@@ -77,8 +77,12 @@ nz-content {
   padding: 24px;
   background: #fff;
   height: 100%;
+  overflow: auto;
 }
 
 nz-footer {
   text-align: center;
+  padding: 5px;
+  background-color: #25253d;
+  color: white;
 }
