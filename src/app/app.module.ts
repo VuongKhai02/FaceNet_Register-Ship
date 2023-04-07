@@ -15,15 +15,12 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { IconsProviderModule } from './icons-provider.module';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
-
+import { NzTableModule } from 'ng-zorro-antd/table';
+import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
 registerLocaleData(vi);
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    Tm1Component,
-    Tm2Component
-  ],
+  declarations: [AppComponent, Tm1Component, Tm2Component],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -32,11 +29,11 @@ registerLocaleData(vi);
     BrowserAnimationsModule,
     IconsProviderModule,
     NzLayoutModule,
-    NzMenuModule
+    NzMenuModule,
+    NzTableModule,
+    NzPopconfirmModule,
   ],
-  providers: [
-    { provide: NZ_I18N, useValue: vi_VN }
-  ],
-  bootstrap: [AppComponent]
+  providers: [{ provide: NZ_I18N, useValue: vi_VN }],
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

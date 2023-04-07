@@ -1,1 +1,115 @@
-<p>tm1 works!</p>
+<button nz-button (click)="addRow()" nzType="primary">Add</button>
+<br />
+<br />
+<nz-table #editRowTable nzBordered [nzData]="listOfData">
+  <thead>
+    <tr>
+      <th nzWidth="10%" class="background-color-header-table">
+        STRAKE POSITION
+      </th>
+      <th colSpan="18" class="background-color-header-table">
+        <div
+          class="editable-cell"
+          [hidden]="isEditStrakePosition === true"
+          (click)="startEditStrakePosition()"
+          style="text-align: left"
+        >
+          {{ strakePosition }}
+        </div>
+        <input
+          [hidden]="isEditStrakePosition === false"
+          type="text"
+          nz-input
+          [(ngModel)]="strakePosition"
+          (blur)="stopEdit()"
+          style="width: 100%"
+        />
+      </th>
+    </tr>
+    <tr>
+      <th class="background-color-header-table" rowSpan="3">PLATE POSITION</th>
+      <th class="background-color-header-table" rowSpan="3">No. or Letter</th>
+      <th class="background-color-header-table" rowSpan="3">
+        Original Thickness (mm)
+      </th>
+      <th class="background-color-header-table" colSpan="6">Forward Reading</th>
+      <th class="background-color-header-table" colSpan="6">Aft Reading</th>
+      <th class="background-color-header-table" colSpan="2" rowSpan="2">
+        Mean Diminution (%)
+      </th>
+      <th class="background-color-header-table" rowSpan="2">Max Alwb Dim</th>
+      <th class="background-color-header-table" rowSpan="3"></th>
+    </tr>
+    <tr>
+      <th class="background-color-header-table" colSpan="2">Gauged (mm)</th>
+      <th class="background-color-header-table" colSpan="2">Diminution P</th>
+      <th class="background-color-header-table" colSpan="2">Diminution S</th>
+      <th class="background-color-header-table" colSpan="2">Gauged (mm)</th>
+      <th class="background-color-header-table" colSpan="2">Diminution P</th>
+      <th class="background-color-header-table" colSpan="2">Diminution S</th>
+    </tr>
+    <tr>
+      <th class="background-color-header-table">P</th>
+      <th class="background-color-header-table">S</th>
+      <th class="background-color-header-table">mm</th>
+      <th class="background-color-header-table">%</th>
+      <th class="background-color-header-table">mm</th>
+      <th class="background-color-header-table">%</th>
+      <th class="background-color-header-table">P</th>
+      <th class="background-color-header-table">S</th>
+      <th class="background-color-header-table">mm</th>
+      <th class="background-color-header-table">%</th>
+      <th class="background-color-header-table">mm</th>
+      <th class="background-color-header-table">%</th>
+      <th class="background-color-header-table">P</th>
+      <th class="background-color-header-table">S</th>
+      <th class="background-color-header-table">mm</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let data of editRowTable.data" class="editable-row">
+      <td>
+        <div
+          class="editable-cell"
+          [hidden]="editId === data.id"
+          (click)="startEdit(data.id)"
+        >
+          {{ data.platePosition }}
+        </div>
+        <input
+          [hidden]="editId !== data.id"
+          type="text"
+          nz-input
+          [(ngModel)]="data.platePosition"
+          (blur)="stopEdit()"
+          style="width: 100%"
+        />
+      </td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td>
+        <a
+          nz-popconfirm
+          nzPopconfirmTitle="Sure to delete?"
+          (nzOnConfirm)="deleteRow(data.id)"
+          >Delete
+        </a>
+      </td>
+    </tr>
+  </tbody>
+</nz-table>
