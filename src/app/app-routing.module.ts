@@ -8,6 +8,7 @@ import { Tm5Component } from './Pages/tm5/tm5.component';
 import { Tm6Component } from './Pages/tm6/tm6.component';
 import { Tm7Component } from './Pages/tm7/tm7.component';
 import { GeneralParticularsComponent } from './Pages/general-particulars/general-particulars.component';
+import { AccountManagementComponent } from './Pages/account-management/account-management.component';
 
 const routes: Routes = [
   { path: 'tm1', component: Tm1Component },
@@ -18,6 +19,7 @@ const routes: Routes = [
   { path: 'tm6', component: Tm6Component },
   { path: 'tm7', component: Tm7Component },
   { path: 'generalParticulars', component: GeneralParticularsComponent },
+  { path: 'accountmanagement', component: AccountManagementComponent },
 ];
 
 @NgModule({
