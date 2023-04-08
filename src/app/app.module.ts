@@ -23,6 +23,9 @@ import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { GeneralParticularsComponent } from './Pages/general-particulars/general-particulars.component';
 import { AccountManagementComponent } from './Pages/account-management/account-management.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
+
 registerLocaleData(vi);
 
 @NgModule({
@@ -48,6 +51,8 @@ registerLocaleData(vi);
     NzLayoutModule,
     NzMenuModule,
     NzFormModule,
+    NzDatePickerModule,
+    ReactiveFormsModule,
   ],
   providers: [{ provide: NZ_I18N, useValue: vi_VN }],
   bootstrap: [AppComponent],
