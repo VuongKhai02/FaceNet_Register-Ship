@@ -25,7 +25,6 @@ import { GeneralParticularsComponent } from './Pages/general-particulars/general
 import { AccountManagementComponent } from './Pages/account-management/account-management.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
-import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
