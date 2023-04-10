@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
+import { NzTableModule } from 'ng-zorro-antd/table';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { Tm1Component } from './Pages/tm1/tm1.component';
@@ -48,6 +48,7 @@ registerLocaleData(vi);
     NzLayoutModule,
     NzMenuModule,
     NzFormModule,
+    NzTableModule
   ],
   providers: [{ provide: NZ_I18N, useValue: vi_VN }],
   bootstrap: [AppComponent],
