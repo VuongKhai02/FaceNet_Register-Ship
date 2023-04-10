@@ -1,0 +1,38 @@
+.title{
+    text-align: center;
+}
+
+.infor{
+    display: flex;
+    justify-content: space-between;
+}
+
+.infor span{
+    border-bottom: 1px dotted ;
+    margin-left: 10px;
+    display: inline-block;
+    width: 200px;
+    text-align: center;
+    font-weight: 700;
+}
+
+.th th{
+    background-color: rgb(129,194,255);
+    border: 1px solid white;
+    border-collapse: collapse;
+    text-align: center;
+}
+.th th{
+    border: 1px solid white;
+}
+.th span{
+    display: block;
+}
+.inp{
+    width: 12%;
+}
+.tb{
+    text-align: center;
+}
+
+
