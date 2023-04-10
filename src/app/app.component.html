@@ -2,7 +2,7 @@
   <nz-sider
     class="menu-sidebar"
     nzCollapsible
-    nzWidth="210px"
+    nzWidth="256px"
     nzBreakpoint="md"
     [(nzCollapsed)]="isCollapsed"
     [nzTrigger]="null"
@@ -25,7 +25,10 @@
             <a routerLink="generalParticulars">General Particulars</a>
           </li>
           <li nz-menu-item nzMatchRouter>
-            <a routerLink="accountmanagement">Account management</a>
+            <a routerLink="accountManagement">Account management</a>
+          </li>
+          <li nz-menu-item nzMatchRouter>
+            <a routerLink="login">Log in</a>
           </li>
         </ul>
       </li>
@@ -52,6 +55,12 @@
           <li nz-menu-item nzMatchRouter>
             <a routerLink="tm7">TM7</a>
           </li>
+          <li nz-menu-item nzMatchRouter>
+            <a routerLink="selectForm"
+              ><span nz-icon nzType="plus" nzTheme="outline"> </span> Add new
+              part</a
+            >
+          </li>
         </ul>
       </li>
     </ul>
@@ -66,6 +75,9 @@
             [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"
           ></span>
         </span>
+        <button class="btnLogout" nz-button nzType="primary">
+          <span nz-icon nzType="logout" nzTheme="outline"></span> Log out
+        </button>
       </div>
     </nz-header>
     <nz-content>

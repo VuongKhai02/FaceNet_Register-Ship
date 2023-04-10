@@ -9,6 +9,8 @@ import { Tm6Component } from './Pages/tm6/tm6.component';
 import { Tm7Component } from './Pages/tm7/tm7.component';
 import { GeneralParticularsComponent } from './Pages/general-particulars/general-particulars.component';
 import { AccountManagementComponent } from './Pages/account-management/account-management.component';
+import { LoginComponent } from './Pages/login/login.component';
+import { SelectformComponent } from './Pages/selectform/selectform.component';
 
 const routes: Routes = [
   { path: 'tm1', component: Tm1Component },
@@ -19,7 +21,9 @@ const routes: Routes = [
   { path: 'tm6', component: Tm6Component },
   { path: 'tm7', component: Tm7Component },
   { path: 'generalParticulars', component: GeneralParticularsComponent },
-  { path: 'accountmanagement', component: AccountManagementComponent },
+  { path: 'accountManagement', component: AccountManagementComponent },
+  { path: 'login', component: LoginComponent },
+  { path: 'selectForm', component: SelectformComponent },
 ];
 
 @NgModule({

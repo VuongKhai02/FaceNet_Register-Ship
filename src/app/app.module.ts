@@ -27,6 +27,11 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzButtonModule } from 'ng-zorro-antd/button';
+import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzDividerModule } from 'ng-zorro-antd/divider';
+import { LoginComponent } from './Pages/login/login.component';
+import { NzInputModule } from 'ng-zorro-antd/input';
+import { SelectformComponent } from './Pages/selectform/selectform.component';
 
 registerLocaleData(vi);
 
@@ -42,6 +47,8 @@ registerLocaleData(vi);
     Tm7Component,
     AccountManagementComponent,
     GeneralParticularsComponent,
+    LoginComponent,
+    SelectformComponent,
   ],
   imports: [
     BrowserModule,
@@ -57,6 +64,9 @@ registerLocaleData(vi);
     NzTableModule,
     NzButtonModule,
     ReactiveFormsModule,
+    NzIconModule,
+    NzDividerModule,
+    NzInputModule,
   ],
   providers: [{ provide: NZ_I18N, useValue: vi_VN }],
   bootstrap: [AppComponent],
