@@ -1,10 +1,6 @@
 <section>
-  <form
-    nz-form
-    [formGroup]="validateForm"
-    class="login-form"
-    (ngSubmit)="submitForm()"
-  >
+  <h1>Log in</h1>
+  <form nz-form [formGroup]="validateForm" class="login-form">
     <nz-form-item>
       <nz-form-control nzErrorTip="Please input your username!">
         <nz-input-group nzPrefixIcon="user">
@@ -29,14 +25,13 @@
         </nz-input-group>
       </nz-form-control>
     </nz-form-item>
-    <a routerLink="/generalParticulars">
-      <button
-        nz-button
-        class="login-form-button login-form-margin"
-        [nzType]="'primary'"
-      >
-        Log in
-      </button>
-    </a>
+    <button
+      nz-button
+      class="login-form-button login-form-margin"
+      [nzType]="'primary'"
+      (click)="submitForm()"
+    >
+      Log in
+    </button>
   </form>
 </section>

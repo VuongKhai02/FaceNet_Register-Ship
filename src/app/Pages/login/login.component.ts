@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import {
   UntypedFormBuilder,
   UntypedFormGroup,
   Validators,
 } from '@angular/forms';
+import { FormControl, FormArray, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-login',
@@ -11,28 +12,30 @@ import {
   styleUrls: ['./login.component.css'],
 })
 export class LoginComponent {
-  validateForm!: UntypedFormGroup;
+  @Output() out: EventEmitter<boolean> = new EventEmitter();
+  Islogin: boolean = true;
+
+  ngOnInit(): void {}
+
+  validateForm: FormGroup = new FormGroup({
+    userName: new FormControl(),
+    password: new FormControl(),
+  });
 
   submitForm(): void {
-    if (this.validateForm.valid) {
-      console.log('submit', this.validateForm.value);
+    if (
+      this.validateForm.value.userName === 'admin' &&
+      this.validateForm.value.password === 'admin'
+    ) {
+      this.Islogin = false;
+      console.log(this.validateForm.value.userName);
+      console.log(this.validateForm.value.password);
+      console.log(this.Islogin);
+      this.out.emit(this.Islogin);
     } else {
-      Object.values(this.validateForm.controls).forEach((control) => {
-        if (control.invalid) {
-          control.markAsDirty();
-          control.updateValueAndValidity({ onlySelf: true });
-        }
-      });
+      alert('Nhập sai');
     }
   }
 
-  constructor(private fb: UntypedFormBuilder) {}
-
-  ngOnInit(): void {
-    this.validateForm = this.fb.group({
-      userName: [null, [Validators.required]],
-      password: [null, [Validators.required]],
-      remember: [true],
-    });
-  }
+  constructor() {}
 }

@@ -11,6 +11,7 @@ import { GeneralParticularsComponent } from './Pages/general-particulars/general
 import { AccountManagementComponent } from './Pages/account-management/account-management.component';
 import { LoginComponent } from './Pages/login/login.component';
 import { SelectformComponent } from './Pages/selectform/selectform.component';
+import { AppComponent } from './app.component';
 
 const routes: Routes = [
   { path: 'tm1', component: Tm1Component },

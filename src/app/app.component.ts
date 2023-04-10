@@ -10,4 +10,13 @@ export class AppComponent {
     throw new Error('Method not implemented.');
   }
   isCollapsed = false;
+  Islogin: boolean = true;
+
+  logIn(title: boolean): void {
+    this.Islogin = title;
+  }
+
+  logOut(): void {
+    this.Islogin = true;
+  }
 }

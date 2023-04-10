@@ -5,6 +5,11 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.LoginForm {
+  width: 100%;
+  height: 100vh;
+}
+
 .app-layout {
   height: 100vh;
 }
