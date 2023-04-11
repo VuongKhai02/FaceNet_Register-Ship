@@ -15,14 +15,21 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { IconsProviderModule } from './icons-provider.module';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
-
+import { ReactiveFormsModule } from '@angular/forms';
+import { Tm4Component } from './Pages/tm4/tm4.component';
+import { Tm5Component } from './Pages/tm5/tm5.component';
+import { NzTableModule } from 'ng-zorro-antd/table';
+import { NzButtonModule } from 'ng-zorro-antd/button';
+import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
 registerLocaleData(vi);
 
 @NgModule({
   declarations: [
     AppComponent,
     Tm1Component,
-    Tm2Component
+    Tm2Component,
+    Tm4Component,
+    Tm5Component,
   ],
   imports: [
     BrowserModule,
@@ -32,11 +39,13 @@ registerLocaleData(vi);
     BrowserAnimationsModule,
     IconsProviderModule,
     NzLayoutModule,
-    NzMenuModule
+    NzMenuModule,
+    ReactiveFormsModule,
+    NzTableModule,
+    NzButtonModule,
+    NzPopconfirmModule,
   ],
-  providers: [
-    { provide: NZ_I18N, useValue: vi_VN }
-  ],
-  bootstrap: [AppComponent]
+  providers: [{ provide: NZ_I18N, useValue: vi_VN }],
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
