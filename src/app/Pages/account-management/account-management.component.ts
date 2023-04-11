@@ -5,6 +5,7 @@ interface ItemData {
   name: string;
   age: string;
   address: string;
+  phanquyen: string;
 }
 
 @Component({
@@ -33,6 +34,7 @@ export class AccountManagementComponent {
         name: `${this.i + 1}`,
         age: `Account ${this.i + 1}`,
         address: `Password ${this.i + 1}`,
+        phanquyen: `admin`,
       },
     ];
     this.i++;

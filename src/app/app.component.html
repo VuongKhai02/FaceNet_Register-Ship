@@ -30,11 +30,11 @@
               <a routerLink="generalParticulars">General Particulars</a>
             </li>
             <li nz-menu-item nzMatchRouter>
-              <a routerLink="accountManagement">Account management</a>
+              <a routerLink="history">History</a>
             </li>
           </ul>
         </li>
-        <li nz-submenu nzOpen nzTitle="Form nhập liệu" nzIcon="form">
+        <!-- <li nz-submenu nzOpen nzTitle="Mục lục" nzIcon="form">
           <ul>
             <li nz-menu-item nzMatchRouter>
               <a routerLink="tm1">TM1</a>
@@ -57,13 +57,28 @@
             <li nz-menu-item nzMatchRouter>
               <a routerLink="tm7">TM7</a>
             </li>
-            <li nz-menu-item nzMatchRouter>
-              <a routerLink="selectForm"
-                ><span nz-icon nzType="plus" nzTheme="outline"> </span> Add new
-                part</a
-              >
+          </ul>
+        </li> -->
+        <li
+          *ngFor="let part of parts"
+          nz-submenu
+          nzOpen
+          nzTitle="{{ part.partName }}"
+          nzIcon="form"
+        >
+          <ul>
+            <li *ngFor="let form of part.forms" nz-menu-item nzMatchRouter>
+              <span nz-icon nzType="align-left" nzTheme="outline"> </span>
+              <span> </span>
+              <a routerLink="{{ form }}">{{ form }}</a>
             </li>
           </ul>
+        </li>
+        <li nz-menu-item nzMatchRouter>
+          <a routerLink="selectForm"
+            ><span nz-icon nzType="plus" nzTheme="outline"> </span> Add new
+            part</a
+          >
         </li>
       </ul>
     </nz-sider>

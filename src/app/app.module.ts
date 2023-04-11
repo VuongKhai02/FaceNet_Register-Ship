@@ -31,6 +31,10 @@ import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { LoginComponent } from './Pages/login/login.component';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { SelectformComponent } from './Pages/selectform/selectform.component';
+import { NzCardModule } from 'ng-zorro-antd/card';
+import { NzListModule } from 'ng-zorro-antd/list';
+import { NzSelectModule } from 'ng-zorro-antd/select';
+import { HistoryComponent } from './Pages/history/history.component';
 
 registerLocaleData(vi);
 
@@ -48,6 +52,7 @@ registerLocaleData(vi);
     GeneralParticularsComponent,
     LoginComponent,
     SelectformComponent,
+    HistoryComponent,
   ],
   imports: [
     BrowserModule,
@@ -66,6 +71,9 @@ registerLocaleData(vi);
     NzIconModule,
     NzDividerModule,
     NzInputModule,
+    NzCardModule,
+    NzListModule,
+    NzSelectModule,
   ],
   providers: [{ provide: NZ_I18N, useValue: vi_VN }],
   bootstrap: [AppComponent],
