@@ -1,1 +1,73 @@
-<p>tm7 works!</p>
+<section>
+    <div class="header">
+        <h1 class="title">
+            Report on THICKNESS MEASUREMENT OF CARGO HOLD SIDE SHELL FRAMES
+        </h1>
+        <div class="infor">
+            <p>Ship's name<span>M/V "AFRICAN EAGLE"</span></p>
+            <p>Class Identity No.<span>03112356</span></p>
+            <p>Report No.<span>VMC.UTM.22.046/5255939</span></p>
+        </div>
+    </div>
+    <div class="addPage">
+        <input nz-input type="number" [(ngModel)]="addRowValue">
+        <button (click)="addRow()"><span nz-icon nzType="file-add" nzTheme="outline"></span>Add {{addRowValue}} rows</button>
+    </div>
+    <nz-table nzTemplateMode="" [nzScroll]="{y:'250px'}" nzBordered="" nzSize="small">
+        <thead>
+            <tr>
+                <th colspan="26">CARDO HOLD NO. 1</th>
+            </tr>
+            <tr>
+                <th colspan="1.9"></th>
+                <th colspan="8">UPPER PART</th>
+                <th colspan="8">MID PART</th>
+                <th colspan="8">LOWER PART</th>
+            </tr>
+            <tr>
+                <th colSpan="2" rowspan="2">FRAME NUMBER</th>
+                <th rowspan="2">Org. Thk. (mm)</th>
+                <th>Max Alwb Dim.</th>
+                <th colspan="2">Gauged</th>
+                <th colspan="2">Diminution <span>P</span></th>
+                <th colspan="2">Diminution <span>S</span></th>
+                <th rowspan="2">Org. Thk. (mm)</th>
+                <th>Max Alwb Dim.</th>
+                <th colspan="2">Gauged</th>
+                <th colspan="2">Diminution <span>P</span></th>
+                <th colspan="2">Diminution <span>S</span></th>
+                <th rowspan="2">Org. Thk. (mm)</th>
+                <th>Max Alwb Dim.</th>
+                <th colspan="2">Gauged</th>
+                <th colspan="2">Diminution <span>P</span></th>
+                <th colspan="2">Diminution <span>S</span></th>
+            </tr>
+            <tr>
+                <th>mm</th>
+                <th>P</th>
+                <th>S</th>
+                <th>mm</th>
+                <th>%</th>
+                <th>mm</th>
+                <th>%</th>
+                <th>mm</th>
+                <th>P</th>
+                <th>S</th>
+                <th>mm</th>
+                <th>%</th>
+                <th>mm</th>
+                <th>%</th>
+                <th>mm</th>
+                <th>P</th>
+                <th>S</th>
+                <th>mm</th>
+                <th>%</th>
+                <th>mm</th>
+                <th>%</th>
+            </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </nz-table>
+</section>
