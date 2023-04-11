@@ -21,7 +21,7 @@ export class AppComponent implements OnInit {
     throw new Error('Method not implemented.');
   }
   isCollapsed = false;
-  Islogin: boolean = true;
+  Islogin: boolean = false;
 
   logIn(title: boolean): void {
     this.Islogin = title;
