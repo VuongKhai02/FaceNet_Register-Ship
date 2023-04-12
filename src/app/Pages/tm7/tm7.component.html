@@ -13,18 +13,18 @@
         <input nz-input type="number" [(ngModel)]="addRowValue">
         <button (click)="addRow()"><span nz-icon nzType="file-add" nzTheme="outline"></span>Add {{addRowValue}} rows</button>
     </div>
-    <nz-table nzTemplateMode="" [nzScroll]="{y:'250px'}" nzBordered="" nzSize="small">
+    <nz-table nzTemplateMode="" [nzScroll]="{y:'240px'}" nzBordered="" nzSize="small">
         <thead>
-            <tr>
+            <tr class="th">
                 <th colspan="26">CARDO HOLD NO. 1</th>
             </tr>
-            <tr>
-                <th colspan="1.9"></th>
+            <tr class="th">
+                <th colspan="2"></th>
                 <th colspan="8">UPPER PART</th>
                 <th colspan="8">MID PART</th>
                 <th colspan="8">LOWER PART</th>
             </tr>
-            <tr>
+            <tr class="th">
                 <th colSpan="2" rowspan="2">FRAME NUMBER</th>
                 <th rowspan="2">Org. Thk. (mm)</th>
                 <th>Max Alwb Dim.</th>
@@ -42,7 +42,7 @@
                 <th colspan="2">Diminution <span>P</span></th>
                 <th colspan="2">Diminution <span>S</span></th>
             </tr>
-            <tr>
+            <tr class="th">
                 <th>mm</th>
                 <th>P</th>
                 <th>S</th>
@@ -67,7 +67,33 @@
             </tr>
         </thead>
         <tbody>
-
+            <tr *ngFor="let i of rowValue">
+                <td colspan="2"><input type="text" nz-input></td>
+                <td><input type="text" nz-input></td>
+                <td></td>
+                <td><input type="text" nz-input></td>
+                <td><input type="text" nz-input></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td><input type="text" nz-input></td>
+                <td></td>
+                <td><input type="text" nz-input></td>
+                <td><input type="text" nz-input></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td><input type="text" nz-input></td>
+                <td></td>
+                <td><input type="text" nz-input></td>
+                <td><input type="text" nz-input></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
         </tbody>
     </nz-table>
 </section>
