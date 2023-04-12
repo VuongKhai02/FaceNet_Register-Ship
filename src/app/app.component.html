@@ -24,16 +24,18 @@
         nzMode="inline"
         [nzInlineCollapsed]="isCollapsed"
       >
-        <li nz-submenu nzOpen nzTitle="Biểu mẫu" nzIcon="dashboard">
+        <li nz-menu-item nzMatchRouter>
+          <span nz-icon nzType="form" nzTheme="outline"></span>
+          <span>General Particulars</span>
+          <a routerLink="generalParticulars"></a>
+        </li>
+        <!-- <li nz-submenu nzOpen nzTitle="Biểu mẫu" nzIcon="dashboard">
           <ul>
             <li nz-menu-item nzMatchRouter>
               <a routerLink="generalParticulars">General Particulars</a>
             </li>
-            <li nz-menu-item nzMatchRouter>
-              <a routerLink="history">History</a>
-            </li>
           </ul>
-        </li>
+        </li> -->
         <!-- <li nz-submenu nzOpen nzTitle="Mục lục" nzIcon="form">
           <ul>
             <li nz-menu-item nzMatchRouter>
@@ -64,11 +66,11 @@
           nz-submenu
           nzOpen
           nzTitle="{{ part.partName }}"
-          nzIcon="form"
+          nzIcon="folder"
         >
           <ul>
             <li *ngFor="let form of part.forms" nz-menu-item nzMatchRouter>
-              <span nz-icon nzType="align-left" nzTheme="outline"> </span>
+              <span nz-icon nzType="file-text" nzTheme="outline"></span>
               <span> </span>
               <a routerLink="{{ form }}">{{ form }}</a>
             </li>
@@ -76,8 +78,14 @@
         </li>
         <li nz-menu-item nzMatchRouter>
           <a routerLink="selectForm"
-            ><span nz-icon nzType="plus" nzTheme="outline"> </span> Add new
-            part</a
+            ><span nz-icon nzType="folder-add" nzTheme="outline"></span>
+            <span>Add new part</span></a
+          >
+        </li>
+        <li nz-menu-item nzMatchRouter>
+          <a routerLink="history"
+            ><span nz-icon nzType="history" nzTheme="outline"></span
+            ><span>History</span></a
           >
         </li>
       </ul>

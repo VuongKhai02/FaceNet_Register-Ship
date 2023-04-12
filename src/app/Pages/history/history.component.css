@@ -1,0 +1,94 @@
+section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* nz-card {
+  margin: 20px 0px;
+  width: 100%;
+}
+
+::ng-deep nz-card .ant-card-head {
+  background-color: var(--titleTablebackGround);
+}
+
+.btnBox {
+  width: 100%;
+  height: auto;
+  padding: 10px 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: end;
+}
+
+.tableBox {
+  width: 100%;
+  height: auto;
+}
+
+.titleTable {
+  background-color: var(--titleTablebackGround);
+}
+
+.editable-cell {
+  position: relative;
+  padding: 5px 12px;
+  cursor: pointer;
+}
+
+.editable-row:hover .editable-cell {
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  padding: 4px 11px;
+} */
+
+.titleTable {
+  background-color: var(--titleTablebackGround);
+}
+
+.ant-advanced-search-form {
+  width: 100%;
+  padding: 24px;
+  background: #fbfbfb;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+}
+
+.search-result-list {
+  width: 100%;
+  margin-top: 16px;
+  border: 1px dashed #e9e9e9;
+  border-radius: 6px;
+  background-color: #fafafa;
+  min-height: 200px;
+  text-align: center;
+}
+
+[nz-form-label] {
+  overflow: visible;
+}
+
+button {
+  margin-left: 8px;
+}
+
+.collapse {
+  margin-left: 8px;
+  font-size: 12px;
+}
+
+.search-area {
+  text-align: right;
+}
+
+nz-form-item {
+  width: 45%;
+}
+
+.controlBox {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+}
