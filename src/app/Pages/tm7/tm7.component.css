@@ -6,6 +6,9 @@
     display: flex;
     justify-content: space-between;
 }
+.th th{
+    background-color: rgb(129,194,255);
+}
 
 .infor span{
     border-bottom: 1px dotted ;
@@ -36,6 +39,13 @@
     border-radius: 5px;
 }
 
+input{
+    padding: 0 2px;
+    margin: 0;
+    height: 25px;
+    width: 100%;
+    font-size: 12px;
+}
 .addPage button:hover{
     transition: 0.5s;
     background-color: rgb(53, 158, 255);
