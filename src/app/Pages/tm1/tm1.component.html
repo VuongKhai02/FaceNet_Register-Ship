@@ -1,13 +1,20 @@
 <button nz-button (click)="addRow()" nzType="primary">Add</button>
 <br />
 <br />
-<nz-table #editRowTable nzBordered [nzData]="listOfData">
+<nz-table
+  #editRowTable
+  nzBordered
+  [nzData]="listOfData"
+  nzSimple
+  [nzScroll]="{ y: '600px' }"
+  [nzShowPagination]="false"
+>
   <thead>
-    <tr>
-      <th nzWidth="10%" class="background-color-header-table">
+    <tr class="editable-row">
+      <th nzWidth="9%" nzLeft class="background-color-header-table">
         STRAKE POSITION
       </th>
-      <th colSpan="18" class="background-color-header-table">
+      <th colSpan="17" nzAlign="right" class="background-color-header-table">
         <div
           class="editable-cell"
           [hidden]="isEditStrakePosition === true"
@@ -25,11 +32,16 @@
           style="width: 100%"
         />
       </th>
+      <th class="background-color-header-table" nzRight></th>
     </tr>
     <tr>
-      <th class="background-color-header-table" rowSpan="3">PLATE POSITION</th>
-      <th class="background-color-header-table" rowSpan="3">No. or Letter</th>
-      <th class="background-color-header-table" rowSpan="3">
+      <th class="background-color-header-table" rowSpan="3" nzLeft>
+        PLATE POSITION
+      </th>
+      <th class="background-color-header-table" rowSpan="3" nzLeft>
+        No. or Letter
+      </th>
+      <th class="background-color-header-table" rowSpan="3" nzLeft>
         Original Thickness (mm)
       </th>
       <th class="background-color-header-table" colSpan="6">Forward Reading</th>
@@ -38,7 +50,7 @@
         Mean Diminution (%)
       </th>
       <th class="background-color-header-table" rowSpan="2">Max Alwb Dim</th>
-      <th class="background-color-header-table" rowSpan="3"></th>
+      <th class="background-color-header-table" rowSpan="3" nzRight></th>
     </tr>
     <tr>
       <th class="background-color-header-table" colSpan="2">Gauged (mm)</th>
@@ -68,7 +80,7 @@
   </thead>
   <tbody>
     <tr *ngFor="let data of editRowTable.data" class="editable-row">
-      <td>
+      <td nzLeft>
         <div
           class="editable-cell"
           [hidden]="editId === data.id"
@@ -85,29 +97,160 @@
           style="width: 100%"
         />
       </td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
+      <td nzLeft>
+        <div
+          class="editable-cell"
+          [hidden]="editId === data.id"
+          (click)="startEdit(data.id)"
+        >
+          {{ data.noOrLetter }}
+        </div>
+        <input
+          [hidden]="editId !== data.id"
+          type="text"
+          nz-input
+          [(ngModel)]="data.noOrLetter"
+          (blur)="stopEdit()"
+          style="width: 100%"
+        />
+      </td>
+      <td nzLeft>
+        <div
+          class="editable-cell"
+          [hidden]="editId === data.id"
+          (click)="startEdit(data.id)"
+        >
+          {{ data.originalThickness }}
+        </div>
+        <input
+          [hidden]="editId !== data.id"
+          type="text"
+          nz-input
+          [(ngModel)]="data.originalThickness"
+          (blur)="stopEdit()"
+          style="width: 100%"
+        />
+      </td>
+      <td>
+        <div
+          class="editable-cell"
+          [hidden]="editId === data.id"
+          (click)="startEdit(data.id)"
+        >
+          {{ data.forwardReadingP }}
+        </div>
+        <input
+          [hidden]="editId !== data.id"
+          type="text"
+          nz-input
+          [(ngModel)]="data.forwardReadingP"
+          (blur)="stopEdit()"
+          style="width: 100%"
+        />
+      </td>
+      <td>
+        <div
+          class="editable-cell"
+          [hidden]="editId === data.id"
+          (click)="startEdit(data.id)"
+        >
+          {{ data.forwardReadingS }}
+        </div>
+        <input
+          [hidden]="editId !== data.id"
+          type="text"
+          nz-input
+          [(ngModel)]="data.forwardReadingS"
+          (blur)="stopEdit()"
+          style="width: 100%"
+        />
+      </td>
       <td></td>
       <td></td>
       <td></td>
       <td></td>
       <td>
+        <div
+          class="editable-cell"
+          [hidden]="editId === data.id"
+          (click)="startEdit(data.id)"
+        >
+          {{ data.afterReadingP }}
+        </div>
+        <input
+          [hidden]="editId !== data.id"
+          type="text"
+          nz-input
+          [(ngModel)]="data.afterReadingP"
+          (blur)="stopEdit()"
+          style="width: 100%"
+        />
+      </td>
+      <td>
+        <div
+          class="editable-cell"
+          [hidden]="editId === data.id"
+          (click)="startEdit(data.id)"
+        >
+          {{ data.afterReadingS }}
+        </div>
+        <input
+          [hidden]="editId !== data.id"
+          type="text"
+          nz-input
+          [(ngModel)]="data.afterReadingS"
+          (blur)="stopEdit()"
+          style="width: 100%"
+        />
+      </td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td>
+        <div
+          class="editable-cell"
+          [hidden]="editId === data.id"
+          (click)="startEdit(data.id)"
+        >
+          {{ data.meanDiminutionP }}
+        </div>
+        <input
+          [hidden]="editId !== data.id"
+          type="text"
+          nz-input
+          [(ngModel)]="data.meanDiminutionP"
+          (blur)="stopEdit()"
+          style="width: 100%"
+        />
+      </td>
+      <td>
+        <div
+          class="editable-cell"
+          [hidden]="editId === data.id"
+          (click)="startEdit(data.id)"
+        >
+          {{ data.meanDiminutionS }}
+        </div>
+        <input
+          [hidden]="editId !== data.id"
+          type="text"
+          nz-input
+          [(ngModel)]="data.meanDiminutionS"
+          (blur)="stopEdit()"
+          style="width: 100%"
+        />
+      </td>
+      <td></td>
+      <td nzRight>
         <a
           nz-popconfirm
-          nzPopconfirmTitle="Sure to delete?"
+          nzPopconfirmTitle="Bạn có chắc chắn muốn xóa?"
           (nzOnConfirm)="deleteRow(data.id)"
-          >Delete
+        >
+          <div style="display: flex; justify-content: center">
+            <span nz-icon nzType="delete" nzTheme="fill"></span>
+          </div>
         </a>
       </td>
     </tr>

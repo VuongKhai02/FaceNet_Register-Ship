@@ -17,6 +17,7 @@ import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
+import { NzIconModule } from 'ng-zorro-antd/icon';
 registerLocaleData(vi);
 
 @NgModule({
@@ -32,6 +33,7 @@ registerLocaleData(vi);
     NzMenuModule,
     NzTableModule,
     NzPopconfirmModule,
+    NzIconModule,
   ],
   providers: [{ provide: NZ_I18N, useValue: vi_VN }],
   bootstrap: [AppComponent],

@@ -5,12 +5,12 @@ interface ItemData {
   platePosition: string;
   noOrLetter: string;
   originalThickness: string;
-  forwardReadingP: number;
-  forwardReadingS: number;
-  afterReadingP: number;
-  afterReadingS: number;
-  meanDiminutionP: number;
-  meanDiminutionS: number;
+  forwardReadingP: string;
+  forwardReadingS: string;
+  afterReadingP: string;
+  afterReadingS: string;
+  meanDiminutionP: string;
+  meanDiminutionS: string;
 }
 
 @Component({
@@ -46,12 +46,12 @@ export class Tm1Component implements OnInit {
         platePosition: '',
         noOrLetter: '',
         originalThickness: '',
-        forwardReadingP: 0,
-        forwardReadingS: 0,
-        afterReadingP: 0,
-        afterReadingS: 0,
-        meanDiminutionP: 0,
-        meanDiminutionS: 0,
+        forwardReadingP: '',
+        forwardReadingS: '',
+        afterReadingP: '',
+        afterReadingS: '',
+        meanDiminutionP: '',
+        meanDiminutionS: '',
       },
     ];
     this.i++;
@@ -61,8 +61,5 @@ export class Tm1Component implements OnInit {
     this.listOfData = this.listOfData.filter((d) => d.id !== id);
   }
 
-  ngOnInit(): void {
-    this.addRow();
-    this.addRow();
-  }
+  ngOnInit(): void {}
 }
