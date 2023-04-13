@@ -1,4 +1,4 @@
-export interface generalParticulars {
+export interface GeneralParticular {
   shipName: string;
   imoNumber: number;
   absIdentificationNumber: number;
