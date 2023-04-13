@@ -100,3 +100,7 @@ nz-footer {
   background-color: #25253d;
   color: white;
 }
+
+.none-arrow ::ng-deep .ant-menu-submenu-arrow {
+  display: none;
+}
