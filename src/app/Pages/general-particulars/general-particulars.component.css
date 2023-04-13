@@ -1,0 +1,22 @@
+section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.formBox {
+  margin-top: 20px;
+  width: 100%;
+}
+input {
+  color: blue;
+  width: auto;
+  width: 100%;
+}
+hr {
+  width: 100%;
+}
+
+span {
+  color: blue;
+}

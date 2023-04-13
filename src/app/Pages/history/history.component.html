@@ -1,0 +1,266 @@
+<section>
+  <h1>History</h1>
+  <!-- <nz-card nzTitle="Search box" [nzExtra]="extraTemplate">
+    <p>Card content</p>
+    <p>Card content</p>
+    <p>Card content</p>
+  </nz-card>
+  <ng-template #extraTemplate>
+    <button nz-button nzType="primary" (click)="search()">
+      <span nz-icon nzType="search"></span>
+      Search
+    </button>
+  </ng-template>
+  <div class="tableBox">
+    <nz-table #editRowTable nzBordered [nzData]="listOfData" nzWidth="100%">
+      <thead class="titleTable" nzWidth="100%">
+        <tr class="titleTable" nzWidth="100%">
+          <th class="titleTable" nzWidth="10%">Stt</th>
+          <th class="titleTable" nzWidth="25%">Account</th>
+          <th class="titleTable" nzWidth="25%">Password</th>
+          <th class="titleTable" nzWidth="20%">Decentralization</th>
+          <th class="titleTable" nzWidth="20%">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of editRowTable.data" class="editable-row">
+          <td>
+            <div
+              class="editable-cell"
+              [hidden]="editId === data.id"
+              (click)="startEdit(data.id)"
+            >
+              {{ data.name }}
+            </div>
+            <input
+              [hidden]="editId !== data.id"
+              type="text"
+              nz-input
+              [(ngModel)]="data.name"
+              (blur)="stopEdit()"
+            />
+          </td>
+          <td>{{ data.age }}</td>
+          <td>{{ data.address }}</td>
+          <td>{{ data.phanquyen }}</td>
+          <td>
+            <a nz-popconfirm> Edit</a>
+            <nz-divider nzType="vertical"></nz-divider>
+            <a
+              nz-popconfirm
+              nzPopconfirmTitle="Sure to delete?"
+              (nzOnConfirm)="deleteRow(data.id)"
+              >Delete</a
+            >
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </div> -->
+  <form class="ant-advanced-search-form">
+    <div class="controlBox">
+      <nz-form-item>
+        <nz-form-label>Ship's name</nz-form-label>
+        <nz-form-control>
+          <input nz-input />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label>IMO number </nz-form-label>
+        <nz-form-control>
+          <input nz-input />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label>Date of build</nz-form-label>
+        <nz-form-control>
+          <nz-date-picker></nz-date-picker>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label>Certificate No.</nz-form-label>
+        <nz-form-control>
+          <input nz-input />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label>Classification society</nz-form-label>
+        <nz-form-control>
+          <input nz-input />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label>Certificate valid from</nz-form-label>
+        <nz-form-control>
+          <nz-range-picker></nz-range-picker>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-row>
+      <div nz-col [nzSpan]="24" class="search-area">
+        <button nz-button [nzType]="'primary'">
+          <span nz-icon nzType="file-search" nzTheme="outline"></span>Search
+        </button>
+        <button nz-button (click)="resetForm()">Clear</button>
+      </div>
+    </div>
+  </form>
+  <div class="search-result-list">
+    <nz-table #borderedTable nzBordered [nzScroll]="{ y: '450px' }">
+      <thead class="titleTable">
+        <tr class="titleTable">
+          <th class="titleTable" nzWidth="60px">Stt</th>
+          <th class="titleTable">Ship's name</th>
+          <th class="titleTable">IMO number</th>
+          <th class="titleTable">Date of build</th>
+          <th class="titleTable">Certificate No.</th>
+          <th class="titleTable">Classification society</th>
+          <th class="titleTable">Certificate valid from</th>
+          <th class="titleTable">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </div>
+</section>

@@ -1,77 +1,121 @@
-<nz-layout class="app-layout">
-  <nz-sider
-    class="menu-sidebar"
-    nzCollapsible
-    nzWidth="210px"
-    [(nzCollapsed)]="isCollapsed"
-    [nzTrigger]="null"
-  >
-    <div class="sidebar-logo">
-      <a href="https://ng.ant.design/" target="_blank">
-        <img src="https://ng.ant.design/assets/img/logo.svg" alt="logo" />
-        <h1>Register Shipping</h1>
-      </a>
-    </div>
-    <ul
-      nz-menu
-      nzTheme="dark"
-      nzMode="inline"
-      [nzInlineCollapsed]="isCollapsed"
+<div class="LoginForm" *ngIf="Islogin === true; else mainLayout">
+  <app-login (out)="logIn($event)"></app-login>
+</div>
+
+<ng-template #mainLayout>
+  <nz-layout class="app-layout">
+    <nz-sider
+      class="menu-sidebar"
+      nzCollapsible
+      nzWidth="256px"
+      nzBreakpoint="md"
+      [(nzCollapsed)]="isCollapsed"
+      [nzTrigger]="null"
     >
-      <li nz-submenu nzOpen nzTitle="Biểu mẫu" nzIcon="dashboard">
-        <ul>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="generalParticulars">General Particulars</a>
-          </li>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="accountmanagement">Account management</a>
-          </li>
-        </ul>
-      </li>
-      <li nz-submenu nzOpen nzTitle="Form nhập liệu" nzIcon="form">
-        <ul>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="tm1">TM1</a>
-          </li>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="tm2">TM2</a>
-          </li>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="tm3">TM3</a>
-          </li>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="tm4">TM4</a>
-          </li>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="tm5">TM5</a>
-          </li>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="tm6">TM6</a>
-          </li>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="tm7">TM7</a>
-          </li>
-        </ul>
-      </li>
-    </ul>
-  </nz-sider>
-  <nz-layout>
-    <nz-header>
-      <div class="app-header">
-        <span class="header-trigger" (click)="isCollapsed = !isCollapsed">
-          <span
-            class="trigger"
-            nz-icon
-            [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"
-          ></span>
-        </span>
+      <div class="sidebar-logo">
+        <a href="https://ng.ant.design/" target="_blank">
+          <img src="https://ng.ant.design/assets/img/logo.svg" alt="logo" />
+          <h1>Register Shipping</h1>
+        </a>
       </div>
-    </nz-header>
-    <nz-content>
-      <div class="inner-content">
-        <router-outlet></router-outlet>
-      </div>
-    </nz-content>
-    <nz-footer>© Copyright Facenet. All Rights Reserved</nz-footer>
+      <ul
+        nz-menu
+        nzTheme="dark"
+        nzMode="inline"
+        [nzInlineCollapsed]="isCollapsed"
+      >
+        <li nz-menu-item nzMatchRouter>
+          <span nz-icon nzType="form" nzTheme="outline"></span>
+          <span>General Particulars</span>
+          <a routerLink="generalParticulars"></a>
+        </li>
+        <!-- <li nz-submenu nzOpen nzTitle="Biểu mẫu" nzIcon="dashboard">
+          <ul>
+            <li nz-menu-item nzMatchRouter>
+              <a routerLink="generalParticulars">General Particulars</a>
+            </li>
+          </ul>
+        </li> -->
+        <!-- <li nz-submenu nzOpen nzTitle="Mục lục" nzIcon="form">
+          <ul>
+            <li nz-menu-item nzMatchRouter>
+              <a routerLink="tm1">TM1</a>
+            </li>                   
+            <li nz-menu-item nzMatchRouter>
+              <a routerLink="tm2">TM2</a>
+            </li>
+            <li nz-menu-item nzMatchRouter>
+              <a routerLink="tm3">TM3</a>
+            </li>
+            <li nz-menu-item nzMatchRouter>
+              <a routerLink="tm4">TM4</a>
+            </li>
+            <li nz-menu-item nzMatchRouter>
+              <a routerLink="tm5">TM5</a>
+            </li>
+            <li nz-menu-item nzMatchRouter>
+              <a routerLink="tm6">TM6</a>
+            </li>
+            <li nz-menu-item nzMatchRouter>
+              <a routerLink="tm7">TM7</a>
+            </li>
+          </ul>
+        </li> -->
+        <li
+          *ngFor="let part of parts"
+          nz-submenu
+          nzOpen
+          nzTitle="{{ part.partName }}"
+          nzIcon="folder"
+        >
+          <ul>
+            <li *ngFor="let form of part.forms" nz-menu-item nzMatchRouter>
+              <span nz-icon nzType="file-text" nzTheme="outline"></span>
+              <span> </span>
+              <a routerLink="{{ form }}">{{ form }}</a>
+            </li>
+          </ul>
+        </li>
+        <li nz-menu-item nzMatchRouter>
+          <a routerLink="selectForm"
+            ><span nz-icon nzType="folder-add" nzTheme="outline"></span>
+            <span>Add new part</span></a
+          >
+        </li>
+        <li nz-menu-item nzMatchRouter>
+          <a routerLink="history"
+            ><span nz-icon nzType="history" nzTheme="outline"></span
+            ><span>History</span></a
+          >
+        </li>
+      </ul>
+    </nz-sider>
+    <nz-layout>
+      <nz-header>
+        <div class="app-header">
+          <span class="header-trigger" (click)="isCollapsed = !isCollapsed">
+            <span
+              class="trigger"
+              nz-icon
+              [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"
+            ></span>
+          </span>
+          <button
+            (click)="logOut()"
+            class="btnLogout"
+            nz-button
+            nzType="primary"
+          >
+            <span nz-icon nzType="logout" nzTheme="outline"></span> Log out
+          </button>
+        </div>
+      </nz-header>
+      <nz-content>
+        <div class="inner-content">
+          <router-outlet></router-outlet>
+        </div>
+      </nz-content>
+      <nz-footer>© Copyright Facenet. All Rights Reserved</nz-footer>
+    </nz-layout>
   </nz-layout>
-</nz-layout>
+</ng-template>
