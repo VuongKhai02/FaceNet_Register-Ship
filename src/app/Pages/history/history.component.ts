@@ -5,14 +5,6 @@ import {
   UntypedFormGroup,
 } from '@angular/forms';
 
-interface ItemData {
-  id: string;
-  name: string;
-  age: string;
-  address: string;
-  phanquyen: string;
-}
-
 @Component({
   selector: 'app-history',
   templateUrl: './history.component.html',
