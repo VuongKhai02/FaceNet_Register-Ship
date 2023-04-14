@@ -2,6 +2,7 @@ import { PartsService } from './../../share/services/parts.service';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { part } from 'src/app/share/models/part.model';
+import { NzMessageService } from 'ng-zorro-antd/message';
 
 @Component({
   selector: 'app-selectform',
@@ -10,7 +11,10 @@ import { part } from 'src/app/share/models/part.model';
 })
 export class SelectformComponent implements OnInit {
   parts: part[] = [];
-  constructor(private partsService: PartsService) {}
+  constructor(
+    private partsService: PartsService,
+    private message: NzMessageService
+  ) {}
   ngOnInit(): void {
     this.parts = this.partsService.setParts();
   }
@@ -30,10 +34,12 @@ export class SelectformComponent implements OnInit {
       this.parts.push({
         partName: this.selectForm.value.formName,
         forms: this.selectForm.value.formSelect,
+        visible: false,
       });
+      this.message.create('success', 'Admit success');
     } else {
       this.selectForm.value.formSelect = ['selectForm'];
-      alert('Nhập thiếu thông tin');
+      this.message.create('error', 'Nhập thiếu thông tin');
     }
   }
 }

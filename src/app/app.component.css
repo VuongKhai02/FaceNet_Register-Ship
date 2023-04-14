@@ -8,6 +8,9 @@
 .LoginForm {
   width: 100%;
   height: 100vh;
+  background-image: url("../app/share/img/BackgroundBody3.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .app-layout {

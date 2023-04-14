@@ -62,17 +62,96 @@
           </ul>
         </li> -->
         <li
-          *ngFor="let part of parts"
+          *ngFor="let part of parts; let i = index"
           nz-submenu
           nzOpen
           nzTitle="{{ part.partName }}"
           nzIcon="folder"
         >
           <ul>
-            <li *ngFor="let form of part.forms" nz-menu-item nzMatchRouter>
+            <li
+              *ngFor="let form of part.forms; let j = index"
+              nz-menu-item
+              nzMatchRouter
+            >
               <span nz-icon nzType="file-text" nzTheme="outline"></span>
-              <span> </span>
-              <a routerLink="{{ form }}">{{ form }}</a>
+              <span
+                ><a routerLink="{{ form }}">{{ form }}</a>
+              </span>
+
+              <button
+                style="
+                  margin-left: 110px;
+                  background-color: transparent;
+                  border: none;
+                "
+                nz-popconfirm
+                nzPopconfirmTitle="Bạn có chắc muốn xóa?"
+                (nzOnConfirm)="deleteTm(i, j)"
+                (nzOnCancel)="cancel()"
+                nzPopconfirmPlacement="top"
+                nz-button
+              >
+                <span
+                  style="color: white"
+                  nz-icon
+                  nzType="delete"
+                  nzTheme="outline"
+                >
+                </span>
+              </button>
+            </li>
+            <li nz-menu-item nzMatchRouter>
+              <span nz-icon nzType="file-add" nzTheme="outline"></span>
+              <a
+                style="background-color: transparent; border: none"
+                nz-button
+                nzType="primary"
+                nz-popover
+                nzPopoverTitle="Select form"
+                [(nzPopoverVisible)]="part.visible"
+                (nzPopoverVisibleChange)="change($event)"
+                nzPopoverTrigger="click"
+                [nzPopoverContent]="contentTemplate"
+              >
+                Add new form
+              </a>
+              <ng-template #contentTemplate>
+                <div>
+                  <div style="width: 100%">
+                    <nz-select
+                      style="width: 100%"
+                      nzMode="tags"
+                      [nzTokenSeparators]="[',']"
+                      nzPlaceHolder="Select form"
+                      [(ngModel)]="formSelect"
+                    >
+                      <nz-option nzLabel="Tm1" nzValue="Tm1"></nz-option>
+                      <nz-option nzLabel="Tm2" nzValue="Tm2"></nz-option>
+                      <nz-option nzLabel="Tm3" nzValue="Tm3"></nz-option>
+                      <nz-option nzLabel="Tm4" nzValue="Tm4"></nz-option>
+                      <nz-option nzLabel="Tm5" nzValue="Tm5"></nz-option>
+                      <nz-option nzLabel="Tm6" nzValue="Tm6"></nz-option>
+                      <nz-option nzLabel="Tm7" nzValue="Tm7"></nz-option>
+                    </nz-select>
+                  </div>
+                  <a (click)="addForm(i)" nz-popconfirm> Submit</a>
+                  <nz-divider nzType="vertical"></nz-divider>
+                  <a (click)="clickMe(i)">Đóng</a>
+                </div>
+              </ng-template>
+            </li>
+            <li nz-menu-item nzMatchRouter>
+              <span nz-icon nzType="delete" nzTheme="outline"></span>
+              <span
+                ><a
+                  nz-popconfirm
+                  nzPopconfirmTitle="Bạn có chắc muốn xóa?"
+                  (nzOnConfirm)="deletePart(i)"
+                  (nzOnCancel)="cancel()"
+                  >Delete part</a
+                ></span
+              >
             </li>
           </ul>
         </li>
@@ -80,6 +159,12 @@
           <a routerLink="selectForm"
             ><span nz-icon nzType="folder-add" nzTheme="outline"></span>
             <span>Add new part</span></a
+          >
+        </li>
+        <li nz-menu-item nzMatchRouter>
+          <a routerLink="review"
+            ><span nz-icon nzType="folder-view" nzTheme="outline"></span
+            ><span>Review</span></a
           >
         </li>
         <li nz-menu-item nzMatchRouter>

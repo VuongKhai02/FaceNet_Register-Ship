@@ -35,6 +35,10 @@ import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzListModule } from 'ng-zorro-antd/list';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { HistoryComponent } from './Pages/history/history.component';
+import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
+import { NzPopoverModule } from 'ng-zorro-antd/popover';
+import { ReviewComponent } from './Pages/review/review.component';
+import { NzMessageModule } from 'ng-zorro-antd/message';
 
 registerLocaleData(vi);
 
@@ -53,6 +57,7 @@ registerLocaleData(vi);
     LoginComponent,
     SelectformComponent,
     HistoryComponent,
+    ReviewComponent,
   ],
   imports: [
     BrowserModule,
@@ -74,6 +79,9 @@ registerLocaleData(vi);
     NzCardModule,
     NzListModule,
     NzSelectModule,
+    NzPopconfirmModule,
+    NzPopoverModule,
+    NzMessageModule,
   ],
   providers: [{ provide: NZ_I18N, useValue: vi_VN }],
   bootstrap: [AppComponent],
