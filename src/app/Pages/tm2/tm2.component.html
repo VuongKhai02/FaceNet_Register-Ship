@@ -1,1 +1,116 @@
-<p>tm2 works!</p>
+<section>
+  <div class="header">
+    <h1 class="title">
+      Report on THICKNESS MEASUREMENT OF SHELL AND DECK PLATING (one, two or
+      three transverse sections)
+    </h1>
+    <div class="infor">
+      <p>Ship's name<span>M/V "AFRICAN EAGLE"</span></p>
+      <p>Class Identity No.<span>03112356</span></p>
+      <p>Report No.<span>VMC.UTM.22.046/5255939</span></p>
+    </div>
+  </div>
+  <div class="addPage">
+    <input nz-input type="number" [(ngModel)]="addRowValue" />
+    <button (click)="addRow()">
+      <span nz-icon nzType="file-add" nzTheme="outline"></span>Add
+      {{ addRowValue }} rows
+    </button>
+  </div>
+  <nz-table
+    [nzScroll]="{ x: '2000px', y: '400px' }"
+    [nzPageSize]="5"
+    nzBordered
+    class="table"
+    nzTemplateMode=""
+    nzSize="small"
+  >
+    <thead>
+      <tr class="th">
+        <th colspan="29">STRENGTH DECK AND SHEER STRAKE PLATING</th>
+      </tr>
+      <tr class="th">
+        <th colspan="2"></th>
+        <th colspan="9">1st TRANSVERSE SECTION <br />at Fr.No.: 91~92</th>
+        <th colspan="9">2nd TRANSVERSE SECTION <br />at Fr.No.: 116~117</th>
+        <th colspan="9">3rd TRANSVERSE SECTION <br />at Fr.No.: 137~138</th>
+      </tr>
+      <tr class="th">
+        <th rowspan="2">No.</th>
+        <th rowspan="2">STRAKE POSITION</th>
+        <th rowspan="2">No. or Letter</th>
+        <th rowspan="2">Original Thickness (mm)</th>
+        <th rowSpan="2">Max Alwb Dim</th>
+        <th colspan="2">Gauged mm</th>
+        <th colspan="2">Diminution P</th>
+        <th colspan="2">Diminution S</th>
+        <th rowspan="2">No. or Letter</th>
+        <th rowspan="2">Original Thickness (mm)</th>
+        <th rowSpan="2">Max Alwb Dim</th>
+        <th colspan="2">Gauged mm</th>
+        <th colspan="2">Diminution P</th>
+        <th colspan="2">Diminution S</th>
+        <th rowspan="2">No. or Letter</th>
+        <th rowspan="2">Original Thickness (mm)</th>
+        <th rowSpan="2">Max Alwb Dim</th>
+        <th colspan="2">Gauged mm</th>
+        <th colspan="2">Diminution P</th>
+        <th colspan="2">Diminution S</th>
+      </tr>
+
+      <tr class="th">
+        <th>P</th>
+        <th>S</th>
+        <th>mm</th>
+        <th>%</th>
+        <th>mm</th>
+        <th>%</th>
+        <th>P</th>
+        <th>S</th>
+        <th>mm</th>
+        <th>%</th>
+        <th>mm</th>
+        <th>%</th>
+        <th>P</th>
+        <th>S</th>
+        <th>mm</th>
+        <th>%</th>
+        <th>mm</th>
+        <th>%</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let i of rowValue; index as index" class="tb">
+        <td>{{ index + 1 }}</td>
+        <td><input nz-input type="text" /></td>
+        <td><input nz-input type="text" /></td>
+        <td><input nz-input type="text" /></td>
+        <td><input nz-input type="text" /></td>
+        <td><input nz-input type="text" /></td>
+        <td><input nz-input type="text" /></td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td><input nz-input type="text" /></td>
+        <td><input nz-input type="text" /></td>
+        <td><input nz-input type="text" /></td>
+        <td><input nz-input type="text" /></td>
+        <td><input nz-input type="text" /></td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td><input nz-input type="text" /></td>
+        <td><input nz-input type="text" /></td>
+        <td><input nz-input type="text" /></td>
+        <td><input nz-input type="text" /></td>
+        <td><input nz-input type="text" /></td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+      </tr>
+    </tbody>
+  </nz-table>
+</section>

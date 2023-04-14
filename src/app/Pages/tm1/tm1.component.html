@@ -1,258 +1,93 @@
-<button nz-button (click)="addRow()" nzType="primary">Add</button>
-<br />
-<br />
-<nz-table
-  #editRowTable
-  nzBordered
-  [nzData]="listOfData"
-  nzSimple
-  [nzScroll]="{ y: '600px' }"
-  [nzShowPagination]="false"
->
-  <thead>
-    <tr class="editable-row">
-      <th nzWidth="9%" nzLeft class="background-color-header-table">
-        STRAKE POSITION
-      </th>
-      <th colSpan="17" nzAlign="right" class="background-color-header-table">
-        <div
-          class="editable-cell"
-          [hidden]="isEditStrakePosition === true"
-          (click)="startEditStrakePosition()"
-          style="text-align: left"
-        >
-          {{ strakePosition }}
-        </div>
-        <input
-          [hidden]="isEditStrakePosition === false"
-          type="text"
-          nz-input
-          [(ngModel)]="strakePosition"
-          (blur)="stopEdit()"
-          style="width: 100%"
-        />
-      </th>
-      <th class="background-color-header-table" nzRight></th>
-    </tr>
-    <tr>
-      <th class="background-color-header-table" rowSpan="3" nzLeft>
-        PLATE POSITION
-      </th>
-      <th class="background-color-header-table" rowSpan="3" nzLeft>
-        No. or Letter
-      </th>
-      <th class="background-color-header-table" rowSpan="3" nzLeft>
-        Original Thickness (mm)
-      </th>
-      <th class="background-color-header-table" colSpan="6">Forward Reading</th>
-      <th class="background-color-header-table" colSpan="6">Aft Reading</th>
-      <th class="background-color-header-table" colSpan="2" rowSpan="2">
-        Mean Diminution (%)
-      </th>
-      <th class="background-color-header-table" rowSpan="2">Max Alwb Dim</th>
-      <th class="background-color-header-table" rowSpan="3" nzRight></th>
-    </tr>
-    <tr>
-      <th class="background-color-header-table" colSpan="2">Gauged (mm)</th>
-      <th class="background-color-header-table" colSpan="2">Diminution P</th>
-      <th class="background-color-header-table" colSpan="2">Diminution S</th>
-      <th class="background-color-header-table" colSpan="2">Gauged (mm)</th>
-      <th class="background-color-header-table" colSpan="2">Diminution P</th>
-      <th class="background-color-header-table" colSpan="2">Diminution S</th>
-    </tr>
-    <tr>
-      <th class="background-color-header-table">P</th>
-      <th class="background-color-header-table">S</th>
-      <th class="background-color-header-table">mm</th>
-      <th class="background-color-header-table">%</th>
-      <th class="background-color-header-table">mm</th>
-      <th class="background-color-header-table">%</th>
-      <th class="background-color-header-table">P</th>
-      <th class="background-color-header-table">S</th>
-      <th class="background-color-header-table">mm</th>
-      <th class="background-color-header-table">%</th>
-      <th class="background-color-header-table">mm</th>
-      <th class="background-color-header-table">%</th>
-      <th class="background-color-header-table">P</th>
-      <th class="background-color-header-table">S</th>
-      <th class="background-color-header-table">mm</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let data of editRowTable.data" class="editable-row">
-      <td nzLeft>
-        <div
-          class="editable-cell"
-          [hidden]="editId === data.id"
-          (click)="startEdit(data.id)"
-        >
-          {{ data.platePosition }}
-        </div>
-        <input
-          [hidden]="editId !== data.id"
-          type="text"
-          nz-input
-          [(ngModel)]="data.platePosition"
-          (blur)="stopEdit()"
-          style="width: 100%"
-        />
-      </td>
-      <td nzLeft>
-        <div
-          class="editable-cell"
-          [hidden]="editId === data.id"
-          (click)="startEdit(data.id)"
-        >
-          {{ data.noOrLetter }}
-        </div>
-        <input
-          [hidden]="editId !== data.id"
-          type="text"
-          nz-input
-          [(ngModel)]="data.noOrLetter"
-          (blur)="stopEdit()"
-          style="width: 100%"
-        />
-      </td>
-      <td nzLeft>
-        <div
-          class="editable-cell"
-          [hidden]="editId === data.id"
-          (click)="startEdit(data.id)"
-        >
-          {{ data.originalThickness }}
-        </div>
-        <input
-          [hidden]="editId !== data.id"
-          type="text"
-          nz-input
-          [(ngModel)]="data.originalThickness"
-          (blur)="stopEdit()"
-          style="width: 100%"
-        />
-      </td>
-      <td>
-        <div
-          class="editable-cell"
-          [hidden]="editId === data.id"
-          (click)="startEdit(data.id)"
-        >
-          {{ data.forwardReadingP }}
-        </div>
-        <input
-          [hidden]="editId !== data.id"
-          type="text"
-          nz-input
-          [(ngModel)]="data.forwardReadingP"
-          (blur)="stopEdit()"
-          style="width: 100%"
-        />
-      </td>
-      <td>
-        <div
-          class="editable-cell"
-          [hidden]="editId === data.id"
-          (click)="startEdit(data.id)"
-        >
-          {{ data.forwardReadingS }}
-        </div>
-        <input
-          [hidden]="editId !== data.id"
-          type="text"
-          nz-input
-          [(ngModel)]="data.forwardReadingS"
-          (blur)="stopEdit()"
-          style="width: 100%"
-        />
-      </td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td>
-        <div
-          class="editable-cell"
-          [hidden]="editId === data.id"
-          (click)="startEdit(data.id)"
-        >
-          {{ data.afterReadingP }}
-        </div>
-        <input
-          [hidden]="editId !== data.id"
-          type="text"
-          nz-input
-          [(ngModel)]="data.afterReadingP"
-          (blur)="stopEdit()"
-          style="width: 100%"
-        />
-      </td>
-      <td>
-        <div
-          class="editable-cell"
-          [hidden]="editId === data.id"
-          (click)="startEdit(data.id)"
-        >
-          {{ data.afterReadingS }}
-        </div>
-        <input
-          [hidden]="editId !== data.id"
-          type="text"
-          nz-input
-          [(ngModel)]="data.afterReadingS"
-          (blur)="stopEdit()"
-          style="width: 100%"
-        />
-      </td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td>
-        <div
-          class="editable-cell"
-          [hidden]="editId === data.id"
-          (click)="startEdit(data.id)"
-        >
-          {{ data.meanDiminutionP }}
-        </div>
-        <input
-          [hidden]="editId !== data.id"
-          type="text"
-          nz-input
-          [(ngModel)]="data.meanDiminutionP"
-          (blur)="stopEdit()"
-          style="width: 100%"
-        />
-      </td>
-      <td>
-        <div
-          class="editable-cell"
-          [hidden]="editId === data.id"
-          (click)="startEdit(data.id)"
-        >
-          {{ data.meanDiminutionS }}
-        </div>
-        <input
-          [hidden]="editId !== data.id"
-          type="text"
-          nz-input
-          [(ngModel)]="data.meanDiminutionS"
-          (blur)="stopEdit()"
-          style="width: 100%"
-        />
-      </td>
-      <td></td>
-      <td nzRight>
-        <a
-          nz-popconfirm
-          nzPopconfirmTitle="Bạn có chắc chắn muốn xóa?"
-          (nzOnConfirm)="deleteRow(data.id)"
-        >
-          <div style="display: flex; justify-content: center">
-            <span nz-icon nzType="delete" nzTheme="fill"></span>
-          </div>
-        </a>
-      </td>
-    </tr>
-  </tbody>
-</nz-table>
+<section>
+  <div class="header">
+    <h1 class="title">
+      Report on THICKNESS MEASUREMENT of ALL DECK PLATING, ALL BOTTOM SHELL
+      PLATING or SIDE SHELL PLATING
+    </h1>
+    <div class="infor">
+      <p>Ship's name<span>M/V "AFRICAN EAGLE"</span></p>
+      <p>Class Identity No.<span>03112356</span></p>
+      <p>Report No.<span>VMC.UTM.22.046/5255939</span></p>
+    </div>
+  </div>
+  <div class="addPage">
+    <input nz-input type="number" [(ngModel)]="addRowValue" />
+    <button (click)="addRow()">
+      <span nz-icon nzType="file-add" nzTheme="outline"></span>Add
+      {{ addRowValue }} rows
+    </button>
+  </div>
+  <nz-table
+    [nzScroll]="{ y: '240px' }"
+    [nzPageSize]="5"
+    nzBordered
+    class="table"
+    nzTemplateMode=""
+    nzSize="small"
+  >
+    <thead>
+      <tr class="th">
+        <th colspan="2">STRAKE POSITION :</th>
+        <th colspan="17"><input nz-input type="text" /></th>
+      </tr>
+      <tr class="th">
+        <th rowSpan="3">No.</th>
+        <th rowspan="3" nzWidth="10%">PLATE POSITION</th>
+        <th rowspan="3">No. or Letter</th>
+        <th rowspan="3">Original Thickness (mm)</th>
+        <th colspan="6">Forward Reading</th>
+        <th colspan="6">Aft Reading</th>
+        <th rowSpan="2" colspan="2">Mean Diminution (%)</th>
+        <th rowSpan="2">Max Alwb Dim</th>
+      </tr>
+      <tr class="th">
+        <th colspan="2">Gauged (mm)</th>
+        <th colspan="2">Diminution P</th>
+        <th colspan="2">Diminution S</th>
+        <th colspan="2">Gauged (mm)</th>
+        <th colspan="2">Diminution P</th>
+        <th colspan="2">Diminution S</th>
+      </tr>
+      <tr class="th">
+        <th>P</th>
+        <th>S</th>
+        <th>mm</th>
+        <th>%</th>
+        <th>mm</th>
+        <th>%</th>
+        <th>P</th>
+        <th>S</th>
+        <th>mm</th>
+        <th>%</th>
+        <th>mm</th>
+        <th>%</th>
+        <th>P</th>
+        <th>S</th>
+        <th>mm</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let i of rowValue; index as index" class="tb">
+        <td>{{ index + 1 }}</td>
+        <td><input nz-input type="text" /></td>
+        <td><input nz-input type="text" /></td>
+        <td><input nz-input type="text" /></td>
+        <td><input nz-input type="text" /></td>
+        <td><input nz-input type="text" /></td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td><input nz-input type="text" /></td>
+        <td><input nz-input type="text" /></td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td><input nz-input type="text" /></td>
+        <td><input nz-input type="text" /></td>
+        <td>0</td>
+      </tr>
+    </tbody>
+  </nz-table>
+</section>

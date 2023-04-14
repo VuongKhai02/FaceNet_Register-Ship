@@ -1,23 +1,67 @@
-.editable-cell {
-  position: relative;
-  padding: 5px 12px;
-  cursor: pointer;
+.title {
   text-align: center;
 }
 
-.editable-row:hover .editable-cell {
-  border: 1px solid #555555;
+input {
   border-radius: 4px;
-  padding: 4px 11px;
 }
 
-.background-color-header-table {
-  background-color: var(--blue);
+.infor {
+  display: flex;
+  justify-content: space-between;
+}
+
+.infor span {
+  border-bottom: 1px dotted;
+  margin-left: 10px;
+  display: inline-block;
+  width: 200px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.th th {
+  background-color: rgb(129, 194, 255);
   text-align: center;
 }
 
-table,
-th,
-td {
-  border: 1px solid black;
+.th span {
+  display: block;
+}
+.inp {
+  width: 12%;
+}
+.tb {
+  height: 20px;
+}
+.tb td {
+  text-align: center;
+}
+/* ::ng-deep .ant-table-body::-webkit-scrollbar {
+width: 0px !important;
+background-color: transparent;
+} */
+.addPage {
+  margin: 5px 0;
+  float: right;
+  border-radius: 4px;
+  display: flex;
+  overflow: hidden;
+  margin-right: 18px;
+  width: 25%;
+  justify-content: space-between;
+}
+.addPage button {
+  background-color: rgb(20, 139, 250);
+  border: 0;
+  cursor: pointer;
+  color: white;
+  width: 90%;
+  margin-left: 10px;
+  border-radius: 5px;
+}
+
+.addPage button:hover {
+  transition: 0.5s;
+  background-color: rgb(53, 158, 255);
 }
