@@ -26,6 +26,7 @@ export class Tm4Component implements OnInit {
 
   lineAdd: number = 0;
 
+  maximumAllowableDim: number = 0;
   i = 0;
   editId: string | null = null;
   listOfData: ItemData[] = [
@@ -58,22 +59,14 @@ export class Tm4Component implements OnInit {
   }
 
   addRow(): void {
-    // this.listOfData = [
-    //   ...this.listOfData,
-    //   {
-    //     id: `${this.i}`,
-    //     name: ``,
-    //     age: '',
-    //     address: ``,
-    //   },
-    // ];
-
-    for (let j = 3; j <= this.lineAdd; j++) {
+    let maxId = 0;
+    for (let j = 1; j <= this.lineAdd; j++) {
+      maxId = Math.max(...this.listOfData.map((x) => x.id));
       this.listOfData.push({
-        id: j,
+        id: maxId + 1,
         structuralMember: '',
         item: '',
-        originalThickness: j,
+        originalThickness: 0,
         maximumAllowableDim: 0,
         gaugedP: 0,
         gaugedS: 0,
@@ -92,14 +85,3 @@ export class Tm4Component implements OnInit {
     this.addRow();
   }
 }
-// tm4From: FormGroup = new FormGroup({
-//   structuralMember: new FormControl(),
-//   item: new FormControl(),
-//   originalThickness: new FormControl(),
-//   maximumAllowableDim: new FormControl(),
-
-//   gauged: new FormGroup({
-//     p: new FormControl(),
-//     s: new FormControl(),
-//   }),
-// });

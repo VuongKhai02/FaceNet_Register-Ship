@@ -143,6 +143,7 @@ table,th,td{
 }
 .readonly{
     width: 2%;
+    text-align: center;
 }
 .structuralMemberCol{
     /* width: 20%; */

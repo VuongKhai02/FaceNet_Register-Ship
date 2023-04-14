@@ -6,21 +6,21 @@
         </ul>
         <div class="table-info tableInfo">
             <div class="table-name">
-                <h4 class="text-center text-uppercase">Report on THICKNESS MEASUREMENT OF TRANSVERSE STRUCTURAL MEMBERS
-                    in the cargo oil and water ballast tanks within the cargo tank length</h4>
+                <h4 class="text-center text-uppercase">Report on THICKNESS MEASUREMENT OF W.T./O.T. TRANSVERSE BULKHEADS
+                    within the cargo tank or cargo hold spaces</h4>
             </div>
             <div class="d-flex justify-content-between ship-info">
                 <div class="ship-name d-flex">
-                    <h4 class="title"><label for="shipName" class="">Ship's name: </label></h4>
-                    <h4 class="value">{{shipName}}</h4>
+                    <h5 class="title"><label for="shipName" class="">Ship's name: </label></h5>
+                    <h5 class="value">{{shipName}}</h5>
                 </div>
                 <div class="ship-classIdentity d-flex">
-                    <h4 class="title"><label for="shipId" class="">Class Identity No: </label></h4>
-                    <h4 class="value">{{classIdentity}}</h4>
+                    <h5 class="title"><label for="shipId" class="">Class Identity No: </label></h5>
+                    <h5 class="value">{{classIdentity}}</h5>
                 </div>
                 <div class="ship-reportNumber d-flex">
-                    <h4 class="title"><label for="shipNumber" class="">Report No: </label></h4>
-                    <h4 class="value">{{reportNo}}</h4>
+                    <h5 class="title"><label for="shipNumber" class="">Report No: </label></h5>
+                    <h5 class="value">{{reportNo}}</h5>
                 </div>
             </div>
         </div>
@@ -32,7 +32,7 @@
             <button class="btn-add" nz-button (click)="addRow()" nzType="primary">
                 <i class="fa-solid fa-file-circle-plus"></i>
                 Add
-                <span style="color:red; margin: 0 .3rem;"> {{lineAdd}} </span>
+                <span style=" margin: 0 .3rem;"> {{lineAdd}} </span>
                 row
             </button>
 
@@ -90,31 +90,36 @@
                         <input type="text" name="" id="" [(ngModel)]="data.item">
                     </td>
                     <td>
-                        <input type="text" name="" id="" [(ngModel)]="data.originalThickness">
+                        <input (input)="calculateMaximumAllowDimAuto(data.id)"
+                            (input)="calculateDiminutionPpercent(data.id)" type="text" name="" id=""
+                            (input)="calculateDiminutionSpercent(data.id)" (input)="calculateStandard(data.id)"
+                            [(ngModel)]="data.originalThickness">
                     </td>
                     <td>
-                        <div>18</div>
+                        <div>{{data.maximumAllowableDim}}</div>
                     </td>
                     <td>
-                        <input type="text" name="" id="" [(ngModel)]="data.gaugedP">
+                        <input (input)="calculateDiminutionPmm(data.id)" type="text" name="" id=""
+                            [(ngModel)]="data.gaugedP">
                     </td>
                     <td>
-                        <input type="text" name="" id="" [(ngModel)]="data.gaugedS">
+                        <input (input)="calculateDiminutionSmm(data.id)" type="text" name="" id=""
+                            [(ngModel)]="data.gaugedS">
                     </td>
                     <td>
-                        <div>12</div>
+                        <div>{{data.diminutionPmm}}</div>
                     </td>
                     <td>
-                        <div>4.2</div>
+                        <div>{{data.diminutionPpercent}}</div>
                     </td>
-                    <td class="readonly"></td>
+                    <td class="readonly" style="color: red;">{{data.isStandardP}}</td>
                     <td>
-                        <div>1.2</div>
+                        <div>{{data.diminutionSmm}}</div>
                     </td>
                     <td>
-                        <div>2.2</div>
+                        <div>{{data.diminutionSpercent}}</div>
                     </td>
-                    <td class="readonly">R</td>
+                    <td class="readonly" style="color: red;">{{data.isStandardP}}</td>
                     <!-- <td>
                         <a nz-popconfirm nzPopconfirmTitle="Sure to delete?"
                             (nzOnConfirm)="deleteRow(data.id)">Delete</a>
