@@ -1,4 +1,5 @@
 /* You can add global styles to this file, and also import other style files */
-:root{
-    --backGGroundTitleTable: #81C2FF;
+:root {
+  --titleTablebackGround: #81c2ff;
+  --buttonBackGround: #59a657;
 }

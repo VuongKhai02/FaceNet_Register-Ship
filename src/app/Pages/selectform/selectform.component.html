@@ -1,0 +1,47 @@
+<section>
+  <h1>Create a new part</h1>
+  <div class="inputBox">
+    <form nz-form [formGroup]="selectForm">
+      <nz-form-item>
+        <nz-form-label [nzSm]="7" [nzXs]="24" nzFor=""
+          >Part's Name</nz-form-label
+        >
+        <nz-form-control
+          [nzSm]="14"
+          [nzXs]="24"
+          nzErrorTip="Please input website!"
+        >
+          <input formControlName="formName" nz-input id="" />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label [nzSm]="7" [nzXs]="24" nzFor="">Form</nz-form-label>
+        <nz-form-control
+          [nzSm]="14"
+          [nzXs]="24"
+          nzErrorTip="Please input website!"
+        >
+          <nz-select
+            nzMode="tags"
+            [nzTokenSeparators]="[',']"
+            nzPlaceHolder="Select form"
+            formControlName="formSelect"
+          >
+            <nz-option nzLabel="Tm1" nzValue="Tm1"></nz-option>
+            <nz-option nzLabel="Tm2" nzValue="Tm2"></nz-option>
+            <nz-option nzLabel="Tm3" nzValue="Tm3"></nz-option>
+            <nz-option nzLabel="Tm4" nzValue="Tm4"></nz-option>
+            <nz-option nzLabel="Tm5" nzValue="Tm5"></nz-option>
+            <nz-option nzLabel="Tm6" nzValue="Tm6"></nz-option>
+            <nz-option nzLabel="Tm7" nzValue="Tm7"></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </div>
+  <a routerLink="/{{ selectForm.value.formSelect[0] }}">
+    <div class="btnBox">
+      <button (click)="submit()" nz-button nzType="primary">Submit</button>
+    </div>
+  </a>
+</section>
