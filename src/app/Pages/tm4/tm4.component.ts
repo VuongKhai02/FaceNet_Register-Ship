@@ -10,6 +10,12 @@ interface ItemData {
   maximumAllowableDim: number;
   gaugedP: number;
   gaugedS: number;
+  diminutionPmm: number;
+  diminutionPpercent: number;
+  diminutionSmm: number;
+  diminutionSpercent: number;
+  isStandardP: string;
+  isStandardS: string;
 }
 
 @Component({
@@ -38,6 +44,12 @@ export class Tm4Component implements OnInit {
       maximumAllowableDim: 2.9,
       gaugedP: 11.4,
       gaugedS: 11.3,
+      diminutionPmm: 0,
+      diminutionPpercent: 0,
+      diminutionSmm: 0,
+      diminutionSpercent: 0,
+      isStandardP: '',
+      isStandardS: '',
     },
     {
       id: 2,
@@ -47,6 +59,12 @@ export class Tm4Component implements OnInit {
       maximumAllowableDim: 2.9,
       gaugedP: 11.4,
       gaugedS: 11.3,
+      diminutionPmm: 0,
+      diminutionPpercent: 0,
+      diminutionSmm: 0,
+      diminutionSpercent: 0,
+      isStandardP: '',
+      isStandardS: '',
     },
   ];
 
@@ -70,6 +88,12 @@ export class Tm4Component implements OnInit {
         maximumAllowableDim: 0,
         gaugedP: 0,
         gaugedS: 0,
+        diminutionPmm: 0,
+        diminutionPpercent: 0,
+        diminutionSmm: 0,
+        diminutionSpercent: 0,
+        isStandardP: '',
+        isStandardS: '',
       });
     }
     this.lineAdd = 0;
