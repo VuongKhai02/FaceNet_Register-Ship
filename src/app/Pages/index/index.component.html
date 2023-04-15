@@ -1,0 +1,65 @@
+<section>
+  <h1>THICKNESS MEASUREMENT REPORT INDEX</h1>
+  <div class="infoBox">
+    <div class="labelBox">
+      <label for=""> SHIP'S NAME</label><br />
+      <label for=""> IMO No.</label><br />
+      <label for=""> CLASS ID.</label><br />
+      <label for=""> REPORT No.</label><br />
+      <label for=""> TYPE OF SURVEY</label><br />
+    </div>
+    <div class="outputBox">
+      <span style="margin-right: 10px">:</span>
+      <span style="color: cadetblue"><b>M/V "AFRICAN EAGLE"</b></span
+      ><br />
+      <span style="margin-right: 10px">:</span>
+      <span style="color: blue"><b>9257046</b></span
+      ><br />
+      <span style="margin-right: 10px">:</span>
+      <span><b>'03112356</b></span
+      ><br />
+      <span style="margin-right: 10px">:</span>
+      <span><b>VMC.UTM.22.046/5255939</b></span
+      ><br />
+      <span style="margin-right: 10px">:</span>
+      <span><b>SPECIAL PERIODICAL SURVEY - HULL 4</b></span
+      ><br />
+    </div>
+  </div>
+  <div class="index-list">
+    <nz-table
+      #borderedTable
+      nzTemplateMode="true"
+      nzBordered
+      [nzScroll]="{ y: '450px' }"
+    >
+      <thead class="titleTable">
+        <tr class="titleTable">
+          <th class="titleTable" nzWidth="80px">Part.</th>
+          <th class="titleTable">Item</th>
+          <th class="titleTable" nzWidth="150px">Action</th>
+        </tr>
+      </thead>
+      <tbody *ngFor="let part of parts; let i = index">
+        <tr>
+          <td style="text-align: center">{{ i + 1 }}</td>
+          <td>{{ part.partName }}</td>
+          <td style="text-align: center">
+            <a nz-popconfirm nzPopconfirmTitle="Sure to move?">Move up</a>
+            <nz-divider nzType="vertical"></nz-divider>
+            <a nz-popconfirm nzPopconfirmTitle="Sure to move?">Move down</a>
+          </td>
+        </tr>
+        <tr *ngFor="let form of part.forms; let j = index">
+          <td style="text-align: center">{{ i + 1 }}.{{ j + 1 }}</td>
+          <td>{{ form }}</td>
+          <td style="text-align: center">
+            <a nz-popconfirm nzPopconfirmTitle="Sure to move?">Move up</a>
+            <nz-divider nzType="vertical"></nz-divider>
+            <a nz-popconfirm nzPopconfirmTitle="Sure to move?">Move down</a>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </div>
+</section>

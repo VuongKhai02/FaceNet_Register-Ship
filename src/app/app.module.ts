@@ -10,10 +10,9 @@ import { Tm4Component } from './Pages/tm4/tm4.component';
 import { Tm5Component } from './Pages/tm5/tm5.component';
 import { Tm6Component } from './Pages/tm6/tm6.component';
 import { Tm7Component } from './Pages/tm7/tm7.component';
-import { NZ_I18N } from 'ng-zorro-antd/i18n';
-import { vi_VN } from 'ng-zorro-antd/i18n';
+import { NZ_I18N, en_US } from 'ng-zorro-antd/i18n';
 import { registerLocaleData } from '@angular/common';
-import vi from '@angular/common/locales/vi';
+import en from '@angular/common/locales/vi';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -39,8 +38,10 @@ import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
 import { NzPopoverModule } from 'ng-zorro-antd/popover';
 import { ReviewComponent } from './Pages/review/review.component';
 import { NzMessageModule } from 'ng-zorro-antd/message';
+import { NzAffixModule } from 'ng-zorro-antd/affix';
+import { IndexComponent } from './Pages/index/index.component';
 
-registerLocaleData(vi);
+registerLocaleData(en);
 
 @NgModule({
   declarations: [
@@ -59,6 +60,7 @@ registerLocaleData(vi);
     SelectformComponent,
     HistoryComponent,
     ReviewComponent,
+    IndexComponent,
   ],
   imports: [
     BrowserModule,
@@ -83,8 +85,9 @@ registerLocaleData(vi);
     NzPopconfirmModule,
     NzPopoverModule,
     NzMessageModule,
+    NzAffixModule,
   ],
-  providers: [{ provide: NZ_I18N, useValue: vi_VN }],
+  providers: [{ provide: NZ_I18N, useValue: en_US }],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
