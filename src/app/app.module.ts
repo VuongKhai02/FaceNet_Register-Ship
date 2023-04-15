@@ -52,6 +52,7 @@ registerLocaleData(vi);
     Tm5Component,
     Tm6Component,
     Tm7Component,
+    ReviewComponent,
     AccountManagementComponent,
     GeneralParticularsComponent,
     LoginComponent,
