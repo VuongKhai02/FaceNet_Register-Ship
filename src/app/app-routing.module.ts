@@ -13,6 +13,7 @@ import { LoginComponent } from './Pages/login/login.component';
 import { SelectformComponent } from './Pages/selectform/selectform.component';
 import { AppComponent } from './app.component';
 import { HistoryComponent } from './Pages/history/history.component';
+import { ReviewComponent } from './Pages/review/review.component';
 
 const routes: Routes = [
   { path: '', component: GeneralParticularsComponent },
@@ -28,6 +29,7 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'selectForm', component: SelectformComponent },
   { path: 'history', component: HistoryComponent },
+  { path: 'review', component: ReviewComponent },
 ];
 
 @NgModule({

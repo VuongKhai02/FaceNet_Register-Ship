@@ -12,10 +12,21 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 export class GeneralParticularsComponent {
   generalParticulars: GeneralParticular[] = [];
 
-  constructor(private getDataService: GetDataService) {}
+  constructor(
+    private getDataService: GetDataService,
+    private message: NzMessageService
+  ) {}
 
   ngOninit() {
-    this.generalParticulars = this.getDataService.getGeneralParticulars();
+    // this.generalParticulars = this.getDataService.getGeneralParticulars();
+    this.getDataService.getGeneralParticularsFromAPI().subscribe(
+      (data) => {
+        this.generalParticulars = data;
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
   }
 
   NameOfCompanyPerformingThicknessMeasurement: string =
@@ -52,6 +63,7 @@ export class GeneralParticularsComponent {
   subMit(): void {
     if (this.generalParticulars.length === 0) {
       let newGeneralParticulars: GeneralParticular = {
+        id: 1,
         shipName: this.generalParticularsForm.value.shipName,
         imoNumber: this.generalParticularsForm.value.imoNumber,
         absIdentificationNumber:
@@ -62,7 +74,7 @@ export class GeneralParticularsComponent {
         dateOfBuild: this.generalParticularsForm.value.dateOfBuild,
         classificationSociety:
           this.generalParticularsForm.value.classificationSociety,
-        NameOfCompanyPerformingThicknessMeasurement:
+        nameOfCompanyPerformingThicknessMeasurement:
           this.NameOfCompanyPerformingThicknessMeasurement,
         thicknessMeasurementCompanCertifiedBy:
           this.generalParticularsForm.value
@@ -93,8 +105,11 @@ export class GeneralParticularsComponent {
         classificationSocietyOfficialStamp:
           this.generalParticularsForm.value.classificationSocietyOfficialStamp,
       };
-      this.generalParticulars.push(newGeneralParticulars);
-      console.log(this.generalParticulars);
+      // this.generalParticulars.push(newGeneralParticulars);
+      this.getDataService
+        .addGeneralParticularsToAPI(newGeneralParticulars)
+        .subscribe();
+      this.message.create('success', 'Admit success');
     }
   }
 

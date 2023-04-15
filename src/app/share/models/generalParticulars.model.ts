@@ -1,4 +1,5 @@
 export interface GeneralParticular {
+  id: number;
   shipName: string;
   imoNumber: number;
   absIdentificationNumber: number;
@@ -7,7 +8,7 @@ export interface GeneralParticular {
   deadweight: number;
   dateOfBuild: Date;
   classificationSociety: string;
-  NameOfCompanyPerformingThicknessMeasurement: string;
+  nameOfCompanyPerformingThicknessMeasurement: string;
   thicknessMeasurementCompanCertifiedBy: string;
   certificateNo: number;
   certificateValidFrom: Date;
