@@ -39,7 +39,7 @@ import { NzPopoverModule } from 'ng-zorro-antd/popover';
 import { ReviewComponent } from './Pages/review/review.component';
 import { NzMessageModule } from 'ng-zorro-antd/message';
 import { NzAffixModule } from 'ng-zorro-antd/affix';
-import { IndexComponent } from './Pages/index/index.component';
+import { TableOfContentsComponent } from './Pages/table-of-contents/table-of-contents.component';
 
 registerLocaleData(en);
 
@@ -59,7 +59,7 @@ registerLocaleData(en);
     SelectformComponent,
     HistoryComponent,
     ReviewComponent,
-    IndexComponent,
+    TableOfContentsComponent,
   ],
   imports: [
     BrowserModule,
