@@ -31,7 +31,7 @@
                 <th class="inp" colspan="2">Gauged <span>mm</span></th>
                 <th colspan="3">Diminution <span>P</span></th>
                 <th colspan="3">Diminution <span>S</span></th>
-                <th rowspan="100"></th>
+                <th rowspan="2"></th>
             </tr>
             <tr class="th">
                 <th>P</th>
@@ -43,10 +43,10 @@
             </tr>
         </thead>
         <tbody>
-            <tr class="tb">
+            <tr  class="tb">
                 <td colspan="3"><input nz-input type="text"></td>
                 <td><input nz-input type="text"></td>
-                <td><input nz-input type="text"></td>
+                <td></td>
                 <td><input nz-input type="text"></td>
                 <td><input nz-input type="text"></td>
                 <td>5</td>
@@ -58,11 +58,11 @@
                 <td rowspan="1000"></td>
             </tr>
             <tr *ngFor="let i of rowValue; index as index" class="tb">
-                <td colspan="3"><input nz-input type="text" ></td>
-                <td><input nz-input type="text"></td>
-                <td><input nz-input type="text"></td>
-                <td><input nz-input type="text"></td>
-                <td><input nz-input type="text"></td>
+                <td colspan="3"><input nz-input type="text" [(ngModel)]="i.desc" ></td>
+                <td><input nz-input type="text" [(ngModel)]="i.orgThk"></td>
+                <td>{{i.orgThk==''?'':(toNumber(i.orgThk)*0.3).toFixed(1)}}</td>
+                <td><input nz-input type="text" [(ngModel)]="i.gauP"></td>
+                <td><input nz-input type="text" [(ngModel)]="i.gauS"></td>
                 <td>5</td>
                 <td>6</td>
                 <td>7</td>
