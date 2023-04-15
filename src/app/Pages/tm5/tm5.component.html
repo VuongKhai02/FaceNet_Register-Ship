@@ -1,1 +1,133 @@
-<p>tm5 works!</p>
+<div class="wrapper">
+    <header class="header-wrapper">
+        <ul class="breadcrumb">
+            <li><a href="#"> Form nhập liệu </a></li>
+            <li><a href="#"> Tm5 </a></li>
+        </ul>
+        <div class="table-info tableInfo">
+            <div class="table-name">
+                <h4 class="text-center text-uppercase">Report on THICKNESS MEASUREMENT OF W.T./O.T. TRANSVERSE BULKHEADS
+                    within the cargo tank or cargo hold spaces</h4>
+            </div>
+            <div class="d-flex justify-content-between ship-info">
+                <div class="ship-name d-flex">
+                    <h5 class="title"><label for="shipName" class="">Ship's name: </label></h5>
+                    <h5 class="value">{{shipName}}</h5>
+                </div>
+                <div class="ship-classIdentity d-flex">
+                    <h5 class="title"><label for="shipId" class="">Class Identity No: </label></h5>
+                    <h5 class="value">{{classIdentity}}</h5>
+                </div>
+                <div class="ship-reportNumber d-flex">
+                    <h5 class="title"><label for="shipNumber" class="">Report No: </label></h5>
+                    <h5 class="value">{{reportNo}}</h5>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="section">
+        <div class="d-flex addPage">
+            <input type="number" [(ngModel)]="lineAdd" name="" id="" placeholder="Nhập số bản ghi">
+            <button class="btn-add" nz-button (click)="addRow()" nzType="primary">
+                <i class="fa-solid fa-file-circle-plus"></i>
+                Add
+                <span style=" margin: 0 .3rem;"> {{lineAdd}} </span>
+                row
+            </button>
+
+        </div>
+        <nz-table id="table-tm4" #editRowTable [nzBordered]="true" [nzData]="listOfData" [nzFrontPagination]="false"
+            [nzShowPagination]="false" [nzScroll]="{ y: '400px' }" [nzData]="listOfData">
+            <thead>
+                <tr class="thead-tm4-general">
+                    <th class="structuralMemberCol" colspan="3">Tank description:</th>
+                    <th colspan="11">
+                        <input type="text" name="tankDesc" [defaultValue]="tankHoldDescription" id="tankDesc">
+                    </th>
+                </tr>
+                <tr class="thead-tm4-general">
+                    <th colspan="3">Location of structure:</th>
+                    <th colspan="5">
+                        <input type="text" name="locationOfStructure" [defaultValue]="locationOfStructure"
+                            id="locationOfStructure">
+                    </th>
+                    <th colSpan="1">Frame No.:</th>
+                    <th colSpan="5">
+                        <input type="text" name="locationOfStructure" [defaultValue]="frameNo" id="locationOfStructure">
+                    </th>
+                </tr>
+                <tr>
+                    <th rowSpan="2">STT</th>
+                    <th rowSpan="2" colSpan="2">STRUCTURAL COMPONENT (PLATING/STIFFENER)</th>
+                    <th rowSpan="2">Item</th>
+                    <th rowSpan="2">Original Thickness(mm)</th>
+                    <th rowSpan="2">Maximum Allowable Dim(mm)</th>
+                    <th rowSpan="1" colSpan="2">Gauged</th>
+                    <th rowSpan="1" colSpan="3">Diminution P</th>
+                    <th rowSpan="1" colSpan="3">Diminution S</th>
+                </tr>
+                <tr>
+                    <th>P</th>
+                    <th>S</th>
+                    <th>mm</th>
+                    <th colSpan="2">%</th>
+                    <th>mm</th>
+                    <th colSpan="2">%</th>
+                </tr>
+            </thead>
+            <tbody class="tbody-tm4">
+                <tr *ngFor="let data of editRowTable.data" class="editable-row">
+                    <td class="readonly">
+                        <div>
+                            {{data.id}}
+                        </div>
+                    </td>
+                    <td colspan="2">
+                        <input type="text" name="" id="" [(ngModel)]="data.structuralComponent">
+                    </td>
+                    <td>
+                        <input type="text" name="" id="" [(ngModel)]="data.item">
+                    </td>
+                    <td>
+                        <input (input)="calculateMaximumAllowDimAuto(data.id)"
+                            (input)="calculateDiminutionPpercent(data.id)" type="text" name="" id=""
+                            (input)="calculateDiminutionSpercent(data.id)" (input)="calculateStandard(data.id)"
+                            [(ngModel)]="data.originalThickness">
+                    </td>
+                    <td>
+                        <div>{{data.maximumAllowableDim}}</div>
+                    </td>
+                    <td>
+                        <input (input)="calculateDiminutionPmm(data.id)" type="text" name="" id=""
+                            [(ngModel)]="data.gaugedP">
+                    </td>
+                    <td>
+                        <input (input)="calculateDiminutionSmm(data.id)" type="text" name="" id=""
+                            [(ngModel)]="data.gaugedS">
+                    </td>
+                    <td>
+                        <div>{{data.diminutionPmm}}</div>
+                    </td>
+                    <td>
+                        <div>{{data.diminutionPpercent}}</div>
+                    </td>
+                    <td class="readonly" style="color: red;">{{data.isStandardP}}</td>
+                    <td>
+                        <div>{{data.diminutionSmm}}</div>
+                    </td>
+                    <td>
+                        <div>{{data.diminutionSpercent}}</div>
+                    </td>
+                    <td class="readonly" style="color: red;">{{data.isStandardP}}</td>
+                    <!-- <td>
+                        <a nz-popconfirm nzPopconfirmTitle="Sure to delete?"
+                            (nzOnConfirm)="deleteRow(data.id)">Delete</a>
+                        <button (click)="deleteRow(data.id)">
+                        </button>
+                    </td> -->
+                </tr>
+            </tbody>
+        </nz-table>
+    </div>
+</div>

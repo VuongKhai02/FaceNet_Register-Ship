@@ -1,19 +1,7 @@
 <section>
   <h1>GENERAL PARTICULARS</h1>
   <div class="formBox">
-    <form nz-form>
-      <nz-form-item>
-        <nz-form-label [nzSm]="7" [nzXs]="24" nzFor=""
-          >Ship's name</nz-form-label
-        >
-        <nz-form-control
-          [nzSm]="14"
-          [nzXs]="24"
-          nzErrorTip="Please input website!"
-        >
-          <input nz-input id="" />
-        </nz-form-control>
-      </nz-form-item>
+    <form [formGroup]="generalParticularsForm" nz-form>
       <nz-form-item>
         <nz-form-label [nzSm]="7" [nzXs]="24" nzFor=""
           >IMO number</nz-form-label
@@ -23,7 +11,26 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <input nz-input id="" />
+          <nz-input-group nzSearch [nzAddOnAfter]="suffixIconButton">
+            <input formControlName="imoNumber" type="text" nz-input />
+          </nz-input-group>
+          <ng-template #suffixIconButton>
+            <button nz-button nzType="primary" nzSearch>
+              <span style="color: white" nz-icon nzType="search"></span>
+            </button>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label [nzSm]="7" [nzXs]="24" nzFor=""
+          >Ship's name</nz-form-label
+        >
+        <nz-form-control
+          [nzSm]="14"
+          [nzXs]="24"
+          nzErrorTip="Please input website!"
+        >
+          <input formControlName="shipName" nz-input id="" />
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
@@ -35,7 +42,7 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <input nz-input id="" />
+          <input formControlName="absIdentificationNumber" nz-input id="" />
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
@@ -47,7 +54,7 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <input nz-input id="" />
+          <input formControlName="portOfRegistry" nz-input id="" />
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
@@ -59,7 +66,7 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <input nz-input id="" />
+          <input formControlName="grossTons" nz-input id="" />
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
@@ -71,7 +78,7 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <input nz-input id="" />
+          <input formControlName="deadweight" nz-input id="" />
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
@@ -83,7 +90,10 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <nz-date-picker></nz-date-picker>
+          <nz-date-picker
+            style="width: 100%"
+            formControlName="dateOfBuild"
+          ></nz-date-picker>
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
@@ -95,14 +105,10 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <input nz-input id="" />
+          <input formControlName="classificationSociety" nz-input id="" />
         </nz-form-control>
       </nz-form-item>
-    </form>
-  </div>
-  <hr />
-  <div class="formBox">
-    <form nz-form>
+      <hr />
       <nz-form-item>
         <nz-form-label [nzSm]="10" [nzXs]="24" nzFor=""
           >Name of company performing thickness measurement</nz-form-label
@@ -124,7 +130,11 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <input nz-input id="" />
+          <input
+            formControlName="thicknessMeasurementCompanCertifiedBy"
+            nz-input
+            id=""
+          />
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
@@ -136,7 +146,7 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <input nz-input id="" />
+          <input formControlName="certificateNo" nz-input id="" />
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
@@ -148,7 +158,10 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <nz-range-picker></nz-range-picker>
+          <nz-range-picker
+            style="width: 100%"
+            formControlName="certificateValidFrom"
+          ></nz-range-picker>
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
@@ -160,7 +173,7 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <input nz-input id="" />
+          <input formControlName="placeOfMeasurement" nz-input id="" />
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
@@ -172,7 +185,10 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <nz-date-picker></nz-date-picker>
+          <nz-date-picker
+            style="width: 100%"
+            formControlName="firstDateOfMeasurement"
+          ></nz-date-picker>
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
@@ -184,7 +200,10 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <nz-date-picker></nz-date-picker>
+          <nz-date-picker
+            style="width: 100%"
+            formControlName="lastDateOfMeasurement"
+          ></nz-date-picker>
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
@@ -196,7 +215,7 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <input nz-input id="" />
+          <input formControlName="specialSurvey" nz-input id="" />
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
@@ -208,7 +227,43 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <input nz-input id="" />
+          <input
+            formControlName="detailsOfMeasurementEquipment"
+            nz-input
+            id=""
+          />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label [nzSm]="7" [nzXs]="24" nzFor=""
+          >Details of measurement equipment</nz-form-label
+        >
+        <nz-form-control
+          [nzSm]="14"
+          [nzXs]="24"
+          nzErrorTip="Please input website!"
+        >
+          <nz-select
+            nzShowSearch
+            nzAllowClear
+            [nzDropdownRender]="renderTemplate"
+          >
+            <nz-option
+              *ngFor="let item of listOfItem"
+              [nzLabel]="item"
+              [nzValue]="item"
+            ></nz-option>
+          </nz-select>
+          <ng-template #renderTemplate>
+            <nz-divider></nz-divider>
+            <div class="container">
+              <input type="text" nz-input #inputElement />
+              <a class="add-item" (click)="addItem(inputElement)">
+                <span nz-icon nzType="plus"></span>
+                Add item
+              </a>
+            </div>
+          </ng-template>
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
@@ -223,39 +278,37 @@
           <span>SNT-TC-1A UT LEVEL 2</span>
         </nz-form-control>
       </nz-form-item>
-    </form>
-    <hr />
-    <nz-form-item>
-      <nz-form-label [nzSm]="5" [nzXs]="24" nzFor=""
-        >Report Number</nz-form-label
-      >
-      <nz-form-control
-        [nzSm]="7"
-        [nzXs]="24"
-        nzErrorTip="Please input website!"
-      >
-        <input nz-input id="" />
-      </nz-form-control>
-      <nz-form-label [nzSm]="5" [nzXs]="24" nzFor=""
-        >Report Number</nz-form-label
-      >
-      <nz-form-control
-        [nzSm]="1"
-        [nzXs]="24"
-        nzErrorTip="Please input website!"
-      >
-        <span>???</span>
-      </nz-form-control>
-      <nz-form-control
-        [nzSm]="1"
-        [nzXs]="24"
-        nzErrorTip="Please input website!"
-      >
-        <span style="color: black">Sheets</span>
-      </nz-form-control>
-    </nz-form-item>
-    <hr />
-    <form nz-form>
+      <hr />
+      <nz-form-item style="margin: 0px">
+        <nz-form-label [nzSm]="5" [nzXs]="24" nzFor=""
+          >Report Number</nz-form-label
+        >
+        <nz-form-control
+          [nzSm]="7"
+          [nzXs]="24"
+          nzErrorTip="Please input website!"
+        >
+          <input formControlName="reportNumber" nz-input id="" />
+        </nz-form-control>
+        <nz-form-label [nzSm]="5" [nzXs]="24" nzFor=""
+          >Consisting of</nz-form-label
+        >
+        <nz-form-control
+          [nzSm]="1"
+          [nzXs]="24"
+          nzErrorTip="Please input website!"
+        >
+          <span>{{ numberOfSheets }}</span>
+        </nz-form-control>
+        <nz-form-control
+          [nzSm]="1"
+          [nzXs]="24"
+          nzErrorTip="Please input website!"
+        >
+          <span style="color: black">Sheets</span>
+        </nz-form-control>
+      </nz-form-item>
+      <hr />
       <nz-form-item>
         <nz-form-label [nzSm]="4" [nzXs]="24" nzFor=""
           >Name of operator</nz-form-label
@@ -265,7 +318,7 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <input nz-input id="" />
+          <input formControlName="nameOfOperator" nz-input id="" />
         </nz-form-control>
         <nz-form-label [nzSm]="6" [nzXs]="24" nzFor=""
           >Name of surveyor</nz-form-label
@@ -275,7 +328,7 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <input nz-input id="" />
+          <input formControlName="nameOfSurveyor" nz-input id="" />
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
@@ -287,7 +340,7 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <input nz-input id="" />
+          <input formControlName="signatureOfOperator" nz-input id="" />
         </nz-form-control>
         <nz-form-label [nzSm]="6" [nzXs]="24" nzFor=""
           >Signature of surveyor</nz-form-label
@@ -297,7 +350,7 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <input nz-input id="" />
+          <input formControlName="signatureOfSurveyor" nz-input id="" />
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
@@ -309,7 +362,7 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <input nz-input id="" />
+          <input formControlName="companyOfficialStamp" nz-input id="" />
         </nz-form-control>
         <nz-form-label [nzSm]="6" [nzXs]="24" nzFor=""
           >Classification Society official stamp</nz-form-label
@@ -319,10 +372,22 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <input nz-input id="" />
+          <input
+            formControlName="classificationSocietyOfficialStamp"
+            nz-input
+            id=""
+          />
         </nz-form-control>
       </nz-form-item>
     </form>
   </div>
-  <button nz-button nzType="primary">Submit</button>
+  <div *ngIf="generalParticulars.length === 0; else updateBox"></div>
+  <a routerLink="/selectForm">
+    <button (click)="subMit()" nz-button nzType="primary">
+      Save and continue
+    </button></a
+  >
+  <ng-template #updateBox>
+    <button (click)="update()" nz-button nzType="primary">Update</button>
+  </ng-template>
 </section>
