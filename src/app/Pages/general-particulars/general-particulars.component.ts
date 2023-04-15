@@ -11,6 +11,8 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 })
 export class GeneralParticularsComponent {
   generalParticulars: GeneralParticular[] = [];
+  listOfItem: string[] = [];
+  index: number = 0;
 
   constructor(
     private getDataService: GetDataService,
@@ -27,6 +29,15 @@ export class GeneralParticularsComponent {
         console.log(err);
       }
     );
+  }
+  addItem(input: HTMLInputElement) {
+    const value = input.value;
+    if (this.listOfItem.indexOf(value) === -1) {
+      this.listOfItem = [
+        ...this.listOfItem,
+        input.value || `New item ${this.index++}`,
+      ];
+    }
   }
 
   NameOfCompanyPerformingThicknessMeasurement: string =
