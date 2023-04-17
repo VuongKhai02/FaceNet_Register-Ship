@@ -1,4 +1,4 @@
-<section>
+<section #myElement>
   <h1>THICKNESS MEASUREMENT REPORT INDEX</h1>
   <div class="infoBox">
     <div class="labelBox">
@@ -37,26 +37,54 @@
         <tr class="titleTable">
           <th class="titleTable" nzWidth="80px">Part.</th>
           <th class="titleTable">Item</th>
-          <th class="titleTable" nzWidth="150px">Action</th>
+          <th class="titleTable" nzWidth="200px">Action</th>
         </tr>
       </thead>
       <tbody *ngFor="let part of parts; let i = index">
         <tr>
-          <td style="text-align: center">{{ i + 1 }}</td>
-          <td>{{ part.partName }}</td>
-          <td style="text-align: center">
-            <a nz-popconfirm nzPopconfirmTitle="Sure to move?">Move up</a>
+          <td style="text-align: center; background-color: #f5f5f5">
+            <b>{{ i + 1 }}</b>
+          </td>
+          <td style="background-color: #f5f5f5">
+            <b>{{ part.partName }}</b>
+          </td>
+          <td style="text-align: center; background-color: #f5f5f5">
+            <a
+              (nzOnConfirm)="moveUpPart(i)"
+              (nzOnCancel)="cancel()"
+              nz-popconfirm
+              nzPopconfirmTitle="Sure to move?"
+              >Move up</a
+            >
             <nz-divider nzType="vertical"></nz-divider>
-            <a nz-popconfirm nzPopconfirmTitle="Sure to move?">Move down</a>
+            <a
+              (nzOnConfirm)="moveDownPart(i)"
+              (nzOnCancel)="cancel()"
+              nz-popconfirm
+              nzPopconfirmTitle="Sure to move?"
+              >Move down</a
+            >
           </td>
         </tr>
         <tr *ngFor="let form of part.forms; let j = index">
           <td style="text-align: center">{{ i + 1 }}.{{ j + 1 }}</td>
           <td>{{ form }}</td>
           <td style="text-align: center">
-            <a nz-popconfirm nzPopconfirmTitle="Sure to move?">Move up</a>
+            <a
+              (nzOnConfirm)="moveUpForm(i, j)"
+              (nzOnCancel)="cancel()"
+              nz-popconfirm
+              nzPopconfirmTitle="Sure to move?"
+              >Move up</a
+            >
             <nz-divider nzType="vertical"></nz-divider>
-            <a nz-popconfirm nzPopconfirmTitle="Sure to move?">Move down</a>
+            <a
+              (nzOnConfirm)="moveDownForm(i, j)"
+              (nzOnCancel)="cancel()"
+              nz-popconfirm
+              nzPopconfirmTitle="Sure to move?"
+              >Move down</a
+            >
           </td>
         </tr>
       </tbody>

@@ -3,6 +3,8 @@ import { GeneralParticular } from './../../share/models/generalParticulars.model
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { ship } from 'src/app/share/models/ship.model';
+import { ShipService } from 'src/app/share/services/ships.service';
 
 @Component({
   selector: 'app-general-particulars',
@@ -11,10 +13,12 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 })
 export class GeneralParticularsComponent {
   generalParticulars: GeneralParticular[] = [];
+  ships: ship[] = [];
   listOfItem: string[] = [];
   index: number = 0;
 
   constructor(
+    private shipSevice: ShipService,
     private getDataService: GetDataService,
     private message: NzMessageService
   ) {}
@@ -74,10 +78,9 @@ export class GeneralParticularsComponent {
   subMit(): void {
     if (this.generalParticulars.length === 0) {
       let newGeneralParticulars: GeneralParticular = {
-        id: 1,
         shipName: this.generalParticularsForm.value.shipName,
         imoNumber: this.generalParticularsForm.value.imoNumber,
-        absIdentificationNumber:
+        absIdentification:
           this.generalParticularsForm.value.absIdentificationNumber,
         portOfRegistry: this.generalParticularsForm.value.portOfRegistry,
         grossTons: this.generalParticularsForm.value.grossTons,
@@ -117,11 +120,35 @@ export class GeneralParticularsComponent {
           this.generalParticularsForm.value.classificationSocietyOfficialStamp,
       };
       // this.generalParticulars.push(newGeneralParticulars);
-      this.getDataService
-        .addGeneralParticularsToAPI(newGeneralParticulars)
-        .subscribe();
-      this.message.create('success', 'Admit success');
+      // this.getDataService
+      //   .addGeneralParticularsToAPI(newGeneralParticulars)
+      //   .subscribe();
+      let newShip: ship = {
+        name: this.generalParticularsForm.value.shipName,
+        imoNumber: this.generalParticularsForm.value.imoNumber,
+        absIdentification:
+          this.generalParticularsForm.value.absIdentificationNumber,
+        postOfRegistry: this.generalParticularsForm.value.portOfRegistry,
+        grossTons: this.generalParticularsForm.value.grossTons,
+        deadweight: this.generalParticularsForm.value.deadweight,
+        dateOfBuild: this.generalParticularsForm.value.dateOfBuild,
+      };
+      this.shipSevice.addShipsToAPI(newShip).subscribe(
+        (data) => {
+          console.log(data);
+        },
+        (err) => {
+          alert(err);
+        }
+      );
+      this.message.create('success', 'Save success');
     }
+  }
+
+  searchShip() {
+    this.shipSevice.getShipsFromAPI().subscribe((data) => {
+      console.log(data);
+    });
   }
 
   update(): void {}

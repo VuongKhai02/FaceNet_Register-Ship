@@ -15,6 +15,7 @@ import { AppComponent } from './app.component';
 import { HistoryComponent } from './Pages/history/history.component';
 import { ReviewComponent } from './Pages/review/review.component';
 import { TableOfContentsComponent } from './Pages/table-of-contents/table-of-contents.component';
+import { ManagingDefaultValuesComponent } from './Pages/managing-default-values/managing-default-values.component';
 
 const routes: Routes = [
   { path: '', component: GeneralParticularsComponent },
@@ -32,6 +33,10 @@ const routes: Routes = [
   { path: 'history', component: HistoryComponent },
   { path: 'review', component: ReviewComponent },
   { path: 'index', component: TableOfContentsComponent },
+  {
+    path: 'managing-default-values',
+    component: ManagingDefaultValuesComponent,
+  },
 ];
 
 @NgModule({

@@ -39,7 +39,10 @@ import { NzPopoverModule } from 'ng-zorro-antd/popover';
 import { ReviewComponent } from './Pages/review/review.component';
 import { NzMessageModule } from 'ng-zorro-antd/message';
 import { NzAffixModule } from 'ng-zorro-antd/affix';
+import { NzCollapseModule } from 'ng-zorro-antd/collapse';
+import { environment } from 'src/environments/env';
 import { TableOfContentsComponent } from './Pages/table-of-contents/table-of-contents.component';
+import { ManagingDefaultValuesComponent } from './Pages/managing-default-values/managing-default-values.component';
 
 registerLocaleData(en);
 
@@ -60,6 +63,7 @@ registerLocaleData(en);
     HistoryComponent,
     ReviewComponent,
     TableOfContentsComponent,
+    ManagingDefaultValuesComponent,
   ],
   imports: [
     BrowserModule,
@@ -85,6 +89,7 @@ registerLocaleData(en);
     NzPopoverModule,
     NzMessageModule,
     NzAffixModule,
+    NzCollapseModule,
   ],
   providers: [{ provide: NZ_I18N, useValue: en_US }],
   bootstrap: [AppComponent],
