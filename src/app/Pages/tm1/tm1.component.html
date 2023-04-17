@@ -1,1 +1,93 @@
-<p>tm1 works!</p>
+<section>
+  <div class="header">
+    <h1 class="title">
+      Report on THICKNESS MEASUREMENT of ALL DECK PLATING, ALL BOTTOM SHELL
+      PLATING or SIDE SHELL PLATING
+    </h1>
+    <div class="infor">
+      <p>Ship's name<span>M/V "AFRICAN EAGLE"</span></p>
+      <p>Class Identity No.<span>03112356</span></p>
+      <p>Report No.<span>VMC.UTM.22.046/5255939</span></p>
+    </div>
+  </div>
+  <div class="addPage">
+    <input nz-input type="number" [(ngModel)]="addRowValue" />
+    <button (click)="addRow()">
+      <span nz-icon nzType="file-add" nzTheme="outline"></span>Add
+      {{ addRowValue }} rows
+    </button>
+  </div>
+  <nz-table
+    [nzScroll]="{ y: '240px' }"
+    [nzPageSize]="5"
+    nzBordered
+    class="table"
+    nzTemplateMode=""
+    nzSize="small"
+  >
+    <thead>
+      <tr class="th">
+        <th colspan="2">STRAKE POSITION :</th>
+        <th colspan="17"><input nz-input type="text" /></th>
+      </tr>
+      <tr class="th">
+        <th rowSpan="3">No.</th>
+        <th rowspan="3" nzWidth="10%">PLATE POSITION</th>
+        <th rowspan="3">No. or Letter</th>
+        <th rowspan="3">Original Thickness (mm)</th>
+        <th colspan="6">Forward Reading</th>
+        <th colspan="6">Aft Reading</th>
+        <th rowSpan="2" colspan="2">Mean Diminution (%)</th>
+        <th rowSpan="2">Max Alwb Dim</th>
+      </tr>
+      <tr class="th">
+        <th colspan="2">Gauged (mm)</th>
+        <th colspan="2">Diminution P</th>
+        <th colspan="2">Diminution S</th>
+        <th colspan="2">Gauged (mm)</th>
+        <th colspan="2">Diminution P</th>
+        <th colspan="2">Diminution S</th>
+      </tr>
+      <tr class="th">
+        <th>P</th>
+        <th>S</th>
+        <th>mm</th>
+        <th>%</th>
+        <th>mm</th>
+        <th>%</th>
+        <th>P</th>
+        <th>S</th>
+        <th>mm</th>
+        <th>%</th>
+        <th>mm</th>
+        <th>%</th>
+        <th>P</th>
+        <th>S</th>
+        <th>mm</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let i of rowValue; index as index" class="tb">
+        <td>{{ index + 1 }}</td>
+        <td><input nz-input type="text" /></td>
+        <td><input nz-input type="text" /></td>
+        <td><input nz-input type="text" /></td>
+        <td><input nz-input type="text" /></td>
+        <td><input nz-input type="text" /></td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td><input nz-input type="text" /></td>
+        <td><input nz-input type="text" /></td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td><input nz-input type="text" /></td>
+        <td><input nz-input type="text" /></td>
+        <td>0</td>
+      </tr>
+    </tbody>
+  </nz-table>
+</section>
