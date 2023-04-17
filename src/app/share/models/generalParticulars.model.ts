@@ -1,8 +1,8 @@
 export interface GeneralParticular {
-  id: number;
+  ship_id: number;
   shipName: string;
   imoNumber: number;
-  absIdentificationNumber: number;
+  absIdentification: number;
   portOfRegistry: string;
   grossTons: number;
   deadweight: number;

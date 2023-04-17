@@ -15,7 +15,7 @@
             <input formControlName="imoNumber" type="text" nz-input />
           </nz-input-group>
           <ng-template #suffixIconButton>
-            <button nz-button nzType="primary" nzSearch>
+            <button nz-button (click)="searchShip()" nzType="primary" nzSearch>
               <span style="color: white" nz-icon nzType="search"></span>
             </button>
           </ng-template>

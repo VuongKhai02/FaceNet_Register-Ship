@@ -36,10 +36,10 @@ export class SelectformComponent implements OnInit {
         forms: this.selectForm.value.formSelect,
         visible: false,
       });
-      this.message.create('success', 'Admit success');
+      this.message.create('success', 'Create success');
     } else {
       this.selectForm.value.formSelect = ['selectForm'];
-      this.message.create('error', 'Nhập thiếu thông tin');
+      this.message.create('error', 'Enter missing information');
     }
   }
 }
