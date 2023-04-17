@@ -26,18 +26,25 @@
     display: flex;
     overflow: hidden;
     margin-right: 18px;
-    width: 25%;
+    width: 35%;
     justify-content: space-between;
+    height: 32px;
 }
 .addPage button{
     background-color: rgb(20, 139, 250);
     border: 0;
     cursor: pointer;
     color: white;
-    width: 90%;
+    width: 40%;
     margin-left: 10px;
     border-radius: 5px;
 }
+
+.addPage input{
+    height: 100%;
+    width: 20%;
+}
+
 
 input{
     padding: 0 2px;
@@ -51,6 +58,6 @@ input{
     background-color: rgb(53, 158, 255);
 }
 
-nz-table th{
+nz-table th,td{
     text-align: center;
 }

@@ -12,8 +12,9 @@
     <div class="addPage">
         <input nz-input type="number" [(ngModel)]="addRowValue">
         <button (click)="addRow()"><span nz-icon nzType="file-add" nzTheme="outline"></span>Add {{addRowValue}} rows</button>
+        <button>Save</button>
     </div>
-    <nz-table [nzScroll]="{y: '240px'}" [nzPageSize]="5" nzBordered class="table" nzTemplateMode="" nzSize="small">
+    <nz-table [nzScroll]="{y: '240px'}" nzBordered class="table" nzTemplateMode="" nzSize="small">
         <thead>
             <tr class="th">
                 <th colspan="3">STRUCTURAL MEMBERS :</th>           
@@ -63,12 +64,12 @@
                 <td>{{i.orgThk==''?'':(toNumber(i.orgThk)*0.3).toFixed(1)}}</td>
                 <td><input nz-input type="text" [(ngModel)]="i.gauP"></td>
                 <td><input nz-input type="text" [(ngModel)]="i.gauS"></td>
-                <td>5</td>
-                <td>6</td>
-                <td>7</td>
-                <td>8</td>
-                <td>9</td>
-                <td>10</td>
+                <td>{{(toNumber(i.orgThk)<=0||toNumber(i.gauP)<=0)?"":(toNumber(i.orgThk)-toNumber(i.gauP)).toFixed(1)}}</td>
+                <td>{{(toNumber(i.orgThk)<=0||toNumber(i.gauP)<=0)?"":parseInt((toNumber(i.orgThk)-toNumber(i.gauP))*1000/toNumber(i.orgThk))/10}}</td>
+                <td>{{(toNumber(i.orgThk)<=0||toNumber(i.gauP)<=0)?"":((toNumber(i.orgThk)-toNumber(i.gauP)<=(i.orgThk==''?0:(toNumber(i.orgThk)*0.3)))&&(toNumber(i.orgThk)-toNumber(i.gauP)>(i.orgThk==''?0:(toNumber(i.orgThk)*0.3))*3/4))?"S":(toNumber(i.orgThk)-toNumber(i.gauP)>(i.orgThk==''?0:(toNumber(i.orgThk)*0.3)))?"R":""}}</td>
+                <td>{{(toNumber(i.orgThk)<=0||toNumber(i.gauS)<=0)?"":(toNumber(i.orgThk)-toNumber(i.gauS)).toFixed(1)}}</td>
+                <td>{{(toNumber(i.orgThk)<=0||toNumber(i.gauS)<=0)?"":parseInt((toNumber(i.orgThk)-toNumber(i.gauS))*1000/toNumber(i.orgThk))/10}}</td>
+                <td>{{(toNumber(i.orgThk)<=0||toNumber(i.gauS)<=0)?"":((toNumber(i.orgThk)-toNumber(i.gauS)<=(i.orgThk==''?0:(toNumber(i.orgThk)*0.3)))&&(toNumber(i.orgThk)-toNumber(i.gauS)>(i.orgThk==''?0:(toNumber(i.orgThk)*0.3))*3/4))?"S":(toNumber(i.orgThk)-toNumber(i.gauS)>(i.orgThk==''?0:(toNumber(i.orgThk)*0.3)))?"R":""}}</td>
             </tr>
         </tbody>
     </nz-table>
