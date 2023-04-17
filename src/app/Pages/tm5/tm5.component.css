@@ -42,7 +42,7 @@
   width: 0px !important;
   background-color: transparent;
   } */
-  .addPage, .btn-save {
+  .addPage {
     margin: 5px 0;
     float: right;
     border-radius: 4px;
@@ -70,3 +70,10 @@
     background-color: rgb(53, 158, 255);
   }
   
+  .ant-input-group-wrapper {
+    display: block;
+  }
+
+  .my-select::ng-deep nz-select-top-control nz-select-item[title="TRANSVERSE WEB FR.170"]{
+    font-weight: 700;
+  }

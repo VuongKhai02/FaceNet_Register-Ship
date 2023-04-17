@@ -31,9 +31,7 @@ export class Tm5Component implements OnInit {
   frameNo: number = 35;
 
   lineAdd: number = 0;
-  b: number = 0;
   i = 0;
-  editId: string | null = null;
   listOfData: ItemData[] = [
     {
       id: 1,
@@ -103,13 +101,6 @@ export class Tm5Component implements OnInit {
       }
     }
   }
-  startEdit(id: string): void {
-    this.editId = id;
-  }
-
-  stopEdit(): void {
-    this.editId = null;
-  }
 
   addRow(): void {
     let maxId = 0;
@@ -135,8 +126,15 @@ export class Tm5Component implements OnInit {
     this.listOfData = [...this.listOfData];
     this.i++;
   }
-  deleteRow(id: number): void {
-    this.listOfData = this.listOfData.filter((d) => d.id !== id);
+
+  visible: boolean = false;
+
+  clickMe(): void {
+    this.visible = false;
+  }
+
+  change(value: boolean): void {
+    console.log(value);
   }
   ngOnInit(): void {
     this.addRow();

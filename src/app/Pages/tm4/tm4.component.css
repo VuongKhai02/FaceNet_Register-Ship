@@ -224,6 +224,9 @@ td .readonlyInput{
     width: 25%;
     justify-content: space-between;
   }
+  .btn-save{
+    width: auto;
+  }
   .addPage button {
     background-color: rgb(20, 139, 250);
     border: 0;
@@ -237,5 +240,13 @@ td .readonlyInput{
   .addPage button:hover {
     transition: 0.5s;
     background-color: rgb(53, 158, 255);
+  }
+  
+  .ant-input-group-wrapper {
+    display: block;
+  }
+
+  .my-select::ng-deep nz-select-top-control nz-select-item[title="TRANSVERSE WEB FR.170"]{
+    font-weight: 700;
   }
   

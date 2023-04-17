@@ -11,11 +11,58 @@
         </div>
     </div>
     <div class="addPage">
-        <input nz-input type="number" [(ngModel)]="lineAdd" />
-        <button (click)="addRow()">
+        <div style="margin-right:1rem">
+            <button nz-button nzType="primary" nz-popover [(nzPopoverVisible)]="visible"
+                (nzPopoverVisibleChange)="change($event)" nzPopoverTrigger="click" [nzPopoverContent]="contentTemplate">
+                <span>Code</span><span nz-icon nzType="caret-up" nzTheme="outline"></span>
+            </button>
+            <ng-template class="table-code" #contentTemplate>
+                <nz-input-group nzAddOnBefore=" 1 " nzAddOnAfter="%">
+                    <nz-select style="width: 100%;" nzPlaceHolder="Select">
+                        <nz-option nzLabel="20%" nzValue="Plating11"></nz-option>
+
+                        <nz-option nzLabel="25%" nzValue="Plating11"></nz-option>
+
+                        <nz-option nzLabel="30%" nzValue="Plating11"></nz-option>
+                    </nz-select>
+                </nz-input-group>
+                <nz-input-group nzAddOnBefore=" 2 " nzAddOnAfter="%">
+                    <nz-select style="width: 100%;" nzPlaceHolder="Select">
+                        <nz-option nzLabel="20%" nzValue="Plating11"></nz-option>
+
+                        <nz-option nzLabel="25%" nzValue="Plating11"></nz-option>
+
+                        <nz-option nzLabel="30%" nzValue="Plating11"></nz-option>
+                    </nz-select>
+                </nz-input-group>
+                <nz-input-group nzAddOnBefore=" 3 " nzAddOnAfter="%">
+                    <nz-select style="width: 100%;" nzPlaceHolder="Select">
+                        <nz-option nzLabel="20%" nzValue="Plating11"></nz-option>
+
+                        <nz-option nzLabel="25%" nzValue="Plating11"></nz-option>
+
+                        <nz-option nzLabel="30%" nzValue="Plating11"></nz-option>
+                    </nz-select>
+                </nz-input-group>
+                <div style="display: flex; width: 100%;justify-content: space-between; margin-top:.3rem">
+                    <button (click)="clickMe()" nz-button nzType="default">Close</button>
+
+                    <button (click)="clickMe()" nz-button nzType="primary">Save</button>
+
+                </div>
+            </ng-template>
+        </div>
+        <input nz-input type="number" style="width: 20%;" [(ngModel)]="lineAdd" />
+        <button (click)="addRow()" style="width: 45%;margin-left: 4px;">
             <span nz-icon nzType="file-add" nzTheme="outline"></span>Add
             {{lineAdd}} rows
         </button>
+
+        <div class="btn-save">
+            <button nz-button nzType="primary"><span nz-icon nzType="save" nzTheme="outline"></span>Save
+            </button>
+        </div>
+
     </div>
 
     <nz-table [nzScroll]="{ y: '400px' }" [nzPageSize]="5" nzBordered class="table" nzTemplateMode="" nzSize="small"
@@ -61,7 +108,12 @@
             <tr *ngFor="let data of dataTable.data" class="editable-row">
                 <td>{{data.id}}</td>
                 <td colspan="2">
-                    <input nz-input type="text" name="" id="" [(ngModel)]="data.structuralComponent">
+                    <nz-select class="my-select" style="width: 100%" nzShowSearch nzAllowClear nzPlaceHolder="Select"
+                        [(ngModel)]="data.structuralComponent">
+                        <nz-option nzLabel="Plating1" nzValue="Plating11"></nz-option>
+                        <nz-option nzLabel="Plating22" nzValue="Plating22"></nz-option>
+                        <nz-option nzLabel="TRANSVERSE WEB FR.170" nzValue="TRANSVERSE WEB FR.170"></nz-option>
+                    </nz-select>
                 </td>
                 <td>
                     <input nz-input type="text" name="" id="" [(ngModel)]="data.item">
@@ -88,8 +140,4 @@
             </tr>
         </tbody>
     </nz-table>
-    <div class="btn-save">
-        <button nz-button nzType="primary"><span nz-icon nzType="save" nzTheme="outline"></span>Save
-        </button>
-    </div>
 </section>
