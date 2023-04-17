@@ -1,9 +1,8 @@
 export interface ship {
-  ship_id: number;
-  shipName: string;
+  name: string;
   imoNumber: number;
   absIdentification: number;
-  portOfRegistry: string;
+  postOfRegistry: string;
   grossTons: number;
   deadweight: number;
   dateOfBuild: Date;

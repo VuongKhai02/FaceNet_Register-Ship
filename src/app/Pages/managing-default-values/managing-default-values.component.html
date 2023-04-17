@@ -1,0 +1,36 @@
+<section>
+  <h1>Managing default values</h1>
+  <nz-collapse style="margin-top: 10px; width: 100%">
+    <nz-collapse-panel
+      style="width: 100%"
+      *ngFor="let panel of panels"
+      [nzHeader]="panel.name"
+      [nzActive]="panel.active"
+      [nzDisabled]="panel.disabled"
+    >
+      <div class="collapseBox">
+        <button nz-button nzType="primary">Add new</button>
+        <nz-table nzTemplateMode="true" #borderedTable nzBordered>
+          <thead class="titleTable">
+            <tr class="titleTable">
+              <th class="titleTable" nzWidth="80px">No.</th>
+              <th class="titleTable">Item</th>
+              <th class="titleTable" nzWidth="150px">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td></td>
+              <td></td>
+              <td>
+                <a nz-popconfirm> Edit</a>
+                <nz-divider nzType="vertical"></nz-divider>
+                <a nz-popconfirm nzPopconfirmTitle="Sure to delete?">Delete</a>
+              </td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </div>
+    </nz-collapse-panel>
+  </nz-collapse>
+</section>

@@ -1,5 +1,4 @@
 export interface GeneralParticular {
-  ship_id: number;
   shipName: string;
   imoNumber: number;
   absIdentification: number;

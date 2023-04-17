@@ -78,7 +78,6 @@ export class GeneralParticularsComponent {
   subMit(): void {
     if (this.generalParticulars.length === 0) {
       let newGeneralParticulars: GeneralParticular = {
-        ship_id: 1,
         shipName: this.generalParticularsForm.value.shipName,
         imoNumber: this.generalParticularsForm.value.imoNumber,
         absIdentification:
@@ -125,18 +124,19 @@ export class GeneralParticularsComponent {
       //   .addGeneralParticularsToAPI(newGeneralParticulars)
       //   .subscribe();
       let newShip: ship = {
-        ship_id: 3,
-        shipName: this.generalParticularsForm.value.shipName,
+        name: this.generalParticularsForm.value.shipName,
         imoNumber: this.generalParticularsForm.value.imoNumber,
         absIdentification:
           this.generalParticularsForm.value.absIdentificationNumber,
-        portOfRegistry: this.generalParticularsForm.value.portOfRegistry,
+        postOfRegistry: this.generalParticularsForm.value.portOfRegistry,
         grossTons: this.generalParticularsForm.value.grossTons,
         deadweight: this.generalParticularsForm.value.deadweight,
         dateOfBuild: this.generalParticularsForm.value.dateOfBuild,
       };
       this.shipSevice.addShipsToAPI(newShip).subscribe(
-        (data) => {},
+        (data) => {
+          console.log(data);
+        },
         (err) => {
           alert(err);
         }

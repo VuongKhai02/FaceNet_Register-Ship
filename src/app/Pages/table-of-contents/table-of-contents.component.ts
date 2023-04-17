@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { part } from 'src/app/share/models/part.model';
 import { PartsService } from 'src/app/share/services/parts.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
@@ -11,6 +11,9 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 export class TableOfContentsComponent implements OnInit {
   parts: part[] = [];
 
+  @ViewChild('myElement')
+  myElement!: ElementRef;
+
   constructor(
     private partsService: PartsService,
     private message: NzMessageService
@@ -18,7 +21,8 @@ export class TableOfContentsComponent implements OnInit {
 
   ngOnInit(): void {
     this.parts = this.partsService.setParts();
-    console.log(this.parts);
+    var height: number = this.myElement.nativeElement.offsetHeight;
+    var tbheight: string = `${String(height)}px`;
   }
 
   moveUpPart(num: any) {
