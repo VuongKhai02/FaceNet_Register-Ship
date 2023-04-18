@@ -9,7 +9,10 @@
       [nzDisabled]="panel.disabled"
     >
       <div class="collapseBox">
-        <button nz-button nzType="primary">Add new</button>
+        <div class="addNewBox">
+          <input placeholder="Enter the new item" nz-input id="" />
+          <button nz-button nzType="primary">Add new</button>
+        </div>
         <nz-table nzTemplateMode="true" #borderedTable nzBordered>
           <thead class="titleTable">
             <tr class="titleTable">
@@ -18,10 +21,10 @@
               <th class="titleTable" nzWidth="150px">Action</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody *ngFor="let item of panel.items; let i = index">
             <tr>
-              <td></td>
-              <td></td>
+              <td>{{ i + 1 }}</td>
+              <td>{{ item }}</td>
               <td>
                 <a nz-popconfirm> Edit</a>
                 <nz-divider nzType="vertical"></nz-divider>

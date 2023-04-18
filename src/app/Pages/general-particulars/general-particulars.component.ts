@@ -16,12 +16,27 @@ export class GeneralParticularsComponent {
   ships: ship[] = [];
   listOfItem: string[] = [];
   index: number = 0;
+  isVisible = false;
 
   constructor(
     private shipSevice: ShipService,
     private getDataService: GetDataService,
     private message: NzMessageService
   ) {}
+
+  showModal(): void {
+    this.isVisible = true;
+  }
+
+  handleOk(): void {
+    this.searchShip();
+    this.generalParticularsForm.value.shipName = 'ok';
+    this.isVisible = false;
+  }
+
+  handleCancel(): void {
+    this.isVisible = false;
+  }
 
   ngOninit() {
     // this.generalParticulars = this.getDataService.getGeneralParticulars();
@@ -77,52 +92,6 @@ export class GeneralParticularsComponent {
 
   subMit(): void {
     if (this.generalParticulars.length === 0) {
-      let newGeneralParticulars: GeneralParticular = {
-        shipName: this.generalParticularsForm.value.shipName,
-        imoNumber: this.generalParticularsForm.value.imoNumber,
-        absIdentification:
-          this.generalParticularsForm.value.absIdentificationNumber,
-        portOfRegistry: this.generalParticularsForm.value.portOfRegistry,
-        grossTons: this.generalParticularsForm.value.grossTons,
-        deadweight: this.generalParticularsForm.value.deadweight,
-        dateOfBuild: this.generalParticularsForm.value.dateOfBuild,
-        classificationSociety:
-          this.generalParticularsForm.value.classificationSociety,
-        nameOfCompanyPerformingThicknessMeasurement:
-          this.NameOfCompanyPerformingThicknessMeasurement,
-        thicknessMeasurementCompanCertifiedBy:
-          this.generalParticularsForm.value
-            .thicknessMeasurementCompanCertifiedBy,
-        certificateNo: this.generalParticularsForm.value.certificateNo,
-        certificateValidFrom:
-          this.generalParticularsForm.value.certificateValidFrom,
-        placeOfMeasurement:
-          this.generalParticularsForm.value.placeOfMeasurement,
-        firstDateOfMeasurement:
-          this.generalParticularsForm.value.firstDateOfMeasurement,
-        lastDateOfMeasurement:
-          this.generalParticularsForm.value.lastDateOfMeasurement,
-        specialSurvey: this.generalParticularsForm.value.specialSurvey,
-        detailsOfMeasurementEquipment:
-          this.generalParticularsForm.value.detailsOfMeasurementEquipment,
-        qualificationOfoperator: this.qualificationOfoperator,
-        reportNumber: this.generalParticularsForm.value.reportNumber,
-        numberOfSheets: this.numberOfSheets,
-        nameOfOperator: this.generalParticularsForm.value.nameOfOperator,
-        nameOfSurveyor: this.generalParticularsForm.value.nameOfSurveyor,
-        signatureOfOperator:
-          this.generalParticularsForm.value.signatureOfOperator,
-        signatureOfSurveyor:
-          this.generalParticularsForm.value.signatureOfSurveyor,
-        companyOfficialStamp:
-          this.generalParticularsForm.value.companyOfficialStamp,
-        classificationSocietyOfficialStamp:
-          this.generalParticularsForm.value.classificationSocietyOfficialStamp,
-      };
-      // this.generalParticulars.push(newGeneralParticulars);
-      // this.getDataService
-      //   .addGeneralParticularsToAPI(newGeneralParticulars)
-      //   .subscribe();
       let newShip: ship = {
         name: this.generalParticularsForm.value.shipName,
         imoNumber: this.generalParticularsForm.value.imoNumber,
@@ -132,23 +101,80 @@ export class GeneralParticularsComponent {
         grossTons: this.generalParticularsForm.value.grossTons,
         deadweight: this.generalParticularsForm.value.deadweight,
         dateOfBuild: this.generalParticularsForm.value.dateOfBuild,
+        classificationSociety:
+          this.generalParticularsForm.value.classificationSociety,
       };
-      this.shipSevice.addShipsToAPI(newShip).subscribe(
-        (data) => {
-          console.log(data);
-        },
-        (err) => {
-          alert(err);
-        }
-      );
+      let newGeneralParticulars: GeneralParticular = {
+        ship: newShip,
+        // shipName: this.generalParticularsForm.value.shipName,
+        // imoNumber: this.generalParticularsForm.value.imoNumber,
+        // absIdentification:
+        //   this.generalParticularsForm.value.absIdentificationNumber,
+        // portOfRegistry: this.generalParticularsForm.value.portOfRegistry,
+        // grossTons: this.generalParticularsForm.value.grossTons,
+        // deadweight: this.generalParticularsForm.value.deadweight,
+        // dateOfBuild: this.generalParticularsForm.value.dateOfBuild,
+        // classificationSociety:
+        //   this.generalParticularsForm.value.classificationSociety,
+        // nameOfCompanyPerformingThicknessMeasurement:
+        // this.NameOfCompanyPerformingThicknessMeasurement,
+        // thicknessMeasurementCompanCertifiedBy:
+        //   this.generalParticularsForm.value
+        //     .thicknessMeasurementCompanCertifiedBy,
+        certificateNo: this.generalParticularsForm.value.certificateNo,
+        // certificateValidFrom:
+        //   this.generalParticularsForm.value.certificateValidFrom,
+        placeOfMeasurement:
+          this.generalParticularsForm.value.placeOfMeasurement,
+        firstDateOfMeasurement:
+          this.generalParticularsForm.value.firstDateOfMeasurement,
+        lastDateOfMeasurement:
+          this.generalParticularsForm.value.lastDateOfMeasurement,
+        specialSurvey: this.generalParticularsForm.value.specialSurvey,
+        measurementEquipmentInfo:
+          this.generalParticularsForm.value.detailsOfMeasurementEquipment,
+        // qualificationOfoperator: this.qualificationOfoperator,
+        reportNo: this.generalParticularsForm.value.reportNumber,
+        numberOfSheets: this.numberOfSheets,
+        nameOfOperator: this.generalParticularsForm.value.nameOfOperator,
+        nameOfSurveyor: this.generalParticularsForm.value.nameOfSurveyor,
+        // signatureOfOperator:
+        //   this.generalParticularsForm.value.signatureOfOperator,
+        // signatureOfSurveyor:
+        //   this.generalParticularsForm.value.signatureOfSurveyor,
+        // companyOfficialStamp:
+        //   this.generalParticularsForm.value.companyOfficialStamp,
+        // classificationSocietyOfficialStamp:
+        //   this.generalParticularsForm.value.classificationSocietyOfficialStamp,
+      };
+      // this.generalParticulars.push(newGeneralParticulars);
+      // this.getDataService
+      //   .addGeneralParticularsToAPI(newGeneralParticulars)
+      //   .subscribe();
+
+      this.getDataService
+        .addGeneralParticularsToAPI(newGeneralParticulars)
+        .subscribe(
+          (data) => {
+            console.log(data);
+          },
+          (err) => {
+            alert(err);
+          }
+        );
       this.message.create('success', 'Save success');
     }
   }
 
   searchShip() {
-    this.shipSevice.getShipsFromAPI().subscribe((data) => {
-      console.log(data);
-    });
+    this.shipSevice.getShipsFromAPI().subscribe(
+      (data) => {
+        console.log(data);
+      },
+      (err) => {
+        alert(err);
+      }
+    );
   }
 
   update(): void {}
