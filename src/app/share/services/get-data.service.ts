@@ -8,8 +8,7 @@ import { Observable } from 'rxjs';
 })
 export class GetDataService {
   constructor(private http: HttpClient) {}
-  API_URL: string =
-    'https://642e2c062b883abc64085347.mockapi.io/book/registryShipping';
+  API_URL: string = 'http://222.252.25.37:9080/api/v1/generals_particulars';
 
   generalParticulars: GeneralParticular[] = [];
 

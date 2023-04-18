@@ -4,25 +4,6 @@
     <form [formGroup]="generalParticularsForm" nz-form>
       <nz-form-item>
         <nz-form-label [nzSm]="7" [nzXs]="24" nzFor=""
-          >IMO number</nz-form-label
-        >
-        <nz-form-control
-          [nzSm]="14"
-          [nzXs]="24"
-          nzErrorTip="Please input website!"
-        >
-          <nz-input-group nzSearch [nzAddOnAfter]="suffixIconButton">
-            <input formControlName="imoNumber" type="text" nz-input />
-          </nz-input-group>
-          <ng-template #suffixIconButton>
-            <button nz-button (click)="searchShip()" nzType="primary" nzSearch>
-              <span style="color: white" nz-icon nzType="search"></span>
-            </button>
-          </ng-template>
-        </nz-form-control>
-      </nz-form-item>
-      <nz-form-item>
-        <nz-form-label [nzSm]="7" [nzXs]="24" nzFor=""
           >Ship's name</nz-form-label
         >
         <nz-form-control
@@ -31,6 +12,44 @@
           nzErrorTip="Please input website!"
         >
           <input formControlName="shipName" nz-input id="" />
+        </nz-form-control>
+        <button
+          style="color: white; margin-left: 10px"
+          nz-button
+          [nzType]="'primary'"
+          (click)="showModal()"
+        >
+          <span
+            style="color: white"
+            nz-icon
+            nzType="file-search"
+            nzTheme="outline"
+          ></span>
+          <span style="color: white">Search</span>
+        </button>
+        <nz-modal
+          [(nzVisible)]="isVisible"
+          nzTitle="Result"
+          (nzOnCancel)="handleCancel()"
+          (nzOnOk)="handleOk()"
+        >
+          <ng-container *nzModalContent>
+            <p>No result</p>
+          </ng-container>
+        </nz-modal>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label [nzSm]="7" [nzXs]="24" nzFor=""
+          >IMO number</nz-form-label
+        >
+        <nz-form-control
+          [nzSm]="14"
+          [nzXs]="24"
+          nzErrorTip="Please input website!"
+        >
+          <nz-input-group nzSearch>
+            <input formControlName="imoNumber" type="text" nz-input />
+          </nz-input-group>
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
@@ -108,6 +127,7 @@
           <input formControlName="classificationSociety" nz-input id="" />
         </nz-form-control>
       </nz-form-item>
+
       <hr />
       <nz-form-item>
         <nz-form-label [nzSm]="10" [nzXs]="24" nzFor=""

@@ -6,4 +6,5 @@ export interface ship {
   grossTons: number;
   deadweight: number;
   dateOfBuild: Date;
+  classificationSociety: string;
 }
