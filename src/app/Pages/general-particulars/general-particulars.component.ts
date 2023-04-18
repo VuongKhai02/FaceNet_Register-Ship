@@ -3,6 +3,8 @@ import { GeneralParticular } from './../../share/models/generalParticulars.model
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { ship } from 'src/app/share/models/ship.model';
+import { ShipService } from 'src/app/share/services/ships.service';
 
 @Component({
   selector: 'app-general-particulars',
@@ -11,11 +13,30 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 })
 export class GeneralParticularsComponent {
   generalParticulars: GeneralParticular[] = [];
+  ships: ship[] = [];
+  listOfItem: string[] = [];
+  index: number = 0;
+  isVisible = false;
 
   constructor(
+    private shipSevice: ShipService,
     private getDataService: GetDataService,
     private message: NzMessageService
   ) {}
+
+  showModal(): void {
+    this.isVisible = true;
+  }
+
+  handleOk(): void {
+    this.searchShip();
+    this.generalParticularsForm.value.shipName = 'ok';
+    this.isVisible = false;
+  }
+
+  handleCancel(): void {
+    this.isVisible = false;
+  }
 
   ngOninit() {
     // this.generalParticulars = this.getDataService.getGeneralParticulars();
@@ -27,6 +48,15 @@ export class GeneralParticularsComponent {
         console.log(err);
       }
     );
+  }
+  addItem(input: HTMLInputElement) {
+    const value = input.value;
+    if (this.listOfItem.indexOf(value) === -1) {
+      this.listOfItem = [
+        ...this.listOfItem,
+        input.value || `New item ${this.index++}`,
+      ];
+    }
   }
 
   NameOfCompanyPerformingThicknessMeasurement: string =
@@ -62,26 +92,38 @@ export class GeneralParticularsComponent {
 
   subMit(): void {
     if (this.generalParticulars.length === 0) {
-      let newGeneralParticulars: GeneralParticular = {
-        id: 1,
-        shipName: this.generalParticularsForm.value.shipName,
+      let newShip: ship = {
+        name: this.generalParticularsForm.value.shipName,
         imoNumber: this.generalParticularsForm.value.imoNumber,
-        absIdentificationNumber:
+        absIdentification:
           this.generalParticularsForm.value.absIdentificationNumber,
-        portOfRegistry: this.generalParticularsForm.value.portOfRegistry,
+        postOfRegistry: this.generalParticularsForm.value.portOfRegistry,
         grossTons: this.generalParticularsForm.value.grossTons,
         deadweight: this.generalParticularsForm.value.deadweight,
         dateOfBuild: this.generalParticularsForm.value.dateOfBuild,
         classificationSociety:
           this.generalParticularsForm.value.classificationSociety,
-        nameOfCompanyPerformingThicknessMeasurement:
-          this.NameOfCompanyPerformingThicknessMeasurement,
-        thicknessMeasurementCompanCertifiedBy:
-          this.generalParticularsForm.value
-            .thicknessMeasurementCompanCertifiedBy,
+      };
+      let newGeneralParticulars: GeneralParticular = {
+        ship: newShip,
+        // shipName: this.generalParticularsForm.value.shipName,
+        // imoNumber: this.generalParticularsForm.value.imoNumber,
+        // absIdentification:
+        //   this.generalParticularsForm.value.absIdentificationNumber,
+        // portOfRegistry: this.generalParticularsForm.value.portOfRegistry,
+        // grossTons: this.generalParticularsForm.value.grossTons,
+        // deadweight: this.generalParticularsForm.value.deadweight,
+        // dateOfBuild: this.generalParticularsForm.value.dateOfBuild,
+        // classificationSociety:
+        //   this.generalParticularsForm.value.classificationSociety,
+        // nameOfCompanyPerformingThicknessMeasurement:
+        // this.NameOfCompanyPerformingThicknessMeasurement,
+        // thicknessMeasurementCompanCertifiedBy:
+        //   this.generalParticularsForm.value
+        //     .thicknessMeasurementCompanCertifiedBy,
         certificateNo: this.generalParticularsForm.value.certificateNo,
-        certificateValidFrom:
-          this.generalParticularsForm.value.certificateValidFrom,
+        // certificateValidFrom:
+        //   this.generalParticularsForm.value.certificateValidFrom,
         placeOfMeasurement:
           this.generalParticularsForm.value.placeOfMeasurement,
         firstDateOfMeasurement:
@@ -89,28 +131,50 @@ export class GeneralParticularsComponent {
         lastDateOfMeasurement:
           this.generalParticularsForm.value.lastDateOfMeasurement,
         specialSurvey: this.generalParticularsForm.value.specialSurvey,
-        detailsOfMeasurementEquipment:
+        measurementEquipmentInfo:
           this.generalParticularsForm.value.detailsOfMeasurementEquipment,
-        qualificationOfoperator: this.qualificationOfoperator,
-        reportNumber: this.generalParticularsForm.value.reportNumber,
+        // qualificationOfoperator: this.qualificationOfoperator,
+        reportNo: this.generalParticularsForm.value.reportNumber,
         numberOfSheets: this.numberOfSheets,
         nameOfOperator: this.generalParticularsForm.value.nameOfOperator,
         nameOfSurveyor: this.generalParticularsForm.value.nameOfSurveyor,
-        signatureOfOperator:
-          this.generalParticularsForm.value.signatureOfOperator,
-        signatureOfSurveyor:
-          this.generalParticularsForm.value.signatureOfSurveyor,
-        companyOfficialStamp:
-          this.generalParticularsForm.value.companyOfficialStamp,
-        classificationSocietyOfficialStamp:
-          this.generalParticularsForm.value.classificationSocietyOfficialStamp,
+        // signatureOfOperator:
+        //   this.generalParticularsForm.value.signatureOfOperator,
+        // signatureOfSurveyor:
+        //   this.generalParticularsForm.value.signatureOfSurveyor,
+        // companyOfficialStamp:
+        //   this.generalParticularsForm.value.companyOfficialStamp,
+        // classificationSocietyOfficialStamp:
+        //   this.generalParticularsForm.value.classificationSocietyOfficialStamp,
       };
       // this.generalParticulars.push(newGeneralParticulars);
+      // this.getDataService
+      //   .addGeneralParticularsToAPI(newGeneralParticulars)
+      //   .subscribe();
+
       this.getDataService
         .addGeneralParticularsToAPI(newGeneralParticulars)
-        .subscribe();
-      this.message.create('success', 'Admit success');
+        .subscribe(
+          (data) => {
+            console.log(data);
+          },
+          (err) => {
+            alert(err);
+          }
+        );
+      this.message.create('success', 'Save success');
     }
+  }
+
+  searchShip() {
+    this.shipSevice.getShipsFromAPI().subscribe(
+      (data) => {
+        console.log(data);
+      },
+      (err) => {
+        alert(err);
+      }
+    );
   }
 
   update(): void {}

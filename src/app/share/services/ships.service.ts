@@ -1,22 +1,22 @@
 import { Injectable } from '@angular/core';
-import { GeneralParticular } from '../models/generalParticulars.model';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { ship } from '../models/ship.model';
 
 @Injectable({
   providedIn: 'root',
 })
-export class GetDataService {
+export class ShipService {
   constructor(private http: HttpClient) {}
-  API_URL: string = 'http://222.252.25.37:9080/api/v1/generals_particulars';
+  API_URL: string = 'http://222.252.25.37:9080/api/v1/ships';
 
-  generalParticulars: GeneralParticular[] = [];
+  ships: ship[] = [];
 
   /**
    * Hàm dùng để lấy dữ liệu từ API
-   * @returns Trả về mảng thông tin của sách
+   * @returns Trả về mảng thông tin của ship
    */
-  getGeneralParticularsFromAPI(): Observable<any> {
+  getShipsFromAPI(): Observable<any> {
     return this.http.get(this.API_URL);
   }
 
@@ -25,16 +25,16 @@ export class GetDataService {
    * @param data : Dữ liệu thêm mới từ input
    * @returns
    */
-  addGeneralParticularsToAPI(data: GeneralParticular): Observable<any> {
+  addShipsToAPI(data: ship): Observable<any> {
     return this.http.post(this.API_URL, data);
   }
 
   /**
    * Hàm dùng để xóa sách trong mảng dữ liệu
-   * @param id : Id của sản sách cần xóa
+   * @param id : Id của ship cần xóa
    * @returns
    */
-  deleteGeneralParticularsFormAPI(id: string): Observable<any> {
+  deleteShipsFormAPI(id: string): Observable<any> {
     return this.http.delete(`${this.API_URL}/${id}`);
   }
 
@@ -44,14 +44,11 @@ export class GetDataService {
    * @param data : Thông tin của sách cần sửa
    * @returns
    */
-  updateGeneralParticularsToAPI(
-    id: string,
-    data: GeneralParticular
-  ): Observable<any> {
+  updateShipsToAPI(id: string, data: ship): Observable<any> {
     return this.http.put(`${this.API_URL}/${id}`, data);
   }
 
-  getGeneralParticulars(): GeneralParticular[] {
-    return this.generalParticulars;
+  getShips(): ship[] {
+    return this.ships;
   }
 }
