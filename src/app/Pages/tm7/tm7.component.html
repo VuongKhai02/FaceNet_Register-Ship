@@ -4,14 +4,15 @@
             Report on THICKNESS MEASUREMENT OF CARGO HOLD SIDE SHELL FRAMES
         </h1>
         <div class="infor">
-            <p>Ship's name<span>M/V "AFRICAN EAGLE"</span></p>
-            <p>Class Identity No.<span>03112356</span></p>
+            <p>Ship's name<span>{{shipName}}</span></p>
+            <p>Class Identity No.<span>{{classID}}</span></p>
             <p>Report No.<span>VMC.UTM.22.046/5255939</span></p>
         </div>
     </div>
     <div class="addPage">
         <input nz-input type="number" [(ngModel)]="addRowValue">
         <button (click)="addRow()"><span nz-icon nzType="file-add" nzTheme="outline"></span>Add {{addRowValue}} rows</button>
+        <button>Save</button>
     </div>
     <nz-table nzTemplateMode="" [nzScroll]="{y:'240px'}" nzBordered="" nzSize="small">
         <thead>
@@ -69,30 +70,34 @@
         <tbody>
             <tr *ngFor="let i of rowValue">
                 <td colspan="2"><input type="text" nz-input></td>
-                <td><input type="text" nz-input></td>
-                <td></td>
-                <td><input type="text" nz-input></td>
-                <td><input type="text" nz-input></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td><input type="text" nz-input></td>
-                <td></td>
-                <td><input type="text" nz-input></td>
-                <td><input type="text" nz-input></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td><input type="text" nz-input></td>
-                <td></td>
-                <td><input type="text" nz-input></td>
-                <td><input type="text" nz-input></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td><input type="text" nz-input [(ngModel)]="i.upPart.orgThk"></td>
+                <td>{{(toNumber(i.upPart.orgThk)<=0.1)?"":(toNumber(i.upPart.orgThk)*0.25).toFixed(1)}}</td>
+                <td><input type="text" nz-input [(ngModel)]="i.upPart.gauP"></td>
+                <td><input type="text" nz-input [(ngModel)]="i.upPart.gauS"></td>
+                <td>{{(toNumber(i.upPart.orgThk)<=0 || toNumber(i.upPart.gauP) <=0)?"":(toNumber(i.upPart.orgThk)-toNumber(i.upPart.gauP)).toFixed(1)}}</td>
+                <td>{{(toNumber(i.upPart.orgThk)<=0||toNumber(i.upPart.gauP)<=0)?"":((toNumber(i.upPart.orgThk)-toNumber(i.upPart.gauP))*100/toNumber(i.upPart.orgThk)).toFixed(1)}}</td>
+                <td>{{(toNumber(i.upPart.orgThk)<=0 || toNumber(i.upPart.gauS) <=0)?"":(toNumber(i.upPart.orgThk)-toNumber(i.upPart.gauS)).toFixed(1)}}</td>
+                <td>{{(toNumber(i.upPart.orgThk)<=0||toNumber(i.upPart.gauS)<=0)?"":parseInt(((toNumber(i.upPart.orgThk)-toNumber(i.upPart.gauS))*1000/toNumber(i.upPart.orgThk)))/10}}</td>
+
+
+                <td><input type="text" nz-input [(ngModel)]="i.midPart.orgThk"></td>
+                <td>{{(toNumber(i.midPart.orgThk)<=0.1)?"":(toNumber(i.midPart.orgThk)*0.25).toFixed(1)}}</td>
+                <td><input type="text" nz-input [(ngModel)]="i.midPart.gauP"></td>
+                <td><input type="text" nz-input [(ngModel)]="i.midPart.gauS"></td>
+                <td>{{(toNumber(i.midPart.orgThk)<=0 || toNumber(i.midPart.gauP) <=0)?"":(toNumber(i.midPart.orgThk)-toNumber(i.midPart.gauP)).toFixed(1)}}</td>
+                <td>{{(toNumber(i.midPart.orgThk)<=0||toNumber(i.midPart.gauP)<=0)?"":((toNumber(i.midPart.orgThk)-toNumber(i.midPart.gauP))*100/toNumber(i.midPart.orgThk)).toFixed(1)}}</td>
+                <td>{{(toNumber(i.midPart.orgThk)<=0 || toNumber(i.midPart.gauS) <=0)?"":(toNumber(i.midPart.orgThk)-toNumber(i.midPart.gauS)).toFixed(1)}}</td>
+                <td>{{(toNumber(i.midPart.orgThk)<=0||toNumber(i.midPart.gauS)<=0)?"":parseInt(((toNumber(i.midPart.orgThk)-toNumber(i.midPart.gauS))*1000/toNumber(i.midPart.orgThk)))/10}}</td>
+
+
+                <td><input type="text" nz-input [(ngModel)]="i.lowPart.orgThk"></td>
+                <td>{{(toNumber(i.lowPart.orgThk)<=0.1)?"":(toNumber(i.lowPart.orgThk)*0.25).toFixed(1)}}</td>
+                <td><input type="text" nz-input [(ngModel)]="i.lowPart.gauP"></td>
+                <td><input type="text" nz-input [(ngModel)]="i.lowPart.gauS"></td>
+                <td>{{(toNumber(i.lowPart.orgThk)<=0 || toNumber(i.lowPart.gauP) <=0)?"":(toNumber(i.lowPart.orgThk)-toNumber(i.lowPart.gauP)).toFixed(1)}}</td>
+                <td>{{(toNumber(i.lowPart.orgThk)<=0||toNumber(i.lowPart.gauP)<=0)?"":((toNumber(i.lowPart.orgThk)-toNumber(i.lowPart.gauP))*100/toNumber(i.lowPart.orgThk)).toFixed(1)}}</td>
+                <td>{{(toNumber(i.lowPart.orgThk)<=0 || toNumber(i.lowPart.gauS) <=0)?"":(toNumber(i.lowPart.orgThk)-toNumber(i.lowPart.gauS)).toFixed(1)}}</td>
+                <td>{{(toNumber(i.lowPart.orgThk)<=0||toNumber(i.lowPart.gauS)<=0)?"":parseInt(((toNumber(i.lowPart.orgThk)-toNumber(i.lowPart.gauS))*1000/toNumber(i.lowPart.orgThk)))/10}}</td>
             </tr>
         </tbody>
     </nz-table>
