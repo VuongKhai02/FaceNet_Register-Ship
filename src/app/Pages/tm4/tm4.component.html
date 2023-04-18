@@ -1,124 +1,142 @@
-<div class="wrapper">
-    <header class="header-wrapper">
-        <ul class="breadcrumb">
-            <li><a href="#"> Form nhập liệu </a></li>
-            <li><a href="#"> Tm4 </a></li>
-        </ul>
-        <div class="table-info tableInfo">
-            <div class="table-name">
-                <h4 class="text-center text-uppercase">Report on THICKNESS MEASUREMENT OF TRANSVERSE STRUCTURAL MEMBERS
-                    in the cargo oil and water ballast tanks within the cargo tank length</h4>
-            </div>
-            <div class="d-flex justify-content-between ship-info">
-                <div class="ship-name d-flex">
-                    <h5 class="title"><label for="shipName" class="">Ship's name: </label></h5>
-                    <h5 class="value">{{shipName}}</h5>
-                </div>
-                <div class="ship-classIdentity d-flex">
-                    <h5 class="title"><label for="shipId" class="">Class Identity No: </label></h5>
-                    <h5 class="value">{{classIdentity}}</h5>
-                </div>
-                <div class="ship-reportNumber d-flex">
-                    <h5 class="title"><label for="shipNumber" class="">Report No: </label></h5>
-                    <h5 class="value">{{reportNo}}</h5>
-                </div>
-            </div>
+<section>
+    <div class="header">
+        <h1 class="title">
+            Report on THICKNESS MEASUREMENT OF TRANSVERSE STRUCTURAL MEMBERS
+            in the cargo oil and water ballast tanks within the cargo tank length
+        </h1>
+        <div class="infor">
+            <p>Ship's name: <span>{{shipName}}</span></p>
+            <p>Class Identity No.: <span>{{classIdentity}}</span></p>
+            <p>Report No.: <span>{{reportNo}}</span></p>
         </div>
-    </header>
-
-    <div class="section">
-        <div class="d-flex addPage">
-            <input type="number" [(ngModel)]="lineAdd" name="" id="" placeholder="Nhập số bản ghi">
-            <button class="btn-add" nz-button (click)="addRow()" nzType="primary">
-                <i class="fa-solid fa-file-circle-plus"></i>
-                Add
-                <span style=" margin: 0 .3rem;"> {{lineAdd}} </span>
-                row
-            </button>
-
-        </div>
-        <nz-table id="table-tm4" #editRowTable [nzBordered]="true" [nzData]="listOfData" [nzFrontPagination]="false"
-            [nzShowPagination]="false" [nzScroll]="{ y: '400px' }" [nzData]="listOfData">
-            <thead>
-                <tr class="thead-tm4-general">
-                    <th class="structuralMemberCol" colspan="3">Tank description:</th>
-                    <th colspan="11">
-                        <input type="text" name="tankDesc" [defaultValue]="tankDesc" id="tankDesc">
-                    </th>
-                </tr>
-                <tr class="thead-tm4-general">
-                    <th colspan="3">Location of structure:</th>
-                    <th colspan="11">
-                        <input type="text" name="locationOfStructure" [defaultValue]="locationOfStructure"
-                            id="locationOfStructure">
-                    </th>
-                </tr>
-                <tr>
-                    <th rowSpan="2">STT</th>
-                    <th rowSpan="2" colSpan="2">Structural Member</th>
-                    <th rowSpan="2">Item</th>
-                    <th rowSpan="2">Original Thickness(mm)</th>
-                    <th rowSpan="2">Maximum Allowable Dim(mm)</th>
-                    <th rowSpan="1" colSpan="2">Gauged</th>
-                    <th rowSpan="1" colSpan="3">Diminution P</th>
-                    <th rowSpan="1" colSpan="3">Diminution S</th>
-                </tr>
-                <tr>
-                    <th>P</th>
-                    <th>S</th>
-                    <th>mm</th>
-                    <th colSpan="2">%</th>
-                    <th>mm</th>
-                    <th colSpan="2">%</th>
-                </tr>
-            </thead>
-            <tbody class="tbody-tm4">
-                <tr *ngFor="let data of editRowTable.data" class="editable-row">
-                    <td class="readonly">
-                        <div>
-                            {{data.id }}
-                        </div>
-                    </td>
-                    <td colspan="2">
-                        <input type="text" name="" id="" [(ngModel)]="data.structuralMember">
-                    </td>
-                    <td>
-                        <input type="text" name="" id="" [(ngModel)]="data.item">
-                    </td>
-                    <td>
-                        <input type="text" name="" id="" [(ngModel)]="data.originalThickness">
-                    </td>
-                    <td>
-                        <div>0</div>
-                    </td>
-                    <td>
-                        <input type="text" name="" id="" [(ngModel)]="data.gaugedP">
-                    </td>
-                    <td>
-                        <input type="text" name="" id="" [(ngModel)]="data.gaugedS">
-                    </td>
-                    <td>
-                        <div>0</div>
-                    </td>
-                    <td>
-                        <div>0</div>
-                    </td>
-                    <td class="readonly"></td>
-                    <td>
-                        <div>0</div>
-                    </td>
-                    <td>
-                        <div>0</div>
-                    </td>
-                    <td class="readonly" style="color: red;">R</td>
-                    <!-- <td>
-                        <a nz-popconfirm nzPopconfirmTitle="Sure to delete?"
-                            (nzOnConfirm)="deleteRow(data.id)">Delete</a>
-                        <button (click)="deleteRow(data.id)">
-                        </button>
-                    </td> -->
-                </tr>
-            </tbody>
-        </nz-table>
     </div>
-</div>
+    <div class="addPage">
+        <div style="margin-right:1rem">
+            <button nz-button nzType="primary" nz-popover [(nzPopoverVisible)]="visible"
+                (nzPopoverVisibleChange)="change($event)" nzPopoverTrigger="click" [nzPopoverContent]="contentTemplate">
+                <span>Code</span><span nz-icon nzType="caret-up" nzTheme="outline"></span>
+            </button>
+            <ng-template class="table-code" #contentTemplate>
+                <nz-input-group nzAddOnBefore=" 1 " nzAddOnAfter="%">
+                    <nz-select style="width: 100%;" nzPlaceHolder="Select">
+                        <nz-option nzLabel="20%" nzValue="Plating11"></nz-option>
+
+                        <nz-option nzLabel="25%" nzValue="Plating11"></nz-option>
+
+                        <nz-option nzLabel="30%" nzValue="Plating11"></nz-option>
+                    </nz-select>
+                </nz-input-group>
+                <nz-input-group nzAddOnBefore=" 2 " nzAddOnAfter="%">
+                    <nz-select style="width: 100%;" nzPlaceHolder="Select">
+                        <nz-option nzLabel="20%" nzValue="Plating11"></nz-option>
+
+                        <nz-option nzLabel="25%" nzValue="Plating11"></nz-option>
+
+                        <nz-option nzLabel="30%" nzValue="Plating11"></nz-option>
+                    </nz-select>
+                </nz-input-group>
+                <nz-input-group nzAddOnBefore=" 3 " nzAddOnAfter="%">
+                    <nz-select style="width: 100%;" nzPlaceHolder="Select">
+                        <nz-option nzLabel="20%" nzValue="Plating11"></nz-option>
+
+                        <nz-option nzLabel="25%" nzValue="Plating11"></nz-option>
+
+                        <nz-option nzLabel="30%" nzValue="Plating11"></nz-option>
+                    </nz-select>
+                </nz-input-group>
+                <div style="display: flex; width: 100%;justify-content: space-between; margin-top:.3rem">
+                    <button (click)="clickMe()" nz-button nzType="default">Close</button>
+
+                    <button (click)="clickMe()" nz-button nzType="primary">Save</button>
+
+                </div>
+            </ng-template>
+        </div>
+        <input nz-input type="number" style="width: 20%;" [(ngModel)]="lineAdd" />
+        <button (click)="addRow()" style="width: 45%;margin-left: 4px;">
+            <span nz-icon nzType="file-add" nzTheme="outline"></span>Add
+            {{lineAdd}} rows
+        </button>
+
+        <div class="btn-save">
+            <button nz-button nzType="primary"><span nz-icon nzType="save" nzTheme="outline"></span>Save
+            </button>
+        </div>
+
+    </div>
+
+    <nz-table [nzScroll]="{ y: '400px' }" [nzPageSize]="5" nzBordered class="table" nzTemplateMode="" nzSize="small"
+        #dataTable [nzData]="listOfData" [nzFrontPagination]="false">
+        <thead>
+            <tr class=" th">
+                <th colspan="3">Tank description:</th>
+                <th colspan="11">
+                    <input nz-input nz-input type="text" [defaultValue]="tankDesc" />
+                </th>
+            </tr>
+            <tr class=" th">
+                <th colspan="3">Location of structure:</th>
+                <th colspan="11">
+                    <input nz-input nz-input type="text" [defaultValue]="locationOfStructure" />
+                </th>
+            </tr>
+            <tr class="th">
+                <th rowSpan="2">No.</th>
+                <th rowSpan="2" colSpan="2">Structural Member</th>
+                <th rowSpan="2">Item</th>
+                <th rowSpan="2">Original Thickness(mm)</th>
+                <th rowSpan="2">Maximum Allowable Dim(mm)</th>
+                <th rowSpan="1" colSpan="2">Gauged</th>
+                <th rowSpan="1" colSpan="3">Diminution P</th>
+                <th rowSpan="1" colSpan="3">Diminution S</th>
+            </tr>
+            <tr class="th">
+                <th>P</th>
+                <th>S</th>
+                <th>mm</th>
+                <th colSpan="2">%</th>
+                <th>mm</th>
+                <th colSpan="2">%</th>
+            </tr>
+        </thead>
+        <tbody class="tbody-tm4">
+            <tr *ngFor="let data of dataTable.data" class="editable-row tb">
+                <td>{{data.id }}</td>
+                <td colspan="2">
+                    <nz-select class="my-select" style="width: 100%" nzShowSearch nzAllowClear nzPlaceHolder="Select"
+                        [(ngModel)]="data.structuralMember">
+                        <nz-option nzLabel="Plating1" nzValue="Plating11"></nz-option>
+                        <nz-option nzLabel="Plating22" nzValue="Plating22"></nz-option>
+                        <nz-option nzLabel="TRANSVERSE WEB FR.170" nzValue="TRANSVERSE WEB FR.170"></nz-option>
+                    </nz-select>
+                </td>
+                <td>
+                    <input nz-input type="text" name="" id="" [(ngModel)]="data.item">
+                </td>
+                <td>
+                    <input (input)="calMAD(data.id)" (input)="calDimP(data.id)" (input)="calDimS(data.id)" nz-input
+                        type="text" name="" id="" [(ngModel)]="data.originalThickness">
+                </td>
+                <td>0</td>
+                <td>
+                    <input (input)="calDimP(data.id)" nz-input type="text" name="" id="" [(ngModel)]="data.gaugedP">
+                </td>
+                <td>
+                    <input (input)="calDimS(data.id)" nz-input type="text" name="" id="" [(ngModel)]="data.gaugedS">
+                </td>
+                <td>{{data.diminutionPmm}}</td>
+                <td>{{data.diminutionPpercent}}</td>
+                <td style="color: red;">
+                    {{ data.isStandardP ? '' : 'R' }}
+                </td>
+                <td>{{data.diminutionSmm}}</td>
+                <td>{{data.diminutionSpercent}}</td>
+                <td style="color: red;">{{ data.isStandardS ? '' : 'R' }}</td>
+            </tr>
+        </tbody>
+    </nz-table>
+    <div class="btn-save">
+        <button nz-button nzType="primary"><span nz-icon nzType="save" nzTheme="outline"></span>Save
+        </button>
+    </div>
+</section>

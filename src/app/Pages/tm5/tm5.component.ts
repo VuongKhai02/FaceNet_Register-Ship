@@ -14,8 +14,8 @@ interface ItemData {
   diminutionPpercent: number;
   diminutionSmm: number;
   diminutionSpercent: number;
-  isStandardP: string;
-  isStandardS: string;
+  isStandardP: boolean;
+  isStandardS: boolean;
 }
 @Component({
   selector: 'app-tm5',
@@ -31,9 +31,7 @@ export class Tm5Component implements OnInit {
   frameNo: number = 35;
 
   lineAdd: number = 0;
-  b: number = 0;
   i = 0;
-  editId: string | null = null;
   listOfData: ItemData[] = [
     {
       id: 1,
@@ -47,8 +45,8 @@ export class Tm5Component implements OnInit {
       diminutionPpercent: 0,
       diminutionSmm: 0,
       diminutionSpercent: 0,
-      isStandardP: '',
-      isStandardS: '',
+      isStandardP: true,
+      isStandardS: true,
     },
     {
       id: 2,
@@ -62,59 +60,46 @@ export class Tm5Component implements OnInit {
       diminutionPpercent: 0,
       diminutionSmm: 0,
       diminutionSpercent: 0,
-      isStandardP: '',
-      isStandardS: '',
+      isStandardP: true,
+      isStandardS: true,
     },
   ];
-  calculateMaximumAllowDimAuto(id: number) {
+  calMAD(id: number) {
     let data = this.listOfData.find((item) => item.id == id);
     if (data) {
-      data.maximumAllowableDim = data.originalThickness * 0.25;
-    }
-    console.log(data);
-  }
-
-  calculateDiminutionPmm(id: number) {
-    let data = this.listOfData.find((item) => item.id == id);
-    if (data) {
-      data.diminutionPmm = data.originalThickness - data.gaugedP;
+      data.maximumAllowableDim =
+        Math.round(data.originalThickness * 0.25 * 10) / 10;
     }
   }
-  calculateDiminutionPpercent(id: number) {
+  calDimP(id: number) {
     let data = this.listOfData.find((item) => item.id == id);
     if (data) {
+      data.diminutionPmm =
+        Math.round((data.originalThickness - data.gaugedP) * 10) / 10;
       data.diminutionPpercent =
-        (data.diminutionPmm / data.originalThickness) * 100;
+        Math.floor((data.diminutionPmm / data.originalThickness) * 100 * 10) /
+        10;
+      if (data.diminutionPpercent > 0.5) {
+        data.isStandardP = false;
+      } else {
+        data.isStandardP = true;
+      }
     }
   }
-  calculateDiminutionSmm(id: number) {
+  calDimS(id: number) {
     let data = this.listOfData.find((item) => item.id == id);
     if (data) {
-      data.diminutionSmm = data.originalThickness - data.gaugedS;
-    }
-  }
-  calculateDiminutionSpercent(id: number) {
-    let data = this.listOfData.find((item) => item.id == id);
-    if (data) {
+      data.diminutionSmm =
+        Math.round((data.originalThickness - data.gaugedS) * 10) / 10;
       data.diminutionSpercent =
-        (data.diminutionSmm / data.originalThickness) * 100;
+        Math.floor((data.diminutionSmm / data.originalThickness) * 100 * 10) /
+        10;
+      if (data.diminutionSpercent > 0.5) {
+        data.isStandardS = false;
+      } else {
+        data.isStandardS = true;
+      }
     }
-  }
-  calculateStandard(id: number) {
-    // let data = this.listOfData.find((item) => item.id == id);
-    // if (data) {
-    //   if (data.diminutionPpercent > 0.5) {
-    //     data.isStandardP = 'S';
-    //   }
-    // }
-  }
-
-  startEdit(id: string): void {
-    this.editId = id;
-  }
-
-  stopEdit(): void {
-    this.editId = null;
   }
 
   addRow(): void {
@@ -133,16 +118,23 @@ export class Tm5Component implements OnInit {
         diminutionPpercent: 0,
         diminutionSmm: 0,
         diminutionSpercent: 0,
-        isStandardP: '',
-        isStandardS: '',
+        isStandardP: true,
+        isStandardS: true,
       });
     }
     this.lineAdd = 0;
     this.listOfData = [...this.listOfData];
     this.i++;
   }
-  deleteRow(id: number): void {
-    this.listOfData = this.listOfData.filter((d) => d.id !== id);
+
+  visible: boolean = false;
+
+  clickMe(): void {
+    this.visible = false;
+  }
+
+  change(value: boolean): void {
+    console.log(value);
   }
   ngOnInit(): void {
     this.addRow();
