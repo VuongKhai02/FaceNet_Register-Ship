@@ -3,15 +3,22 @@
   <nz-collapse style="margin-top: 10px; width: 100%">
     <nz-collapse-panel
       style="width: 100%"
-      *ngFor="let panel of panels"
+      *ngFor="let panel of panels; let i = index"
       [nzHeader]="panel.name"
       [nzActive]="panel.active"
       [nzDisabled]="panel.disabled"
     >
       <div class="collapseBox">
         <div class="addNewBox">
-          <input placeholder="Enter the new item" nz-input id="" />
-          <button nz-button nzType="primary">Add new</button>
+          <input
+            [(ngModel)]="panel.newItem"
+            placeholder="Enter the new item"
+            nz-input
+            id=""
+          />
+          <button (click)="addItem(i)" nz-button nzType="primary">
+            Add new
+          </button>
         </div>
         <nz-table nzTemplateMode="true" #borderedTable nzBordered>
           <thead class="titleTable">
@@ -21,14 +28,26 @@
               <th class="titleTable" nzWidth="150px">Action</th>
             </tr>
           </thead>
-          <tbody *ngFor="let item of panel.items; let i = index">
+          <tbody *ngFor="let item of panel.items; let j = index">
             <tr>
               <td>{{ i + 1 }}</td>
               <td>{{ item }}</td>
               <td>
-                <a nz-popconfirm> Edit</a>
+                <a
+                  (nzOnConfirm)="editItem(i, j)"
+                  (nzOnCancel)="cancel()"
+                  nz-popconfirm
+                >
+                  Edit</a
+                >
                 <nz-divider nzType="vertical"></nz-divider>
-                <a nz-popconfirm nzPopconfirmTitle="Sure to delete?">Delete</a>
+                <a
+                  (nzOnConfirm)="deleteItem(i, j)"
+                  (nzOnCancel)="cancel()"
+                  nz-popconfirm
+                  nzPopconfirmTitle="Sure to delete?"
+                  >Delete</a
+                >
               </td>
             </tr>
           </tbody>
