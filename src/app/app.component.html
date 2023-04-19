@@ -13,8 +13,9 @@
       [nzTrigger]="null"
     >
       <div class="sidebar-logo">
-        <a href="https://ng.ant.design/" target="_blank">
-          <img src="https://ng.ant.design/assets/img/logo.svg" alt="logo" />
+        <a routerLink="generalParticulars">
+          <img src="vinisco.jpg" alt="logo" />
+          <!-- <div class="imgLogo"></div> -->
           <h1>Register Shipping</h1>
         </a>
       </div>
@@ -29,38 +30,12 @@
           <span>General Particulars</span>
           <a routerLink="generalParticulars"></a>
         </li>
-        <!-- <li nz-submenu nzOpen nzTitle="Biểu mẫu" nzIcon="dashboard">
-          <ul>
-            <li nz-menu-item nzMatchRouter>
-              <a routerLink="generalParticulars">General Particulars</a>
-            </li>
-          </ul>
-        </li> -->
-        <!-- <li nz-submenu nzOpen nzTitle="Mục lục" nzIcon="form">
-          <ul>
-            <li nz-menu-item nzMatchRouter>
-              <a routerLink="tm1">TM1</a>
-            </li>                   
-            <li nz-menu-item nzMatchRouter>
-              <a routerLink="tm2">TM2</a>
-            </li>
-            <li nz-menu-item nzMatchRouter>
-              <a routerLink="tm3">TM3</a>
-            </li>
-            <li nz-menu-item nzMatchRouter>
-              <a routerLink="tm4">TM4</a>
-            </li>
-            <li nz-menu-item nzMatchRouter>
-              <a routerLink="tm5">TM5</a>
-            </li>
-            <li nz-menu-item nzMatchRouter>
-              <a routerLink="tm6">TM6</a>
-            </li>
-            <li nz-menu-item nzMatchRouter>
-              <a routerLink="tm7">TM7</a>
-            </li>
-          </ul>
-        </li> -->
+        <li nz-menu-item nzMatchRouter>
+          <a routerLink="index"
+            ><span nz-icon nzType="unordered-list" nzTheme="outline"></span>
+            <span>Index</span></a
+          >
+        </li>
         <li
           *ngFor="let part of parts; let i = index"
           nz-submenu
@@ -162,12 +137,7 @@
             <span>Add new part</span></a
           >
         </li>
-        <li nz-menu-item nzMatchRouter>
-          <a routerLink="index"
-            ><span nz-icon nzType="unordered-list" nzTheme="outline"></span>
-            <span>Index</span></a
-          >
-        </li>
+
         <li nz-menu-item nzMatchRouter>
           <a routerLink="review"
             ><span nz-icon nzType="folder-view" nzTheme="outline"></span

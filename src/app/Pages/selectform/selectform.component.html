@@ -42,7 +42,13 @@
   <a routerLink="/{{ selectForm.value.formSelect[0] }}">
     <div class="btnBox">
       <button (click)="submit()" nz-button nzType="primary">
-        Save and create
+        <span
+          style="color: white"
+          nz-icon
+          nzType="save"
+          nzTheme="outline"
+        ></span>
+        <span style="color: white">Save and create</span>
       </button>
     </div>
   </a>

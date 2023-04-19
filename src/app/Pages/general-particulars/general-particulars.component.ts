@@ -17,6 +17,17 @@ export class GeneralParticularsComponent {
   listOfItem: string[] = [];
   index: number = 0;
   isVisible = false;
+  shipname: any = null;
+  IMONum: any = null;
+  ABSNum: any = null;
+  ngShipName: any = null;
+  ngIMO: any = null;
+  ngABS: any = null;
+  ngPortOf: any = null;
+  ngGrossTon: any = null;
+  ngDeadWeith: any = null;
+  ngDateBuild: any = null;
+  ngClassi: any = null;
 
   constructor(
     private shipSevice: ShipService,
@@ -26,11 +37,34 @@ export class GeneralParticularsComponent {
 
   showModal(): void {
     this.isVisible = true;
+    this.shipSevice.getShipsFromAPI().subscribe((data) => {
+      this.ships = data;
+    });
+    this.shipname = this.generalParticularsForm.value.shipName;
+    this.IMONum = this.generalParticularsForm.value.imoNumber;
+    this.ABSNum = this.generalParticularsForm.value.absIdentificationNumber;
   }
+
+  addShip(i: number) {
+    let shipToAdd: ship[] = this.ships.filter((x) => {
+      x.imoNumber === i;
+    });
+    this.ngShipName = shipToAdd[0].name;
+    this.ngIMO = shipToAdd[0].imoNumber;
+    this.ngABS = shipToAdd[0].absIdentification;
+    this.ngPortOf = shipToAdd[0].postOfRegistry;
+    this.ngGrossTon = shipToAdd[0].grossTons;
+    this.ngDeadWeith = shipToAdd[0].deadweight;
+    this.ngDateBuild = shipToAdd[0].dateOfBuild;
+    this.ngClassi = shipToAdd[0].classificationSociety;
+    console.log(shipToAdd);
+    console.log('ok');
+  }
+
+  cancel() {}
 
   handleOk(): void {
     this.searchShip();
-    this.generalParticularsForm.value.shipName = 'ok';
     this.isVisible = false;
   }
 
@@ -43,6 +77,15 @@ export class GeneralParticularsComponent {
     this.getDataService.getGeneralParticularsFromAPI().subscribe(
       (data) => {
         this.generalParticulars = data;
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+
+    this.shipSevice.getShipsFromAPI().subscribe(
+      (data) => {
+        this.ships = data;
       },
       (err) => {
         console.log(err);
@@ -159,23 +202,14 @@ export class GeneralParticularsComponent {
             console.log(data);
           },
           (err) => {
-            alert(err);
+            console.log(err);
           }
         );
       this.message.create('success', 'Save success');
     }
   }
 
-  searchShip() {
-    this.shipSevice.getShipsFromAPI().subscribe(
-      (data) => {
-        console.log(data);
-      },
-      (err) => {
-        alert(err);
-      }
-    );
-  }
+  searchShip() {}
 
   update(): void {}
 }

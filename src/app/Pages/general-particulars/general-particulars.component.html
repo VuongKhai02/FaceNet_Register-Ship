@@ -11,7 +11,12 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <input formControlName="shipName" nz-input id="" />
+          <input
+            [(ngModel)]="ngShipName"
+            formControlName="shipName"
+            nz-input
+            id=""
+          />
         </nz-form-control>
         <button
           style="color: white; margin-left: 10px"
@@ -28,13 +33,61 @@
           <span style="color: white">Search</span>
         </button>
         <nz-modal
+          nzWidth="70%"
           [(nzVisible)]="isVisible"
           nzTitle="Result"
           (nzOnCancel)="handleCancel()"
           (nzOnOk)="handleOk()"
+          nzOkDisabled="true"
+          nzOkDisabled="true"
+          nzFooter=" "
         >
           <ng-container *nzModalContent>
-            <p>No result</p>
+            <div
+              *ngIf="
+                shipname === null && IMONum === null && ABSNum === null;
+                else tableBox
+              "
+            >
+              <h1>No result</h1>
+            </div>
+            <ng-template #tableBox>
+              <nz-table nzTemplateMode="true" #borderedTable nzBordered>
+                <thead class="titleTable">
+                  <tr class="titleTable">
+                    <th class="titleTable" nzWidth="60px">No.</th>
+                    <th class="titleTable">Ship's name</th>
+                    <th class="titleTable" nzWidth="200px">IMO number</th>
+                    <th class="titleTable" nzWidth="200px">
+                      ABS identification number
+                    </th>
+                    <th class="titleTable" nzWidth="80px">Action</th>
+                  </tr>
+                </thead>
+                <tbody
+                  *ngFor="
+                    let ship of ships | shipFilter : shipname : IMONum : ABSNum;
+                    let i = index
+                  "
+                >
+                  <tr>
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ ship.name }}</td>
+                    <td>{{ ship.imoNumber }}</td>
+                    <td>{{ ship.absIdentification }}</td>
+                    <td>
+                      <a
+                        (nzOnConfirm)="addShip(ship.imoNumber)"
+                        (nzOnCancel)="cancel()"
+                        nz-popconfirm
+                        nzPopconfirmTitle="Sure to add?"
+                        >Add</a
+                      >
+                    </td>
+                  </tr>
+                </tbody>
+              </nz-table>
+            </ng-template>
           </ng-container>
         </nz-modal>
       </nz-form-item>
@@ -48,7 +101,12 @@
           nzErrorTip="Please input website!"
         >
           <nz-input-group nzSearch>
-            <input formControlName="imoNumber" type="text" nz-input />
+            <input
+              [(ngModel)]="ngIMO"
+              formControlName="imoNumber"
+              type="text"
+              nz-input
+            />
           </nz-input-group>
         </nz-form-control>
       </nz-form-item>
@@ -61,7 +119,12 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <input formControlName="absIdentificationNumber" nz-input id="" />
+          <input
+            [(ngModel)]="ngABS"
+            formControlName="absIdentificationNumber"
+            nz-input
+            id=""
+          />
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
@@ -73,7 +136,12 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <input formControlName="portOfRegistry" nz-input id="" />
+          <input
+            [(ngModel)]="ngPortOf"
+            formControlName="portOfRegistry"
+            nz-input
+            id=""
+          />
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
@@ -85,7 +153,12 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <input formControlName="grossTons" nz-input id="" />
+          <input
+            [(ngModel)]="ngGrossTon"
+            formControlName="grossTons"
+            nz-input
+            id=""
+          />
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
@@ -97,7 +170,12 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <input formControlName="deadweight" nz-input id="" />
+          <input
+            [(ngModel)]="ngDeadWeith"
+            formControlName="deadweight"
+            nz-input
+            id=""
+          />
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
@@ -110,6 +188,7 @@
           nzErrorTip="Please input website!"
         >
           <nz-date-picker
+            [(ngModel)]="ngDateBuild"
             style="width: 100%"
             formControlName="dateOfBuild"
           ></nz-date-picker>
@@ -124,7 +203,12 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <input formControlName="classificationSociety" nz-input id="" />
+          <input
+            [(ngModel)]="ngClassi"
+            formControlName="classificationSociety"
+            nz-input
+            id=""
+          />
         </nz-form-control>
       </nz-form-item>
 
@@ -264,14 +348,17 @@
           nzErrorTip="Please input website!"
         >
           <nz-select
-            nzShowSearch
-            nzAllowClear
-            [nzDropdownRender]="renderTemplate"
+            nzMode="tags"
+            [nzTokenSeparators]="[',']"
+            nzPlaceHolder="Select"
           >
             <nz-option
-              *ngFor="let item of listOfItem"
-              [nzLabel]="item"
-              [nzValue]="item"
+              nzLabel="T-GAGE V (Serri 05058879)"
+              nzValue="T-GAGE V (Serri 05058879)"
+            ></nz-option>
+            <nz-option
+              nzLabel="	OLYMPUS 27MG (Serri 150239211)"
+              nzValue="	OLYMPUS 27MG (Serri 150239211)"
             ></nz-option>
           </nz-select>
           <ng-template #renderTemplate>
@@ -404,7 +491,8 @@
   <div *ngIf="generalParticulars.length === 0; else updateBox"></div>
   <a routerLink="/selectForm">
     <button (click)="subMit()" nz-button nzType="primary">
-      Save and continue
+      <span style="color: white" nz-icon nzType="save" nzTheme="outline"></span>
+      <span style="color: white">Save and continue</span>
     </button></a
   >
   <ng-template #updateBox>

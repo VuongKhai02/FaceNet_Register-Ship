@@ -13,6 +13,14 @@
   background-size: cover;
 }
 
+.imgLogo {
+  height: 30px;
+  width: 30px;
+  background-image: url("./share/img/vinisco.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
 .app-layout {
   height: 100vh;
 }

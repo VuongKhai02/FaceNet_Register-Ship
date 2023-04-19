@@ -42,6 +42,7 @@ import { NzAffixModule } from 'ng-zorro-antd/affix';
 import { NzCollapseModule } from 'ng-zorro-antd/collapse';
 import { environment } from 'src/environments/env';
 import { NzModalModule } from 'ng-zorro-antd/modal';
+import { ShipFilterPipe } from './share/pipes/ship-filter.pipe';
 import { TableOfContentsComponent } from './Pages/table-of-contents/table-of-contents.component';
 import { ManagingDefaultValuesComponent } from './Pages/managing-default-values/managing-default-values.component';
 
@@ -58,6 +59,7 @@ registerLocaleData(en);
     Tm6Component,
     Tm7Component,
     ReviewComponent,
+    ShipFilterPipe,
     AccountManagementComponent,
     GeneralParticularsComponent,
     LoginComponent,
