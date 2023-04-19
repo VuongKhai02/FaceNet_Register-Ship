@@ -132,7 +132,8 @@ export class Tm4Component implements OnInit {
   visible: boolean = false;
 
   clickMe(): void {
-    this.visible = false;
+    this.visible = !this.visible;
+    alert(this.visible);
   }
 
   change(value: boolean): void {

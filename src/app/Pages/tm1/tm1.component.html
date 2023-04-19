@@ -10,29 +10,91 @@
       <p>Report No.<span>VMC.UTM.22.046/5255939</span></p>
     </div>
   </div>
-  <div class="addPage">
-    <input nz-input type="number" [(ngModel)]="addRowValue" />
-    <button (click)="addRow()">
-      <span nz-icon nzType="file-add" nzTheme="outline"></span>Add
+
+  <!-- Start tool bar -->
+  <div class="toolBar">
+    <div>
+      <button
+        nz-button
+        nzType="primary"
+        nz-popover
+        [(nzPopoverVisible)]="visible"
+        (nzPopoverVisibleChange)="onChangePopoverPercent($event)"
+        nzPopoverTrigger="click"
+        [nzPopoverContent]="contentTemplate"
+        nzPopoverPlacement="bottom"
+      >
+        <span>Code</span
+        ><span nz-icon nzType="caret-down" nzTheme="outline"></span>
+      </button>
+      <ng-template class="table-code" #contentTemplate>
+        <div *ngFor="let row of listPercentName">
+          <nz-input-group nzAddOnBefore=" 1 " nzAddOnAfter="%">
+            <nz-select style="width: 100%" nzPlaceHolder="Select">
+              <nz-option nzLabel="20%" nzValue="20%"></nz-option>
+
+              <nz-option nzLabel="25%" nzValue="25%"></nz-option>
+
+              <nz-option nzLabel="30%" nzValue="30%"></nz-option>
+            </nz-select>
+          </nz-input-group>
+        </div>
+        <div
+          style="
+            display: flex;
+            width: 100%;
+            justify-content: space-around;
+            margin-top: 0.3rem;
+          "
+        >
+          <button (click)="closePopoverPercent()" nz-button nzType="default">
+            Close
+          </button>
+
+          <button (click)="savePopoverPercent()" nz-button nzType="primary">
+            Save
+          </button>
+        </div>
+      </ng-template>
+    </div>
+    <input
+      class="input-row-value"
+      nz-input
+      type="number"
+      [(ngModel)]="addRowValue"
+    />
+    <button class="btn-add-row" (click)="addRow()">
+      <span nz-icon nzType="file-add" nzTheme="outline"></span> Add
       {{ addRowValue }} rows
     </button>
+    <div class="btn-save">
+      <button nz-button nzType="primary">
+        <span nz-icon nzType="save" nzTheme="outline"></span>Save
+      </button>
+    </div>
   </div>
+  <!-- End tool bar -->
+
+  <!-- Start table -->
   <nz-table
-    [nzScroll]="{ y: '240px' }"
+    [nzScroll]="{ x: '1900px', y: '470px' }"
     [nzPageSize]="5"
     nzBordered
     class="table"
     nzTemplateMode=""
     nzSize="small"
   >
+    <!-- Start table header -->
     <thead>
       <tr class="th">
         <th colspan="2">STRAKE POSITION :</th>
-        <th colspan="17"><input nz-input type="text" /></th>
+        <th colspan="17">
+          <input nz-input type="text" [(ngModel)]="formTM1.strakePosition" />
+        </th>
       </tr>
       <tr class="th">
-        <th rowSpan="3">No.</th>
-        <th rowspan="3" nzWidth="10%">PLATE POSITION</th>
+        <th rowSpan="3" nzLeft>No.</th>
+        <th rowspan="3" style="min-width: 200px">PLATE POSITION</th>
         <th rowspan="3">No. or Letter</th>
         <th rowspan="3">Original Thickness (mm)</th>
         <th colspan="6">Forward Reading</th>
@@ -66,28 +128,222 @@
         <th>mm</th>
       </tr>
     </thead>
+    <!-- End table header -->
+
+    <!-- Start table body -->
     <tbody>
-      <tr *ngFor="let i of rowValue; index as index" class="tb">
-        <td>{{ index + 1 }}</td>
-        <td><input nz-input type="text" /></td>
-        <td><input nz-input type="text" /></td>
-        <td><input nz-input type="text" /></td>
-        <td><input nz-input type="text" /></td>
-        <td><input nz-input type="text" /></td>
+      <tr *ngFor="let row of listRow; index as index" class="tb">
+        <td nzLeft>{{ index + 1 }}</td>
+        <td><input nz-input type="text" (ngModel)="(row.platePosition)" /></td>
+        <td><input nz-input type="text" (ngModel)="(row.noOrLetter)" /></td>
+        <td>
+          <input
+            nz-input
+            type="number"
+            [(ngModel)]="row.forwardReadingMeasurementDetail.originalThickness"
+            [(ngModel)]="row.afterReadingMeasurementDetail.originalThickness"
+          />
+        </td>
+        <!-- Start calculator for Forward Reading -->
+        <td>
+          <input
+            nz-input
+            type="number"
+            [(ngModel)]="row.forwardReadingMeasurementDetail.gaugedP"
+          />
+        </td>
+        <td>
+          <input
+            nz-input
+            type="number"
+            [(ngModel)]="row.forwardReadingMeasurementDetail.gaugedS"
+          />
+        </td>
+        <td>
+          {{
+            row.forwardReadingMeasurementDetail.originalThickness !== "" &&
+            row.forwardReadingMeasurementDetail.gaugedP !== "" &&
+            convertToNumber(
+              row.forwardReadingMeasurementDetail.originalThickness
+            ) >= convertToNumber(row.forwardReadingMeasurementDetail.gaugedP)
+              ? (
+                  convertToNumber(
+                    row.forwardReadingMeasurementDetail.originalThickness
+                  ) -
+                  convertToNumber(row.forwardReadingMeasurementDetail.gaugedP)
+                ).toFixed(1)
+              : ""
+          }}
+        </td>
+        <td>
+          {{
+            row.forwardReadingMeasurementDetail.originalThickness !== "" &&
+            row.forwardReadingMeasurementDetail.gaugedP !== "" &&
+            convertToNumber(
+              row.forwardReadingMeasurementDetail.originalThickness
+            ) >= convertToNumber(row.forwardReadingMeasurementDetail.gaugedP)
+              ? parseFloat(
+                  parseInt(
+                    ((convertToNumber(
+                      row.forwardReadingMeasurementDetail.originalThickness
+                    ) -
+                      convertToNumber(
+                        row.forwardReadingMeasurementDetail.gaugedP
+                      )) *
+                      1000) /
+                      convertToNumber(
+                        row.forwardReadingMeasurementDetail.originalThickness
+                      )
+                  ) / 10
+                ).toFixed(1)
+              : ""
+          }}
+        </td>
+        <td>
+          {{
+            row.forwardReadingMeasurementDetail.originalThickness !== "" &&
+            row.forwardReadingMeasurementDetail.gaugedS !== "" &&
+            convertToNumber(
+              row.forwardReadingMeasurementDetail.originalThickness
+            ) >= convertToNumber(row.forwardReadingMeasurementDetail.gaugedS)
+              ? (
+                  convertToNumber(
+                    row.forwardReadingMeasurementDetail.originalThickness
+                  ) -
+                  convertToNumber(row.forwardReadingMeasurementDetail.gaugedS)
+                ).toFixed(1)
+              : ""
+          }}
+        </td>
+        <td>
+          {{
+            row.forwardReadingMeasurementDetail.originalThickness !== "" &&
+            row.forwardReadingMeasurementDetail.gaugedS !== "" &&
+            convertToNumber(
+              row.forwardReadingMeasurementDetail.originalThickness
+            ) >= convertToNumber(row.forwardReadingMeasurementDetail.gaugedS)
+              ? parseFloat(
+                  parseInt(
+                    ((convertToNumber(
+                      row.forwardReadingMeasurementDetail.originalThickness
+                    ) -
+                      convertToNumber(
+                        row.forwardReadingMeasurementDetail.gaugedS
+                      )) *
+                      1000) /
+                      convertToNumber(
+                        row.forwardReadingMeasurementDetail.originalThickness
+                      )
+                  ) / 10
+                ).toFixed(1)
+              : ""
+          }}
+        </td>
+        <!-- End calculator for Forward Reading -->
+
+        <!-- Start calculator for After Reading -->
+        <td>
+          <input
+            nz-input
+            type="number"
+            [(ngModel)]="row.afterReadingMeasurementDetail.gaugedP"
+          />
+        </td>
+        <td>
+          <input
+            nz-input
+            type="number"
+            [(ngModel)]="row.afterReadingMeasurementDetail.gaugedS"
+          />
+        </td>
+        <td>
+          {{
+            row.afterReadingMeasurementDetail.originalThickness !== "" &&
+            row.afterReadingMeasurementDetail.gaugedP !== "" &&
+            convertToNumber(
+              row.afterReadingMeasurementDetail.originalThickness
+            ) >= convertToNumber(row.afterReadingMeasurementDetail.gaugedP)
+              ? (
+                  convertToNumber(
+                    row.afterReadingMeasurementDetail.originalThickness
+                  ) - convertToNumber(row.afterReadingMeasurementDetail.gaugedP)
+                ).toFixed(1)
+              : ""
+          }}
+        </td>
+        <td>
+          {{
+            row.afterReadingMeasurementDetail.originalThickness !== "" &&
+            row.afterReadingMeasurementDetail.gaugedP !== "" &&
+            convertToNumber(
+              row.afterReadingMeasurementDetail.originalThickness
+            ) >= convertToNumber(row.afterReadingMeasurementDetail.gaugedP)
+              ? parseFloat(
+                  parseInt(
+                    ((convertToNumber(
+                      row.afterReadingMeasurementDetail.originalThickness
+                    ) -
+                      convertToNumber(
+                        row.afterReadingMeasurementDetail.gaugedP
+                      )) *
+                      1000) /
+                      convertToNumber(
+                        row.forwardReadingMeasurementDetail.originalThickness
+                      )
+                  ) / 10
+                ).toFixed(1)
+              : ""
+          }}
+        </td>
+        <td>
+          {{
+            row.afterReadingMeasurementDetail.originalThickness !== "" &&
+            row.afterReadingMeasurementDetail.gaugedS !== "" &&
+            convertToNumber(
+              row.afterReadingMeasurementDetail.originalThickness
+            ) >= convertToNumber(row.afterReadingMeasurementDetail.gaugedS)
+              ? (
+                  convertToNumber(
+                    row.afterReadingMeasurementDetail.originalThickness
+                  ) - convertToNumber(row.afterReadingMeasurementDetail.gaugedS)
+                ).toFixed(1)
+              : ""
+          }}
+        </td>
+        <td>
+          {{
+            row.afterReadingMeasurementDetail.originalThickness !== "" &&
+            row.afterReadingMeasurementDetail.gaugedS !== "" &&
+            convertToNumber(
+              row.afterReadingMeasurementDetail.originalThickness
+            ) >= convertToNumber(row.afterReadingMeasurementDetail.gaugedS)
+              ? parseFloat(
+                  parseInt(
+                    ((convertToNumber(
+                      row.afterReadingMeasurementDetail.originalThickness
+                    ) -
+                      convertToNumber(
+                        row.afterReadingMeasurementDetail.gaugedS
+                      )) *
+                      1000) /
+                      convertToNumber(
+                        row.forwardReadingMeasurementDetail.originalThickness
+                      )
+                  ) / 10
+                ).toFixed(1)
+              : ""
+          }}
+        </td>
+        <!-- End calculator for After Reading -->
+
+        <!-- Start calculator for Mean Diminution -->
         <td>0</td>
         <td>0</td>
         <td>0</td>
-        <td>0</td>
-        <td><input nz-input type="text" /></td>
-        <td><input nz-input type="text" /></td>
-        <td>0</td>
-        <td>0</td>
-        <td>0</td>
-        <td>0</td>
-        <td><input nz-input type="text" /></td>
-        <td><input nz-input type="text" /></td>
-        <td>0</td>
+        <!-- End calculator for Mean Diminution -->
       </tr>
     </tbody>
+    <!-- End table body -->
   </nz-table>
+  <!-- End table -->
 </section>

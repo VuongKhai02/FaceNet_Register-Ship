@@ -10,6 +10,7 @@
       <p>Report No.<span>VMC.UTM.22.046/5255939</span></p>
     </div>
   </div>
+  <!-- Start tool bar -->
   <div class="addPage">
     <input nz-input type="number" [(ngModel)]="addRowValue" />
     <button (click)="addRow()">
@@ -17,6 +18,9 @@
       {{ addRowValue }} rows
     </button>
   </div>
+  <!-- End tool bar -->
+
+  <!-- Start table -->
   <nz-table
     [nzScroll]="{ x: '2000px', y: '400px' }"
     [nzPageSize]="5"
@@ -25,6 +29,7 @@
     nzTemplateMode=""
     nzSize="small"
   >
+    <!-- Start table header -->
     <thead>
       <tr class="th">
         <th colspan="29">STRENGTH DECK AND SHEER STRAKE PLATING</th>
@@ -79,6 +84,9 @@
         <th>%</th>
       </tr>
     </thead>
+    <!-- End table header -->
+
+    <!-- Start table body -->
     <tbody>
       <tr *ngFor="let i of rowValue; index as index" class="tb">
         <td>{{ index + 1 }}</td>
@@ -112,5 +120,7 @@
         <td>0</td>
       </tr>
     </tbody>
+    <!-- End table body -->
   </nz-table>
+  <!-- End table -->
 </section>
