@@ -30,12 +30,13 @@
           <span>General Particulars</span>
           <a routerLink="generalParticulars"></a>
         </li>
-        <li nz-menu-item nzMatchRouter>
+        <li nz-menu-item nzMatchRouter *ngIf="parts.length > 0">
           <a routerLink="index"
             ><span nz-icon nzType="unordered-list" nzTheme="outline"></span>
             <span>Index</span></a
           >
         </li>
+        <ng-template #indexBox> </ng-template>
         <li
           *ngFor="let part of parts; let i = index"
           nz-submenu

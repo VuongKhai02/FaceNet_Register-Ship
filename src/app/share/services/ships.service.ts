@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ship } from '../models/ship.model';
+import { API_END_POINT } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ShipService {
   constructor(private http: HttpClient) {}
-  API_URL: string = 'http://222.252.25.37:9080/api/v1/ships';
+  API_URL: string = `${API_END_POINT}/ships`;
 
   ships: ship[] = [];
 
@@ -30,7 +31,7 @@ export class ShipService {
   }
 
   /**
-   * Hàm dùng để xóa sách trong mảng dữ liệu
+   * Hàm dùng để xóa ship trong mảng dữ liệu
    * @param id : Id của ship cần xóa
    * @returns
    */
@@ -39,9 +40,9 @@ export class ShipService {
   }
 
   /**
-   * Hàm dùng để sửa thông tin sách trong mảng dữ liệu
-   * @param id : Id của sách cần sửa
-   * @param data : Thông tin của sách cần sửa
+   * Hàm dùng để sửa thông tin ship trong mảng dữ liệu
+   * @param id : Id của ship cần sửa
+   * @param data : Thông tin của ship cần sửa
    * @returns
    */
   updateShipsToAPI(id: string, data: ship): Observable<any> {

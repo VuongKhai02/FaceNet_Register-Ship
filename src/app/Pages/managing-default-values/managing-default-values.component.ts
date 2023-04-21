@@ -1,13 +1,32 @@
-import { Component } from '@angular/core';
+import { certificate } from './../../share/models/certificate.model';
+import { Component, OnInit } from '@angular/core';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { CertificateService } from 'src/app/share/services/certificate.service';
 
 @Component({
   selector: 'app-managing-default-values',
   templateUrl: './managing-default-values.component.html',
   styleUrls: ['./managing-default-values.component.css'],
 })
-export class ManagingDefaultValuesComponent {
-  constructor(private message: NzMessageService) {}
+export class ManagingDefaultValuesComponent implements OnInit {
+  certificates: certificate[] = [];
+
+  constructor(
+    private message: NzMessageService,
+    private certificateService: CertificateService
+  ) {}
+
+  ngOnInit(): void {
+    this.certificateService.getCertificateFromAPI().subscribe(
+      (data) => {
+        this.certificates = data;
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+  }
+
   panels = [
     {
       active: false,

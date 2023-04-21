@@ -1,38 +1,35 @@
+import { GeneralParticular } from './../../share/models/generalParticulars.model';
+import { ship } from 'src/app/share/models/ship.model';
 import { Component, OnInit } from '@angular/core';
-import {
-  UntypedFormBuilder,
-  UntypedFormControl,
-  UntypedFormGroup,
-} from '@angular/forms';
+import { GetDataService } from 'src/app/share/services/get-data.service';
 
 @Component({
   selector: 'app-history',
   templateUrl: './history.component.html',
   styleUrls: ['./history.component.css'],
 })
-export class HistoryComponent {
-  validateForm!: UntypedFormGroup;
-  controlArray: Array<{ index: number; show: boolean }> = [];
-  isCollapse = true;
+export class HistoryComponent implements OnInit {
+  generalParticulars: GeneralParticular[] = [];
+  inShipName: string = '';
+  inIMONumber: number | string = '';
+  inDateOfBuild: Date | string = '';
+  inReportNumber: string = '';
 
-  toggleCollapse(): void {
-    this.isCollapse = !this.isCollapse;
-    this.controlArray.forEach((c, index) => {
-      c.show = this.isCollapse ? index < 6 : true;
-    });
-  }
+  toggleCollapse(): void {}
 
-  resetForm(): void {
-    this.validateForm.reset();
-  }
+  resetForm(): void {}
 
-  constructor(private fb: UntypedFormBuilder) {}
+  constructor(private getdataService: GetDataService) {}
 
   ngOnInit(): void {
-    this.validateForm = this.fb.group({});
-    for (let i = 0; i < 10; i++) {
-      this.controlArray.push({ index: i, show: i < 6 });
-      this.validateForm.addControl(`field${i}`, new UntypedFormControl());
-    }
+    this.getdataService.getGeneralParticularsFromAPI().subscribe(
+      (data) => {
+        this.generalParticulars = data;
+        console.log(this.generalParticulars);
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
   }
 }

@@ -40,9 +40,9 @@ import { ReviewComponent } from './Pages/review/review.component';
 import { NzMessageModule } from 'ng-zorro-antd/message';
 import { NzAffixModule } from 'ng-zorro-antd/affix';
 import { NzCollapseModule } from 'ng-zorro-antd/collapse';
-import { environment } from 'src/environments/env';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { ShipFilterPipe } from './share/pipes/ship-filter.pipe';
+import { LocalService } from './share/services/local.service';
 import { TableOfContentsComponent } from './Pages/table-of-contents/table-of-contents.component';
 import { ManagingDefaultValuesComponent } from './Pages/managing-default-values/managing-default-values.component';
 
@@ -96,7 +96,7 @@ registerLocaleData(en);
     NzCollapseModule,
     NzModalModule,
   ],
-  providers: [{ provide: NZ_I18N, useValue: en_US }],
+  providers: [{ provide: NZ_I18N, useValue: en_US }, LocalService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

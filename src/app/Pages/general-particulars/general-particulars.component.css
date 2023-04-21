@@ -8,11 +8,11 @@ section {
   margin-top: 20px;
   width: 100%;
 }
-input {
-  color: blue;
+/* input {
   width: auto;
   width: 100%;
-}
+  font-weight: bold;
+} */
 hr {
   width: 100%;
 }
@@ -24,3 +24,23 @@ span {
 .titleTable {
   background-color: var(--titleTablebackGround);
 }
+/* 
+::ng-deep nz-date-picker .ng-valid {
+  font-weight: bold;
+}
+
+::ng-deep nz-range-picker .ng-valid {
+  font-weight: bold;
+}
+
+::ng-deep nz-select-item .ng-star-inserted {
+  font-weight: bold;
+}
+
+::ng-deep nz-select {
+  font-weight: bold;
+}
+
+::ng-deep nz-select .ng-star-inserted {
+  font-weight: bold;
+} */

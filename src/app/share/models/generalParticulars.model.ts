@@ -1,7 +1,8 @@
 import { ship } from './ship.model';
+import { certificate } from './certificate.model';
 
 export interface GeneralParticular {
-  ship: ship;
+  shipInfo: ship;
   // shipName: string;
   // imoNumber: number;
   // absIdentification: number;
@@ -12,12 +13,11 @@ export interface GeneralParticular {
   // classificationSociety: string;
   // nameOfCompanyPerformingThicknessMeasurement: string;
   // thicknessMeasurementCompanCertifiedBy: string;
-  certificateNo: string;
+  certificateDTO: certificate;
   // certificateValidFrom: Date;
   placeOfMeasurement: string;
   firstDateOfMeasurement: Date;
   lastDateOfMeasurement: Date;
-  specialSurvey: string;
   measurementEquipmentInfo: string;
   // qualificationOfoperator: string;
   reportNo: string;
