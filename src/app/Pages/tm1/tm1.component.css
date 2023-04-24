@@ -75,5 +75,5 @@ input::-webkit-inner-spin-button {
 }
 
 .btn-add-row {
-  min-width: 200px;
+  white-space: nowrap;
 }

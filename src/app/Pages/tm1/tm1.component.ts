@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { formTM1 } from 'src/app/share/models/formTM1.model';
 import { measurementTM1 } from 'src/app/share/models/measurementTM1.model';
+import { FormService } from 'src/app/share/services/form/form.service';
 
 @Component({
   selector: 'app-tm1',
@@ -8,27 +9,22 @@ import { measurementTM1 } from 'src/app/share/models/measurementTM1.model';
   styleUrls: ['./tm1.component.css'],
 })
 export class Tm1Component implements OnInit {
+  constructor(public formService: FormService) {}
+
   addRowValue: number = 1;
   listRow: measurementTM1[] = [];
   formTM1: formTM1 = {
     strakePosition: '',
     measurementTM1List: this.listRow,
   };
-  measurementTM1: measurementTM1 = {
-    platePosition: '',
-    noOrLetter: '',
-    forwardReadingMeasurementDetail: {
-      originalThickness: '',
-      gaugedP: '',
-      gaugedS: '',
-    },
-    afterReadingMeasurementDetail: {
-      originalThickness: '',
-      gaugedP: '',
-      gaugedS: '',
-    },
-  };
-  listPercentName: string[] = ['a', 'b', 'c'];
+  listPercentOption = [
+    { label: '20%', value: 1 },
+    { label: '20% + 1', value: 2 },
+    { label: '25%', value: 3 },
+    { label: '30%', value: 4 },
+  ];
+
+  percentSelected: number = 0;
 
   visible: boolean = false;
 
@@ -68,7 +64,7 @@ export class Tm1Component implements OnInit {
       });
   }
 
-  convertToNumber(str: string) {
+  convertToNumber(str: string): number {
     return Number(str);
   }
 
@@ -79,12 +75,6 @@ export class Tm1Component implements OnInit {
   parseFloat(str: number) {
     return Number.parseFloat(String(str));
   }
-
-  closePopoverPercent(): void {
-    this.visible = false;
-  }
-
-  savePopoverPercent(): void {}
 
   onChangePopoverPercent(value: boolean): void {}
 }

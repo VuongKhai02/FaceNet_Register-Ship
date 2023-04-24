@@ -37,31 +37,49 @@ input {
 .tb td {
   text-align: center;
 }
-/* ::ng-deep .ant-table-body::-webkit-scrollbar {
-  width: 0px !important;
-  background-color: transparent;
-  } */
-.addPage {
-  margin: 5px 0;
+
+.toolBar {
+  margin: 5px 25px 0;
   float: right;
   border-radius: 4px;
   display: flex;
-  overflow: hidden;
-  margin-right: 18px;
-  width: 25%;
   justify-content: space-between;
+  width: fit-content;
 }
-.addPage button {
+
+.toolBar button {
   background-color: rgb(20, 139, 250);
   border: 0;
   cursor: pointer;
   color: white;
-  width: 90%;
-  margin-left: 10px;
+  width: 100%;
   border-radius: 5px;
+  margin-left: 10px;
 }
 
-.addPage button:hover {
+.toolBar button:hover {
   transition: 0.5s;
   background-color: rgb(53, 158, 255);
+}
+
+.input-row-value {
+  max-width: 50px;
+  text-align: center;
+  margin-left: 20px;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.btn-add-row {
+  white-space: nowrap;
+}
+
+.input-frame-no {
+  width: 50px !important;
+  text-align: center;
+  padding: 2px 8px !important;
 }
