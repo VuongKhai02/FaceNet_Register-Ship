@@ -1,11 +1,16 @@
 import { Injectable } from '@angular/core';
 import { BaseServiceService } from '../base-service.service';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FormService {
-  constructor(private baseService: BaseServiceService) {}
+  constructor(
+    private baseService: BaseServiceService,
+    private httpClient: HttpClient
+  ) {}
 
   // Check arguments are qualified for calculation
   // Condition:
@@ -71,5 +76,9 @@ export class FormService {
     return (Number(MaxAlwbDim) * 0.75).toString();
   }
 
-  addFormToAPI(): void {}
+  addFormToAPI() {}
+
+  // addFormToAPI(API_URL: string, data: any): Observable<any> {
+  //   return this.httpClient.post(API_URL, data);
+  // }
 }

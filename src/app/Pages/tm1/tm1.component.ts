@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { formTM1 } from 'src/app/share/models/formTM1.model';
-import { measurementTM1 } from 'src/app/share/models/measurementTM1.model';
+import { formTM1 } from 'src/app/share/models/form/formTM1.model';
+import { measurementTM1 } from 'src/app/share/models/form/measurementTM1.model';
 import { FormService } from 'src/app/share/services/form/form.service';
 
 @Component({
