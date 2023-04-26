@@ -41,5 +41,11 @@ export class SelectformComponent implements OnInit {
       this.selectForm.value.formSelect = ['selectForm'];
       this.message.create('error', 'Enter missing information');
     }
+    // if (
+    //   this.selectForm.value.formName !== '' &&
+    //   this.selectForm.value.formSelect.length > 0
+    // ) {
+    //   this.partsService.addPartsToAPI({})
+    // }
   }
 }

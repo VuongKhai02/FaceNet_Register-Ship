@@ -8,6 +8,7 @@ import { ShipService } from 'src/app/share/services/ships.service';
 import { certificate } from 'src/app/share/models/certificate.model';
 import { CertificateService } from 'src/app/share/services/certificate.service';
 import { LocalService } from 'src/app/share/services/local.service';
+import { main } from 'src/app/share/models/local.model';
 
 @Component({
   selector: 'app-general-particulars',
@@ -15,10 +16,12 @@ import { LocalService } from 'src/app/share/services/local.service';
   styleUrls: ['./general-particulars.component.css'],
 })
 export class GeneralParticularsComponent implements OnInit {
-  editMode: boolean = false;
-  reportNumber: string = '';
-  mainId: number = 0;
-  entering: number = 0;
+  mainData!: main;
+  link: string = '/generalParticulars';
+  // editMode: boolean = false;
+  // reportNumber: string = '';
+  // mainId: number = 0;
+  // entering: number = 0;
   generalParticulars: GeneralParticular[] = [];
   ships: ship[] = [];
   certificates: certificate[] = [];
@@ -28,18 +31,26 @@ export class GeneralParticularsComponent implements OnInit {
   shipname: any = null;
   IMONum: any = null;
   ABSNum: any = null;
-  ngShipName: any = null;
-  ngIMO: any = null;
-  ngABS: any = null;
-  ngPortOf: any = null;
-  ngGrossTon: any = null;
-  ngDeadWeith: any = null;
-  ngDateBuild: any = null;
-  ngClassi: any = null;
-  ngCertificateName: any = null;
-  ngCertificateDate: any = null;
-  ngCertificateNo: any = null;
-  ngPlaceOf: any = null;
+  inShipName: string = '';
+  inIMO: string = '';
+  inABS: string = '';
+  inPortOf: string = '';
+  inGrossTon: number | string = '';
+  inDeadWeith: number | string = '';
+  inDateBuild: Date | string = '';
+  inClassi: string = '';
+  inCertificateName: string = '';
+  inCertificateDate: Date[] | string = '';
+  inCertificateNo: string = '';
+  inPlaceOf: string = '';
+  inFirstDate: Date | string = '';
+  inLastDate: Date | string = '';
+  inSpecial: string = '';
+  inDetailOf: string = '';
+  inQualification: string = '';
+  inReport: string = '';
+  inOperatorName: string = '';
+  inSuveyor: string = '';
 
   constructor(
     private shipSevice: ShipService,
@@ -49,27 +60,22 @@ export class GeneralParticularsComponent implements OnInit {
     private localService: LocalService
   ) {}
 
-  test() {}
+  test() {
+    console.log(
+      this.generalParticularsForm.value.detailsOfMeasurementEquipment.join(';')
+    );
+  }
 
   seclectChange() {
     let nowCertificate = this.certificates.filter(
-      (x) => x.certificateOrganization === this.ngCertificateName
-      // .toLowerCase()
-      // .normalize('NFD')
-      // .replace(/[\u0300-\u036f]/g, '')
-      // .includes(
-      //   this.ngCertificateName
-      //     .toLowerCase()
-      //     .normalize('NFD')
-      //     .replace(/[\u0300-\u036f]/g, '')
+      (x) => x.certificateOrganization === this.inCertificateName
     );
-    // this.ngCertificateName = nowCertificate[0].certificateOrganization;
 
-    this.ngCertificateDate = [
-      `${nowCertificate[0].validStartDate}`,
-      `${nowCertificate[0].validEndDate}`,
+    this.inCertificateDate = [
+      nowCertificate[0].validStartDate,
+      nowCertificate[0].validEndDate,
     ];
-    this.ngCertificateNo = nowCertificate[0].certificateNo;
+    this.inCertificateNo = nowCertificate[0].certificateNo;
   }
 
   showModal(): void {
@@ -83,14 +89,14 @@ export class GeneralParticularsComponent implements OnInit {
   }
 
   addShip(i: ship) {
-    this.ngShipName = i.name;
-    this.ngIMO = i.imoNumber;
-    this.ngABS = i.absIdentification;
-    this.ngPortOf = i.postOfRegistry;
-    this.ngGrossTon = i.grossTons;
-    this.ngDeadWeith = i.deadweight;
-    this.ngDateBuild = i.dateOfBuild;
-    this.ngClassi = i.classificationSociety;
+    this.inShipName = i.name;
+    this.inIMO = i.imoNumber;
+    this.inABS = i.absIdentification;
+    this.inPortOf = i.postOfRegistry;
+    this.inGrossTon = i.grossTons;
+    this.inDeadWeith = i.deadweight;
+    this.inDateBuild = i.dateOfBuild;
+    this.inClassi = i.classificationSociety;
     this.isVisible = false;
   }
 
@@ -105,16 +111,15 @@ export class GeneralParticularsComponent implements OnInit {
     this.isVisible = false;
   }
 
-  ngOnInit() {
-    // this.generalParticulars = this.getDataService.getGeneralParticulars();
-    this.getDataService.getGeneralParticularsFromAPI().subscribe(
-      (data) => {
-        this.generalParticulars = data;
-      },
-      (err) => {
-        console.log(err);
-      }
-    );
+  ngOnInit(): void {
+    // this.getDataService.getGeneralParticularsFromAPI().subscribe(
+    //   (data) => {
+    //     this.generalParticulars = data;
+    //   },
+    //   (err) => {
+    //     console.log(err);
+    //   }
+    // );
 
     this.shipSevice.getShipsFromAPI().subscribe(
       (data) => {
@@ -131,9 +136,26 @@ export class GeneralParticularsComponent implements OnInit {
       },
       (err) => {}
     );
-    this.editMode = this.localService.getStatus();
-    this.reportNumber = this.localService.report();
-    this.mainId = this.localService.getId();
+    this.mainData = this.localService.getMainData();
+    if (this.mainData.editMode === true) {
+      this.getDataService.getGeneralParticularsFromAPI().subscribe(
+        (data) => {
+          this.generalParticulars = data.find(
+            (x: { reportNo: string }) =>
+              x.reportNo === this.mainData.reportNumber
+          );
+        },
+        (err) => {
+          console.log(err);
+        }
+      );
+    }
+    console.log(this.mainData);
+    console.log(this.generalParticulars);
+
+    // this.editMode = this.localService.getStatus();
+    // this.reportNumber = this.localService.report();
+    // this.mainId = this.localService.getId();
   }
   addItem(input: HTMLInputElement) {
     const value = input.value;
@@ -170,20 +192,31 @@ export class GeneralParticularsComponent implements OnInit {
     reportNumber: new FormControl(),
     nameOfOperator: new FormControl(),
     nameOfSurveyor: new FormControl(),
-    signatureOfOperator: new FormControl(),
-    signatureOfSurveyor: new FormControl(),
-    companyOfficialStamp: new FormControl(),
-    classificationSocietyOfficialStamp: new FormControl(),
   });
 
   subMit(): void {
-    this.editMode = true;
-    console.log(this.localService.getStatus());
-
-    console.log(this.editMode);
-    console.log(this.localService.getStatus());
-
-    if (this.generalParticulars.length === 0) {
+    if (
+      this.inShipName !== '' &&
+      this.inIMO !== '' &&
+      this.inABS !== '' &&
+      this.inPortOf !== '' &&
+      this.inGrossTon !== '' &&
+      this.inDeadWeith !== '' &&
+      this.inDateBuild !== '' &&
+      this.inClassi !== '' &&
+      this.inCertificateName !== '' &&
+      this.inCertificateDate !== '' &&
+      this.inCertificateNo !== '' &&
+      this.inPlaceOf !== '' &&
+      this.inFirstDate !== '' &&
+      this.inLastDate !== '' &&
+      this.inSpecial !== '' &&
+      this.inDetailOf !== '' &&
+      this.inQualification !== '' &&
+      this.inReport !== '' &&
+      this.inOperatorName !== '' &&
+      this.inSuveyor !== ''
+    ) {
       let newShip: ship = {
         name: this.generalParticularsForm.value.shipName,
         imoNumber: this.generalParticularsForm.value.imoNumber,
@@ -209,24 +242,6 @@ export class GeneralParticularsComponent implements OnInit {
 
       let newGeneralParticulars: GeneralParticular = {
         shipInfo: newShip,
-        // shipName: this.generalParticularsForm.value.shipName,
-        // imoNumber: this.generalParticularsForm.value.imoNumber,
-        // absIdentification:
-        //   this.generalParticularsForm.value.absIdentificationNumber,
-        // portOfRegistry: this.generalParticularsForm.value.portOfRegistry,
-        // grossTons: this.generalParticularsForm.value.grossTons,
-        // deadweight: this.generalParticularsForm.value.deadweight,
-        // dateOfBuild: this.generalParticularsForm.value.dateOfBuild,
-        // classificationSociety:
-        //   this.generalParticularsForm.value.classificationSociety,
-        // nameOfCompanyPerformingThicknessMeasurement:
-        // this.NameOfCompanyPerformingThicknessMeasurement,
-        // thicknessMeasurementCompanCertifiedBy:
-        //   this.generalParticularsForm.value
-        //     .thicknessMeasurementCompanCertifiedBy,
-        // certificateNo: this.generalParticularsForm.value.certificateNo,
-        // certificateValidFrom:
-        //   this.generalParticularsForm.value.certificateValidFrom,
         certificateDTO: newCertificate,
         placeOfMeasurement:
           this.generalParticularsForm.value.placeOfMeasurement,
@@ -234,27 +249,15 @@ export class GeneralParticularsComponent implements OnInit {
           this.generalParticularsForm.value.firstDateOfMeasurement,
         lastDateOfMeasurement:
           this.generalParticularsForm.value.lastDateOfMeasurement,
-        // specialSurvey: this.generalParticularsForm.value.specialSurvey,
         measurementEquipmentInfo:
-          this.generalParticularsForm.value.detailsOfMeasurementEquipment,
-        // qualificationOfoperator: this.qualificationOfoperator,
+          this.generalParticularsForm.value.detailsOfMeasurementEquipment.join(
+            ';'
+          ),
         reportNo: this.generalParticularsForm.value.reportNumber,
         numberOfSheets: this.numberOfSheets,
         nameOfOperator: this.generalParticularsForm.value.nameOfOperator,
         nameOfSurveyor: this.generalParticularsForm.value.nameOfSurveyor,
-        // signatureOfOperator:
-        //   this.generalParticularsForm.value.signatureOfOperator,
-        // signatureOfSurveyor:
-        //   this.generalParticularsForm.value.signatureOfSurveyor,
-        // companyOfficialStamp:
-        //   this.generalParticularsForm.value.companyOfficialStamp,
-        // classificationSocietyOfficialStamp:
-        //   this.generalParticularsForm.value.classificationSocietyOfficialStamp,
       };
-      // this.generalParticulars.push(newGeneralParticulars);
-      // this.getDataService
-      //   .addGeneralParticularsToAPI(newGeneralParticulars)
-      //   .subscribe();
 
       this.getDataService
         .addGeneralParticularsToAPI(newGeneralParticulars)
@@ -264,7 +267,11 @@ export class GeneralParticularsComponent implements OnInit {
             console.log(err);
           }
         );
+      this.localService.changeStatus();
+      this.link = '/selectForm';
       this.message.create('success', 'Save success');
+    } else {
+      this.message.create('error', 'Enter missing information');
     }
   }
 

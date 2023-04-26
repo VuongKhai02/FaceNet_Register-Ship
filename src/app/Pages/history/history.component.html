@@ -1,29 +1,37 @@
 <section>
   <h1>History</h1>
-  <form class="ant-advanced-search-form">
+  <form [formGroup]="formSearch" class="ant-advanced-search-form">
     <div class="controlBox">
       <nz-form-item>
         <nz-form-label [nzSm]="9" [nzXs]="24">Ship's name</nz-form-label>
         <nz-form-control [nzSm]="15" [nzXs]="24" [nzSm]="15" [nzXs]="24">
-          <input nz-input />
+          <input formControlName="name" [(ngModel)]="inShipName" nz-input />
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
         <nz-form-label [nzSm]="9" [nzXs]="24">IMO number </nz-form-label>
         <nz-form-control [nzSm]="15" [nzXs]="24">
-          <input nz-input />
+          <input formControlName="imo" [(ngModel)]="inIMONumber" nz-input />
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
         <nz-form-label [nzSm]="9" [nzXs]="24">Date of build</nz-form-label>
         <nz-form-control [nzSm]="15" [nzXs]="24">
-          <nz-date-picker style="width: 100%"></nz-date-picker>
+          <nz-date-picker
+            [(ngModel)]="inDateOfBuild"
+            formControlName="dateOfBuild"
+            style="width: 100%"
+          ></nz-date-picker>
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
         <nz-form-label [nzSm]="9" [nzXs]="24">Report Number</nz-form-label>
         <nz-form-control [nzSm]="15" [nzXs]="24">
-          <input nz-input />
+          <input
+            formControlName="report"
+            [(ngModel)]="inReportNumber"
+            nz-input
+          />
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
@@ -31,7 +39,11 @@
           >First date of measurement</nz-form-label
         >
         <nz-form-control [nzSm]="15" [nzXs]="24">
-          <nz-date-picker style="width: 100%"></nz-date-picker>
+          <nz-date-picker
+            [(ngModel)]="inFirstDate"
+            formControlName="firstDate"
+            style="width: 100%"
+          ></nz-date-picker>
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
@@ -39,13 +51,17 @@
           >Last date of measurement</nz-form-label
         >
         <nz-form-control [nzSm]="15" [nzXs]="24">
-          <nz-date-picker style="width: 100%"></nz-date-picker>
+          <nz-date-picker
+            [(ngModel)]="inEndDate"
+            formControlName="endDate"
+            style="width: 100%"
+          ></nz-date-picker>
         </nz-form-control>
       </nz-form-item>
     </div>
     <div nz-row style="margin-right: 24px; margin-bottom: 24px">
       <div nz-col [nzSpan]="24" class="search-area">
-        <button nz-button [nzType]="'primary'">
+        <button (click)="search()" nz-button [nzType]="'primary'">
           <span nz-icon nzType="file-search" nzTheme="outline"></span>Search
         </button>
         <button nz-button (click)="resetForm()">Clear</button>
@@ -66,7 +82,6 @@
           <th class="titleTable" nzWidth="115px">IMO number</th>
           <th class="titleTable" nzWidth="120px">Date of build</th>
           <th class="titleTable" nzWidth="200px">Report Number</th>
-          <!-- <th class="titleTable">Classification society</th> -->
           <th class="titleTable" nzWidth="120px">First date of measurement</th>
           <th class="titleTable" nzWidth="120px">Last date of measurement</th>
           <th class="titleTable" nzWidth="120px">Action</th>
@@ -89,14 +104,24 @@
           <td>
             {{ generalParticular.lastDateOfMeasurement }}
           </td>
-          <!-- <td></td> -->
-          <!-- <td></td> -->
-          <!-- <td></td> -->
-          <!-- <td></td> -->
           <td>
-            <a nz-popconfirm> Edit</a>
+            <a
+              routerLink="{{ link }}"
+              (nzOnConfirm)="editItem(i, generalParticular.reportNo)"
+              (nzOnCancel)="cancel()"
+              nz-popconfirm
+              nzPopconfirmTitle="Sure to edit?"
+            >
+              Edit</a
+            >
             <nz-divider nzType="vertical"></nz-divider>
-            <a nz-popconfirm nzPopconfirmTitle="Sure to delete?">Delete</a>
+            <a
+              (nzOnConfirm)="deleteItem()"
+              (nzOnCancel)="cancel()"
+              nz-popconfirm
+              nzPopconfirmTitle="Sure to delete?"
+              >Delete</a
+            >
           </td>
         </tr>
       </tbody>

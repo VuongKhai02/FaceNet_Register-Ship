@@ -12,7 +12,7 @@
           nzErrorTip="Please input website!"
         >
           <input
-            [(ngModel)]="ngShipName"
+            [(ngModel)]="inShipName"
             formControlName="shipName"
             nz-input
             id=""
@@ -107,7 +107,7 @@
         >
           <nz-input-group nzSearch>
             <input
-              [(ngModel)]="ngIMO"
+              [(ngModel)]="inIMO"
               formControlName="imoNumber"
               type="text"
               nz-input
@@ -125,7 +125,7 @@
           nzErrorTip="Please input website!"
         >
           <input
-            [(ngModel)]="ngABS"
+            [(ngModel)]="inABS"
             formControlName="absIdentificationNumber"
             nz-input
             id=""
@@ -142,7 +142,7 @@
           nzErrorTip="Please input website!"
         >
           <input
-            [(ngModel)]="ngPortOf"
+            [(ngModel)]="inPortOf"
             formControlName="portOfRegistry"
             nz-input
             id=""
@@ -159,7 +159,7 @@
           nzErrorTip="Please input website!"
         >
           <input
-            [(ngModel)]="ngGrossTon"
+            [(ngModel)]="inGrossTon"
             formControlName="grossTons"
             nz-input
             id=""
@@ -176,7 +176,7 @@
           nzErrorTip="Please input website!"
         >
           <input
-            [(ngModel)]="ngDeadWeith"
+            [(ngModel)]="inDeadWeith"
             formControlName="deadweight"
             nz-input
             id=""
@@ -193,7 +193,7 @@
           nzErrorTip="Please input website!"
         >
           <nz-date-picker
-            [(ngModel)]="ngDateBuild"
+            [(ngModel)]="inDateBuild"
             style="width: 100%; font-weight: bold"
             formControlName="dateOfBuild"
           ></nz-date-picker>
@@ -209,7 +209,7 @@
           nzErrorTip="Please input website!"
         >
           <input
-            [(ngModel)]="ngClassi"
+            [(ngModel)]="inClassi"
             formControlName="classificationSociety"
             nz-input
             id=""
@@ -247,7 +247,7 @@
             id=""
           /> -->
           <nz-select
-            [(ngModel)]="ngCertificateName"
+            [(ngModel)]="inCertificateName"
             (ngModelChange)="seclectChange()"
             formControlName="thicknessMeasurementCompanCertifiedBy"
             style="width: 100%"
@@ -282,7 +282,7 @@
           nzErrorTip="Please input website!"
         >
           <input
-            [(ngModel)]="ngCertificateNo"
+            [(ngModel)]="inCertificateNo"
             formControlName="certificateNo"
             nz-input
             id=""
@@ -299,7 +299,7 @@
           nzErrorTip="Please input website!"
         >
           <nz-range-picker
-            [(ngModel)]="ngCertificateDate"
+            [(ngModel)]="inCertificateDate"
             style="width: 100%"
             formControlName="certificateValidFrom"
           ></nz-range-picker>
@@ -315,7 +315,7 @@
           nzErrorTip="Please input website!"
         >
           <input
-            [(ngModel)]="ngPlaceOf"
+            [(ngModel)]="inPlaceOf"
             formControlName="placeOfMeasurement"
             nz-input
             id=""
@@ -390,6 +390,7 @@
           nzErrorTip="Please input website!"
         >
           <nz-select
+            formControlName="detailsOfMeasurementEquipment"
             nzMode="tags"
             [nzTokenSeparators]="[',']"
             nzPlaceHolder="Select"
@@ -454,7 +455,7 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <span style="color: black">Sheets</span>
+          <span>Sheets</span>
         </nz-form-control>
       </nz-form-item>
       <hr />
@@ -550,14 +551,28 @@
       </nz-form-item> -->
     </form>
   </div>
-  <div *ngIf="editMode === false; else updateBox"></div>
-  <a routerLink="/selectForm">
-    <button (click)="subMit()" nz-button nzType="primary">
-      <span style="color: white" nz-icon nzType="save" nzTheme="outline"></span>
-      <span style="color: white">Save and continue</span>
-    </button></a
-  >
+  <div *ngIf="mainData.editMode === false; else updateBox">
+    <a routerLink="{{ link }}">
+      <button (click)="subMit()" nz-button nzType="primary">
+        <span
+          style="color: white"
+          nz-icon
+          nzType="save"
+          nzTheme="outline"
+        ></span>
+        <span style="color: white">Save and continue</span>
+      </button></a
+    >
+  </div>
   <ng-template #updateBox>
-    <button (click)="update()" nz-button nzType="primary">Update</button>
+    <button (click)="update()" nz-button nzType="primary">
+      <span
+        style="color: white"
+        nz-icon
+        nzType="delivered-procedure"
+        nzTheme="outline"
+      ></span>
+      <span style="color: white">Update</span>
+    </button>
   </ng-template>
 </section>

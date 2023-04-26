@@ -10,22 +10,38 @@ import { CertificateService } from 'src/app/share/services/certificate.service';
 })
 export class ManagingDefaultValuesComponent implements OnInit {
   certificates: certificate[] = [];
+  newCertificateName: string = '';
+  newCertificateNo: string = '';
+  newCertificateStartDate: Date = new Date();
+  newCertificateEndtDate: Date = new Date();
 
   constructor(
     private message: NzMessageService,
     private certificateService: CertificateService
   ) {}
-
-  ngOnInit(): void {
+  getCertificates() {
     this.certificateService.getCertificateFromAPI().subscribe(
       (data) => {
         this.certificates = data;
       },
       (err) => {
         console.log(err);
+        alert('Failure to load data from server');
       }
     );
   }
+
+  ngOnInit(): void {
+    this.getCertificates();
+  }
+
+  certificatePanel = {
+    active: false,
+    name: 'Certificates',
+    disabled: false,
+    adding: false,
+    newItem: '',
+  };
 
   panels = [
     {
@@ -102,17 +118,65 @@ export class ManagingDefaultValuesComponent implements OnInit {
     },
   ];
 
-  addItem(i: number) {
-    this.panels[i].items.push(this.panels[i].newItem);
-    this.panels[i].newItem = '';
-    this.message.create('success', 'Add new success');
+  addNewCertificate() {
+    if (
+      this.newCertificateName !== '' &&
+      this.newCertificateNo !== '' &&
+      this.newCertificateStartDate !== new Date() &&
+      this.newCertificateEndtDate !== new Date()
+    ) {
+      this.certificateService
+        .addCertificateToAPI({
+          certificateOrganization: this.newCertificateName,
+          certificateNo: this.newCertificateNo,
+          validStartDate: this.newCertificateStartDate,
+          validEndDate: this.newCertificateEndtDate,
+        })
+        .subscribe(
+          (data) => {
+            this.certificates.push({
+              certificateOrganization: this.newCertificateName,
+              certificateNo: this.newCertificateNo,
+              validStartDate: this.newCertificateStartDate,
+              validEndDate: this.newCertificateEndtDate,
+            });
+          },
+          (err) => {
+            console.log(err);
+            alert('failure');
+          }
+        );
+      this.getCertificates();
+      this.message.create('success', 'Add new success');
+    } else {
+      this.message.create('error', 'Enter missing informations');
+    }
+  }
+
+  deleteCerficate(i: number) {
+    let id: any = 0;
+    this.certificateService.getCertificateFromAPI().subscribe((data) => {
+      id = data[i].id;
+    });
+    this.certificateService.deleteCertificateFormAPI(id).subscribe(
+      (data) => {},
+      (err) => {
+        console.log(err);
+      }
+    );
+  }
+
+  addItem() {
+    // this.panels[i].items.push(this.panels[i].newItem);
+    // this.panels[i].newItem = '';
+    // this.message.create('success', 'Add new success');
   }
 
   cancel() {}
 
-  deleteItem(i: number, j: number) {
-    this.panels[i].items.splice(j, 1);
+  deleteItem() {
+    // this.panels[i].items.splice(j, 1);
   }
 
-  editItem(i: number, j: number) {}
+  editItem() {}
 }

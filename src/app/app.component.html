@@ -36,7 +36,6 @@
             <span>Index</span></a
           >
         </li>
-        <ng-template #indexBox> </ng-template>
         <li
           *ngFor="let part of parts; let i = index"
           nz-submenu
@@ -62,7 +61,7 @@
                   border: none;
                 "
                 nz-popconfirm
-                nzPopconfirmTitle="Bạn có chắc muốn xóa?"
+                nzPopconfirmTitle="Sure to delete?"
                 (nzOnConfirm)="deleteTm(i, j)"
                 (nzOnCancel)="cancel()"
                 nzPopconfirmPlacement="top"
@@ -111,9 +110,9 @@
                       <nz-option nzLabel="Tm7" nzValue="Tm7"></nz-option>
                     </nz-select>
                   </div>
-                  <a (click)="addForm(i)" nz-popconfirm> Submit</a>
+                  <a (click)="addForm(i)" nz-popconfirm> Add</a>
                   <nz-divider nzType="vertical"></nz-divider>
-                  <a (click)="clickMe(i)">Đóng</a>
+                  <a (click)="clickMe(i)">Close</a>
                 </div>
               </ng-template>
             </li>
@@ -132,7 +131,7 @@
             </li>
           </ul>
         </li>
-        <li nz-menu-item nzMatchRouter>
+        <li nz-menu-item nzMatchRouter *ngIf="mainData.editMode === true">
           <a routerLink="selectForm"
             ><span nz-icon nzType="folder-add" nzTheme="outline"></span>
             <span>Add new part</span></a

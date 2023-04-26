@@ -17,10 +17,6 @@ hr {
   width: 100%;
 }
 
-span {
-  color: blue;
-}
-
 .titleTable {
   background-color: var(--titleTablebackGround);
 }
