@@ -52,6 +52,8 @@ export class Tm3Component {
       });
   }
 
+  API_URL: string = `http://222.252.25.37:9080/api/v1/report-indexes/1/tm3s`;
+
   addRow() {
     for (let i = 1; i <= this.addRowValue; i++)
       this.listRow.push({

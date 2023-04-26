@@ -17,7 +17,7 @@ export class Tm4Component implements OnInit {
 
   listStructuralMember: structuralMemberTM4[] = [];
 
-  formTM3: formTM4 = {
+  formTM4: formTM4 = {
     tankDescription: '',
     locationOfStructure: '',
     structuralMemberTM4List: this.listStructuralMember,
@@ -42,6 +42,8 @@ export class Tm4Component implements OnInit {
         },
       });
   }
+
+  API_URL: string = `http://222.252.25.37:9080/api/v1/report-indexes/1/tm4s`;
 
   addRow() {
     if (this.structuralMemberSelected >= 0) {

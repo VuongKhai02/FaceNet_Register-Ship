@@ -23,10 +23,10 @@ export class Tm1Component implements OnInit {
     { label: '25%', value: 3 },
     { label: '30%', value: 4 },
   ];
-
   percentSelected: number = 0;
-
   visible: boolean = false;
+
+  API_URL: string = `http://222.252.25.37:9080/api/v1/report-indexes/1/tm1s`;
 
   ngOnInit(): void {
     for (let i = 1; i <= 20; i++)
@@ -74,6 +74,14 @@ export class Tm1Component implements OnInit {
 
   parseFloat(str: number) {
     return Number.parseFloat(String(str));
+  }
+
+  onSaveForm() {
+    this.formService
+      .addFormToAPI(this.API_URL, this.formTM1)
+      .subscribe((data) => {
+        console.log(data);
+      });
   }
 
   onChangePopoverPercent(value: boolean): void {}

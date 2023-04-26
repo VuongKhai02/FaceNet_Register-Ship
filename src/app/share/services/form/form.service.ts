@@ -76,9 +76,7 @@ export class FormService {
     return (Number(MaxAlwbDim) * 0.75).toString();
   }
 
-  addFormToAPI() {}
-
-  // addFormToAPI(API_URL: string, data: any): Observable<any> {
-  //   return this.httpClient.post(API_URL, data);
-  // }
+  addFormToAPI(API_URL: string, data: any): Observable<any> {
+    return this.httpClient.post(API_URL, data);
+  }
 }

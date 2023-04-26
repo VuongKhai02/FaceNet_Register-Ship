@@ -21,6 +21,8 @@ export class Tm2Component {
     measurementTM2List: this.listRow,
   };
 
+  API_URL: string = `http://222.252.25.37:9080/api/v1/report-indexes/1/tm2s`;
+
   ngOnInit(): void {
     for (let i = 1; i <= 20; i++)
       this.listRow.push({

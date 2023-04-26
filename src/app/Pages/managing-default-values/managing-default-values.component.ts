@@ -1,99 +1,133 @@
-import { Component } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Component, OnInit } from '@angular/core';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { paramValue } from 'src/app/share/models/paramValue.model';
+import { ParamValueService } from 'src/app/share/services/param-value.service';
+
+interface newParam {
+  param: string;
+  value: string;
+  type: number;
+}
 
 @Component({
   selector: 'app-managing-default-values',
   templateUrl: './managing-default-values.component.html',
   styleUrls: ['./managing-default-values.component.css'],
 })
-export class ManagingDefaultValuesComponent {
-  constructor(private message: NzMessageService) {}
+export class ManagingDefaultValuesComponent implements OnInit {
+  constructor(
+    private message: NzMessageService,
+    private httpClient: HttpClient,
+    private paramService: ParamValueService
+  ) {}
+
+  listParamValue: paramValue[] = [];
+
+  newParamValue: newParam = {
+    param: '',
+    value: '',
+    type: -1,
+  };
+
   panels = [
+    {
+      active: false,
+      name: 'Company name',
+      disabled: false,
+      adding: false,
+    },
+    {
+      active: false,
+      name: 'Surveyor',
+      disabled: false,
+      adding: false,
+    },
     {
       active: false,
       name: 'Details of measurement equipment',
       disabled: false,
       adding: false,
-      newItem: '',
-      items: ['T-GAGE V (Serri 05058879)', 'OLYMPUS 27MG (Serri 150239211)'],
     },
     {
       active: false,
-      name: 'Structural member of tm4',
+      name: 'Operator',
       disabled: false,
       adding: false,
-      newItem: '',
-      items: [
-        'Web Plating',
-        'Longi Bulkhead',
-        'T.S.T Bottom Longi',
-        'Main Deck Plating',
-        'T.S.T Bottom Plate',
-      ],
+    },
+    {
+      active: false,
+      name: 'Qualification of operator',
+      disabled: false,
+      adding: false,
+    },
+    // {
+    //   active: false,
+    //   disabled: false,
+    //   name: 'Strake position of tm2',
+    //   adding: false,
+    // },
+    {
+      active: false,
+      name: 'Structural member of tm3',
+      disabled: false,
+      adding: false,
+    },
+    {
+      active: false,
+      disabled: false,
+      name: 'Structural member of tm4',
+      adding: false,
+    },
+    {
+      active: false,
+      disabled: false,
+      name: 'Structural component (plating/stiffener) of TM5',
+      adding: false,
     },
     {
       active: false,
       disabled: false,
       name: 'Description of tm6',
       adding: false,
-      newItem: '',
-      items: ['items', 'Deck Beam', 'Deck Girder - Web', 'Deck Girder - Face'],
     },
     {
       active: false,
       disabled: false,
       name: 'Frame number of tm7',
       adding: false,
-      newItem: '',
-      items: ['Web', 'Side Shell', 'Face'],
-    },
-    {
-      active: false,
-      disabled: false,
-      name: 'Strake position of tm2',
-      adding: false,
-      newItem: '',
-      items: ['Web', 'Face', 'Side Shell'],
-    },
-    {
-      active: false,
-      disabled: false,
-      name: 'Structural member of tm3',
-      adding: false,
-      newItem: '',
-      items: [
-        'Hatch Coaming',
-        'Hatch Coaming',
-        'T.S.T Bottom Plate',
-        'Hopper Plate',
-        'Bottom Longi',
-        'Side longi',
-        'T.S.T Bottom Longi',
-        'Side Girder',
-        'Longi BHD',
-      ],
-    },
-    {
-      active: false,
-      disabled: false,
-      name: 'Structural component (plating/stiffener)',
-      adding: false,
-      newItem: '',
-      items: ['Plating'],
     },
   ];
 
+  ngOnInit(): void {}
+
+  showParamValue(isActive: boolean, id: number) {
+    if (isActive === true)
+      this.paramService.getParamValueByType(id).subscribe((data) => {
+        this.listParamValue = data;
+      });
+  }
+
+  addParam(type: number) {
+    this.newParamValue.type = type;
+    if (this.newParamValue.type !== -1) {
+      this.paramService.addParamValue(this.newParamValue).subscribe(() => {
+        this.paramService.getParamValueByType(type).subscribe((data) => {
+          this.listParamValue = data;
+        });
+      });
+
+      this.newParamValue.param = '';
+      this.newParamValue.value = '';
+      this.newParamValue.type = -1;
+    }
+  }
+
   addItem(i: number) {
-    this.panels[i].items.push(this.panels[i].newItem);
-    this.panels[i].newItem = '';
     this.message.create('success', 'Add new success');
   }
 
   cancel() {}
-
-  deleteItem(i: number, j: number) {
-    this.panels[i].items.splice(j, 1);
-  }
 
   editItem(i: number, j: number) {}
 }

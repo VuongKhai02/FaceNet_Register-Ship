@@ -53,7 +53,11 @@
           : ""
       }}
     </button>
-    <button nz-button nzType="primary">
+    <button
+      nz-button
+      nzType="primary"
+      (click)="formService.addFormToAPI(API_URL, formTM4)"
+    >
       <span nz-icon nzType="save" nzTheme="outline"></span>Save
     </button>
   </div>

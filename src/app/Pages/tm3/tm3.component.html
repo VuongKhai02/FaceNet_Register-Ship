@@ -45,7 +45,11 @@
       <span nz-icon nzType="file-add" nzTheme="outline"></span> Add
       {{ addRowValue }} rows
     </button>
-    <button nz-button nzType="primary" (click)="formService.addFormToAPI()">
+    <button
+      nz-button
+      nzType="primary"
+      (click)="formService.addFormToAPI(API_URL, formTM3)"
+    >
       <span nz-icon nzType="save" nzTheme="outline"></span>Save
     </button>
   </div>
