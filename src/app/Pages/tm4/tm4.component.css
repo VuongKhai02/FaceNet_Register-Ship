@@ -1,252 +1,79 @@
-/* 
-
-
-.wrapper{
-    background-color: #e7eded;
-}
-
-
-.header-wrapper{
-    width: 100%;
-}
-
-.header-wrapper .breadcrumb{
-    display: flex;
-    padding: .5rem 1rem;
-    background-color: #ccc;
-}
-.header-wrapper .breadcrumb li{
-    position: relative;
-    padding-right: 1rem;
-    margin-right: 1rem;
-    list-style-type: none;
-}
-.header-wrapper .breadcrumb li::before{
-    border-top: 1px solid #666;
-    border-right: 1px solid #666;
-    content: '';
-    height: 4px;
-    position: absolute;
-    right: 1px;
-    transform: rotate(45deg);
-    top: 9px;
-    width: 4px;
-}
-
-
-.header-wrapper .breadcrumb li:last-child::before{
-    display: none
-}
-.header-wrapper .table-info{
-}
-.header-wrapper .tableInfo{
-    background-color: transparent;
-}
-.tableInfo .ship-info div .title{
-    font-weight: 400;
-}
-
-.tableInfo .ship-info div .value{
-    font-weight: 700;
-    text-decoration: underline;
-    text-decoration-color: #666;
-}
-.header-wrapper .table-info .table-name h4{
-    padding: 0rem 4rem;
-    font-weight: 700;
-}
-.header-wrapper .table-info .ship-info,
-.header-wrapper .table-info .general-info{
-    width: 80%;
-    margin: 1rem auto;
-    
-}
-
-
-.header-wrapper .table-info .general-info{
-    padding: 0 8rem;
-}
-
-.header-wrapper input{
-    border: 1px solid #ccc;
-    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-}
-
-.header-wrapper label{
-    margin-right: 1rem;
-}
-
-
-.editable-cell {
-    position: relative;
-    padding: 5px 12px;
-    cursor: pointer;
-  }
-
-  .editable-row:hover .editable-cell {
-    border: 1px solid #d9d9d9;
-    border-radius: 4px;
-    padding: 4px 11px;
-  }
-
-
-  .section{
-
-  }
-  .section .addPage {
-    height: 3rem;
-    float: right;
-    justify-content: space-around;
-    width: 17%;
-    margin: 0.4rem 1.3rem;
-  }
-  .section .addPage input{
-    height: 100%;
-    border-radius: 6px;
-    padding: 0 .5rem;
-    width:33%;
-  }
-  .section .btn-add i{
-    padding-right: 1.3rem;
-  }
-  .section .btn-add{
-    width: 62%;
-    font-size: 1.2rem;
-    border-radius: 6px;
-    height: 100%;
-    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-  }
-table,th,td{
-    border: 1px solid #ccc;
-}
-#table-tm4 tr th{
-    background-color: var(--titleTablebackGround);
-    text-align: center;
-    text-transform: uppercase;
-    padding: 6px;
-}
-#table-tm4 .thead-tm4-general th {
-    text-align: left;
-}
-
-#table-tm4 .thead-tm4-general th input{
-    border-style: none none none;
-    border-bottom: 1px solid #ccc;
-    opacity: 0.8;
-    margin: 4px 0;
-}
-
-#table-tm4 .thead-tm4-general th input:focus{
-    background-color: #fff;
-}
-#table-tm4 .tbody-tm4 tr td{
-    width: 9%;
-    padding: 6px;
-
-}
-.readonly{
-    width: 2%;
-    text-align: center;
-}
-.structuralMemberCol{
-}
-td div{
-    text-align: center;
-}
-input{
-    width: 100%;
-    padding-left: 6px;
-    border: 1px solid #ccc;
-}
-input:focus {
-    border: 1px solid #ccc;
-    padding-left: 6px;
-
-  }
-
-td .readonlyInput:hover{
-    cursor: no-drop;
-}
-td .readonlyInput{
-    opacity: 0.8;
-} */
-
 .title {
-    text-align: center;
-  }
-  
-  input {
-    border-radius: 4px;
-  }
-  
-  .infor {
-    display: flex;
-    justify-content: space-between;
-  }
-  
-  .infor span {
-    border-bottom: 1px dotted;
-    margin-left: 10px;
-    display: inline-block;
-    width: 200px;
-    text-align: center;
-    font-weight: 700;
-  }
-  
-  .th th {
-    background-color: rgb(129, 194, 255);
-    text-align: center;
-  }
-  
-  .th span {
-    display: block;
-  }
-  .inp {
-    width: 12%;
-  }
-  .tb {
-    height: 20px;
-  }
-  .tb td {
-    text-align: center;
-  }
-  /* ::ng-deep .ant-table-body::-webkit-scrollbar {
-  width: 0px !important;
-  background-color: transparent;
-  } */
-  .addPage {
-    margin: 5px 0;
-    float: right;
-    border-radius: 4px;
-    display: flex;
-    overflow: hidden;
-    margin-right: 18px;
-    /* width: 25%; */
-    justify-content: space-between;
-  }
-  .btn-save{
-    width: auto;
-  }
-  .addPage button {
-    background-color: rgb(20, 139, 250);
-    border: 0;
-    cursor: pointer;
-    color: white;
-    width: 90%;
-    margin-left: 10px;
-    border-radius: 5px;
-  }
-  
-  .addPage button:hover {
-    transition: 0.5s;
-    background-color: rgb(53, 158, 255);
-  }
-  
-  .ant-input-group-wrapper {
-    display: block;
-  }
+  text-align: center;
+}
 
-  .my-select::ng-deep nz-select-top-control nz-select-item[title="TRANSVERSE WEB FR.170"]{
-    font-weight: 700;
-  }
-  
+input {
+  border-radius: 4px;
+}
+
+.infor {
+  display: flex;
+  justify-content: space-between;
+}
+
+.infor span {
+  border-bottom: 1px dotted;
+  margin-left: 10px;
+  display: inline-block;
+  width: 200px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.th th {
+  background-color: rgb(129, 194, 255);
+  text-align: center;
+}
+
+.th span {
+  display: block;
+}
+.inp {
+  width: 12%;
+}
+.tb {
+  height: 20px;
+}
+.tb td {
+  text-align: center;
+}
+
+.toolBar {
+  margin: 5px 25px 6px;
+  float: right;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  width: fit-content;
+}
+
+.toolBar button {
+  background-color: rgb(20, 139, 250);
+  border: 0;
+  cursor: pointer;
+  color: white;
+  width: 100%;
+  border-radius: 5px;
+  margin-left: 10px;
+}
+
+.toolBar button:hover {
+  transition: 0.5s;
+  background-color: rgb(53, 158, 255);
+}
+
+.input-row-value {
+  max-width: 50px;
+  text-align: center;
+  margin-left: 10px;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.btn-add-row {
+  white-space: nowrap;
+}
