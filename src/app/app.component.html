@@ -30,7 +30,8 @@
           <span>General Particulars</span>
           <a routerLink="generalParticulars"></a>
         </li>
-        <li nz-menu-item nzMatchRouter *ngIf="parts.length > 0">
+        <!-- *ngIf="parts.length > 0" -->
+        <li nz-menu-item nzMatchRouter>
           <a routerLink="index"
             ><span nz-icon nzType="unordered-list" nzTheme="outline"></span>
             <span>Index</span></a
@@ -131,7 +132,8 @@
             </li>
           </ul>
         </li>
-        <li nz-menu-item nzMatchRouter *ngIf="mainData.editMode === true">
+        <!-- *ngIf="mainData.editMode === true" -->
+        <li nz-menu-item nzMatchRouter>
           <a routerLink="selectForm"
             ><span nz-icon nzType="folder-add" nzTheme="outline"></span>
             <span>Add new part</span></a
