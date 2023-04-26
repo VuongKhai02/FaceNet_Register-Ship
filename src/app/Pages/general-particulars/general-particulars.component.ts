@@ -140,7 +140,7 @@ export class GeneralParticularsComponent implements OnInit {
     if (this.mainData.editMode === true) {
       this.getDataService.getGeneralParticularsFromAPI().subscribe(
         (data) => {
-          this.generalParticulars = data.find(
+          this.generalParticulars = data.filter(
             (x: { reportNo: string }) =>
               x.reportNo === this.mainData.reportNumber
           );
@@ -195,84 +195,84 @@ export class GeneralParticularsComponent implements OnInit {
   });
 
   subMit(): void {
-    if (
-      this.inShipName !== '' &&
-      this.inIMO !== '' &&
-      this.inABS !== '' &&
-      this.inPortOf !== '' &&
-      this.inGrossTon !== '' &&
-      this.inDeadWeith !== '' &&
-      this.inDateBuild !== '' &&
-      this.inClassi !== '' &&
-      this.inCertificateName !== '' &&
-      this.inCertificateDate !== '' &&
-      this.inCertificateNo !== '' &&
-      this.inPlaceOf !== '' &&
-      this.inFirstDate !== '' &&
-      this.inLastDate !== '' &&
-      this.inSpecial !== '' &&
-      this.inDetailOf !== '' &&
-      this.inQualification !== '' &&
-      this.inReport !== '' &&
-      this.inOperatorName !== '' &&
-      this.inSuveyor !== ''
-    ) {
-      let newShip: ship = {
-        name: this.generalParticularsForm.value.shipName,
-        imoNumber: this.generalParticularsForm.value.imoNumber,
-        absIdentification:
-          this.generalParticularsForm.value.absIdentificationNumber,
-        postOfRegistry: this.generalParticularsForm.value.portOfRegistry,
-        grossTons: this.generalParticularsForm.value.grossTons,
-        deadweight: this.generalParticularsForm.value.deadweight,
-        dateOfBuild: this.generalParticularsForm.value.dateOfBuild,
-        classificationSociety:
-          this.generalParticularsForm.value.classificationSociety,
-      };
+    // if (
+    //   this.inShipName !== '' &&
+    //   this.inIMO !== '' &&
+    //   this.inABS !== '' &&
+    //   this.inPortOf !== '' &&
+    //   this.inGrossTon !== '' &&
+    //   this.inDeadWeith !== '' &&
+    //   this.inDateBuild !== '' &&
+    //   this.inClassi !== '' &&
+    //   this.inCertificateName !== '' &&
+    //   this.inCertificateDate !== '' &&
+    //   this.inCertificateNo !== '' &&
+    //   this.inPlaceOf !== '' &&
+    //   this.inFirstDate !== '' &&
+    //   this.inLastDate !== '' &&
+    //   this.inSpecial !== '' &&
+    //   this.inDetailOf !== '' &&
+    //   this.inQualification !== '' &&
+    //   this.inReport !== '' &&
+    //   this.inOperatorName !== '' &&
+    //   this.inSuveyor !== ''
+    // ) {
+    let newShip: ship = {
+      name: this.generalParticularsForm.value.shipName,
+      imoNumber: this.generalParticularsForm.value.imoNumber,
+      absIdentification:
+        this.generalParticularsForm.value.absIdentificationNumber,
+      postOfRegistry: this.generalParticularsForm.value.portOfRegistry,
+      grossTons: this.generalParticularsForm.value.grossTons,
+      deadweight: this.generalParticularsForm.value.deadweight,
+      dateOfBuild: this.generalParticularsForm.value.dateOfBuild,
+      classificationSociety:
+        this.generalParticularsForm.value.classificationSociety,
+    };
 
-      let newCertificate: certificate = {
-        certificateOrganization:
-          this.generalParticularsForm.value
-            .thicknessMeasurementCompanCertifiedBy,
-        certificateNo: this.generalParticularsForm.value.certificateNo,
-        validStartDate:
-          this.generalParticularsForm.value.certificateValidFrom[0],
-        validEndDate: this.generalParticularsForm.value.certificateValidFrom[1],
-      };
+    let newCertificate: certificate = {
+      certificateOrganization:
+        this.generalParticularsForm.value.thicknessMeasurementCompanCertifiedBy,
+      certificateNo: this.generalParticularsForm.value.certificateNo,
+      validStartDate: this.generalParticularsForm.value.certificateValidFrom[0],
+      validEndDate: this.generalParticularsForm.value.certificateValidFrom[1],
+    };
 
-      let newGeneralParticulars: GeneralParticular = {
-        shipInfo: newShip,
-        certificateDTO: newCertificate,
-        placeOfMeasurement:
-          this.generalParticularsForm.value.placeOfMeasurement,
-        firstDateOfMeasurement:
-          this.generalParticularsForm.value.firstDateOfMeasurement,
-        lastDateOfMeasurement:
-          this.generalParticularsForm.value.lastDateOfMeasurement,
-        measurementEquipmentInfo:
-          this.generalParticularsForm.value.detailsOfMeasurementEquipment.join(
-            ';'
-          ),
-        reportNo: this.generalParticularsForm.value.reportNumber,
-        numberOfSheets: this.numberOfSheets,
-        nameOfOperator: this.generalParticularsForm.value.nameOfOperator,
-        nameOfSurveyor: this.generalParticularsForm.value.nameOfSurveyor,
-      };
+    let newGeneralParticulars: GeneralParticular = {
+      shipInfo: newShip,
+      certificateDTO: newCertificate,
+      placeOfMeasurement: this.generalParticularsForm.value.placeOfMeasurement,
+      firstDateOfMeasurement:
+        this.generalParticularsForm.value.firstDateOfMeasurement,
+      lastDateOfMeasurement:
+        this.generalParticularsForm.value.lastDateOfMeasurement,
+      measurementEquipmentInfo:
+        this.generalParticularsForm.value.detailsOfMeasurementEquipment.join(
+          ';'
+        ),
+      surveyType: this.generalParticularsForm.value.specialSurvey,
+      reportNo: this.generalParticularsForm.value.reportNumber,
+      numberOfSheets: this.numberOfSheets,
+      nameOfOperator: this.generalParticularsForm.value.nameOfOperator,
+      nameOfSurveyor: this.generalParticularsForm.value.nameOfSurveyor,
+    };
 
-      this.getDataService
-        .addGeneralParticularsToAPI(newGeneralParticulars)
-        .subscribe(
-          (data) => {},
-          (err) => {
-            console.log(err);
-          }
-        );
-      this.localService.changeStatus();
-      this.link = '/selectForm';
-      this.message.create('success', 'Save success');
-    } else {
-      this.message.create('error', 'Enter missing information');
-    }
+    this.getDataService
+      .addGeneralParticularsToAPI(newGeneralParticulars)
+      .subscribe(
+        (data) => {
+          console.log(data);
+        },
+        (err) => {
+          console.log(err);
+        }
+      );
+    this.localService.changeStatus();
+    this.link = '/selectForm';
+    this.message.create('success', 'Save success');
+    // } else {
+    //   this.message.create('error', 'Enter missing information');
+    // }
   }
 
   searchShip() {}

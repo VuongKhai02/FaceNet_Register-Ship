@@ -20,6 +20,7 @@ export interface GeneralParticular {
   lastDateOfMeasurement: Date;
   measurementEquipmentInfo: string;
   // qualificationOfoperator: string;
+  surveyType: string;
   reportNo: string;
   numberOfSheets: number;
   nameOfOperator: string;
