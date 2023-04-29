@@ -45,6 +45,7 @@ import { ShipFilterPipe } from './share/pipes/ship-filter.pipe';
 import { LocalService } from './share/services/local.service';
 import { TableOfContentsComponent } from './Pages/table-of-contents/table-of-contents.component';
 import { ManagingDefaultValuesComponent } from './Pages/managing-default-values/managing-default-values.component';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 registerLocaleData(en);
 
@@ -95,6 +96,7 @@ registerLocaleData(en);
     NzAffixModule,
     NzCollapseModule,
     NzModalModule,
+    DragDropModule,
   ],
   providers: [{ provide: NZ_I18N, useValue: en_US }, LocalService],
   bootstrap: [AppComponent],

@@ -26,7 +26,10 @@
       class="input-row-value"
       nz-input
       type="number"
+      min="0"
+      max="100"
       [(ngModel)]="addRowValue"
+      pattern="^(?:[1-9]|[1-9][0-9]|100)$"
     />
     <button class="btn-add-row" nz-button (click)="addRow()">
       <span nz-icon nzType="file-add" nzTheme="outline"></span> Add
@@ -40,6 +43,9 @@
 
   <!-- Start table -->
   <nz-table
+    cdkDropList
+    [cdkDropListData]="listRow"
+    (cdkDropListDropped)="onDrop($event)"
     [nzScroll]="{ x: '1900px', y: '470px' }"
     [nzPageSize]="5"
     nzBordered
@@ -95,10 +101,21 @@
 
     <!-- Start table body -->
     <tbody>
-      <tr *ngFor="let row of listRow; index as index" class="tb">
-        <td nzLeft>{{ index + 1 }}</td>
-        <td><input nz-input type="text" (ngModel)="(row.platePosition)" /></td>
-        <td><input nz-input type="text" (ngModel)="(row.noOrLetter)" /></td>
+      <tr
+        *ngFor="let row of listRow; index as index"
+        class="tb"
+        cdkDragLockAxis="y"
+        cdkDragBoundary="table"
+        (cdkDragEnded)="onDragEnded($event)"
+        (cdkDragMoved)="onItemMoved($event)"
+        cdkDrag
+        (mousedown)="selectRow(index)"
+      >
+        <td nzLeft>
+          {{ index + 1 }}
+        </td>
+        <td><input nz-input type="text" [(ngModel)]="row.platePosition" /></td>
+        <td><input nz-input type="text" [(ngModel)]="row.noOrLetter" /></td>
         <td>
           <input
             nz-input
@@ -398,13 +415,19 @@
           [ngStyle]="{
             color:
               convertToNumber(
-                formService.threePartsFourOfMaxAlwbDim(
-                  formService.calculateForMaxAlwbDim(
-                    row.afterReadingMeasurementDetail.originalThickness,
-                    percentSelected
-                  )
+                formService.calculateForMm(
+                  row.afterReadingMeasurementDetail.originalThickness,
+                  row.afterReadingMeasurementDetail.gaugedP
                 )
-              ) &&
+              ) >=
+                convertToNumber(
+                  formService.threePartsFourOfMaxAlwbDim(
+                    formService.calculateForMaxAlwbDim(
+                      row.afterReadingMeasurementDetail.originalThickness,
+                      percentSelected
+                    )
+                  )
+                ) &&
               convertToNumber(
                 formService.calculateForMm(
                   row.afterReadingMeasurementDetail.originalThickness,
@@ -431,13 +454,19 @@
             row.afterReadingMeasurementDetail.originalThickness !== "" &&
             percentSelected !== 0
               ? convertToNumber(
-                  formService.threePartsFourOfMaxAlwbDim(
-                    formService.calculateForMaxAlwbDim(
-                      row.afterReadingMeasurementDetail.originalThickness,
-                      percentSelected
-                    )
+                  formService.calculateForMm(
+                    row.afterReadingMeasurementDetail.originalThickness,
+                    row.afterReadingMeasurementDetail.gaugedP
                   )
-                ) &&
+                ) >=
+                  convertToNumber(
+                    formService.threePartsFourOfMaxAlwbDim(
+                      formService.calculateForMaxAlwbDim(
+                        row.afterReadingMeasurementDetail.originalThickness,
+                        percentSelected
+                      )
+                    )
+                  ) &&
                 convertToNumber(
                   formService.calculateForMm(
                     row.afterReadingMeasurementDetail.originalThickness,
@@ -498,13 +527,19 @@
           [ngStyle]="{
             color:
               convertToNumber(
-                formService.threePartsFourOfMaxAlwbDim(
-                  formService.calculateForMaxAlwbDim(
-                    row.afterReadingMeasurementDetail.originalThickness,
-                    percentSelected
-                  )
+                formService.calculateForMm(
+                  row.afterReadingMeasurementDetail.originalThickness,
+                  row.afterReadingMeasurementDetail.gaugedS
                 )
-              ) &&
+              ) >=
+                convertToNumber(
+                  formService.threePartsFourOfMaxAlwbDim(
+                    formService.calculateForMaxAlwbDim(
+                      row.afterReadingMeasurementDetail.originalThickness,
+                      percentSelected
+                    )
+                  )
+                ) &&
               convertToNumber(
                 formService.calculateForMm(
                   row.afterReadingMeasurementDetail.originalThickness,
@@ -531,13 +566,19 @@
             row.afterReadingMeasurementDetail.originalThickness !== "" &&
             percentSelected !== 0
               ? convertToNumber(
-                  formService.threePartsFourOfMaxAlwbDim(
-                    formService.calculateForMaxAlwbDim(
-                      row.afterReadingMeasurementDetail.originalThickness,
-                      percentSelected
-                    )
+                  formService.calculateForMm(
+                    row.afterReadingMeasurementDetail.originalThickness,
+                    row.afterReadingMeasurementDetail.gaugedS
                   )
-                ) &&
+                ) >=
+                  convertToNumber(
+                    formService.threePartsFourOfMaxAlwbDim(
+                      formService.calculateForMaxAlwbDim(
+                        row.afterReadingMeasurementDetail.originalThickness,
+                        percentSelected
+                      )
+                    )
+                  ) &&
                 convertToNumber(
                   formService.calculateForMm(
                     row.afterReadingMeasurementDetail.originalThickness,
