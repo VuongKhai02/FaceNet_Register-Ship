@@ -131,6 +131,26 @@ export class ManagingDefaultValuesComponent implements OnInit {
     },
   ];
 
+  checkCertificate() {
+    let newCertificates: certificate[] = [];
+    this.certificateService.getCertificateFromAPI().subscribe(
+      (data) => {
+        newCertificates = data;
+        console.log('Data', data);
+        console.log('New', newCertificates);
+      },
+      (err) => {
+        console.log(err);
+        alert('Failure to load data from server');
+      }
+    );
+    if (this.certificates === newCertificates) {
+      this.checkCertificate;
+    } else {
+      this.certificates = newCertificates;
+    }
+  }
+
   addNewCertificate() {
     if (
       this.newCertificateName !== '' &&
@@ -147,36 +167,78 @@ export class ManagingDefaultValuesComponent implements OnInit {
         })
         .subscribe(
           (data) => {
-            this.certificates.push({
-              certificateOrganization: this.newCertificateName,
-              certificateNo: this.newCertificateNo,
-              validStartDate: this.newCertificateStartDate,
-              validEndDate: this.newCertificateEndtDate,
-            });
+            console.log('adding');
+            this.certificateService.getCertificateFromAPI().subscribe(
+              (data) => {
+                this.certificates = data;
+                console.log(data);
+                console.log(this.certificates);
+              },
+              (err) => {
+                console.log(err);
+                alert('Failure to load data from server');
+              }
+            );
           },
           (err) => {
             console.log(err);
             alert('failure');
           }
         );
-      this.getCertificates();
+      this.newCertificateName = '';
+      this.newCertificateNo = '';
+      this.newCertificateStartDate = new Date();
+      this.newCertificateEndtDate = new Date();
+
       this.message.create('success', 'Add new success');
     } else {
       this.message.create('error', 'Enter missing informations');
     }
   }
-
-  deleteCerficate(i: number) {
-    let id: any = 0;
-    this.certificateService.getCertificateFromAPI().subscribe((data) => {
-      id = data[i].id;
-    });
-    this.certificateService.deleteCertificateFormAPI(id).subscribe(
-      (data) => {},
+  test() {
+    this.certificateService.getCertificateFromAPI().subscribe(
+      (data) => {
+        this.certificates = data;
+        console.log(data);
+        console.log(this.certificates);
+      },
       (err) => {
         console.log(err);
+        alert('Failure to load data from server');
       }
     );
+  }
+
+  deleteCerficate(id: number) {
+    this.certificateService.deleteCertificateFormAPI(id).subscribe(
+      (data) => {
+        this.certificateService.getCertificateFromAPI().subscribe(
+          (data) => {
+            this.certificates = data;
+            console.log(data);
+            console.log(this.certificates);
+          },
+          (err) => {
+            console.log(err);
+            alert('Failure to load data from server');
+          }
+        );
+      },
+      (err) => {
+        console.log('error delete:', err);
+        this.certificateService.getCertificateFromAPI().subscribe(
+          (data) => {
+            this.certificates = data;
+          },
+          (err) => {
+            console.log(err);
+            alert('Failure to load data from server');
+          }
+        );
+      }
+    );
+
+    setTimeout(this.getCertificates, 1000);
   }
 
   showParamValue(isActive: boolean, id: number) {
