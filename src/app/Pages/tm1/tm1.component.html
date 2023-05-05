@@ -10,84 +10,682 @@
       <p>Report No.<span>VMC.UTM.22.046/5255939</span></p>
     </div>
   </div>
-  <div class="addPage">
-    <input nz-input type="number" [(ngModel)]="addRowValue" />
-    <button (click)="addRow()">
-      <span nz-icon nzType="file-add" nzTheme="outline"></span>Add
-      {{ addRowValue }} rows
+
+  <!-- Start tool bar -->
+  <div class="toolBar">
+    <nz-input-group nzAddOnAfter="%">
+      <nz-select
+        nzPlaceHolder="Choose percent"
+        [(ngModel)]="percentSelected"
+        (ngModelChange)="onChangePercent()"
+      >
+        <nz-option
+          *ngFor="let option of listPercentOption"
+          nzLabel="{{ option.label }}"
+          nzValue="{{ option.value }}"
+        ></nz-option>
+      </nz-select>
+    </nz-input-group>
+
+    <button class="btn-add-row" nz-button (click)="showModal()">
+      <span nz-icon nzType="file-add" nzTheme="outline"></span> Add row
+    </button>
+    <nz-modal
+      [nzStyle]="{ top: '20%' }"
+      [(nzVisible)]="isVisible"
+      nzTitle="Enter number of rows"
+      (nzOnCancel)="handleCancel()"
+      (nzOnOk)="handleOk()"
+      nzWidth="300px"
+    >
+      <div *nzModalContent>
+        <input
+          class="input-row-value"
+          nz-input
+          type="number"
+          min="0"
+          max="100"
+          [(ngModel)]="addRowValue"
+          pattern="^(?:[1-9]|[1-9][0-9]|100)$"
+        />
+      </div>
+    </nz-modal>
+
+    <button
+      nz-button
+      nzType="primary"
+      (click)="onSaveForm()"
+      [nzLoading]="isLoadingSaveButton"
+    >
+      <span nz-icon nzType="save" nzTheme="outline"></span>Save
     </button>
   </div>
+  <!-- End tool bar -->
+
+  <!-- Start table -->
   <nz-table
-    [nzScroll]="{ y: '240px' }"
+    cdkDropList
+    [cdkDropListData]="listRow"
+    (cdkDropListDropped)="onDrop($event)"
+    [nzScroll]="{ x: '1900px', y: '470px' }"
     [nzPageSize]="5"
     nzBordered
     class="table"
     nzTemplateMode=""
     nzSize="small"
   >
+    <!-- Start table header -->
     <thead>
       <tr class="th">
-        <th colspan="2">STRAKE POSITION :</th>
-        <th colspan="17"><input nz-input type="text" /></th>
+        <th colspan="3">STRAKE POSITION :</th>
+        <th colspan="21">
+          <input nz-input type="text" [(ngModel)]="formTM1.strakePosition" />
+        </th>
       </tr>
       <tr class="th">
-        <th rowSpan="3">No.</th>
-        <th rowspan="3" nzWidth="10%">PLATE POSITION</th>
+        <th rowSpan="3" nzLeft>No.</th>
+        <th rowspan="3" colspan="2">PLATE POSITION</th>
         <th rowspan="3">No. or Letter</th>
         <th rowspan="3">Original Thickness (mm)</th>
-        <th colspan="6">Forward Reading</th>
-        <th colspan="6">Aft Reading</th>
+        <th colspan="8">Forward Reading</th>
+        <th colspan="8">Aft Reading</th>
         <th rowSpan="2" colspan="2">Mean Diminution (%)</th>
         <th rowSpan="2">Max Alwb Dim</th>
       </tr>
       <tr class="th">
         <th colspan="2">Gauged (mm)</th>
-        <th colspan="2">Diminution P</th>
-        <th colspan="2">Diminution S</th>
+        <th colspan="3">Diminution P</th>
+        <th colspan="3">Diminution S</th>
         <th colspan="2">Gauged (mm)</th>
-        <th colspan="2">Diminution P</th>
-        <th colspan="2">Diminution S</th>
+        <th colspan="3">Diminution P</th>
+        <th colspan="3">Diminution S</th>
       </tr>
       <tr class="th">
         <th>P</th>
         <th>S</th>
         <th>mm</th>
-        <th>%</th>
+        <th colspan="2">%</th>
         <th>mm</th>
-        <th>%</th>
+        <th colspan="2">%</th>
         <th>P</th>
         <th>S</th>
         <th>mm</th>
-        <th>%</th>
+        <th colspan="2">%</th>
         <th>mm</th>
-        <th>%</th>
+        <th colspan="2">%</th>
         <th>P</th>
         <th>S</th>
         <th>mm</th>
       </tr>
     </thead>
+    <!-- End table header -->
+
+    <!-- Start table body -->
     <tbody>
-      <tr *ngFor="let i of rowValue; index as index" class="tb">
-        <td>{{ index + 1 }}</td>
-        <td><input nz-input type="text" /></td>
-        <td><input nz-input type="text" /></td>
-        <td><input nz-input type="text" /></td>
-        <td><input nz-input type="text" /></td>
-        <td><input nz-input type="text" /></td>
-        <td>0</td>
-        <td>0</td>
-        <td>0</td>
-        <td>0</td>
-        <td><input nz-input type="text" /></td>
-        <td><input nz-input type="text" /></td>
-        <td>0</td>
-        <td>0</td>
-        <td>0</td>
-        <td>0</td>
-        <td><input nz-input type="text" /></td>
-        <td><input nz-input type="text" /></td>
-        <td>0</td>
+      <tr
+        *ngFor="let row of listRow; index as index"
+        class="tb"
+        cdkDragLockAxis="y"
+        cdkDragBoundary="table"
+        (cdkDragEnded)="onDragEnded($event)"
+        cdkDrag
+        (mousedown)="selectRow(index)"
+      >
+        <td nzLeft>
+          {{ index + 1 }}
+        </td>
+        <td colspan="2">
+          <input nz-input type="text" [(ngModel)]="row.platePosition" />
+        </td>
+        <td><input nz-input type="text" [(ngModel)]="row.noOrLetter" /></td>
+        <td>
+          <input
+            nz-input
+            type="number"
+            min="0"
+            [(ngModel)]="row.forwardReadingMeasurementDetail.originalThickness"
+            [(ngModel)]="row.afterReadingMeasurementDetail.originalThickness"
+          />
+        </td>
+        <!-- Start calculator for Forward Reading -->
+        <td>
+          <input
+            nz-input
+            type="number"
+            min="0"
+            [(ngModel)]="row.forwardReadingMeasurementDetail.gaugedP"
+          />
+        </td>
+        <td>
+          <input
+            nz-input
+            type="number"
+            min="0"
+            [(ngModel)]="row.forwardReadingMeasurementDetail.gaugedS"
+          />
+        </td>
+        <td>
+          {{
+            formService.checkBeforeCalculate(
+              row.forwardReadingMeasurementDetail.originalThickness,
+              row.forwardReadingMeasurementDetail.gaugedP
+            )
+              ? formService.calculateForMm(
+                  row.forwardReadingMeasurementDetail.originalThickness,
+                  row.forwardReadingMeasurementDetail.gaugedP
+                )
+              : ""
+          }}
+        </td>
+        <td>
+          {{
+            formService.checkBeforeCalculate(
+              row.forwardReadingMeasurementDetail.originalThickness,
+              row.forwardReadingMeasurementDetail.gaugedP
+            )
+              ? formService.calculateForPercent(
+                  row.forwardReadingMeasurementDetail.originalThickness,
+                  row.forwardReadingMeasurementDetail.gaugedP
+                )
+              : ""
+          }}
+        </td>
+        <td
+          [ngStyle]="{
+            color:
+              convertToNumber(
+                formService.calculateForMm(
+                  row.forwardReadingMeasurementDetail.originalThickness,
+                  row.forwardReadingMeasurementDetail.gaugedP
+                )
+              ) >=
+                convertToNumber(
+                  formService.threePartsFourOfMaxAlwbDim(
+                    formService.calculateForMaxAlwbDim(
+                      row.forwardReadingMeasurementDetail.originalThickness,
+                      percentSelected
+                    )
+                  )
+                ) &&
+              convertToNumber(
+                formService.calculateForMm(
+                  row.forwardReadingMeasurementDetail.originalThickness,
+                  row.forwardReadingMeasurementDetail.gaugedP
+                )
+              ) <=
+                convertToNumber(
+                  formService.calculateForMaxAlwbDim(
+                    row.forwardReadingMeasurementDetail.originalThickness,
+                    percentSelected
+                  )
+                )
+                ? '#0000FF'
+                : '#FF3300'
+          }"
+          style="font-weight: 600; font-size: 18px"
+        >
+          {{
+            formService.checkBeforeCalculate(
+              row.forwardReadingMeasurementDetail.originalThickness,
+              row.forwardReadingMeasurementDetail.gaugedP
+            ) &&
+            row.forwardReadingMeasurementDetail.originalThickness !== "" &&
+            row.afterReadingMeasurementDetail.originalThickness !== "" &&
+            percentSelected !== 0
+              ? convertToNumber(
+                  formService.calculateForMm(
+                    row.forwardReadingMeasurementDetail.originalThickness,
+                    row.forwardReadingMeasurementDetail.gaugedP
+                  )
+                ) >=
+                  convertToNumber(
+                    formService.threePartsFourOfMaxAlwbDim(
+                      formService.calculateForMaxAlwbDim(
+                        row.forwardReadingMeasurementDetail.originalThickness,
+                        percentSelected
+                      )
+                    )
+                  ) &&
+                convertToNumber(
+                  formService.calculateForMm(
+                    row.forwardReadingMeasurementDetail.originalThickness,
+                    row.forwardReadingMeasurementDetail.gaugedP
+                  )
+                ) <=
+                  convertToNumber(
+                    formService.calculateForMaxAlwbDim(
+                      row.forwardReadingMeasurementDetail.originalThickness,
+                      percentSelected
+                    )
+                  )
+                ? "S"
+                : convertToNumber(
+                    formService.calculateForMm(
+                      row.forwardReadingMeasurementDetail.originalThickness,
+                      row.forwardReadingMeasurementDetail.gaugedP
+                    )
+                  ) >
+                  convertToNumber(
+                    formService.calculateForMaxAlwbDim(
+                      row.forwardReadingMeasurementDetail.originalThickness,
+                      percentSelected
+                    )
+                  )
+                ? "R"
+                : ""
+              : ""
+          }}
+        </td>
+        <td>
+          {{
+            formService.checkBeforeCalculate(
+              row.forwardReadingMeasurementDetail.originalThickness,
+              row.forwardReadingMeasurementDetail.gaugedS
+            )
+              ? formService.calculateForMm(
+                  row.forwardReadingMeasurementDetail.originalThickness,
+                  row.forwardReadingMeasurementDetail.gaugedS
+                )
+              : ""
+          }}
+        </td>
+        <td>
+          {{
+            formService.checkBeforeCalculate(
+              row.forwardReadingMeasurementDetail.originalThickness,
+              row.forwardReadingMeasurementDetail.gaugedS
+            )
+              ? formService.calculateForMm(
+                  row.forwardReadingMeasurementDetail.originalThickness,
+                  row.forwardReadingMeasurementDetail.gaugedS
+                )
+              : ""
+          }}
+        </td>
+        <td
+          [ngStyle]="{
+            color:
+              convertToNumber(
+                formService.calculateForMm(
+                  row.forwardReadingMeasurementDetail.originalThickness,
+                  row.forwardReadingMeasurementDetail.gaugedS
+                )
+              ) >=
+                convertToNumber(
+                  formService.threePartsFourOfMaxAlwbDim(
+                    formService.calculateForMaxAlwbDim(
+                      row.forwardReadingMeasurementDetail.originalThickness,
+                      percentSelected
+                    )
+                  )
+                ) &&
+              convertToNumber(
+                formService.calculateForMm(
+                  row.forwardReadingMeasurementDetail.originalThickness,
+                  row.forwardReadingMeasurementDetail.gaugedS
+                )
+              ) <=
+                convertToNumber(
+                  formService.calculateForMaxAlwbDim(
+                    row.forwardReadingMeasurementDetail.originalThickness,
+                    percentSelected
+                  )
+                )
+                ? '#0000FF'
+                : '#FF3300'
+          }"
+          style="font-weight: 600; font-size: 18px"
+        >
+          {{
+            formService.checkBeforeCalculate(
+              row.forwardReadingMeasurementDetail.originalThickness,
+              row.forwardReadingMeasurementDetail.gaugedS
+            ) &&
+            row.forwardReadingMeasurementDetail.originalThickness !== "" &&
+            row.afterReadingMeasurementDetail.originalThickness !== "" &&
+            percentSelected !== 0
+              ? convertToNumber(
+                  formService.calculateForMm(
+                    row.forwardReadingMeasurementDetail.originalThickness,
+                    row.forwardReadingMeasurementDetail.gaugedS
+                  )
+                ) >=
+                  convertToNumber(
+                    formService.threePartsFourOfMaxAlwbDim(
+                      formService.calculateForMaxAlwbDim(
+                        row.forwardReadingMeasurementDetail.originalThickness,
+                        percentSelected
+                      )
+                    )
+                  ) &&
+                convertToNumber(
+                  formService.calculateForMm(
+                    row.forwardReadingMeasurementDetail.originalThickness,
+                    row.forwardReadingMeasurementDetail.gaugedS
+                  )
+                ) <=
+                  convertToNumber(
+                    formService.calculateForMaxAlwbDim(
+                      row.forwardReadingMeasurementDetail.originalThickness,
+                      percentSelected
+                    )
+                  )
+                ? "S"
+                : convertToNumber(
+                    formService.calculateForMm(
+                      row.forwardReadingMeasurementDetail.originalThickness,
+                      row.forwardReadingMeasurementDetail.gaugedS
+                    )
+                  ) >
+                  convertToNumber(
+                    formService.calculateForMaxAlwbDim(
+                      row.forwardReadingMeasurementDetail.originalThickness,
+                      percentSelected
+                    )
+                  )
+                ? "R"
+                : ""
+              : ""
+          }}
+        </td>
+        <!-- End calculator for Forward Reading -->
+
+        <!-- Start calculator for After Reading -->
+        <td>
+          <input
+            nz-input
+            type="number"
+            min="0"
+            [(ngModel)]="row.afterReadingMeasurementDetail.gaugedP"
+          />
+        </td>
+        <td>
+          <input
+            nz-input
+            type="number"
+            min="0"
+            [(ngModel)]="row.afterReadingMeasurementDetail.gaugedS"
+          />
+        </td>
+        <td>
+          {{
+            formService.checkBeforeCalculate(
+              row.afterReadingMeasurementDetail.originalThickness,
+              row.afterReadingMeasurementDetail.gaugedP
+            )
+              ? formService.calculateForMm(
+                  row.afterReadingMeasurementDetail.originalThickness,
+                  row.afterReadingMeasurementDetail.gaugedP
+                )
+              : ""
+          }}
+        </td>
+        <td>
+          {{
+            formService.checkBeforeCalculate(
+              row.afterReadingMeasurementDetail.originalThickness,
+              row.afterReadingMeasurementDetail.gaugedP
+            )
+              ? formService.calculateForPercent(
+                  row.afterReadingMeasurementDetail.originalThickness,
+                  row.afterReadingMeasurementDetail.gaugedP
+                )
+              : ""
+          }}
+        </td>
+        <td
+          [ngStyle]="{
+            color:
+              convertToNumber(
+                formService.calculateForMm(
+                  row.afterReadingMeasurementDetail.originalThickness,
+                  row.afterReadingMeasurementDetail.gaugedP
+                )
+              ) >=
+                convertToNumber(
+                  formService.threePartsFourOfMaxAlwbDim(
+                    formService.calculateForMaxAlwbDim(
+                      row.afterReadingMeasurementDetail.originalThickness,
+                      percentSelected
+                    )
+                  )
+                ) &&
+              convertToNumber(
+                formService.calculateForMm(
+                  row.afterReadingMeasurementDetail.originalThickness,
+                  row.afterReadingMeasurementDetail.gaugedP
+                )
+              ) <=
+                convertToNumber(
+                  formService.calculateForMaxAlwbDim(
+                    row.afterReadingMeasurementDetail.originalThickness,
+                    percentSelected
+                  )
+                )
+                ? '#0000FF'
+                : '#FF3300'
+          }"
+          style="font-weight: 600; font-size: 18px"
+        >
+          {{
+            formService.checkBeforeCalculate(
+              row.afterReadingMeasurementDetail.originalThickness,
+              row.afterReadingMeasurementDetail.gaugedP
+            ) &&
+            row.afterReadingMeasurementDetail.originalThickness !== "" &&
+            row.afterReadingMeasurementDetail.originalThickness !== "" &&
+            percentSelected !== 0
+              ? convertToNumber(
+                  formService.calculateForMm(
+                    row.afterReadingMeasurementDetail.originalThickness,
+                    row.afterReadingMeasurementDetail.gaugedP
+                  )
+                ) >=
+                  convertToNumber(
+                    formService.threePartsFourOfMaxAlwbDim(
+                      formService.calculateForMaxAlwbDim(
+                        row.afterReadingMeasurementDetail.originalThickness,
+                        percentSelected
+                      )
+                    )
+                  ) &&
+                convertToNumber(
+                  formService.calculateForMm(
+                    row.afterReadingMeasurementDetail.originalThickness,
+                    row.afterReadingMeasurementDetail.gaugedP
+                  )
+                ) <=
+                  convertToNumber(
+                    formService.calculateForMaxAlwbDim(
+                      row.afterReadingMeasurementDetail.originalThickness,
+                      percentSelected
+                    )
+                  )
+                ? "S"
+                : convertToNumber(
+                    formService.calculateForMm(
+                      row.afterReadingMeasurementDetail.originalThickness,
+                      row.afterReadingMeasurementDetail.gaugedP
+                    )
+                  ) >
+                  convertToNumber(
+                    formService.calculateForMaxAlwbDim(
+                      row.afterReadingMeasurementDetail.originalThickness,
+                      percentSelected
+                    )
+                  )
+                ? "R"
+                : ""
+              : ""
+          }}
+        </td>
+        <td>
+          {{
+            formService.checkBeforeCalculate(
+              row.afterReadingMeasurementDetail.originalThickness,
+              row.afterReadingMeasurementDetail.gaugedS
+            )
+              ? formService.calculateForMm(
+                  row.afterReadingMeasurementDetail.originalThickness,
+                  row.afterReadingMeasurementDetail.gaugedS
+                )
+              : ""
+          }}
+        </td>
+        <td>
+          {{
+            formService.checkBeforeCalculate(
+              row.afterReadingMeasurementDetail.originalThickness,
+              row.afterReadingMeasurementDetail.gaugedS
+            )
+              ? formService.calculateForPercent(
+                  row.afterReadingMeasurementDetail.originalThickness,
+                  row.afterReadingMeasurementDetail.gaugedS
+                )
+              : ""
+          }}
+        </td>
+        <td
+          [ngStyle]="{
+            color:
+              convertToNumber(
+                formService.calculateForMm(
+                  row.afterReadingMeasurementDetail.originalThickness,
+                  row.afterReadingMeasurementDetail.gaugedS
+                )
+              ) >=
+                convertToNumber(
+                  formService.threePartsFourOfMaxAlwbDim(
+                    formService.calculateForMaxAlwbDim(
+                      row.afterReadingMeasurementDetail.originalThickness,
+                      percentSelected
+                    )
+                  )
+                ) &&
+              convertToNumber(
+                formService.calculateForMm(
+                  row.afterReadingMeasurementDetail.originalThickness,
+                  row.afterReadingMeasurementDetail.gaugedS
+                )
+              ) <=
+                convertToNumber(
+                  formService.calculateForMaxAlwbDim(
+                    row.afterReadingMeasurementDetail.originalThickness,
+                    percentSelected
+                  )
+                )
+                ? '#0000FF'
+                : '#FF3300'
+          }"
+          style="font-weight: 600; font-size: 18px"
+        >
+          {{
+            formService.checkBeforeCalculate(
+              row.afterReadingMeasurementDetail.originalThickness,
+              row.afterReadingMeasurementDetail.gaugedS
+            ) &&
+            row.afterReadingMeasurementDetail.originalThickness !== "" &&
+            row.afterReadingMeasurementDetail.originalThickness !== "" &&
+            percentSelected !== 0
+              ? convertToNumber(
+                  formService.calculateForMm(
+                    row.afterReadingMeasurementDetail.originalThickness,
+                    row.afterReadingMeasurementDetail.gaugedS
+                  )
+                ) >=
+                  convertToNumber(
+                    formService.threePartsFourOfMaxAlwbDim(
+                      formService.calculateForMaxAlwbDim(
+                        row.afterReadingMeasurementDetail.originalThickness,
+                        percentSelected
+                      )
+                    )
+                  ) &&
+                convertToNumber(
+                  formService.calculateForMm(
+                    row.afterReadingMeasurementDetail.originalThickness,
+                    row.afterReadingMeasurementDetail.gaugedS
+                  )
+                ) <=
+                  convertToNumber(
+                    formService.calculateForMaxAlwbDim(
+                      row.afterReadingMeasurementDetail.originalThickness,
+                      percentSelected
+                    )
+                  )
+                ? "S"
+                : convertToNumber(
+                    formService.calculateForMm(
+                      row.afterReadingMeasurementDetail.originalThickness,
+                      row.afterReadingMeasurementDetail.gaugedS
+                    )
+                  ) >
+                  convertToNumber(
+                    formService.calculateForMaxAlwbDim(
+                      row.afterReadingMeasurementDetail.originalThickness,
+                      percentSelected
+                    )
+                  )
+                ? "R"
+                : ""
+              : ""
+          }}
+        </td>
+        <!-- End calculator for After Reading -->
+
+        <!-- Start calculator for Mean Diminution -->
+        <td>
+          {{
+            formService.checkBeforeCalculate(
+              row.forwardReadingMeasurementDetail.originalThickness,
+              row.forwardReadingMeasurementDetail.gaugedP
+            ) &&
+            formService.checkBeforeCalculate(
+              row.afterReadingMeasurementDetail.originalThickness,
+              row.afterReadingMeasurementDetail.gaugedP
+            )
+              ? formService.calculateAveragePercent(
+                  row.forwardReadingMeasurementDetail.originalThickness,
+                  row.forwardReadingMeasurementDetail.gaugedP,
+                  row.afterReadingMeasurementDetail.gaugedP
+                )
+              : ""
+          }}
+        </td>
+        <td>
+          {{
+            formService.checkBeforeCalculate(
+              row.forwardReadingMeasurementDetail.originalThickness,
+              row.forwardReadingMeasurementDetail.gaugedS
+            ) &&
+            formService.checkBeforeCalculate(
+              row.afterReadingMeasurementDetail.originalThickness,
+              row.afterReadingMeasurementDetail.gaugedS
+            )
+              ? formService.calculateAveragePercent(
+                  row.forwardReadingMeasurementDetail.originalThickness,
+                  row.forwardReadingMeasurementDetail.gaugedS,
+                  row.afterReadingMeasurementDetail.gaugedS
+                )
+              : ""
+          }}
+        </td>
+        <td>
+          {{
+            row.forwardReadingMeasurementDetail.originalThickness !== "" &&
+            row.afterReadingMeasurementDetail.originalThickness !== "" &&
+            percentSelected !== 0
+              ? formService.calculateForMaxAlwbDim(
+                  row.forwardReadingMeasurementDetail.originalThickness,
+                  percentSelected
+                )
+              : ""
+          }}
+        </td>
+        <!-- End calculator for Mean Diminution -->
       </tr>
     </tbody>
+    <!-- End table body -->
   </nz-table>
+  <!-- End table -->
 </section>

@@ -1,22 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
-import { RouterTestingHarness } from '@angular/router/testing';
-
-interface ItemData {
-  id: number;
-  structuralMember: string;
-  item: string;
-  originalThickness: number;
-  maximumAllowableDim: number;
-  gaugedP: number;
-  gaugedS: number;
-  diminutionPmm: number;
-  diminutionPpercent: number;
-  diminutionSmm: number;
-  diminutionSpercent: number;
-  isStandardP: boolean;
-  isStandardS: boolean;
-}
+import { NzMessageService } from 'ng-zorro-antd/message';
+import { catchError, retry, throwError } from 'rxjs';
+import { formTM4 } from 'src/app/share/models/form/formTM4.model';
+import { measurementTM4 } from 'src/app/share/models/form/measurementTM4.model';
+import { structuralMemberTM4 } from 'src/app/share/models/form/structuralMemberTM4.model';
+import { paramValue } from 'src/app/share/models/paramValue.model';
+import { FormService } from 'src/app/share/services/form/form.service';
+import { ParamValueService } from 'src/app/share/services/param-value.service';
+import { CdkDragEnd, CdkDragDrop } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-tm4',
@@ -24,121 +15,292 @@ interface ItemData {
   styleUrls: ['./tm4.component.css'],
 })
 export class Tm4Component implements OnInit {
-  shipName: string = 'M/V "AFRICAN EAGLE"';
-  classIdentity: number = 3112356;
-  reportNo: string = 'VMC.UTM.22.046/5255939';
-  tankDesc: string = 'NO.1 T.S.T';
-  locationOfStructure: string = 'TRANSVERSE WEB';
+  constructor(
+    public formService: FormService,
+    public paramValueService: ParamValueService,
+    private message: NzMessageService
+  ) {}
 
-  lineAdd: number = 0;
-  maximumAllowableDim: number = 0;
+  addRowValue: number = 0;
+  listRow: measurementTM4[] = [];
 
-  i = 0;
-  listOfData: ItemData[] = [
-    {
-      id: 1,
-      structuralMember: 'Web Plating',
-      item: '1',
-      originalThickness: 11.5,
-      maximumAllowableDim: 2.9,
-      gaugedP: 11.4,
-      gaugedS: 11.3,
-      diminutionPmm: 0,
-      diminutionPpercent: 0,
-      diminutionSmm: 0,
-      diminutionSpercent: 0,
-      isStandardP: true,
-      isStandardS: true,
+  listStructuralMember: paramValue[] = [];
+  listStructuralMemberTitle: structuralMemberTM4[] = [];
+
+  formTM4: formTM4 = {
+    tankDescription: '',
+    locationOfStructure: '',
+    structuralMemberTM4List: this.listStructuralMemberTitle,
+  };
+
+  isPercentVisible: boolean = false;
+  percentSelected: number = 1;
+  structuralMemberSelected: number = -2;
+
+  selectedRowValue: measurementTM4 = {
+    structuralMember: '',
+    item: '',
+    detailMeasurement: {
+      originalThickness: '',
+      maxAlwbDim: '',
+      gaugedP: '',
+      gaugedS: '',
+      percent: '',
     },
-    {
-      id: 2,
-      structuralMember: 'Longi Bulkhead',
-      item: '2',
-      originalThickness: 17.5,
-      maximumAllowableDim: 2.9,
-      gaugedP: 11.4,
-      gaugedS: 11.3,
-      diminutionPmm: 0,
-      diminutionPpercent: 0,
-      diminutionSmm: 0,
-      diminutionSpercent: 0,
-      isStandardP: true,
-      isStandardS: true,
-    },
-  ];
+  };
 
-  calMAD(id: number) {
-    let data = this.listOfData.find((item) => item.id == id);
-    if (data) {
-      data.maximumAllowableDim =
-        Math.round(data.originalThickness * 0.25 * 10) / 10;
-    }
-  }
-  calDimP(id: number) {
-    let data = this.listOfData.find((item) => item.id == id);
-    if (data) {
-      data.diminutionPmm =
-        Math.round((data.originalThickness - data.gaugedP) * 10) / 10;
-      data.diminutionPpercent =
-        Math.floor((data.diminutionPmm / data.originalThickness) * 100 * 10) /
-        10;
-      if (data.diminutionPpercent > 0.5) {
-        data.isStandardP = false;
-      } else {
-        data.isStandardP = true;
-      }
-    }
-  }
-  calDimS(id: number) {
-    let data = this.listOfData.find((item) => item.id == id);
-    if (data) {
-      data.diminutionSmm =
-        Math.round((data.originalThickness - data.gaugedS) * 10) / 10;
-      data.diminutionSpercent =
-        Math.floor((data.diminutionSmm / data.originalThickness) * 100 * 10) /
-        10;
-      if (data.diminutionSpercent > 0.5) {
-        data.isStandardS = false;
-      } else {
-        data.isStandardS = true;
-      }
-    }
-  }
+  startIndex: number = -1;
+  endIndex: number = -1;
 
-  addRow(): void {
-    let maxId = 0;
-    for (let j = 1; j <= this.lineAdd; j++) {
-      maxId = Math.max(...this.listOfData.map((x) => x.id));
-      this.listOfData.push({
-        id: maxId + 1,
+  isLoadingSaveButton: boolean = false;
+
+  isAddRowVisible: boolean = false;
+
+  ngOnInit(): void {
+    this.listStructuralMemberTitle.push({
+      structuralMemberTitle: '',
+      measurementTM4List: this.listRow,
+    });
+
+    for (let i = 1; i <= 20; i++)
+      this.listRow.push({
         structuralMember: '',
         item: '',
-        originalThickness: 0,
-        maximumAllowableDim: 0,
-        gaugedP: 0,
-        gaugedS: 0,
-        diminutionPmm: 0,
-        diminutionPpercent: 0,
-        diminutionSmm: 0,
-        diminutionSpercent: 0,
-        isStandardP: true,
-        isStandardS: true,
+        detailMeasurement: {
+          originalThickness: '',
+          maxAlwbDim: '',
+          gaugedP: '',
+          gaugedS: '',
+          percent: '',
+        },
       });
+
+    this.paramValueService.getParamValueByType(7).subscribe((data) => {
+      this.listStructuralMember = data;
+    });
+  }
+
+  API_URL: string = `http://222.252.25.37:9080/api/v1/report-indexes/1/tm4s`;
+
+  addRow() {
+    if (this.structuralMemberSelected >= 0) {
+      for (let i = 1; i <= this.addRowValue; i++)
+        this.listStructuralMemberTitle[
+          this.structuralMemberSelected
+        ].measurementTM4List.push({
+          structuralMember: '',
+          item: '',
+          detailMeasurement: {
+            originalThickness: '',
+            maxAlwbDim: '',
+            gaugedP: '',
+            gaugedS: '',
+            percent: '',
+          },
+        });
+    } else if (this.structuralMemberSelected == -1) {
+      this.listStructuralMemberTitle.push({
+        structuralMemberTitle: 'New list',
+        measurementTM4List: [],
+      });
+
+      for (let i = 1; i <= this.addRowValue; i++)
+        this.listStructuralMemberTitle[
+          this.listStructuralMemberTitle.length - 1
+        ].measurementTM4List.push({
+          structuralMember: '',
+          item: '',
+          detailMeasurement: {
+            originalThickness: '',
+            maxAlwbDim: '',
+            gaugedP: '',
+            gaugedS: '',
+            percent: '',
+          },
+        });
     }
-    this.lineAdd = 0;
-    this.listOfData = [...this.listOfData];
-    this.i++;
-  }
-  visible: boolean = false;
-
-  clickMe(): void {
-    this.visible = false;
   }
 
-  change(value: boolean): void {
-    console.log(value);
+  showModalPercentManage() {
+    this.isPercentVisible = true;
   }
-  ngOnInit(): void {
-    this.addRow();
+
+  onCancelModal() {
+    this.isPercentVisible = false;
+  }
+
+  onOkModal() {
+    this.isPercentVisible = false;
+  }
+
+  convertToNumber(str: string): number {
+    return Number(str);
+  }
+
+  showModal(): void {
+    this.isAddRowVisible = true;
+  }
+
+  handleOk(): void {
+    if (this.structuralMemberSelected >= -1) {
+      if (this.addRowValue > 0 && this.addRowValue <= 100) {
+        this.addRow();
+        this.isAddRowVisible = false;
+        this.message.create('success', 'Add row success');
+        this.addRowValue = 0;
+      } else {
+        this.message.create(
+          'error',
+          'Row value must be greater than 0 and less than or equal to 100'
+        );
+      }
+    } else {
+      this.message.create('error', 'Select a structural member title');
+    }
+  }
+
+  handleCancel(): void {
+    this.percentSelected = 0;
+    this.isAddRowVisible = false;
+  }
+
+  setPercent(percent: string, param: string): void {
+    this.formTM4.structuralMemberTM4List.map((form) => {
+      form.measurementTM4List
+        .filter((row) => row.structuralMember === param)
+        .map((row) => {
+          row.detailMeasurement.percent = percent;
+        });
+    });
+  }
+
+  onSelected(
+    value: string,
+    structuralMemberTitleIndex: number,
+    structuralMemberIndex: number
+  ): void {
+    this.listStructuralMember.map((param) => {
+      if (param.param === value) {
+        this.formTM4.structuralMemberTM4List[
+          structuralMemberTitleIndex
+        ].measurementTM4List[structuralMemberIndex].detailMeasurement.percent =
+          param.value;
+      }
+    });
+  }
+
+  onSaveForm() {
+    this.isLoadingSaveButton = true;
+
+    var newFormTM4 = JSON.parse(JSON.stringify(this.formTM4));
+
+    for (let i = 0; i < this.formTM4.structuralMemberTM4List.length; i++) {
+      newFormTM4.structuralMemberTM4List[i].measurementTM4List =
+        this.formTM4.structuralMemberTM4List[i].measurementTM4List.filter(
+          (e) => {
+            return (
+              e.structuralMember !== '' ||
+              e.item !== '' ||
+              e.detailMeasurement.originalThickness !== '' ||
+              e.detailMeasurement.gaugedP !== '' ||
+              e.detailMeasurement.gaugedS !== ''
+            );
+          }
+        );
+    }
+
+    this.formService
+      .addFormToAPI(this.API_URL, newFormTM4)
+      .pipe(
+        retry(3),
+        catchError(() => {
+          return throwError('Something went wrong');
+        })
+      )
+      .subscribe({
+        next: (result) => {
+          this.isLoadingSaveButton = false;
+          this.message.create('success', 'Save form success');
+        },
+        error: (error) => {
+          this.isLoadingSaveButton = false;
+          this.message.create(
+            'error',
+            'Something went wrong, please try later'
+          );
+        },
+      });
+  }
+
+  onDragEnded(event: CdkDragEnd) {
+    event.source.reset();
+  }
+
+  selectRow(structuralMemberTitleIndex: number, structuralMemberIndex: number) {
+    this.selectedRowValue =
+      this.formTM4.structuralMemberTM4List[
+        structuralMemberTitleIndex
+      ].measurementTM4List[structuralMemberIndex];
+  }
+
+  onDrop(event: CdkDragDrop<measurementTM4[]>, index: number) {
+    this.startIndex = event.previousIndex;
+    this.endIndex = event.currentIndex;
+    if (this.startIndex < this.endIndex) {
+      for (let i = this.startIndex + 1; i <= this.endIndex; i++) {
+        this.formTM4.structuralMemberTM4List[index].measurementTM4List[
+          i
+        ].structuralMember = this.selectedRowValue.structuralMember;
+        this.formTM4.structuralMemberTM4List[index].measurementTM4List[i].item =
+          this.selectedRowValue.item;
+        this.formTM4.structuralMemberTM4List[index].measurementTM4List[
+          i
+        ].detailMeasurement.originalThickness =
+          this.selectedRowValue.detailMeasurement.originalThickness;
+        this.formTM4.structuralMemberTM4List[index].measurementTM4List[
+          i
+        ].detailMeasurement.gaugedP =
+          this.selectedRowValue.detailMeasurement.gaugedP;
+        this.formTM4.structuralMemberTM4List[index].measurementTM4List[
+          i
+        ].detailMeasurement.gaugedS =
+          this.selectedRowValue.detailMeasurement.gaugedS;
+        this.formTM4.structuralMemberTM4List[index].measurementTM4List[
+          i
+        ].detailMeasurement.percent =
+          this.selectedRowValue.detailMeasurement.percent;
+      }
+    } else {
+      for (let i = this.startIndex - 1; i >= this.endIndex; i--) {
+        this.formTM4.structuralMemberTM4List[index].measurementTM4List[
+          i
+        ].structuralMember = this.selectedRowValue.structuralMember;
+        this.formTM4.structuralMemberTM4List[index].measurementTM4List[i].item =
+          this.selectedRowValue.item;
+        this.formTM4.structuralMemberTM4List[index].measurementTM4List[
+          i
+        ].detailMeasurement.originalThickness =
+          this.selectedRowValue.detailMeasurement.originalThickness;
+        this.formTM4.structuralMemberTM4List[index].measurementTM4List[
+          i
+        ].detailMeasurement.gaugedP =
+          this.selectedRowValue.detailMeasurement.gaugedP;
+        this.formTM4.structuralMemberTM4List[index].measurementTM4List[
+          i
+        ].detailMeasurement.gaugedS =
+          this.selectedRowValue.detailMeasurement.gaugedS;
+        this.formTM4.structuralMemberTM4List[index].measurementTM4List[
+          i
+        ].detailMeasurement.percent =
+          this.selectedRowValue.detailMeasurement.percent;
+      }
+    }
+  }
+
+  countRowBefore(index: number): number {
+    var sum: number = 0;
+    for (let i = 0; i < index; i++)
+      sum += this.listStructuralMemberTitle[i].measurementTM4List.length + 1;
+    return sum;
   }
 }

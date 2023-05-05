@@ -7,16 +7,16 @@
       [nzHeader]="panel.name"
       [nzActive]="panel.active"
       [nzDisabled]="panel.disabled"
+      (nzActiveChange)="showParamValue($event, i + 1)"
     >
       <div class="collapseBox">
         <div class="addNewBox">
           <input
-            [(ngModel)]="panel.newItem"
+            [(ngModel)]="newParamValue.param"
             placeholder="Enter the new item"
             nz-input
-            id=""
           />
-          <button (click)="addItem()" nz-button nzType="primary">
+          <button (click)="addParam(i + 1)" nz-button nzType="primary">
             Add new
           </button>
         </div>
@@ -28,10 +28,10 @@
               <th class="titleTable" nzWidth="150px">Action</th>
             </tr>
           </thead>
-          <tbody *ngFor="let item of panel.items; let j = index">
+          <tbody *ngFor="let item of listParamValue; let j = index">
             <tr>
               <td>{{ j + 1 }}</td>
-              <td>{{ item }}</td>
+              <td>{{ item.param }}</td>
               <td>
                 <a
                   (nzOnConfirm)="editItem()"
@@ -41,101 +41,13 @@
                   Edit</a
                 >
                 <nz-divider nzType="vertical"></nz-divider>
-                <a
-                  (nzOnConfirm)="deleteItem()"
-                  (nzOnCancel)="cancel()"
-                  nz-popconfirm
-                  nzPopconfirmTitle="Sure to delete?"
-                  >Delete</a
-                >
-              </td>
-            </tr>
-          </tbody>
-        </nz-table>
-      </div>
-    </nz-collapse-panel>
-    <nz-collapse-panel
-      style="width: 100%"
-      [nzHeader]="certificatePanel.name"
-      [nzActive]="certificatePanel.active"
-      [nzDisabled]="certificatePanel.disabled"
-    >
-      <div class="collapseBox">
-        <nz-table nzTemplateMode="true" #borderedTable nzBordered>
-          <thead class="titleTable">
-            <tr class="titleTable">
-              <th class="titleTable" nzWidth="60px">No.</th>
-              <th class="titleTable">Certificate Organization</th>
-              <th class="titleTable" nzWidth="160px">Certificate number</th>
-              <th class="titleTable" nzWidth="140px">Valid start date</th>
-              <th class="titleTable" nzWidth="140px">Valid end date</th>
-              <th class="titleTable" nzWidth="150px">Action</th>
-            </tr>
-          </thead>
-          <tbody *ngFor="let item of certificates; let i = index">
-            <tr>
-              <td>{{ i + 1 }}</td>
-              <td>{{ item.certificateOrganization }}</td>
-              <td>{{ item.certificateNo }}</td>
-              <td>{{ item.validStartDate }}</td>
-              <td>{{ item.validEndDate }}</td>
-              <td>
                 <!-- <a
-                  (nzOnConfirm)="editItem()"
-                  (nzOnCancel)="cancel()"
-                  nz-popconfirm
-                  nzPopconfirmTitle="Sure to edit?"
-                >
-                  Edit</a
-                >
-                <nz-divider nzType="vertical"></nz-divider> -->
-                <a
-                  (nzOnConfirm)="deleteCerficate(item.id)"
+                  (nzOnConfirm)="deleteItem(i, j)"
                   (nzOnCancel)="cancel()"
                   nz-popconfirm
                   nzPopconfirmTitle="Sure to delete?"
                   >Delete</a
-                >
-              </td>
-            </tr>
-          </tbody>
-          <tbody>
-            <tr>
-              <td>Null</td>
-              <td>
-                <input
-                  [(ngModel)]="newCertificateName"
-                  nz-input
-                  placeholder="Enter Certificate Organization"
-                />
-              </td>
-              <td>
-                <input
-                  [(ngModel)]="newCertificateNo"
-                  nz-input
-                  placeholder="Enter certificate number"
-                />
-              </td>
-              <td>
-                <nz-date-picker
-                  [(ngModel)]="newCertificateStartDate"
-                  nzPlaceHolder="Enter start date"
-                ></nz-date-picker>
-              </td>
-              <td>
-                <nz-date-picker
-                  [(ngModel)]="newCertificateEndtDate"
-                  nzPlaceHolder="Enter end date"
-                ></nz-date-picker>
-              </td>
-              <td>
-                <a
-                  (nzOnConfirm)="addNewCertificate()"
-                  (nzOnCancel)="cancel()"
-                  nz-popconfirm
-                  nzPopconfirmTitle="Sure to add?"
-                  >Add new</a
-                >
+                > -->
               </td>
             </tr>
           </tbody>

@@ -48,6 +48,7 @@ import { TableOfContentsComponent } from './Pages/table-of-contents/table-of-con
 import { ManagingDefaultValuesComponent } from './Pages/managing-default-values/managing-default-values.component';
 import { Tm2iComponent } from './Pages/tm2i/tm2i.component';
 import { Tm2iiComponent } from './Pages/tm2ii/tm2ii.component';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 registerLocaleData(en);
 
@@ -101,6 +102,7 @@ registerLocaleData(en);
     NzAffixModule,
     NzCollapseModule,
     NzModalModule,
+    DragDropModule,
   ],
   providers: [{ provide: NZ_I18N, useValue: en_US }, LocalService],
   bootstrap: [AppComponent],
