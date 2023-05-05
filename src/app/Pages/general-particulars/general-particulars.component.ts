@@ -9,6 +9,7 @@ import { certificate } from 'src/app/share/models/certificate.model';
 import { CertificateService } from 'src/app/share/services/certificate.service';
 import { LocalService } from 'src/app/share/services/local.service';
 import { main } from 'src/app/share/models/local.model';
+import { GeneralParticularPush } from 'src/app/share/models/generalParticularsPush.model';
 
 @Component({
   selector: 'app-general-particulars',
@@ -17,12 +18,9 @@ import { main } from 'src/app/share/models/local.model';
 })
 export class GeneralParticularsComponent implements OnInit {
   mainData!: main;
-  link: string = '/generalParticulars';
-  // editMode: boolean = false;
-  // reportNumber: string = '';
-  // mainId: number = 0;
-  // entering: number = 0;
+  link: string = '/selectForm';
   generalParticulars: GeneralParticular[] = [];
+  editGeneralParticulars: GeneralParticular[] = [];
   ships: ship[] = [];
   certificates: certificate[] = [];
   listOfItem: string[] = [];
@@ -47,7 +45,7 @@ export class GeneralParticularsComponent implements OnInit {
   inLastDate: Date | string = '';
   inSpecial: string = '';
   inDetailOf: string = '';
-  inQualification: string = '';
+  inQualification: string = 'SNT-TC-1A UT LEVEL 2';
   inReport: string = '';
   inOperatorName: string = '';
   inSuveyor: string = '';
@@ -60,12 +58,9 @@ export class GeneralParticularsComponent implements OnInit {
     private localService: LocalService
   ) {}
 
-  test() {
-    console.log(
-      this.generalParticularsForm.value.detailsOfMeasurementEquipment.join(';')
-    );
-  }
-
+  /**
+   * Hàm này dùng để gộp giá trị startTime và endTime của certificate vào một mảng
+   */
   seclectChange() {
     let nowCertificate = this.certificates.filter(
       (x) => x.certificateOrganization === this.inCertificateName
@@ -78,6 +73,9 @@ export class GeneralParticularsComponent implements OnInit {
     this.inCertificateNo = nowCertificate[0].certificateNo;
   }
 
+  /**
+   * Hàm dùng để hiển thị kết quả tìm kiếm ship
+   */
   showModal(): void {
     this.isVisible = true;
     this.shipSevice.getShipsFromAPI().subscribe((data) => {
@@ -88,6 +86,10 @@ export class GeneralParticularsComponent implements OnInit {
     this.ABSNum = this.generalParticularsForm.value.absIdentificationNumber;
   }
 
+  /**
+   * Hàm dùng để đưa dữ liệu vào các ô thông tin của ship
+   * @param i: Dữ liệu cần đưa vào
+   */
   addShip(i: ship) {
     this.inShipName = i.name;
     this.inIMO = i.imoNumber;
@@ -112,15 +114,6 @@ export class GeneralParticularsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // this.getDataService.getGeneralParticularsFromAPI().subscribe(
-    //   (data) => {
-    //     this.generalParticulars = data;
-    //   },
-    //   (err) => {
-    //     console.log(err);
-    //   }
-    // );
-
     this.shipSevice.getShipsFromAPI().subscribe(
       (data) => {
         this.ships = data;
@@ -137,33 +130,46 @@ export class GeneralParticularsComponent implements OnInit {
       (err) => {}
     );
     this.mainData = this.localService.getMainData();
+
     if (this.mainData.editMode === true) {
       this.getDataService.getGeneralParticularsFromAPI().subscribe(
         (data) => {
-          this.generalParticulars = data.filter(
-            (x: { reportNo: string }) =>
-              x.reportNo === this.mainData.reportNumber
+          this.generalParticulars = data;
+          this.generalParticulars = this.generalParticulars.filter(
+            (x) => x.id === this.mainData.mainId
           );
+          console.log(this.generalParticulars);
+
+          this.inShipName = this.generalParticulars[0].shipInfo.name;
+          this.inIMO = this.generalParticulars[0].shipInfo.imoNumber;
+          this.inABS = this.generalParticulars[0].shipInfo.absIdentification;
+          this.inPortOf = this.generalParticulars[0].shipInfo.postOfRegistry;
+          this.inGrossTon = this.generalParticulars[0].shipInfo.grossTons;
+          this.inDeadWeith = this.generalParticulars[0].shipInfo.deadweight;
+          this.inDateBuild = this.generalParticulars[0].shipInfo.dateOfBuild;
+          this.inClassi =
+            this.generalParticulars[0].shipInfo.classificationSociety;
+          this.inCertificateName =
+            this.generalParticulars[0].certificateDTO.certificateOrganization;
+          this.inCertificateNo =
+            this.generalParticulars[0].certificateDTO.certificateNo;
+          this.inCertificateDate = [
+            this.generalParticulars[0].certificateDTO.validStartDate,
+            this.generalParticulars[0].certificateDTO.validEndDate,
+          ];
+          this.inPlaceOf = this.generalParticulars[0].placeOfMeasurement;
+          this.inFirstDate = this.generalParticulars[0].firstDateOfMeasurement;
+          this.inLastDate = this.generalParticulars[0].lastDateOfMeasurement;
+          this.inSpecial = this.generalParticulars[0].surveyType;
+          this.inDetailOf = this.generalParticulars[0].measurementEquipmentInfo;
+          this.inReport = this.generalParticulars[0].reportNo;
+          this.inOperatorName = this.generalParticulars[0].nameOfOperator;
+          this.inSuveyor = this.generalParticulars[0].surveyorInfo;
         },
         (err) => {
           console.log(err);
         }
       );
-    }
-    console.log(this.mainData);
-    console.log(this.generalParticulars);
-
-    // this.editMode = this.localService.getStatus();
-    // this.reportNumber = this.localService.report();
-    // this.mainId = this.localService.getId();
-  }
-  addItem(input: HTMLInputElement) {
-    const value = input.value;
-    if (this.listOfItem.indexOf(value) === -1) {
-      this.listOfItem = [
-        ...this.listOfItem,
-        input.value || `New item ${this.index++}`,
-      ];
     }
   }
 
@@ -194,85 +200,95 @@ export class GeneralParticularsComponent implements OnInit {
     nameOfSurveyor: new FormControl(),
   });
 
+  /**
+   * Hàm dùng để lưu các dữ liệu nhập vào
+   */
   subMit(): void {
-    // if (
-    //   this.inShipName !== '' &&
-    //   this.inIMO !== '' &&
-    //   this.inABS !== '' &&
-    //   this.inPortOf !== '' &&
-    //   this.inGrossTon !== '' &&
-    //   this.inDeadWeith !== '' &&
-    //   this.inDateBuild !== '' &&
-    //   this.inClassi !== '' &&
-    //   this.inCertificateName !== '' &&
-    //   this.inCertificateDate !== '' &&
-    //   this.inCertificateNo !== '' &&
-    //   this.inPlaceOf !== '' &&
-    //   this.inFirstDate !== '' &&
-    //   this.inLastDate !== '' &&
-    //   this.inSpecial !== '' &&
-    //   this.inDetailOf !== '' &&
-    //   this.inQualification !== '' &&
-    //   this.inReport !== '' &&
-    //   this.inOperatorName !== '' &&
-    //   this.inSuveyor !== ''
-    // ) {
-    let newShip: ship = {
-      name: this.generalParticularsForm.value.shipName,
-      imoNumber: this.generalParticularsForm.value.imoNumber,
-      absIdentification:
-        this.generalParticularsForm.value.absIdentificationNumber,
-      postOfRegistry: this.generalParticularsForm.value.portOfRegistry,
-      grossTons: this.generalParticularsForm.value.grossTons,
-      deadweight: this.generalParticularsForm.value.deadweight,
-      dateOfBuild: this.generalParticularsForm.value.dateOfBuild,
-      classificationSociety:
-        this.generalParticularsForm.value.classificationSociety,
-    };
+    if (
+      this.inShipName !== '' &&
+      this.inIMO !== '' &&
+      this.inABS !== '' &&
+      this.inPortOf !== '' &&
+      this.inGrossTon !== '' &&
+      this.inDeadWeith !== '' &&
+      this.inDateBuild !== '' &&
+      this.inClassi !== '' &&
+      this.inCertificateName !== '' &&
+      this.inCertificateDate !== '' &&
+      this.inCertificateNo !== '' &&
+      this.inPlaceOf !== '' &&
+      this.inFirstDate !== '' &&
+      this.inLastDate !== '' &&
+      this.inSpecial !== '' &&
+      this.inQualification !== '' &&
+      this.inReport !== '' &&
+      this.inOperatorName !== '' &&
+      this.inSuveyor !== ''
+    ) {
+      let newShip: ship = {
+        name: this.generalParticularsForm.value.shipName,
+        imoNumber: this.generalParticularsForm.value.imoNumber,
+        absIdentification:
+          this.generalParticularsForm.value.absIdentificationNumber,
+        postOfRegistry: this.generalParticularsForm.value.portOfRegistry,
+        grossTons: this.generalParticularsForm.value.grossTons,
+        deadweight: this.generalParticularsForm.value.deadweight,
+        dateOfBuild: this.generalParticularsForm.value.dateOfBuild,
+        classificationSociety:
+          this.generalParticularsForm.value.classificationSociety,
+      };
 
-    let newCertificate: certificate = {
-      certificateOrganization:
-        this.generalParticularsForm.value.thicknessMeasurementCompanCertifiedBy,
-      certificateNo: this.generalParticularsForm.value.certificateNo,
-      validStartDate: this.generalParticularsForm.value.certificateValidFrom[0],
-      validEndDate: this.generalParticularsForm.value.certificateValidFrom[1],
-    };
+      let newGeneralParticulars: GeneralParticularPush = {
+        ship: newShip,
+        certificateNo: this.generalParticularsForm.value.certificateNo,
+        placeOfMeasurement:
+          this.generalParticularsForm.value.placeOfMeasurement,
+        firstDateOfMeasurement:
+          this.generalParticularsForm.value.firstDateOfMeasurement,
+        lastDateOfMeasurement:
+          this.generalParticularsForm.value.lastDateOfMeasurement,
+        measurementEquipmentInfo:
+          this.generalParticularsForm.value.detailsOfMeasurementEquipment.join(
+            ';'
+          ),
+        surveyType: this.generalParticularsForm.value.specialSurvey,
+        reportNo: this.generalParticularsForm.value.reportNumber,
+        nameOfOperator: this.generalParticularsForm.value.nameOfOperator,
+        surveyorInfo: this.generalParticularsForm.value.nameOfSurveyor,
+      };
 
-    let newGeneralParticulars: GeneralParticular = {
-      shipInfo: newShip,
-      certificateDTO: newCertificate,
-      placeOfMeasurement: this.generalParticularsForm.value.placeOfMeasurement,
-      firstDateOfMeasurement:
-        this.generalParticularsForm.value.firstDateOfMeasurement,
-      lastDateOfMeasurement:
-        this.generalParticularsForm.value.lastDateOfMeasurement,
-      measurementEquipmentInfo:
-        this.generalParticularsForm.value.detailsOfMeasurementEquipment.join(
-          ';'
-        ),
-      surveyType: this.generalParticularsForm.value.specialSurvey,
-      reportNo: this.generalParticularsForm.value.reportNumber,
-      numberOfSheets: this.numberOfSheets,
-      nameOfOperator: this.generalParticularsForm.value.nameOfOperator,
-      nameOfSurveyor: this.generalParticularsForm.value.nameOfSurveyor,
-    };
-
-    this.getDataService
-      .addGeneralParticularsToAPI(newGeneralParticulars)
-      .subscribe(
-        (data) => {
-          console.log(data);
-        },
-        (err) => {
-          console.log(err);
-        }
-      );
-    this.localService.changeStatus();
-    this.link = '/selectForm';
-    this.message.create('success', 'Save success');
-    // } else {
-    //   this.message.create('error', 'Enter missing information');
-    // }
+      this.getDataService
+        .addGeneralParticularsToAPI(newGeneralParticulars)
+        .subscribe(
+          (data) => {
+            this.getDataService.getGeneralParticularsFromAPI().subscribe(
+              (data) => {
+                this.generalParticulars = data;
+                let newGeneral = this.generalParticulars.filter(
+                  (x) =>
+                    x.reportNo ===
+                    this.generalParticularsForm.value.reportNumber
+                );
+                this.mainData.mainId = newGeneral[0].id;
+                this.mainData.reportNumber = newGeneral[0].reportNo;
+                this.mainData.editMode = true;
+                console.log(this.mainData);
+              },
+              (err) => {
+                console.log(err);
+              }
+            );
+          },
+          (err) => {
+            console.log(err);
+          }
+        );
+      this.message.create('success', 'Save success');
+      console.log(this.link);
+    } else {
+      this.message.create('error', 'Enter missing information');
+      this.link = '/generalParticulars';
+    }
   }
 
   searchShip() {}

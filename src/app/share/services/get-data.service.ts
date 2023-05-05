@@ -3,6 +3,7 @@ import { GeneralParticular } from '../models/generalParticulars.model';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { API_END_POINT } from 'src/environments/environment';
+import { GeneralParticularPush } from '../models/generalParticularsPush.model';
 
 @Injectable({
   providedIn: 'root',
@@ -26,7 +27,7 @@ export class GetDataService {
    * @param data : Dữ liệu thêm mới từ input
    * @returns
    */
-  addGeneralParticularsToAPI(data: GeneralParticular): Observable<any> {
+  addGeneralParticularsToAPI(data: GeneralParticularPush): Observable<any> {
     return this.http.post(this.API_URL, data);
   }
 
@@ -35,7 +36,7 @@ export class GetDataService {
    * @param id : Id của sản  general particular cần xóa
    * @returns
    */
-  deleteGeneralParticularsFormAPI(id: string): Observable<any> {
+  deleteGeneralParticularsFormAPI(id: number): Observable<any> {
     return this.http.delete(`${this.API_URL}/${id}`);
   }
 

@@ -1,4 +1,4 @@
-export interface form {
-  type: string;
-  strakePosition: string;
+export interface Form {
+  index: number;
+  name: string;
 }

@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { certificate } from '../models/certificate.model';
+import { certificatePush } from '../models/certificatePush.model';
 
 @Injectable({
   providedIn: 'root',
@@ -24,7 +25,7 @@ export class CertificateService {
    * @param data : Dữ liệu thêm mới từ input
    * @returns
    */
-  addCertificateToAPI(data: certificate): Observable<any> {
+  addCertificateToAPI(data: certificatePush): Observable<any> {
     return this.http.post(this.API_URL, data);
   }
 
@@ -33,7 +34,7 @@ export class CertificateService {
    * @param id : Id của certificate cần xóa
    * @returns
    */
-  deleteCertificateFormAPI(id: string): Observable<any> {
+  deleteCertificateFormAPI(id: number): Observable<any> {
     return this.http.delete(`${this.API_URL}/${id}`);
   }
 

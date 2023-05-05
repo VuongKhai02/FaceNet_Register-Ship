@@ -16,16 +16,20 @@ import { HistoryComponent } from './Pages/history/history.component';
 import { ReviewComponent } from './Pages/review/review.component';
 import { TableOfContentsComponent } from './Pages/table-of-contents/table-of-contents.component';
 import { ManagingDefaultValuesComponent } from './Pages/managing-default-values/managing-default-values.component';
+import { Tm2iComponent } from './Pages/tm2i/tm2i.component';
+import { Tm2iiComponent } from './Pages/tm2ii/tm2ii.component';
 
 const routes: Routes = [
   { path: '', component: GeneralParticularsComponent },
-  { path: 'Tm1', component: Tm1Component },
-  { path: 'Tm2', component: Tm2Component },
-  { path: 'Tm3', component: Tm3Component },
-  { path: 'Tm4', component: Tm4Component },
-  { path: 'Tm5', component: Tm5Component },
-  { path: 'Tm6', component: Tm6Component },
-  { path: 'Tm7', component: Tm7Component },
+  { path: 'FORM TM1', component: Tm1Component },
+  { path: 'FORM TM2', component: Tm2Component },
+  { path: 'FORM TM2(i)', component: Tm2iComponent },
+  { path: 'FORM TM2(ii)', component: Tm2iiComponent },
+  { path: 'FORM TM3', component: Tm3Component },
+  { path: 'FORM TM4', component: Tm4Component },
+  { path: 'FORM TM5', component: Tm5Component },
+  { path: 'FORM TM6', component: Tm6Component },
+  { path: 'FORM TM7', component: Tm7Component },
   { path: 'generalParticulars', component: GeneralParticularsComponent },
   { path: 'accountManagement', component: AccountManagementComponent },
   { path: 'login', component: LoginComponent },

@@ -42,10 +42,13 @@ import { NzAffixModule } from 'ng-zorro-antd/affix';
 import { NzCollapseModule } from 'ng-zorro-antd/collapse';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { ShipFilterPipe } from './share/pipes/ship-filter.pipe';
+import { CertificateLoadPipe } from './share/pipes/certificate-load.pipe';
 import { LocalService } from './share/services/local.service';
 import { TableOfContentsComponent } from './Pages/table-of-contents/table-of-contents.component';
 import { ManagingDefaultValuesComponent } from './Pages/managing-default-values/managing-default-values.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { Tm2iComponent } from './Pages/tm2i/tm2i.component';
+import { Tm2iiComponent } from './Pages/tm2ii/tm2ii.component';
 
 registerLocaleData(en);
 
@@ -54,6 +57,8 @@ registerLocaleData(en);
     AppComponent,
     Tm1Component,
     Tm2Component,
+    Tm2iComponent,
+    Tm2iiComponent,
     Tm3Component,
     Tm4Component,
     Tm5Component,
@@ -61,6 +66,7 @@ registerLocaleData(en);
     Tm7Component,
     ReviewComponent,
     ShipFilterPipe,
+    CertificateLoadPipe,
     AccountManagementComponent,
     GeneralParticularsComponent,
     LoginComponent,
