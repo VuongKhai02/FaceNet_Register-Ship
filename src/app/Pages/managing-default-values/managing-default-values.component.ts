@@ -31,13 +31,10 @@ export class ManagingDefaultValuesComponent implements OnInit {
     private httpClient: HttpClient,
     private paramService: ParamValueService
   ) {}
-
   getCertificates() {
     this.certificateService.getCertificateFromAPI().subscribe(
       (data) => {
         this.certificates = data;
-        console.log(data);
-        console.log(this.certificates);
       },
       (err) => {
         console.log(err);
