@@ -106,8 +106,9 @@
           </td>
           <td>
             <a
-              routerLink="{{ link }}"
-              (nzOnConfirm)="editItem(i, generalParticular.reportNo)"
+              (nzOnConfirm)="
+                editItem(generalParticular.id, generalParticular.reportNo)
+              "
               (nzOnCancel)="cancel()"
               nz-popconfirm
               nzPopconfirmTitle="Sure to edit?"
@@ -116,7 +117,7 @@
             >
             <nz-divider nzType="vertical"></nz-divider>
             <a
-              (nzOnConfirm)="deleteItem()"
+              (nzOnConfirm)="deleteItem(generalParticular.id)"
               (nzOnCancel)="cancel()"
               nz-popconfirm
               nzPopconfirmTitle="Sure to delete?"

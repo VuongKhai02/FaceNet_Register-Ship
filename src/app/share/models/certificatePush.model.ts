@@ -1,5 +1,4 @@
-export interface certificate {
-  id: number;
+export interface certificatePush {
   certificateOrganization: string;
   certificateNo: string;
   validStartDate: Date;

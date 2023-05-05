@@ -16,7 +16,7 @@
         <a routerLink="generalParticulars">
           <img src="vinisco.jpg" alt="logo" />
           <!-- <div class="imgLogo"></div> -->
-          <h1>Register Shipping</h1>
+          <h1>Vimisco</h1>
         </a>
       </div>
       <ul
@@ -31,7 +31,11 @@
           <a routerLink="generalParticulars"></a>
         </li>
         <!-- *ngIf="parts.length > 0" -->
-        <li nz-menu-item nzMatchRouter>
+        <li
+          *ngIf="mainData.editMode === true && parts.length > 0"
+          nz-menu-item
+          nzMatchRouter
+        >
           <a routerLink="index"
             ><span nz-icon nzType="unordered-list" nzTheme="outline"></span>
             <span>Index</span></a
@@ -57,7 +61,7 @@
 
               <button
                 style="
-                  margin-left: 110px;
+                  margin-left: 50px;
                   background-color: transparent;
                   border: none;
                 "
@@ -123,7 +127,7 @@
               <span
                 ><a
                   nz-popconfirm
-                  nzPopconfirmTitle="Bạn có chắc muốn xóa?"
+                  nzPopconfirmTitle="Sure to delete?"
                   (nzOnConfirm)="deletePart(i)"
                   (nzOnCancel)="cancel()"
                   >Delete part</a
@@ -133,7 +137,7 @@
           </ul>
         </li>
         <!-- *ngIf="mainData.editMode === true" -->
-        <li nz-menu-item nzMatchRouter>
+        <li *ngIf="mainData.editMode === true" nz-menu-item nzMatchRouter>
           <a routerLink="selectForm"
             ><span nz-icon nzType="folder-add" nzTheme="outline"></span>
             <span>Add new part</span></a
@@ -156,6 +160,16 @@
           <a routerLink="history"
             ><span nz-icon nzType="history" nzTheme="outline"></span
             ><span>History</span></a
+          >
+        </li>
+        <li nz-menu-item nzMatchRouter>
+          <a
+            nz-popconfirm
+            nzPopconfirmTitle="Sure to reset?"
+            (nzOnConfirm)="reset()"
+            (nzOnCancel)="cancel()"
+            ><span nz-icon nzType="retweet" nzTheme="outline"></span
+            ><span>Reset</span></a
           >
         </li>
       </ul>
@@ -185,7 +199,7 @@
           <router-outlet></router-outlet>
         </div>
       </nz-content>
-      <nz-footer>© Copyright Facenet. All Rights Reserved</nz-footer>
+      <nz-footer>© Copyright FaceNet. All Rights Reserved</nz-footer>
     </nz-layout>
   </nz-layout>
 </ng-template>

@@ -1,3 +1,4 @@
+import { ReportIndexesService } from './../../share/services/report-indexes.service';
 import { certificate } from './../../share/models/certificate.model';
 import { GeneralParticular } from './../../share/models/generalParticulars.model';
 import { ship } from 'src/app/share/models/ship.model';
@@ -6,6 +7,11 @@ import { GetDataService } from 'src/app/share/services/get-data.service';
 import { LocalService } from 'src/app/share/services/local.service';
 import { main } from 'src/app/share/models/local.model';
 import { FormGroup, FormControl } from '@angular/forms';
+import { PartsService } from 'src/app/share/services/parts.service';
+import { ReportIndex } from 'src/app/share/models/report-index.model';
+import { partLocal } from 'src/app/share/models/local.model';
+import { NzMessageService } from 'ng-zorro-antd/message';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-history',
@@ -14,7 +20,6 @@ import { FormGroup, FormControl } from '@angular/forms';
 })
 export class HistoryComponent implements OnInit {
   link: string = '/history';
-  // editMode: boolean = false;
   mainData!: main;
   generalParticulars: GeneralParticular[] = [];
   inShipName: string = '';
@@ -23,6 +28,7 @@ export class HistoryComponent implements OnInit {
   inReportNumber: string = '';
   inFirstDate: Date | string = '';
   inEndDate: Date | string = '';
+  parts: partLocal[] = [];
 
   formSearch: FormGroup = new FormGroup({
     name: new FormControl(),
@@ -35,6 +41,9 @@ export class HistoryComponent implements OnInit {
 
   toggleCollapse(): void {}
 
+  /**
+   * Hàm dùng để reset lại các ô input
+   */
   resetForm(): void {
     this.inShipName = '';
     this.inIMONumber = '';
@@ -46,14 +55,17 @@ export class HistoryComponent implements OnInit {
 
   constructor(
     private getdataService: GetDataService,
-    private localService: LocalService
+    private localService: LocalService,
+    private reportIndexService: ReportIndexesService,
+    private partsService: PartsService,
+    private message: NzMessageService,
+    private router: Router
   ) {}
 
   getGeneralParticulars(): void {
     this.getdataService.getGeneralParticularsFromAPI().subscribe(
       (data) => {
         this.generalParticulars = data;
-        console.log(this.generalParticulars);
       },
       (err) => {
         console.log(err);
@@ -73,22 +85,41 @@ export class HistoryComponent implements OnInit {
       }
     );
     this.mainData = this.localService.getMainData();
+    this.parts = this.partsService.setParts();
   }
 
+  /**
+   * Hàm dùng để edit
+   * @param id: id của General paticular
+   * @param report : reportNo của General paticular
+   */
   editItem(id: number, report: string): void {
-    // this.localService.pushMain(id, report);
     this.link = '/generalParticulars';
     this.mainData.editMode = true;
-    // this.getdataService.getGeneralParticularsFromAPI().subscribe(
-    //   (data) => {
-    //     this.mainData.mainId = data[0].id;
-    //   },
-    //   (err) => {
-    //     console.log(err);
-    //   }
-    // );
     this.mainData.reportNumber = report;
-    console.log(this.mainData);
+    this.mainData.mainId = id;
+    this.reportIndexService
+      .getReportIndexFromAPI(this.mainData.mainId)
+      .subscribe(
+        (data) => {
+          for (let i: number = 0; i < data.parts.length; i++) {
+            let newForm: string[] = [];
+            for (let j: number = 0; j < data.parts[i].forms.length; j++) {
+              newForm.push(data.parts[i].forms[j].name);
+            }
+            this.parts.push({
+              partName: data.parts[i].item,
+              forms: newForm,
+              visible: false,
+            });
+          }
+          console.log(this.parts);
+        },
+        (err) => {
+          console.log(err);
+        }
+      );
+    this.router.navigateByUrl('/generalParticulars');
   }
 
   search(): void {
@@ -161,7 +192,33 @@ export class HistoryComponent implements OnInit {
     }
   }
 
-  deleteItem() {}
+  deleteItem(id: number) {
+    this.getdataService.deleteGeneralParticularsFormAPI(id).subscribe(
+      (data) => {
+        this.getdataService.getGeneralParticularsFromAPI().subscribe(
+          (data) => {
+            this.generalParticulars = data;
+          },
+          (err) => {
+            console.log(err);
+            alert('Failure to load data from server');
+          }
+        );
+      },
+      (err) => {
+        console.log(err);
+        this.getdataService.getGeneralParticularsFromAPI().subscribe(
+          (data) => {
+            this.generalParticulars = data;
+          },
+          (err) => {
+            console.log(err);
+            alert('Failure to load data from server');
+          }
+        );
+      }
+    );
+  }
 
   cancel() {}
 }

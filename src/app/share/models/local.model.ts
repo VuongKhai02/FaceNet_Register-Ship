@@ -3,3 +3,9 @@ export interface main {
   reportNumber: string;
   mainId: number;
 }
+
+export interface partLocal {
+  partName: string;
+  forms: any;
+  visible: boolean;
+}

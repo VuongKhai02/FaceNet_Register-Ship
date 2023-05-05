@@ -1,10 +1,8 @@
 import { ship } from './ship.model';
-import { certificate } from './certificate.model';
 
-export interface GeneralParticular {
-  id: number;
-  shipInfo: ship;
-  certificateDTO: certificate;
+export interface GeneralParticularPush {
+  ship: ship;
+  certificateNo: string;
   placeOfMeasurement: string;
   firstDateOfMeasurement: Date;
   lastDateOfMeasurement: Date;
