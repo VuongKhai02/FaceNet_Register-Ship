@@ -1,5 +1,5 @@
-export interface measurementTM4 {
-  structuralMember: string;
+export interface measurementTM6 {
+  description: string;
   item: string;
   detailMeasurement: {
     originalThickness: string;

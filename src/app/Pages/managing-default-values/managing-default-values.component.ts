@@ -5,6 +5,7 @@ import { CertificateService } from 'src/app/share/services/certificate.service';
 import { HttpClient } from '@angular/common/http';
 import { paramValue } from 'src/app/share/models/paramValue.model';
 import { ParamValueService } from 'src/app/share/services/param-value.service';
+import { catchError, retry, throwError } from 'rxjs';
 
 interface newParam {
   param: string;
@@ -113,7 +114,7 @@ export class ManagingDefaultValuesComponent implements OnInit {
     {
       active: false,
       disabled: false,
-      name: 'Structural component (plating/stiffener) of TM5',
+      name: 'Structural component (plating/stiffener) of tm5',
       adding: false,
     },
     {
@@ -188,11 +189,43 @@ export class ManagingDefaultValuesComponent implements OnInit {
   addParam(type: number) {
     this.newParamValue.type = type;
     if (this.newParamValue.type !== -1) {
-      this.paramService.addParamValue(this.newParamValue).subscribe(() => {
-        this.paramService.getParamValueByType(type).subscribe((data) => {
-          this.listParamValue = data;
+      this.paramService
+        .addParamValue(this.newParamValue)
+        .pipe(
+          retry(3),
+          catchError(() => {
+            return throwError('Something went wrong');
+          })
+        )
+        .subscribe({
+          next: () => {
+            this.paramService
+              .getParamValueByType(type)
+              .pipe(
+                retry(3),
+                catchError(() => {
+                  return throwError('Something went wrong');
+                })
+              )
+              .subscribe({
+                next: (data) => {
+                  this.listParamValue = data;
+                },
+                error: (error) => {
+                  this.message.create(
+                    'error',
+                    'Something went wrong, please try later'
+                  );
+                },
+              });
+          },
+          error: () => {
+            this.message.create(
+              'error',
+              'Something went wrong, please try later'
+            );
+          },
         });
-      });
 
       this.newParamValue.param = '';
       this.newParamValue.value = '';
@@ -201,7 +234,7 @@ export class ManagingDefaultValuesComponent implements OnInit {
   }
 
   addItem(i: number) {
-    this.message.create('success', 'Add new success');
+    this.message.create('success', 'Add new value success');
   }
 
   cancel() {}

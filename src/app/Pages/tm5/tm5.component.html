@@ -1,143 +1,436 @@
 <section>
-    <div class="header">
-        <h1 class="title">
-            Report on THICKNESS MEASUREMENT OF W.T./O.T. TRANSVERSE BULKHEADS
-            within the cargo tank or cargo hold spaces
-        </h1>
-        <div class="infor">
-            <p>Ship's name: <span>{{shipName}}</span></p>
-            <p>Class Identity No.: <span>{{classIdentity}}</span></p>
-            <p>Report No.: <span>{{reportNo}}</span></p>
-        </div>
+  <div class="header">
+    <h1 class="title">
+      Report on THICKNESS MEASUREMENT OF W.T./O.T. TRANSVERSE BULKHEADS within
+      the cargo tank or cargo hold spaces
+    </h1>
+    <div class="infor">
+      <p>
+        Ship's name: <span>{{ shipName }}</span>
+      </p>
+      <p>
+        Class Identity No.: <span>{{ classIdentity }}</span>
+      </p>
+      <p>
+        Report No.: <span>{{ reportNo }}</span>
+      </p>
     </div>
-    <div class="addPage">
-        <div style="margin-right:1rem">
-            <button nz-button nzType="primary" nz-popover [(nzPopoverVisible)]="visible"
-                (nzPopoverVisibleChange)="change($event)" nzPopoverTrigger="click" [nzPopoverContent]="contentTemplate">
-                <span>Code</span><span nz-icon nzType="caret-up" nzTheme="outline"></span>
-            </button>
-            <ng-template class="table-code" #contentTemplate>
-                <nz-input-group nzAddOnBefore=" 1 " nzAddOnAfter="%">
-                    <nz-select style="width: 100%;" nzPlaceHolder="Select">
-                        <nz-option nzLabel="20%" nzValue="Plating11"></nz-option>
+  </div>
+  <!-- Start tool bar -->
+  <div class="toolBar">
+    <button nz-button nzType="primary" (click)="showModalPercentManage()">
+      <span nz-icon nzType="reconciliation" nzTheme="outline"></span>Percentage
+      management
+    </button>
+    <nz-modal
+      [nzStyle]="{ top: '20%' }"
+      [(nzVisible)]="isPercentVisible"
+      nzTitle="PERCENTAGE MANAGEMENT"
+      (nzOnCancel)="onCancelModal()"
+      (nzOnOk)="onOkModal()"
+    >
+      <ng-container *nzModalContent>
+        <nz-input-group
+          *ngFor="let param of listStructuralMember; index as index"
+          nzAddOnBefore=" {{ index + 1 }} "
+          nzAddOnAfter="%"
+        >
+          <input
+            nz-input
+            type="text"
+            [disabled]="true"
+            [defaultValue]="param.param"
+            style="width: 70%; cursor: default"
+          />
+          <nz-select
+            style="width: 30%"
+            nzPlaceHolder="Select percent"
+            [(ngModel)]="param.value"
+            (ngModelChange)="setPercent($event, param.param)"
+          >
+            <nz-option nzLabel="20%" nzValue="1"></nz-option>
+            <nz-option nzLabel="20% + 1" nzValue="2"></nz-option>
+            <nz-option nzLabel="25%" nzValue="3"></nz-option>
+            <nz-option nzLabel="30%" nzValue="4"></nz-option>
+          </nz-select>
+        </nz-input-group>
+      </ng-container>
+    </nz-modal>
 
-                        <nz-option nzLabel="25%" nzValue="Plating11"></nz-option>
+    <button class="btn-add-row" nz-button (click)="showModal()">
+      <span nz-icon nzType="file-add" nzTheme="outline"></span> Add row
+    </button>
+    <nz-modal
+      [nzStyle]="{ top: '20%' }"
+      [(nzVisible)]="isAddRowVisible"
+      nzTitle="Enter number of rows"
+      (nzOnCancel)="handleCancel()"
+      (nzOnOk)="handleOk()"
+      nzWidth="300px"
+    >
+      <div *nzModalContent>
+        <input
+          class="input-row-value"
+          nz-input
+          type="number"
+          min="0"
+          max="100"
+          [(ngModel)]="addRowValue"
+          pattern="^(?:[1-9]|[1-9][0-9]|100)$"
+        />
+      </div>
+    </nz-modal>
 
-                        <nz-option nzLabel="30%" nzValue="Plating11"></nz-option>
-                    </nz-select>
-                </nz-input-group>
-                <nz-input-group nzAddOnBefore=" 2 " nzAddOnAfter="%">
-                    <nz-select style="width: 100%;" nzPlaceHolder="Select">
-                        <nz-option nzLabel="20%" nzValue="Plating11"></nz-option>
+    <button nz-button nzType="primary" (click)="onSaveForm()">
+      <span nz-icon nzType="save" nzTheme="outline"></span>Save
+    </button>
+  </div>
+  <!-- End tool bar -->
 
-                        <nz-option nzLabel="25%" nzValue="Plating11"></nz-option>
-
-                        <nz-option nzLabel="30%" nzValue="Plating11"></nz-option>
-                    </nz-select>
-                </nz-input-group>
-                <nz-input-group nzAddOnBefore=" 3 " nzAddOnAfter="%">
-                    <nz-select style="width: 100%;" nzPlaceHolder="Select">
-                        <nz-option nzLabel="20%" nzValue="Plating11"></nz-option>
-
-                        <nz-option nzLabel="25%" nzValue="Plating11"></nz-option>
-
-                        <nz-option nzLabel="30%" nzValue="Plating11"></nz-option>
-                    </nz-select>
-                </nz-input-group>
-                <div style="display: flex; width: 100%;justify-content: space-between; margin-top:.3rem">
-                    <button (click)="clickMe()" nz-button nzType="default">Close</button>
-
-                    <button (click)="clickMe()" nz-button nzType="primary">Save</button>
-
-                </div>
-            </ng-template>
-        </div>
-        <input nz-input type="number" style="width: 20%;" [(ngModel)]="lineAdd" />
-        <button (click)="addRow()" style="width: 45%;margin-left: 4px;">
-            <span nz-icon nzType="file-add" nzTheme="outline"></span>Add
-            {{lineAdd}} rows
-        </button>
-
-        <div class="btn-save">
-            <button nz-button nzType="primary"><span nz-icon nzType="save" nzTheme="outline"></span>Save
-            </button>
-        </div>
-
-    </div>
-
-    <nz-table [nzScroll]="{ y: '400px' }" [nzPageSize]="5" nzBordered class="table" nzTemplateMode="" nzSize="small"
-        #dataTable [nzData]="listOfData" [nzFrontPagination]="false">
-        <thead>
-            <tr class=" th">
-                <th colspan="3">Tank description:</th>
-                <th colspan="11">
-                    <input nz-input nz-input type="text" [defaultValue]="tankHoldDescription" />
-                </th>
-            </tr>
-            <tr class=" th">
-                <th colspan="3">Location of structure:</th>
-                <th colspan="5">
-                    <input nz-input nz-input type="text" [defaultValue]="locationOfStructure" />
-                </th>
-                <th colSpan="1">Frame No.:</th>
-                <th colSpan="5">
-                    <input nz-input type="text" name="locationOfStructure" [defaultValue]="frameNo"
-                        id="locationOfStructure">
-                </th>
-            </tr>
-            <tr class="th">
-                <th rowSpan="2">No.</th>
-                <th rowSpan="2" colSpan="2">STRUCTURAL COMPONENT (PLATING/STIFFENER)</th>
-                <th rowSpan="2">Item</th>
-                <th rowSpan="2">Original Thickness(mm)</th>
-                <th rowSpan="2">Maximum Allowable Dim(mm)</th>
-                <th rowSpan="1" colSpan="2">Gauged</th>
-                <th rowSpan="1" colSpan="3">Diminution P</th>
-                <th rowSpan="1" colSpan="3">Diminution S</th>
-            </tr>
-            <tr class="th">
-                <th>P</th>
-                <th>S</th>
-                <th>mm</th>
-                <th colSpan="2">%</th>
-                <th>mm</th>
-                <th colSpan="2">%</th>
-            </tr>
-        </thead>
-        <tbody class="tb">
-            <tr *ngFor="let data of dataTable.data" class="editable-row">
-                <td>{{data.id}}</td>
-                <td colspan="2">
-                    <nz-select class="my-select" style="width: 100%" nzShowSearch nzAllowClear nzPlaceHolder="Select"
-                        [(ngModel)]="data.structuralComponent">
-                        <nz-option nzLabel="Plating1" nzValue="Plating11"></nz-option>
-                        <nz-option nzLabel="Plating22" nzValue="Plating22"></nz-option>
-                        <nz-option nzLabel="TRANSVERSE WEB FR.170" nzValue="TRANSVERSE WEB FR.170"></nz-option>
-                    </nz-select>
-                </td>
-                <td>
-                    <input nz-input type="text" name="" id="" [(ngModel)]="data.item">
-                </td>
-                <td>
-                    <input nz-input (input)="calMAD(data.id)" (input)="calDimP(data.id)" (input)="calDimS(data.id)"
-                        [(ngModel)]="data.originalThickness">
-                </td>
-                <td>{{data.maximumAllowableDim}}</td>
-                <td>
-                    <input nz-input (input)="calDimP(data.id)" type="text" name="" id="" [(ngModel)]="data.gaugedP">
-                </td>
-                <td>
-                    <input nz-input (input)="calDimS(data.id)" type="text" name="" id="" [(ngModel)]="data.gaugedS">
-                </td>
-                <td>{{data.diminutionPmm}}</td>
-                <td>{{data.diminutionPpercent}}</td>
-                <td style="color: red;">
-                    {{ data.isStandardP ? '' : 'R' }}
-                </td>
-                <td>{{data.diminutionSmm}}</td>
-                <td>{{data.diminutionSpercent}}</td>
-                <td style="color: red;">{{ data.isStandardS ? '' : 'R' }}</td>
-            </tr>
-        </tbody>
-    </nz-table>
+  <!-- Start table -->
+  <nz-table
+    cdkDropList
+    [cdkDropListData]="listRow"
+    (cdkDropListDropped)="onDrop($event)"
+    [nzScroll]="{ x: '1000px', y: '470px' }"
+    [nzPageSize]="5"
+    nzBordered
+    class="table"
+    nzTemplateMode=""
+    nzSize="small"
+  >
+    <thead>
+      <tr class="th">
+        <th colspan="4">Tank description:</th>
+        <th colspan="10">
+          <input nz-input type="text" [(ngModel)]="formTM5.description" />
+        </th>
+      </tr>
+      <tr class="th">
+        <th colspan="4">Location of structure:</th>
+        <th colspan="4">
+          <input
+            nz-input
+            type="text"
+            [(ngModel)]="formTM5.locationOfStructure"
+          />
+        </th>
+        <th colSpan="1">Frame No.:</th>
+        <th colSpan="5">
+          <input nz-input type="number" [(ngModel)]="formTM5.frameNo" />
+        </th>
+      </tr>
+      <tr class="th">
+        <th rowSpan="2">No.</th>
+        <th rowSpan="2" colSpan="3">
+          STRUCTURAL COMPONENT (PLATING/STIFFENER)
+        </th>
+        <th rowSpan="2">Original Thickness(mm)</th>
+        <th rowSpan="2">Maximum Allowable Dim(mm)</th>
+        <th rowSpan="1" colSpan="2">Gauged</th>
+        <th rowSpan="1" colSpan="3">Diminution P</th>
+        <th rowSpan="1" colSpan="3">Diminution S</th>
+      </tr>
+      <tr class="th">
+        <th>P</th>
+        <th>S</th>
+        <th>mm</th>
+        <th colSpan="2">%</th>
+        <th>mm</th>
+        <th colSpan="2">%</th>
+      </tr>
+    </thead>
+    <tbody class="tb">
+      <tr
+        *ngFor="let row of listRow; index as index"
+        class="editable-row"
+        cdkDragLockAxis="y"
+        cdkDragBoundary="table"
+        (cdkDragEnded)="onDragEnded($event)"
+        cdkDrag
+        (mousedown)="selectRow(index)"
+      >
+        <td>{{ index + 1 }}</td>
+        <td colspan="2">
+          <nz-select
+            nzShowSearch
+            nzAllowClear
+            nzPlaceHolder="Select structural component"
+            [(ngModel)]="row.structuralComponent"
+            (ngModelChange)="onSelected($event, index)"
+            style="width: 100%"
+          >
+            <nz-option
+              *ngFor="let param of listStructuralMember"
+              nzLabel="{{ param.param }}"
+              nzValue="{{ param.param }}"
+            ></nz-option>
+          </nz-select>
+        </td>
+        <td>
+          <input
+            nz-input
+            type="text"
+            name=""
+            id=""
+            [(ngModel)]="row.structuralComponentType"
+          />
+        </td>
+        <td>
+          <input
+            nz-input
+            [(ngModel)]="row.measurementDetail.originalThickness"
+          />
+        </td>
+        <td>
+          {{
+            row.measurementDetail.originalThickness !== "" &&
+            convertToNumber(row.measurementDetail.percent) !== 0
+              ? formService.calculateForMaxAlwbDim(
+                  row.measurementDetail.originalThickness,
+                  convertToNumber(row.measurementDetail.percent)
+                )
+              : ""
+          }}
+        </td>
+        <td>
+          <input
+            nz-input
+            type="text"
+            [(ngModel)]="row.measurementDetail.gaugedP"
+          />
+        </td>
+        <td>
+          <input
+            nz-input
+            type="text"
+            [(ngModel)]="row.measurementDetail.gaugedS"
+          />
+        </td>
+        <td>
+          {{
+            formService.checkBeforeCalculate(
+              row.measurementDetail.originalThickness,
+              row.measurementDetail.gaugedP
+            )
+              ? formService.calculateForMm(
+                  row.measurementDetail.originalThickness,
+                  row.measurementDetail.gaugedP
+                )
+              : ""
+          }}
+        </td>
+        <td>
+          {{
+            formService.checkBeforeCalculate(
+              row.measurementDetail.originalThickness,
+              row.measurementDetail.gaugedP
+            )
+              ? formService.calculateForPercent(
+                  row.measurementDetail.originalThickness,
+                  row.measurementDetail.gaugedP
+                )
+              : ""
+          }}
+        </td>
+        <td
+          [ngStyle]="{
+            color:
+              convertToNumber(
+                formService.calculateForMm(
+                  row.measurementDetail.originalThickness,
+                  row.measurementDetail.gaugedP
+                )
+              ) >=
+                convertToNumber(
+                  formService.threePartsFourOfMaxAlwbDim(
+                    formService.calculateForMaxAlwbDim(
+                      row.measurementDetail.originalThickness,
+                      convertToNumber(row.measurementDetail.percent)
+                    )
+                  )
+                ) &&
+              convertToNumber(
+                formService.calculateForMm(
+                  row.measurementDetail.originalThickness,
+                  row.measurementDetail.gaugedP
+                )
+              ) <=
+                convertToNumber(
+                  formService.calculateForMaxAlwbDim(
+                    row.measurementDetail.originalThickness,
+                    convertToNumber(row.measurementDetail.percent)
+                  )
+                )
+                ? '#0000FF'
+                : '#FF3300'
+          }"
+          style="font-weight: 600; font-size: 18px"
+        >
+          {{
+            formService.checkBeforeCalculate(
+              row.measurementDetail.originalThickness,
+              row.measurementDetail.gaugedP
+            ) &&
+            row.measurementDetail.originalThickness !== "" &&
+            convertToNumber(row.measurementDetail.percent) !== 0
+              ? convertToNumber(
+                  formService.calculateForMm(
+                    row.measurementDetail.originalThickness,
+                    row.measurementDetail.gaugedP
+                  )
+                ) >=
+                  convertToNumber(
+                    formService.threePartsFourOfMaxAlwbDim(
+                      formService.calculateForMaxAlwbDim(
+                        row.measurementDetail.originalThickness,
+                        convertToNumber(row.measurementDetail.percent)
+                      )
+                    )
+                  ) &&
+                convertToNumber(
+                  formService.calculateForMm(
+                    row.measurementDetail.originalThickness,
+                    row.measurementDetail.gaugedP
+                  )
+                ) <=
+                  convertToNumber(
+                    formService.calculateForMaxAlwbDim(
+                      row.measurementDetail.originalThickness,
+                      convertToNumber(row.measurementDetail.percent)
+                    )
+                  )
+                ? "S"
+                : convertToNumber(
+                    formService.calculateForMm(
+                      row.measurementDetail.originalThickness,
+                      row.measurementDetail.gaugedP
+                    )
+                  ) >
+                  convertToNumber(
+                    formService.calculateForMaxAlwbDim(
+                      row.measurementDetail.originalThickness,
+                      convertToNumber(row.measurementDetail.percent)
+                    )
+                  )
+                ? "R"
+                : ""
+              : ""
+          }}
+        </td>
+        <td>
+          {{
+            formService.checkBeforeCalculate(
+              row.measurementDetail.originalThickness,
+              row.measurementDetail.gaugedS
+            )
+              ? formService.calculateForMm(
+                  row.measurementDetail.originalThickness,
+                  row.measurementDetail.gaugedS
+                )
+              : ""
+          }}
+        </td>
+        <td>
+          {{
+            formService.checkBeforeCalculate(
+              row.measurementDetail.originalThickness,
+              row.measurementDetail.gaugedS
+            )
+              ? formService.calculateForPercent(
+                  row.measurementDetail.originalThickness,
+                  row.measurementDetail.gaugedS
+                )
+              : ""
+          }}
+        </td>
+        <td
+          [ngStyle]="{
+            color:
+              convertToNumber(
+                formService.calculateForMm(
+                  row.measurementDetail.originalThickness,
+                  row.measurementDetail.gaugedS
+                )
+              ) >=
+                convertToNumber(
+                  formService.threePartsFourOfMaxAlwbDim(
+                    formService.calculateForMaxAlwbDim(
+                      row.measurementDetail.originalThickness,
+                      convertToNumber(row.measurementDetail.percent)
+                    )
+                  )
+                ) &&
+              convertToNumber(
+                formService.calculateForMm(
+                  row.measurementDetail.originalThickness,
+                  row.measurementDetail.gaugedS
+                )
+              ) <=
+                convertToNumber(
+                  formService.calculateForMaxAlwbDim(
+                    row.measurementDetail.originalThickness,
+                    convertToNumber(row.measurementDetail.percent)
+                  )
+                )
+                ? '#0000FF'
+                : '#FF3300'
+          }"
+          style="font-weight: 600; font-size: 18px"
+        >
+          {{
+            formService.checkBeforeCalculate(
+              row.measurementDetail.originalThickness,
+              row.measurementDetail.gaugedS
+            ) &&
+            row.measurementDetail.originalThickness !== "" &&
+            convertToNumber(row.measurementDetail.percent) !== 0
+              ? convertToNumber(
+                  formService.calculateForMm(
+                    row.measurementDetail.originalThickness,
+                    row.measurementDetail.gaugedS
+                  )
+                ) >=
+                  convertToNumber(
+                    formService.threePartsFourOfMaxAlwbDim(
+                      formService.calculateForMaxAlwbDim(
+                        row.measurementDetail.originalThickness,
+                        convertToNumber(row.measurementDetail.percent)
+                      )
+                    )
+                  ) &&
+                convertToNumber(
+                  formService.calculateForMm(
+                    row.measurementDetail.originalThickness,
+                    row.measurementDetail.gaugedS
+                  )
+                ) <=
+                  convertToNumber(
+                    formService.calculateForMaxAlwbDim(
+                      row.measurementDetail.originalThickness,
+                      convertToNumber(row.measurementDetail.percent)
+                    )
+                  )
+                ? "S"
+                : convertToNumber(
+                    formService.calculateForMm(
+                      row.measurementDetail.originalThickness,
+                      row.measurementDetail.gaugedS
+                    )
+                  ) >
+                  convertToNumber(
+                    formService.calculateForMaxAlwbDim(
+                      row.measurementDetail.originalThickness,
+                      convertToNumber(row.measurementDetail.percent)
+                    )
+                  )
+                ? "R"
+                : ""
+              : ""
+          }}
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+  <!-- End Table -->
 </section>

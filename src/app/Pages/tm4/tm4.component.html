@@ -13,58 +13,93 @@
   <!-- Start tool bar -->
   <div class="toolBar">
     <button nz-button nzType="primary" (click)="showModalPercentManage()">
-      Percentage management
+      <span nz-icon nzType="reconciliation" nzTheme="outline"></span>Percentage
+      management
     </button>
     <nz-modal
       [nzStyle]="{ top: '20%' }"
-      [(nzVisible)]="isVisible"
+      [(nzVisible)]="isPercentVisible"
       nzTitle="PERCENTAGE MANAGEMENT"
       (nzOnCancel)="onCancelModal()"
       (nzOnOk)="onOkModal()"
-      [nzOkLoading]="isLoading"
     >
       <ng-container *nzModalContent>
-        <nz-input-group nzAddOnBefore=" 1 " nzAddOnAfter="%">
-          <nz-select style="width: 100%" nzPlaceHolder="Select">
-            <nz-option nzLabel="20%" nzValue="20%"></nz-option>
-
-            <nz-option nzLabel="25%" nzValue="25%"></nz-option>
-
-            <nz-option nzLabel="30%" nzValue="30%"></nz-option>
+        <nz-input-group
+          *ngFor="let param of listStructuralMember; index as index"
+          nzAddOnBefore=" {{ index + 1 }} "
+          nzAddOnAfter="%"
+        >
+          <input
+            nz-input
+            type="text"
+            [disabled]="true"
+            [defaultValue]="param.param"
+            style="width: 70%; cursor: default"
+          />
+          <nz-select
+            style="width: 30%"
+            nzPlaceHolder="Select percent"
+            [(ngModel)]="param.value"
+            (ngModelChange)="setPercent($event, param.param)"
+          >
+            <nz-option nzLabel="20%" nzValue="1"></nz-option>
+            <nz-option nzLabel="20% + 1" nzValue="2"></nz-option>
+            <nz-option nzLabel="25%" nzValue="3"></nz-option>
+            <nz-option nzLabel="30%" nzValue="4"></nz-option>
           </nz-select>
         </nz-input-group>
       </ng-container>
     </nz-modal>
-    <button class="btn-add-row" nz-button (click)="addRowList()">
-      <span nz-icon nzType="file-add" nzTheme="outline"></span> Add row list
+
+    <button class="btn-add-row" nz-button (click)="showModal()">
+      <span nz-icon nzType="file-add" nzTheme="outline"></span> Add row
     </button>
-    <input
-      class="input-row-value"
-      nz-input
-      type="number"
-      [(ngModel)]="addRowValue"
-    />
-    <button class="btn-add-row" nz-button (click)="addRow()">
-      <span nz-icon nzType="file-add" nzTheme="outline"></span> Add
-      {{ addRowValue }} rows to
-      {{
-        structuralMemberSelected !== -1
-          ? listStructuralMember[structuralMemberSelected].structuralMemberTitle
-          : ""
-      }}
-    </button>
-    <button
-      nz-button
-      nzType="primary"
-      (click)="formService.addFormToAPI(API_URL, formTM4)"
+    <nz-modal
+      [nzStyle]="{ top: '20%' }"
+      [(nzVisible)]="isAddRowVisible"
+      nzTitle="Enter number of rows"
+      (nzOnCancel)="handleCancel()"
+      (nzOnOk)="handleOk()"
+      nzWidth="400px"
     >
+      <nz-input-group nzCompact *nzModalContent>
+        <nz-select
+          nzShowSearch
+          nzAllowClear
+          nzPlaceHolder="Select a structural member title"
+          [(ngModel)]="structuralMemberSelected"
+          style="width: 70%"
+        >
+          <nz-option nzLabel="Add a new list" nzValue="-1"></nz-option>
+          <nz-option
+            *ngFor="
+              let structuralMember of formTM4.structuralMemberTM4List;
+              index as index
+            "
+            nzLabel="{{ structuralMember.structuralMemberTitle }}"
+            nzValue="{{ index }}"
+          ></nz-option>
+        </nz-select>
+        <input
+          class="input-row-value"
+          nz-input
+          type="number"
+          min="0"
+          max="100"
+          [(ngModel)]="addRowValue"
+          pattern="^(?:[1-9]|[1-9][0-9]|100)$"
+        />
+      </nz-input-group>
+    </nz-modal>
+
+    <button nz-button nzType="primary" (click)="onSaveForm()">
       <span nz-icon nzType="save" nzTheme="outline"></span>Save
     </button>
   </div>
   <!-- End tool bar -->
 
   <nz-table
-    [nzScroll]="{ y: '400px' }"
+    [nzScroll]="{ y: '480px' }"
     [nzPageSize]="5"
     nzBordered
     class="table"
@@ -103,12 +138,15 @@
         <th colSpan="2">%</th>
       </tr>
     </thead>
-    <tbody *ngFor="let structuralMember of listStructuralMember; index as i">
-      <tr class="tb" (click)="chooseStructuralMember(i)">
+    <tbody
+      *ngFor="let structuralMember of listStructuralMemberTitle; index as i"
+      cdkDropList
+      [cdkDropListData]="listRow"
+      (cdkDropListDropped)="onDrop($event, i)"
+    >
+      <tr class="tb">
         <td>
-          {{
-            i === 0 ? i + 1 : i + structuralMember.measurementTM4List.length + 1
-          }}
+          {{ i === 0 ? i + 1 : countRowBefore(i) + 1 }}
         </td>
         <td colSpan="2">
           <input
@@ -122,14 +160,32 @@
       <tr
         *ngFor="let row of structuralMember.measurementTM4List; index as j"
         class="tb"
+        cdkDragLockAxis="y"
+        cdkDragBoundary="tbody"
+        (cdkDragEnded)="onDragEnded($event)"
+        cdkDrag
+        (mousedown)="selectRow(i, j)"
       >
         <td>
-          {{
-            i === 0 ? j + 2 : j + structuralMember.measurementTM4List.length + 1
-          }}
+          {{ i === 0 ? j + 2 : j + countRowBefore(i) + 2 }}
         </td>
-        <td colSpan="2"></td>
-        <td><input nz-input type="text" /></td>
+        <td colSpan="2">
+          <nz-select
+            nzShowSearch
+            nzAllowClear
+            nzPlaceHolder="Select structural member"
+            [(ngModel)]="row.structuralMember"
+            (ngModelChange)="onSelected($event, i, j)"
+            style="width: 100%"
+          >
+            <nz-option
+              *ngFor="let param of listStructuralMember"
+              nzLabel="{{ param.param }}"
+              nzValue="{{ param.param }}"
+            ></nz-option>
+          </nz-select>
+        </td>
+        <td><input nz-input type="text" [(ngModel)]="row.item" /></td>
         <td>
           <input
             nz-input
@@ -141,10 +197,10 @@
         <td>
           {{
             row.detailMeasurement.originalThickness !== "" &&
-            percentSelected !== 0
+            convertToNumber(row.detailMeasurement.percent) !== 0
               ? formService.calculateForMaxAlwbDim(
                   row.detailMeasurement.originalThickness,
-                  percentSelected
+                  convertToNumber(row.detailMeasurement.percent)
                 )
               : ""
           }}
@@ -204,7 +260,7 @@
                   formService.threePartsFourOfMaxAlwbDim(
                     formService.calculateForMaxAlwbDim(
                       row.detailMeasurement.originalThickness,
-                      percentSelected
+                      convertToNumber(row.detailMeasurement.percent)
                     )
                   )
                 ) &&
@@ -217,7 +273,7 @@
                 convertToNumber(
                   formService.calculateForMaxAlwbDim(
                     row.detailMeasurement.originalThickness,
-                    percentSelected
+                    convertToNumber(row.detailMeasurement.percent)
                   )
                 )
                 ? '#0000FF'
@@ -231,7 +287,7 @@
               row.detailMeasurement.gaugedP
             ) &&
             row.detailMeasurement.originalThickness !== "" &&
-            percentSelected !== 0
+            convertToNumber(row.detailMeasurement.percent) !== 0
               ? convertToNumber(
                   formService.calculateForMm(
                     row.detailMeasurement.originalThickness,
@@ -242,7 +298,7 @@
                     formService.threePartsFourOfMaxAlwbDim(
                       formService.calculateForMaxAlwbDim(
                         row.detailMeasurement.originalThickness,
-                        percentSelected
+                        convertToNumber(row.detailMeasurement.percent)
                       )
                     )
                   ) &&
@@ -255,7 +311,7 @@
                   convertToNumber(
                     formService.calculateForMaxAlwbDim(
                       row.detailMeasurement.originalThickness,
-                      percentSelected
+                      convertToNumber(row.detailMeasurement.percent)
                     )
                   )
                 ? "S"
@@ -268,7 +324,7 @@
                   convertToNumber(
                     formService.calculateForMaxAlwbDim(
                       row.detailMeasurement.originalThickness,
-                      percentSelected
+                      convertToNumber(row.detailMeasurement.percent)
                     )
                   )
                 ? "R"
@@ -315,7 +371,7 @@
                   formService.threePartsFourOfMaxAlwbDim(
                     formService.calculateForMaxAlwbDim(
                       row.detailMeasurement.originalThickness,
-                      percentSelected
+                      convertToNumber(row.detailMeasurement.percent)
                     )
                   )
                 ) &&
@@ -328,7 +384,7 @@
                 convertToNumber(
                   formService.calculateForMaxAlwbDim(
                     row.detailMeasurement.originalThickness,
-                    percentSelected
+                    convertToNumber(row.detailMeasurement.percent)
                   )
                 )
                 ? '#0000FF'
@@ -342,7 +398,7 @@
               row.detailMeasurement.gaugedS
             ) &&
             row.detailMeasurement.originalThickness !== "" &&
-            percentSelected !== 0
+            convertToNumber(row.detailMeasurement.percent) !== 0
               ? convertToNumber(
                   formService.calculateForMm(
                     row.detailMeasurement.originalThickness,
@@ -353,7 +409,7 @@
                     formService.threePartsFourOfMaxAlwbDim(
                       formService.calculateForMaxAlwbDim(
                         row.detailMeasurement.originalThickness,
-                        percentSelected
+                        convertToNumber(row.detailMeasurement.percent)
                       )
                     )
                   ) &&
@@ -366,7 +422,7 @@
                   convertToNumber(
                     formService.calculateForMaxAlwbDim(
                       row.detailMeasurement.originalThickness,
-                      percentSelected
+                      convertToNumber(row.detailMeasurement.percent)
                     )
                   )
                 ? "S"
@@ -379,7 +435,7 @@
                   convertToNumber(
                     formService.calculateForMaxAlwbDim(
                       row.detailMeasurement.originalThickness,
-                      percentSelected
+                      convertToNumber(row.detailMeasurement.percent)
                     )
                   )
                 ? "R"

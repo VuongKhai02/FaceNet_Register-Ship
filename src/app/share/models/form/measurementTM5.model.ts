@@ -1,7 +1,7 @@
-export interface measurementTM4 {
-  structuralMember: string;
-  item: string;
-  detailMeasurement: {
+export interface measurementTM5 {
+  structuralComponentType: string;
+  structuralComponent: string;
+  measurementDetail: {
     originalThickness: string;
     maxAlwbDim: string;
     gaugedP: string;

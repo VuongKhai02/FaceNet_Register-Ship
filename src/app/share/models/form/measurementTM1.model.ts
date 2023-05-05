@@ -6,11 +6,13 @@ export interface measurementTM1 {
     maxAlwbDim: string;
     gaugedP: string;
     gaugedS: string;
+    percent: string;
   };
   afterReadingMeasurementDetail: {
     originalThickness: string;
     maxAlwbDim: string;
     gaugedP: string;
     gaugedS: string;
+    percent: string;
   };
 }

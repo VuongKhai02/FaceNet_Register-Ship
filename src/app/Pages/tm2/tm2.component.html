@@ -21,20 +21,36 @@
         ></nz-option>
       </nz-select>
     </nz-input-group>
-    <input
-      class="input-row-value"
-      nz-input
-      type="number"
-      [(ngModel)]="addRowValue"
-    />
-    <button nz-button class="btn-add-row" (click)="addRow()">
-      <span nz-icon nzType="file-add" nzTheme="outline"></span> Add
-      {{ addRowValue }} rows
+
+    <button class="btn-add-row" nz-button (click)="showModal()">
+      <span nz-icon nzType="file-add" nzTheme="outline"></span> Add row
     </button>
+    <nz-modal
+      [nzStyle]="{ top: '20%' }"
+      [(nzVisible)]="isVisible"
+      nzTitle="Enter number of rows"
+      (nzOnCancel)="handleCancel()"
+      (nzOnOk)="handleOk()"
+      nzWidth="300px"
+    >
+      <div *nzModalContent>
+        <input
+          class="input-row-value"
+          nz-input
+          type="number"
+          min="0"
+          max="100"
+          [(ngModel)]="addRowValue"
+          pattern="^(?:[1-9]|[1-9][0-9]|100)$"
+        />
+      </div>
+    </nz-modal>
+
     <button
       nz-button
       nzType="primary"
-      (click)="formService.addFormToAPI(API_URL, formTM2)"
+      (click)="onSaveForm()"
+      [nzLoading]="isLoadingSaveButton"
     >
       <span nz-icon nzType="save" nzTheme="outline"></span>Save
     </button>
@@ -43,7 +59,10 @@
 
   <!-- Start table -->
   <nz-table
-    [nzScroll]="{ x: '2000px', y: '400px' }"
+    cdkDropList
+    [cdkDropListData]="listRow"
+    (cdkDropListDropped)="onDrop($event)"
+    [nzScroll]="{ x: '2300px', y: '480px' }"
     [nzPageSize]="5"
     nzBordered
     class="table"
@@ -53,32 +72,62 @@
     <!-- Start table header -->
     <thead>
       <tr class="th">
-        <th colspan="35">STRENGTH DECK AND SHEER STRAKE PLATING</th>
+        <th colspan="37">STRENGTH DECK AND SHEER STRAKE PLATING</th>
       </tr>
       <tr class="th">
-        <th colspan="2"></th>
+        <th colspan="4"></th>
         <th colspan="11">
           1st TRANSVERSE SECTION <br />at Fr.No.:
-          <input class="input-frame-no" type="number" nz-input />
+          <input
+            class="input-frame-no"
+            type="number"
+            nz-input
+            [(ngModel)]="firstTransverseSectionFrom"
+          />
           ~
-          <input class="input-frame-no" type="number" nz-input />
+          <input
+            class="input-frame-no"
+            type="number"
+            nz-input
+            [(ngModel)]="firstTransverseSectionTo"
+          />
         </th>
         <th colspan="11">
           2nd TRANSVERSE SECTION <br />at Fr.No.:
-          <input class="input-frame-no" type="number" nz-input />
+          <input
+            class="input-frame-no"
+            type="number"
+            nz-input
+            [(ngModel)]="secondTransverseSectionFrom"
+          />
           ~
-          <input class="input-frame-no" type="number" nz-input />
+          <input
+            class="input-frame-no"
+            type="number"
+            nz-input
+            [(ngModel)]="secondTransverseSectionTo"
+          />
         </th>
         <th colspan="11">
           3rd TRANSVERSE SECTION <br />at Fr.No.:
-          <input class="input-frame-no" type="number" nz-input />
+          <input
+            class="input-frame-no"
+            type="number"
+            nz-input
+            [(ngModel)]="thirdTransverseSectionFrom"
+          />
           ~
-          <input class="input-frame-no" type="number" nz-input />
+          <input
+            class="input-frame-no"
+            type="number"
+            nz-input
+            [(ngModel)]="thirdTransverseSectionTo"
+          />
         </th>
       </tr>
       <tr class="th">
-        <th rowspan="2">No.</th>
-        <th rowspan="2">STRAKE POSITION</th>
+        <th rowspan="2" nzLeft>No.</th>
+        <th rowspan="2" colspan="3">STRAKE POSITION</th>
         <th rowspan="2">No. or Letter</th>
         <th rowspan="2">Original Thickness (mm)</th>
         <th rowSpan="2">Max Alwb Dim</th>
@@ -124,11 +173,21 @@
 
     <!-- Start table body -->
     <tbody>
-      <tr *ngFor="let row of listRow; index as index" class="tb">
-        <td>{{ index + 1 }}</td>
-        <td><input nz-input type="text" (ngModel)="(row.strakePosition)" /></td>
+      <tr
+        *ngFor="let row of listRow; index as index"
+        class="tb"
+        cdkDragLockAxis="y"
+        cdkDragBoundary="table"
+        (cdkDragEnded)="onDragEnded($event)"
+        cdkDrag
+        (mousedown)="selectRow(index)"
+      >
+        <td nzLeft>{{ index + 1 }}</td>
+        <td colSpan="3">
+          <input nz-input type="text" [(ngModel)]="row.strakePosition" />
+        </td>
         <!-- Start transverse first section -->
-        <td><input nz-input type="text" (ngModel)="(row.noOrLetter)" /></td>
+        <td><input nz-input type="text" [(ngModel)]="row.noOrLetter" /></td>
         <td>
           <input
             nz-input

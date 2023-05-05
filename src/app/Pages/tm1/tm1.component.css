@@ -64,9 +64,7 @@ input {
 }
 
 .input-row-value {
-  max-width: 50px;
   text-align: center;
-  margin-left: 20px;
 }
 
 input::-webkit-outer-spin-button,
@@ -87,17 +85,6 @@ input::-webkit-inner-spin-button {
   cursor: pointer;
   z-index: 99999;
   position: relative;
-}
-
-.plus-icon {
-  display: none;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-}
-
-.plus-icon:hover {
-  cursor: pointer;
 }
 
 input.ng-dirty.ng-invalid {

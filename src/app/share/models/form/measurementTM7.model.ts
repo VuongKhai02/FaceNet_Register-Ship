@@ -1,21 +1,20 @@
-export interface measurementTM3 {
-  structuralMember: string;
-  noOrLetter: string;
-  firstTransverseSectionMeasurementDetail: {
+export interface measurementTM7 {
+  name: string;
+  upperPart: {
     originalThickness: string;
     maxAlwbDim: string;
     gaugedP: string;
     gaugedS: string;
     percent: string;
   };
-  secondTransverseSectionMeasurementDetail: {
+  midPart: {
     originalThickness: string;
     maxAlwbDim: string;
     gaugedP: string;
     gaugedS: string;
     percent: string;
   };
-  thirdTransverseSectionMeasurementDetail: {
+  lowerPart: {
     originalThickness: string;
     maxAlwbDim: string;
     gaugedP: string;

@@ -1,104 +1,978 @@
 <section>
-    <div class="header">
-        <h1 class="title">
-            Report on THICKNESS MEASUREMENT OF CARGO HOLD SIDE SHELL FRAMES
-        </h1>
-        <div class="infor">
-            <p>Ship's name<span>{{shipName}}</span></p>
-            <p>Class Identity No.<span>{{classID}}</span></p>
-            <p>Report No.<span>VMC.UTM.22.046/5255939</span></p>
-        </div>
+  <div class="header">
+    <h1 class="title">
+      Report on THICKNESS MEASUREMENT OF CARGO HOLD SIDE SHELL FRAMES
+    </h1>
+    <div class="infor">
+      <p>Ship's name<span></span></p>
+      <p>Class Identity No.<span></span></p>
+      <p>Report No.<span>VMC.UTM.22.046/5255939</span></p>
     </div>
-    <div class="addPage">
-        <input nz-input type="number" [(ngModel)]="addRowValue">
-        <button (click)="addRow()"><span nz-icon nzType="file-add" nzTheme="outline"></span>Add {{addRowValue}} rows</button>
-        <button>Save</button>
-    </div>
-    <nz-table nzTemplateMode="" [nzScroll]="{y:'240px'}" nzBordered="" nzSize="small">
-        <thead>
-            <tr class="th">
-                <th colspan="26">CARDO HOLD NO. 1</th>
-            </tr>
-            <tr class="th">
-                <th colspan="2"></th>
-                <th colspan="8">UPPER PART</th>
-                <th colspan="8">MID PART</th>
-                <th colspan="8">LOWER PART</th>
-            </tr>
-            <tr class="th">
-                <th colSpan="2" rowspan="2">FRAME NUMBER</th>
-                <th rowspan="2">Org. Thk. (mm)</th>
-                <th>Max Alwb Dim.</th>
-                <th colspan="2">Gauged</th>
-                <th colspan="2">Diminution <span>P</span></th>
-                <th colspan="2">Diminution <span>S</span></th>
-                <th rowspan="2">Org. Thk. (mm)</th>
-                <th>Max Alwb Dim.</th>
-                <th colspan="2">Gauged</th>
-                <th colspan="2">Diminution <span>P</span></th>
-                <th colspan="2">Diminution <span>S</span></th>
-                <th rowspan="2">Org. Thk. (mm)</th>
-                <th>Max Alwb Dim.</th>
-                <th colspan="2">Gauged</th>
-                <th colspan="2">Diminution <span>P</span></th>
-                <th colspan="2">Diminution <span>S</span></th>
-            </tr>
-            <tr class="th">
-                <th>mm</th>
-                <th>P</th>
-                <th>S</th>
-                <th>mm</th>
-                <th>%</th>
-                <th>mm</th>
-                <th>%</th>
-                <th>mm</th>
-                <th>P</th>
-                <th>S</th>
-                <th>mm</th>
-                <th>%</th>
-                <th>mm</th>
-                <th>%</th>
-                <th>mm</th>
-                <th>P</th>
-                <th>S</th>
-                <th>mm</th>
-                <th>%</th>
-                <th>mm</th>
-                <th>%</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let i of rowValue">
-                <td colspan="2"><input type="text" nz-input></td>
-                <td><input type="text" nz-input [(ngModel)]="i.upPart.orgThk"></td>
-                <td>{{(toNumber(i.upPart.orgThk)<=0.1)?"":(toNumber(i.upPart.orgThk)*0.25).toFixed(1)}}</td>
-                <td><input type="text" nz-input [(ngModel)]="i.upPart.gauP"></td>
-                <td><input type="text" nz-input [(ngModel)]="i.upPart.gauS"></td>
-                <td>{{(toNumber(i.upPart.orgThk)<=0 || toNumber(i.upPart.gauP) <=0)?"":(toNumber(i.upPart.orgThk)-toNumber(i.upPart.gauP)).toFixed(1)}}</td>
-                <td>{{(toNumber(i.upPart.orgThk)<=0||toNumber(i.upPart.gauP)<=0)?"":((toNumber(i.upPart.orgThk)-toNumber(i.upPart.gauP))*100/toNumber(i.upPart.orgThk)).toFixed(1)}}</td>
-                <td>{{(toNumber(i.upPart.orgThk)<=0 || toNumber(i.upPart.gauS) <=0)?"":(toNumber(i.upPart.orgThk)-toNumber(i.upPart.gauS)).toFixed(1)}}</td>
-                <td>{{(toNumber(i.upPart.orgThk)<=0||toNumber(i.upPart.gauS)<=0)?"":parseInt(((toNumber(i.upPart.orgThk)-toNumber(i.upPart.gauS))*1000/toNumber(i.upPart.orgThk)))/10}}</td>
+  </div>
+  <div class="toolBar">
+    <button nz-button nzType="primary" (click)="showModalPercentManage()">
+      <span nz-icon nzType="reconciliation" nzTheme="outline"></span>Percentage
+      management
+    </button>
+    <nz-modal
+      [nzStyle]="{ top: '20%' }"
+      [(nzVisible)]="isPercentVisible"
+      nzTitle="PERCENTAGE MANAGEMENT"
+      (nzOnCancel)="onCancelModal()"
+      (nzOnOk)="onOkModal()"
+    >
+      <ng-container *nzModalContent>
+        <nz-input-group
+          *ngFor="let param of listStructuralMember; index as index"
+          nzAddOnBefore=" {{ index + 1 }} "
+          nzAddOnAfter="%"
+        >
+          <input
+            nz-input
+            type="text"
+            [disabled]="true"
+            [defaultValue]="param.param"
+            style="width: 70%; cursor: default"
+          />
+          <nz-select
+            style="width: 30%"
+            nzPlaceHolder="Select percent"
+            [(ngModel)]="param.value"
+            (ngModelChange)="setPercent($event, param.param)"
+          >
+            <nz-option nzLabel="20%" nzValue="1"></nz-option>
+            <nz-option nzLabel="20% + 1" nzValue="2"></nz-option>
+            <nz-option nzLabel="25%" nzValue="3"></nz-option>
+            <nz-option nzLabel="30%" nzValue="4"></nz-option>
+          </nz-select>
+        </nz-input-group>
+      </ng-container>
+    </nz-modal>
 
+    <button class="btn-add-row" nz-button (click)="showModal()">
+      <span nz-icon nzType="file-add" nzTheme="outline"></span> Add row
+    </button>
+    <nz-modal
+      [nzStyle]="{ top: '20%' }"
+      [(nzVisible)]="isAddRowVisible"
+      nzTitle="Enter number of rows"
+      (nzOnCancel)="handleCancel()"
+      (nzOnOk)="handleOk()"
+      nzWidth="400px"
+    >
+      <nz-input-group nzCompact *nzModalContent>
+        <nz-select
+          nzShowSearch
+          nzAllowClear
+          nzPlaceHolder="Select a structural member title"
+          [(ngModel)]="structuralMemberSelected"
+          style="width: 70%"
+        >
+          <nz-option nzLabel="Add a new list" nzValue="{{ -1 }}"></nz-option>
+          <nz-option
+            *ngFor="
+              let structuralDescription of formTM7.frameNumberList;
+              index as index
+            "
+            nzLabel="{{ structuralDescription.name }}"
+            nzValue="{{ index }}"
+          ></nz-option>
+        </nz-select>
+        <input
+          class="input-row-value"
+          nz-input
+          type="number"
+          min="0"
+          max="100"
+          [(ngModel)]="addRowValue"
+          pattern="^(?:[1-9]|[1-9][0-9]|100)$"
+        />
+      </nz-input-group>
+    </nz-modal>
 
-                <td><input type="text" nz-input [(ngModel)]="i.midPart.orgThk"></td>
-                <td>{{(toNumber(i.midPart.orgThk)<=0.1)?"":(toNumber(i.midPart.orgThk)*0.25).toFixed(1)}}</td>
-                <td><input type="text" nz-input [(ngModel)]="i.midPart.gauP"></td>
-                <td><input type="text" nz-input [(ngModel)]="i.midPart.gauS"></td>
-                <td>{{(toNumber(i.midPart.orgThk)<=0 || toNumber(i.midPart.gauP) <=0)?"":(toNumber(i.midPart.orgThk)-toNumber(i.midPart.gauP)).toFixed(1)}}</td>
-                <td>{{(toNumber(i.midPart.orgThk)<=0||toNumber(i.midPart.gauP)<=0)?"":((toNumber(i.midPart.orgThk)-toNumber(i.midPart.gauP))*100/toNumber(i.midPart.orgThk)).toFixed(1)}}</td>
-                <td>{{(toNumber(i.midPart.orgThk)<=0 || toNumber(i.midPart.gauS) <=0)?"":(toNumber(i.midPart.orgThk)-toNumber(i.midPart.gauS)).toFixed(1)}}</td>
-                <td>{{(toNumber(i.midPart.orgThk)<=0||toNumber(i.midPart.gauS)<=0)?"":parseInt(((toNumber(i.midPart.orgThk)-toNumber(i.midPart.gauS))*1000/toNumber(i.midPart.orgThk)))/10}}</td>
+    <button nz-button nzType="primary" (click)="onSaveForm()">
+      <span nz-icon nzType="save" nzTheme="outline"></span>Save
+    </button>
+  </div>
+  <nz-table
+    nzTemplateMode=""
+    [nzScroll]="{ x: '2500px', y: '480px' }"
+    nzBordered=""
+    nzSize="small"
+  >
+    <thead>
+      <tr class="th">
+        <th rowspan="4">No.</th>
+        <th colspan="33">CARDO HOLD NO. 1</th>
+      </tr>
+      <tr class="th">
+        <th colspan="3"></th>
+        <th colspan="10">UPPER PART</th>
+        <th colspan="10">MID PART</th>
+        <th colspan="10">LOWER PART</th>
+      </tr>
+      <tr class="th">
+        <th colSpan="3" rowspan="2">FRAME NUMBER</th>
+        <th rowspan="2">Org. Thk. (mm)</th>
+        <th>Max Alwb Dim.</th>
+        <th colspan="2">Gauged</th>
+        <th colspan="3">Diminution <span>P</span></th>
+        <th colspan="3">Diminution <span>S</span></th>
+        <th rowspan="2">Org. Thk. (mm)</th>
+        <th>Max Alwb Dim.</th>
+        <th colspan="2">Gauged</th>
+        <th colspan="3">Diminution <span>P</span></th>
+        <th colspan="3">Diminution <span>S</span></th>
+        <th rowspan="2">Org. Thk. (mm)</th>
+        <th>Max Alwb Dim.</th>
+        <th colspan="2">Gauged</th>
+        <th colspan="3">Diminution <span>P</span></th>
+        <th colspan="3">Diminution <span>S</span></th>
+      </tr>
+      <tr class="th">
+        <th>mm</th>
+        <th>P</th>
+        <th>S</th>
+        <th>mm</th>
+        <th colspan="2">%</th>
+        <th>mm</th>
+        <th colspan="2">%</th>
+        <th>mm</th>
+        <th>P</th>
+        <th>S</th>
+        <th>mm</th>
+        <th colspan="2">%</th>
+        <th>mm</th>
+        <th colspan="2">%</th>
+        <th>mm</th>
+        <th>P</th>
+        <th>S</th>
+        <th>mm</th>
+        <th colspan="2">%</th>
+        <th>mm</th>
+        <th colspan="2">%</th>
+      </tr>
+    </thead>
+    <tbody
+      *ngFor="let frameNumber of listFrameNumber; index as i"
+      cdkDropList
+      [cdkDropListData]="listRow"
+      (cdkDropListDropped)="onDrop($event, i)"
+    >
+      <tr class="tb">
+        <td>
+          {{ i === 0 ? i + 1 : countRowBefore(i) + 1 }}
+        </td>
+        <td colSpan="3">
+          <input nz-input type="text" (ngModel)="(frameNumber.name)" />
+        </td>
+        <td colSpan="30"></td>
+      </tr>
+      <tr
+        *ngFor="let row of frameNumber.measurementTM7List; index as j"
+        class="tb"
+        cdkDragLockAxis="y"
+        cdkDragBoundary="tbody"
+        (cdkDragEnded)="onDragEnded($event)"
+        cdkDrag
+        (mousedown)="selectRow(i, j)"
+      >
+        <td>
+          {{ i === 0 ? j + 2 : j + countRowBefore(i) + 2 }}
+        </td>
+        <td colSpan="3">
+          <nz-select
+            nzShowSearch
+            nzAllowClear
+            nzPlaceHolder="Select a description"
+            [(ngModel)]="row.name"
+            (ngModelChange)="onSelected($event, i, j)"
+            style="width: 100%"
+          >
+            <nz-option
+              *ngFor="let param of listStructuralMember"
+              nzLabel="{{ param.param }}"
+              nzValue="{{ param.param }}"
+            ></nz-option>
+          </nz-select>
+        </td>
+        <!-- Start upper part -->
+        <td>
+          <input
+            nz-input
+            type="number"
+            min="0"
+            [(ngModel)]="row.upperPart.originalThickness"
+          />
+        </td>
+        <td>
+          {{
+            row.upperPart.originalThickness !== "" && percentSelected !== 0
+              ? formService.calculateForMaxAlwbDim(
+                  row.upperPart.originalThickness,
+                  convertToNumber(row.upperPart.percent)
+                )
+              : ""
+          }}
+        </td>
+        <td>
+          <input
+            nz-input
+            type="number"
+            min="0"
+            [(ngModel)]="row.upperPart.gaugedP"
+          />
+        </td>
+        <td>
+          <input
+            nz-input
+            type="number"
+            min="0"
+            [(ngModel)]="row.upperPart.gaugedS"
+          />
+        </td>
+        <td>
+          {{
+            formService.checkBeforeCalculate(
+              row.upperPart.originalThickness,
+              row.upperPart.gaugedP
+            )
+              ? formService.calculateForMm(
+                  row.upperPart.originalThickness,
+                  row.upperPart.gaugedP
+                )
+              : ""
+          }}
+        </td>
+        <td>
+          {{
+            formService.checkBeforeCalculate(
+              row.upperPart.originalThickness,
+              row.upperPart.gaugedP
+            )
+              ? formService.calculateForPercent(
+                  row.upperPart.originalThickness,
+                  row.upperPart.gaugedP
+                )
+              : ""
+          }}
+        </td>
+        <td
+          [ngStyle]="{
+            color:
+              convertToNumber(
+                formService.calculateForMm(
+                  row.upperPart.originalThickness,
+                  row.upperPart.gaugedP
+                )
+              ) >=
+                convertToNumber(
+                  formService.threePartsFourOfMaxAlwbDim(
+                    formService.calculateForMaxAlwbDim(
+                      row.upperPart.originalThickness,
+                      convertToNumber(row.upperPart.percent)
+                    )
+                  )
+                ) &&
+              convertToNumber(
+                formService.calculateForMm(
+                  row.upperPart.originalThickness,
+                  row.upperPart.gaugedP
+                )
+              ) <=
+                convertToNumber(
+                  formService.calculateForMaxAlwbDim(
+                    row.upperPart.originalThickness,
+                    convertToNumber(row.upperPart.percent)
+                  )
+                )
+                ? '#0000FF'
+                : '#FF3300'
+          }"
+          style="font-weight: 600; font-size: 18px"
+        >
+          {{
+            formService.checkBeforeCalculate(
+              row.upperPart.originalThickness,
+              row.upperPart.gaugedP
+            ) &&
+            row.upperPart.originalThickness !== "" &&
+            convertToNumber(row.upperPart.percent) !== 0
+              ? convertToNumber(
+                  formService.calculateForMm(
+                    row.upperPart.originalThickness,
+                    row.upperPart.gaugedP
+                  )
+                ) >=
+                  convertToNumber(
+                    formService.threePartsFourOfMaxAlwbDim(
+                      formService.calculateForMaxAlwbDim(
+                        row.upperPart.originalThickness,
+                        convertToNumber(row.upperPart.percent)
+                      )
+                    )
+                  ) &&
+                convertToNumber(
+                  formService.calculateForMm(
+                    row.upperPart.originalThickness,
+                    row.upperPart.gaugedP
+                  )
+                ) <=
+                  convertToNumber(
+                    formService.calculateForMaxAlwbDim(
+                      row.upperPart.originalThickness,
+                      convertToNumber(row.upperPart.percent)
+                    )
+                  )
+                ? "S"
+                : convertToNumber(
+                    formService.calculateForMm(
+                      row.upperPart.originalThickness,
+                      row.upperPart.gaugedP
+                    )
+                  ) >
+                  convertToNumber(
+                    formService.calculateForMaxAlwbDim(
+                      row.upperPart.originalThickness,
+                      convertToNumber(row.upperPart.percent)
+                    )
+                  )
+                ? "R"
+                : ""
+              : ""
+          }}
+        </td>
+        <td>
+          {{
+            formService.checkBeforeCalculate(
+              row.upperPart.originalThickness,
+              row.upperPart.gaugedS
+            )
+              ? formService.calculateForMm(
+                  row.upperPart.originalThickness,
+                  row.upperPart.gaugedS
+                )
+              : ""
+          }}
+        </td>
+        <td>
+          {{
+            formService.checkBeforeCalculate(
+              row.upperPart.originalThickness,
+              row.upperPart.gaugedS
+            )
+              ? formService.calculateForPercent(
+                  row.upperPart.originalThickness,
+                  row.upperPart.gaugedS
+                )
+              : ""
+          }}
+        </td>
+        <td
+          [ngStyle]="{
+            color:
+              convertToNumber(
+                formService.calculateForMm(
+                  row.upperPart.originalThickness,
+                  row.upperPart.gaugedS
+                )
+              ) >=
+                convertToNumber(
+                  formService.threePartsFourOfMaxAlwbDim(
+                    formService.calculateForMaxAlwbDim(
+                      row.upperPart.originalThickness,
+                      convertToNumber(row.upperPart.percent)
+                    )
+                  )
+                ) &&
+              convertToNumber(
+                formService.calculateForMm(
+                  row.upperPart.originalThickness,
+                  row.upperPart.gaugedS
+                )
+              ) <=
+                convertToNumber(
+                  formService.calculateForMaxAlwbDim(
+                    row.upperPart.originalThickness,
+                    convertToNumber(row.upperPart.percent)
+                  )
+                )
+                ? '#0000FF'
+                : '#FF3300'
+          }"
+          style="font-weight: 600; font-size: 18px"
+        >
+          {{
+            formService.checkBeforeCalculate(
+              row.upperPart.originalThickness,
+              row.upperPart.gaugedS
+            ) &&
+            row.upperPart.originalThickness !== "" &&
+            convertToNumber(row.upperPart.percent) !== 0
+              ? convertToNumber(
+                  formService.calculateForMm(
+                    row.upperPart.originalThickness,
+                    row.upperPart.gaugedS
+                  )
+                ) >=
+                  convertToNumber(
+                    formService.threePartsFourOfMaxAlwbDim(
+                      formService.calculateForMaxAlwbDim(
+                        row.upperPart.originalThickness,
+                        convertToNumber(row.upperPart.percent)
+                      )
+                    )
+                  ) &&
+                convertToNumber(
+                  formService.calculateForMm(
+                    row.upperPart.originalThickness,
+                    row.upperPart.gaugedS
+                  )
+                ) <=
+                  convertToNumber(
+                    formService.calculateForMaxAlwbDim(
+                      row.upperPart.originalThickness,
+                      convertToNumber(row.upperPart.percent)
+                    )
+                  )
+                ? "S"
+                : convertToNumber(
+                    formService.calculateForMm(
+                      row.upperPart.originalThickness,
+                      row.upperPart.gaugedS
+                    )
+                  ) >
+                  convertToNumber(
+                    formService.calculateForMaxAlwbDim(
+                      row.upperPart.originalThickness,
+                      convertToNumber(row.upperPart.percent)
+                    )
+                  )
+                ? "R"
+                : ""
+              : ""
+          }}
+        </td>
+        <!-- End upper part -->
 
+        <!-- Start mid part -->
+        <td>
+          <input
+            nz-input
+            type="number"
+            min="0"
+            [(ngModel)]="row.midPart.originalThickness"
+          />
+        </td>
+        <td>
+          {{
+            row.midPart.originalThickness !== "" && percentSelected !== 0
+              ? formService.calculateForMaxAlwbDim(
+                  row.midPart.originalThickness,
+                  convertToNumber(row.midPart.percent)
+                )
+              : ""
+          }}
+        </td>
+        <td>
+          <input
+            nz-input
+            type="number"
+            min="0"
+            [(ngModel)]="row.midPart.gaugedP"
+          />
+        </td>
+        <td>
+          <input
+            nz-input
+            type="number"
+            min="0"
+            [(ngModel)]="row.midPart.gaugedS"
+          />
+        </td>
+        <td>
+          {{
+            formService.checkBeforeCalculate(
+              row.midPart.originalThickness,
+              row.midPart.gaugedP
+            )
+              ? formService.calculateForMm(
+                  row.midPart.originalThickness,
+                  row.midPart.gaugedP
+                )
+              : ""
+          }}
+        </td>
+        <td>
+          {{
+            formService.checkBeforeCalculate(
+              row.midPart.originalThickness,
+              row.midPart.gaugedP
+            )
+              ? formService.calculateForPercent(
+                  row.midPart.originalThickness,
+                  row.midPart.gaugedP
+                )
+              : ""
+          }}
+        </td>
+        <td
+          [ngStyle]="{
+            color:
+              convertToNumber(
+                formService.calculateForMm(
+                  row.midPart.originalThickness,
+                  row.midPart.gaugedP
+                )
+              ) >=
+                convertToNumber(
+                  formService.threePartsFourOfMaxAlwbDim(
+                    formService.calculateForMaxAlwbDim(
+                      row.midPart.originalThickness,
+                      convertToNumber(row.midPart.percent)
+                    )
+                  )
+                ) &&
+              convertToNumber(
+                formService.calculateForMm(
+                  row.midPart.originalThickness,
+                  row.midPart.gaugedP
+                )
+              ) <=
+                convertToNumber(
+                  formService.calculateForMaxAlwbDim(
+                    row.midPart.originalThickness,
+                    convertToNumber(row.midPart.percent)
+                  )
+                )
+                ? '#0000FF'
+                : '#FF3300'
+          }"
+          style="font-weight: 600; font-size: 18px"
+        >
+          {{
+            formService.checkBeforeCalculate(
+              row.midPart.originalThickness,
+              row.midPart.gaugedP
+            ) &&
+            row.midPart.originalThickness !== "" &&
+            convertToNumber(row.midPart.percent) !== 0
+              ? convertToNumber(
+                  formService.calculateForMm(
+                    row.midPart.originalThickness,
+                    row.midPart.gaugedP
+                  )
+                ) >=
+                  convertToNumber(
+                    formService.threePartsFourOfMaxAlwbDim(
+                      formService.calculateForMaxAlwbDim(
+                        row.midPart.originalThickness,
+                        convertToNumber(row.midPart.percent)
+                      )
+                    )
+                  ) &&
+                convertToNumber(
+                  formService.calculateForMm(
+                    row.midPart.originalThickness,
+                    row.midPart.gaugedP
+                  )
+                ) <=
+                  convertToNumber(
+                    formService.calculateForMaxAlwbDim(
+                      row.midPart.originalThickness,
+                      convertToNumber(row.midPart.percent)
+                    )
+                  )
+                ? "S"
+                : convertToNumber(
+                    formService.calculateForMm(
+                      row.midPart.originalThickness,
+                      row.midPart.gaugedP
+                    )
+                  ) >
+                  convertToNumber(
+                    formService.calculateForMaxAlwbDim(
+                      row.midPart.originalThickness,
+                      convertToNumber(row.midPart.percent)
+                    )
+                  )
+                ? "R"
+                : ""
+              : ""
+          }}
+        </td>
+        <td>
+          {{
+            formService.checkBeforeCalculate(
+              row.midPart.originalThickness,
+              row.midPart.gaugedS
+            )
+              ? formService.calculateForMm(
+                  row.midPart.originalThickness,
+                  row.midPart.gaugedS
+                )
+              : ""
+          }}
+        </td>
+        <td>
+          {{
+            formService.checkBeforeCalculate(
+              row.midPart.originalThickness,
+              row.midPart.gaugedS
+            )
+              ? formService.calculateForPercent(
+                  row.midPart.originalThickness,
+                  row.midPart.gaugedS
+                )
+              : ""
+          }}
+        </td>
+        <td
+          [ngStyle]="{
+            color:
+              convertToNumber(
+                formService.calculateForMm(
+                  row.midPart.originalThickness,
+                  row.midPart.gaugedS
+                )
+              ) >=
+                convertToNumber(
+                  formService.threePartsFourOfMaxAlwbDim(
+                    formService.calculateForMaxAlwbDim(
+                      row.midPart.originalThickness,
+                      convertToNumber(row.midPart.percent)
+                    )
+                  )
+                ) &&
+              convertToNumber(
+                formService.calculateForMm(
+                  row.midPart.originalThickness,
+                  row.midPart.gaugedS
+                )
+              ) <=
+                convertToNumber(
+                  formService.calculateForMaxAlwbDim(
+                    row.midPart.originalThickness,
+                    convertToNumber(row.midPart.percent)
+                  )
+                )
+                ? '#0000FF'
+                : '#FF3300'
+          }"
+          style="font-weight: 600; font-size: 18px"
+        >
+          {{
+            formService.checkBeforeCalculate(
+              row.midPart.originalThickness,
+              row.midPart.gaugedS
+            ) &&
+            row.midPart.originalThickness !== "" &&
+            convertToNumber(row.midPart.percent) !== 0
+              ? convertToNumber(
+                  formService.calculateForMm(
+                    row.midPart.originalThickness,
+                    row.midPart.gaugedS
+                  )
+                ) >=
+                  convertToNumber(
+                    formService.threePartsFourOfMaxAlwbDim(
+                      formService.calculateForMaxAlwbDim(
+                        row.midPart.originalThickness,
+                        convertToNumber(row.midPart.percent)
+                      )
+                    )
+                  ) &&
+                convertToNumber(
+                  formService.calculateForMm(
+                    row.midPart.originalThickness,
+                    row.midPart.gaugedS
+                  )
+                ) <=
+                  convertToNumber(
+                    formService.calculateForMaxAlwbDim(
+                      row.midPart.originalThickness,
+                      convertToNumber(row.midPart.percent)
+                    )
+                  )
+                ? "S"
+                : convertToNumber(
+                    formService.calculateForMm(
+                      row.midPart.originalThickness,
+                      row.midPart.gaugedS
+                    )
+                  ) >
+                  convertToNumber(
+                    formService.calculateForMaxAlwbDim(
+                      row.midPart.originalThickness,
+                      convertToNumber(row.midPart.percent)
+                    )
+                  )
+                ? "R"
+                : ""
+              : ""
+          }}
+        </td>
+        <!-- End mid part -->
 
-                <td><input type="text" nz-input [(ngModel)]="i.lowPart.orgThk"></td>
-                <td>{{(toNumber(i.lowPart.orgThk)<=0.1)?"":(toNumber(i.lowPart.orgThk)*0.25).toFixed(1)}}</td>
-                <td><input type="text" nz-input [(ngModel)]="i.lowPart.gauP"></td>
-                <td><input type="text" nz-input [(ngModel)]="i.lowPart.gauS"></td>
-                <td>{{(toNumber(i.lowPart.orgThk)<=0 || toNumber(i.lowPart.gauP) <=0)?"":(toNumber(i.lowPart.orgThk)-toNumber(i.lowPart.gauP)).toFixed(1)}}</td>
-                <td>{{(toNumber(i.lowPart.orgThk)<=0||toNumber(i.lowPart.gauP)<=0)?"":((toNumber(i.lowPart.orgThk)-toNumber(i.lowPart.gauP))*100/toNumber(i.lowPart.orgThk)).toFixed(1)}}</td>
-                <td>{{(toNumber(i.lowPart.orgThk)<=0 || toNumber(i.lowPart.gauS) <=0)?"":(toNumber(i.lowPart.orgThk)-toNumber(i.lowPart.gauS)).toFixed(1)}}</td>
-                <td>{{(toNumber(i.lowPart.orgThk)<=0||toNumber(i.lowPart.gauS)<=0)?"":parseInt(((toNumber(i.lowPart.orgThk)-toNumber(i.lowPart.gauS))*1000/toNumber(i.lowPart.orgThk)))/10}}</td>
-            </tr>
-        </tbody>
-    </nz-table>
+        <!-- Start lower part -->
+        <td>
+          <input
+            nz-input
+            type="number"
+            min="0"
+            [(ngModel)]="row.lowerPart.originalThickness"
+          />
+        </td>
+        <td>
+          {{
+            row.lowerPart.originalThickness !== "" && percentSelected !== 0
+              ? formService.calculateForMaxAlwbDim(
+                  row.lowerPart.originalThickness,
+                  convertToNumber(row.lowerPart.percent)
+                )
+              : ""
+          }}
+        </td>
+        <td>
+          <input
+            nz-input
+            type="number"
+            min="0"
+            [(ngModel)]="row.lowerPart.gaugedP"
+          />
+        </td>
+        <td>
+          <input
+            nz-input
+            type="number"
+            min="0"
+            [(ngModel)]="row.lowerPart.gaugedS"
+          />
+        </td>
+        <td>
+          {{
+            formService.checkBeforeCalculate(
+              row.lowerPart.originalThickness,
+              row.lowerPart.gaugedP
+            )
+              ? formService.calculateForMm(
+                  row.lowerPart.originalThickness,
+                  row.lowerPart.gaugedP
+                )
+              : ""
+          }}
+        </td>
+        <td>
+          {{
+            formService.checkBeforeCalculate(
+              row.lowerPart.originalThickness,
+              row.lowerPart.gaugedP
+            )
+              ? formService.calculateForPercent(
+                  row.lowerPart.originalThickness,
+                  row.lowerPart.gaugedP
+                )
+              : ""
+          }}
+        </td>
+        <td
+          [ngStyle]="{
+            color:
+              convertToNumber(
+                formService.calculateForMm(
+                  row.lowerPart.originalThickness,
+                  row.lowerPart.gaugedP
+                )
+              ) >=
+                convertToNumber(
+                  formService.threePartsFourOfMaxAlwbDim(
+                    formService.calculateForMaxAlwbDim(
+                      row.lowerPart.originalThickness,
+                      convertToNumber(row.lowerPart.percent)
+                    )
+                  )
+                ) &&
+              convertToNumber(
+                formService.calculateForMm(
+                  row.lowerPart.originalThickness,
+                  row.lowerPart.gaugedP
+                )
+              ) <=
+                convertToNumber(
+                  formService.calculateForMaxAlwbDim(
+                    row.lowerPart.originalThickness,
+                    convertToNumber(row.lowerPart.percent)
+                  )
+                )
+                ? '#0000FF'
+                : '#FF3300'
+          }"
+          style="font-weight: 600; font-size: 18px"
+        >
+          {{
+            formService.checkBeforeCalculate(
+              row.lowerPart.originalThickness,
+              row.lowerPart.gaugedP
+            ) &&
+            row.lowerPart.originalThickness !== "" &&
+            convertToNumber(row.lowerPart.percent) !== 0
+              ? convertToNumber(
+                  formService.calculateForMm(
+                    row.lowerPart.originalThickness,
+                    row.lowerPart.gaugedP
+                  )
+                ) >=
+                  convertToNumber(
+                    formService.threePartsFourOfMaxAlwbDim(
+                      formService.calculateForMaxAlwbDim(
+                        row.lowerPart.originalThickness,
+                        convertToNumber(row.lowerPart.percent)
+                      )
+                    )
+                  ) &&
+                convertToNumber(
+                  formService.calculateForMm(
+                    row.lowerPart.originalThickness,
+                    row.lowerPart.gaugedP
+                  )
+                ) <=
+                  convertToNumber(
+                    formService.calculateForMaxAlwbDim(
+                      row.lowerPart.originalThickness,
+                      convertToNumber(row.lowerPart.percent)
+                    )
+                  )
+                ? "S"
+                : convertToNumber(
+                    formService.calculateForMm(
+                      row.lowerPart.originalThickness,
+                      row.lowerPart.gaugedP
+                    )
+                  ) >
+                  convertToNumber(
+                    formService.calculateForMaxAlwbDim(
+                      row.lowerPart.originalThickness,
+                      convertToNumber(row.lowerPart.percent)
+                    )
+                  )
+                ? "R"
+                : ""
+              : ""
+          }}
+        </td>
+        <td>
+          {{
+            formService.checkBeforeCalculate(
+              row.lowerPart.originalThickness,
+              row.lowerPart.gaugedS
+            )
+              ? formService.calculateForMm(
+                  row.lowerPart.originalThickness,
+                  row.lowerPart.gaugedS
+                )
+              : ""
+          }}
+        </td>
+        <td>
+          {{
+            formService.checkBeforeCalculate(
+              row.lowerPart.originalThickness,
+              row.lowerPart.gaugedS
+            )
+              ? formService.calculateForPercent(
+                  row.lowerPart.originalThickness,
+                  row.lowerPart.gaugedS
+                )
+              : ""
+          }}
+        </td>
+        <td
+          [ngStyle]="{
+            color:
+              convertToNumber(
+                formService.calculateForMm(
+                  row.lowerPart.originalThickness,
+                  row.lowerPart.gaugedS
+                )
+              ) >=
+                convertToNumber(
+                  formService.threePartsFourOfMaxAlwbDim(
+                    formService.calculateForMaxAlwbDim(
+                      row.lowerPart.originalThickness,
+                      convertToNumber(row.lowerPart.percent)
+                    )
+                  )
+                ) &&
+              convertToNumber(
+                formService.calculateForMm(
+                  row.lowerPart.originalThickness,
+                  row.lowerPart.gaugedS
+                )
+              ) <=
+                convertToNumber(
+                  formService.calculateForMaxAlwbDim(
+                    row.lowerPart.originalThickness,
+                    convertToNumber(row.lowerPart.percent)
+                  )
+                )
+                ? '#0000FF'
+                : '#FF3300'
+          }"
+          style="font-weight: 600; font-size: 18px"
+        >
+          {{
+            formService.checkBeforeCalculate(
+              row.lowerPart.originalThickness,
+              row.lowerPart.gaugedS
+            ) &&
+            row.lowerPart.originalThickness !== "" &&
+            convertToNumber(row.lowerPart.percent) !== 0
+              ? convertToNumber(
+                  formService.calculateForMm(
+                    row.lowerPart.originalThickness,
+                    row.lowerPart.gaugedS
+                  )
+                ) >=
+                  convertToNumber(
+                    formService.threePartsFourOfMaxAlwbDim(
+                      formService.calculateForMaxAlwbDim(
+                        row.lowerPart.originalThickness,
+                        convertToNumber(row.lowerPart.percent)
+                      )
+                    )
+                  ) &&
+                convertToNumber(
+                  formService.calculateForMm(
+                    row.lowerPart.originalThickness,
+                    row.lowerPart.gaugedS
+                  )
+                ) <=
+                  convertToNumber(
+                    formService.calculateForMaxAlwbDim(
+                      row.lowerPart.originalThickness,
+                      convertToNumber(row.lowerPart.percent)
+                    )
+                  )
+                ? "S"
+                : convertToNumber(
+                    formService.calculateForMm(
+                      row.lowerPart.originalThickness,
+                      row.lowerPart.gaugedS
+                    )
+                  ) >
+                  convertToNumber(
+                    formService.calculateForMaxAlwbDim(
+                      row.lowerPart.originalThickness,
+                      convertToNumber(row.lowerPart.percent)
+                    )
+                  )
+                ? "R"
+                : ""
+              : ""
+          }}
+        </td>
+        <!-- End lower part -->
+      </tr>
+    </tbody>
+  </nz-table>
 </section>
