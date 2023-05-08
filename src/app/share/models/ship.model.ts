@@ -1,7 +1,7 @@
 export interface ship {
   name: string;
-  imoNumber: number;
-  absIdentification: number;
+  imoNumber: string;
+  absIdentification: string;
   postOfRegistry: string;
   grossTons: number;
   deadweight: number;

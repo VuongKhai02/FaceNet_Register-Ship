@@ -6,5 +6,6 @@ export interface measurementTM4 {
     maxAlwbDim: string;
     gaugedP: string;
     gaugedS: string;
+    percent: string;
   };
 }

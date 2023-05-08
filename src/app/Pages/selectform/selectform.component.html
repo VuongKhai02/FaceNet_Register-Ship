@@ -11,7 +11,7 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <input formControlName="formName" nz-input id="" />
+          <input [(ngModel)]="item" formControlName="formName" nz-input id="" />
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
@@ -27,22 +27,32 @@
             nzPlaceHolder="Select form"
             formControlName="formSelect"
           >
-            <nz-option nzLabel="Tm1" nzValue="Tm1"></nz-option>
-            <nz-option nzLabel="Tm2" nzValue="Tm2"></nz-option>
-            <nz-option nzLabel="Tm3" nzValue="Tm3"></nz-option>
-            <nz-option nzLabel="Tm4" nzValue="Tm4"></nz-option>
-            <nz-option nzLabel="Tm5" nzValue="Tm5"></nz-option>
-            <nz-option nzLabel="Tm6" nzValue="Tm6"></nz-option>
-            <nz-option nzLabel="Tm7" nzValue="Tm7"></nz-option>
+            <nz-option nzLabel="FORM TM1" nzValue="FORM TM1"></nz-option>
+            <nz-option nzLabel="FORM TM2(i)" nzValue="FORM TM2(i)"></nz-option>
+            <nz-option
+              nzLabel="FORM TM2(ii)"
+              nzValue="FORM TM2(ii)"
+            ></nz-option>
+            <nz-option nzLabel="FORM TM3" nzValue="FORM TM3"></nz-option>
+            <nz-option nzLabel="FORM TM4" nzValue="FORM TM4"></nz-option>
+            <nz-option nzLabel="FORM TM5" nzValue="FORM TM5"></nz-option>
+            <nz-option nzLabel="FORM TM6" nzValue="FORM TM6"></nz-option>
+            <nz-option nzLabel="FORM TM7" nzValue="FORM TM7"></nz-option>
           </nz-select>
         </nz-form-control>
       </nz-form-item>
     </form>
   </div>
-  <a routerLink="/{{ selectForm.value.formSelect[0] }}">
+  <a>
     <div class="btnBox">
       <button (click)="submit()" nz-button nzType="primary">
-        Save and create
+        <span
+          style="color: white"
+          nz-icon
+          nzType="save"
+          nzTheme="outline"
+        ></span>
+        <span style="color: white">Save and create</span>
       </button>
     </div>
   </a>

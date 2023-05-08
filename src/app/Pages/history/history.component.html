@@ -1,47 +1,67 @@
 <section>
   <h1>History</h1>
-  <form class="ant-advanced-search-form">
+  <form [formGroup]="formSearch" class="ant-advanced-search-form">
     <div class="controlBox">
       <nz-form-item>
-        <nz-form-label>Ship's name</nz-form-label>
-        <nz-form-control>
-          <input nz-input />
+        <nz-form-label [nzSm]="9" [nzXs]="24">Ship's name</nz-form-label>
+        <nz-form-control [nzSm]="15" [nzXs]="24" [nzSm]="15" [nzXs]="24">
+          <input formControlName="name" [(ngModel)]="inShipName" nz-input />
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
-        <nz-form-label>IMO number </nz-form-label>
-        <nz-form-control>
-          <input nz-input />
+        <nz-form-label [nzSm]="9" [nzXs]="24">IMO number </nz-form-label>
+        <nz-form-control [nzSm]="15" [nzXs]="24">
+          <input formControlName="imo" [(ngModel)]="inIMONumber" nz-input />
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
-        <nz-form-label>Date of build</nz-form-label>
-        <nz-form-control>
-          <nz-date-picker style="width: 100%"></nz-date-picker>
+        <nz-form-label [nzSm]="9" [nzXs]="24">Date of build</nz-form-label>
+        <nz-form-control [nzSm]="15" [nzXs]="24">
+          <nz-date-picker
+            [(ngModel)]="inDateOfBuild"
+            formControlName="dateOfBuild"
+            style="width: 100%"
+          ></nz-date-picker>
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
-        <nz-form-label>Certificate No.</nz-form-label>
-        <nz-form-control>
-          <input nz-input />
+        <nz-form-label [nzSm]="9" [nzXs]="24">Report Number</nz-form-label>
+        <nz-form-control [nzSm]="15" [nzXs]="24">
+          <input
+            formControlName="report"
+            [(ngModel)]="inReportNumber"
+            nz-input
+          />
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
-        <nz-form-label>Classification society</nz-form-label>
-        <nz-form-control>
-          <input nz-input />
+        <nz-form-label [nzSm]="9" [nzXs]="24"
+          >First date of measurement</nz-form-label
+        >
+        <nz-form-control [nzSm]="15" [nzXs]="24">
+          <nz-date-picker
+            [(ngModel)]="inFirstDate"
+            formControlName="firstDate"
+            style="width: 100%"
+          ></nz-date-picker>
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
-        <nz-form-label>Certificate valid from</nz-form-label>
-        <nz-form-control>
-          <nz-range-picker style="width: 100%"></nz-range-picker>
+        <nz-form-label [nzSm]="9" [nzXs]="24"
+          >Last date of measurement</nz-form-label
+        >
+        <nz-form-control [nzSm]="15" [nzXs]="24">
+          <nz-date-picker
+            [(ngModel)]="inEndDate"
+            formControlName="endDate"
+            style="width: 100%"
+          ></nz-date-picker>
         </nz-form-control>
       </nz-form-item>
     </div>
-    <div nz-row>
+    <div nz-row style="margin-right: 24px; margin-bottom: 24px">
       <div nz-col [nzSpan]="24" class="search-area">
-        <button nz-button [nzType]="'primary'">
+        <button (click)="search()" nz-button [nzType]="'primary'">
           <span nz-icon nzType="file-search" nzTheme="outline"></span>Search
         </button>
         <button nz-button (click)="resetForm()">Clear</button>
@@ -49,216 +69,60 @@
     </div>
   </form>
   <div class="search-result-list">
-    <nz-table #borderedTable nzBordered [nzScroll]="{ y: '450px' }">
+    <nz-table
+      #borderedTable
+      nzTemplateMode="true"
+      nzBordered
+      [nzScroll]="{ y: '450px' }"
+    >
       <thead class="titleTable">
         <tr class="titleTable">
-          <th class="titleTable" nzWidth="60px">Stt</th>
-          <th class="titleTable">Ship's name</th>
-          <th class="titleTable">IMO number</th>
-          <th class="titleTable">Date of build</th>
-          <th class="titleTable">Certificate No.</th>
-          <th class="titleTable">Classification society</th>
-          <th class="titleTable">Certificate valid from</th>
-          <th class="titleTable">Action</th>
+          <th class="titleTable" nzWidth="60px">No.</th>
+          <th class="titleTable" nzWidth="250px">Ship's name</th>
+          <th class="titleTable" nzWidth="115px">IMO number</th>
+          <th class="titleTable" nzWidth="120px">Date of build</th>
+          <th class="titleTable" nzWidth="200px">Report Number</th>
+          <th class="titleTable" nzWidth="120px">First date of measurement</th>
+          <th class="titleTable" nzWidth="120px">Last date of measurement</th>
+          <th class="titleTable" nzWidth="120px">Action</th>
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
+        <tr *ngFor="let generalParticular of generalParticulars; let i = index">
+          <td style="text-align: center">{{ i + 1 }}</td>
           <td>
-            <a nz-popconfirm> Edit</a>
-            <nz-divider nzType="vertical"></nz-divider>
-            <a nz-popconfirm nzPopconfirmTitle="Sure to delete?">Delete</a>
+            {{ generalParticular.shipInfo.name }}
           </td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
+          <td>{{ generalParticular.shipInfo.imoNumber }}</td>
           <td>
-            <a nz-popconfirm> Edit</a>
+            {{ generalParticular.shipInfo.dateOfBuild }}
+          </td>
+          <td>{{ generalParticular.reportNo }}</td>
+          <td>
+            {{ generalParticular.firstDateOfMeasurement }}
+          </td>
+          <td>
+            {{ generalParticular.lastDateOfMeasurement }}
+          </td>
+          <td>
+            <a
+              (nzOnConfirm)="
+                editItem(generalParticular.id, generalParticular.reportNo)
+              "
+              (nzOnCancel)="cancel()"
+              nz-popconfirm
+              nzPopconfirmTitle="Sure to edit?"
+            >
+              Edit</a
+            >
             <nz-divider nzType="vertical"></nz-divider>
-            <a nz-popconfirm nzPopconfirmTitle="Bạn có chắc muốn xóa?"
+            <a
+              (nzOnConfirm)="deleteItem(generalParticular.id)"
+              (nzOnCancel)="cancel()"
+              nz-popconfirm
+              nzPopconfirmTitle="Sure to delete?"
               >Delete</a
             >
-          </td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td>
-            <a nz-popconfirm> Edit</a>
-            <nz-divider nzType="vertical"></nz-divider>
-            <a nz-popconfirm nzPopconfirmTitle="Sure to delete?">Delete</a>
-          </td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td>
-            <a nz-popconfirm> Edit</a>
-            <nz-divider nzType="vertical"></nz-divider>
-            <a nz-popconfirm nzPopconfirmTitle="Sure to delete?">Delete</a>
-          </td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td>
-            <a nz-popconfirm> Edit</a>
-            <nz-divider nzType="vertical"></nz-divider>
-            <a nz-popconfirm nzPopconfirmTitle="Sure to delete?">Delete</a>
-          </td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td>
-            <a nz-popconfirm> Edit</a>
-            <nz-divider nzType="vertical"></nz-divider>
-            <a nz-popconfirm nzPopconfirmTitle="Sure to delete?">Delete</a>
-          </td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td>
-            <a nz-popconfirm> Edit</a>
-            <nz-divider nzType="vertical"></nz-divider>
-            <a nz-popconfirm nzPopconfirmTitle="Sure to delete?">Delete</a>
-          </td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td>
-            <a nz-popconfirm> Edit</a>
-            <nz-divider nzType="vertical"></nz-divider>
-            <a nz-popconfirm nzPopconfirmTitle="Sure to delete?">Delete</a>
-          </td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td>
-            <a nz-popconfirm> Edit</a>
-            <nz-divider nzType="vertical"></nz-divider>
-            <a nz-popconfirm nzPopconfirmTitle="Sure to delete?">Delete</a>
-          </td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td>
-            <a nz-popconfirm> Edit</a>
-            <nz-divider nzType="vertical"></nz-divider>
-            <a nz-popconfirm nzPopconfirmTitle="Sure to delete?">Delete</a>
-          </td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td>
-            <a nz-popconfirm> Edit</a>
-            <nz-divider nzType="vertical"></nz-divider>
-            <a nz-popconfirm nzPopconfirmTitle="Sure to delete?">Delete</a>
-          </td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td>
-            <a nz-popconfirm> Edit</a>
-            <nz-divider nzType="vertical"></nz-divider>
-            <a nz-popconfirm nzPopconfirmTitle="Sure to delete?">Delete</a>
-          </td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td>
-            <a nz-popconfirm> Edit</a>
-            <nz-divider nzType="vertical"></nz-divider>
-            <a nz-popconfirm nzPopconfirmTitle="Sure to delete?">Delete</a>
-          </td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td>
-            <a nz-popconfirm> Edit</a>
-            <nz-divider nzType="vertical"></nz-divider>
-            <a nz-popconfirm nzPopconfirmTitle="Sure to delete?">Delete</a>
           </td>
         </tr>
       </tbody>

@@ -11,7 +11,12 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <input formControlName="shipName" nz-input id="" />
+          <input
+            [(ngModel)]="inShipName"
+            formControlName="shipName"
+            nz-input
+            id=""
+          />
         </nz-form-control>
         <button
           style="color: white; margin-left: 10px"
@@ -28,13 +33,66 @@
           <span style="color: white">Search</span>
         </button>
         <nz-modal
+          nzWidth="70%"
           [(nzVisible)]="isVisible"
           nzTitle="Result"
           (nzOnCancel)="handleCancel()"
           (nzOnOk)="handleOk()"
+          nzOkDisabled="true"
+          nzOkDisabled="true"
+          nzFooter=" "
         >
           <ng-container *nzModalContent>
-            <p>No result</p>
+            <div
+              *ngIf="
+                shipname === null && IMONum === null && ABSNum === null;
+                else tableBox
+              "
+            >
+              <h1>No result</h1>
+            </div>
+            <ng-template #tableBox>
+              <nz-table
+                [nzScroll]="{ y: '300px' }"
+                nzTemplateMode="true"
+                #borderedTable
+                nzBordered
+              >
+                <thead class="titleTable">
+                  <tr class="titleTable">
+                    <th class="titleTable" nzWidth="60px">No.</th>
+                    <th class="titleTable">Ship's name</th>
+                    <th class="titleTable" nzWidth="200px">IMO number</th>
+                    <th class="titleTable" nzWidth="200px">
+                      ABS identification number
+                    </th>
+                    <th class="titleTable" nzWidth="80px">Action</th>
+                  </tr>
+                </thead>
+                <tbody
+                  *ngFor="
+                    let ship of ships | shipFilter : shipname : IMONum : ABSNum;
+                    let i = index
+                  "
+                >
+                  <tr>
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ ship.name }}</td>
+                    <td>{{ ship.imoNumber }}</td>
+                    <td>{{ ship.absIdentification }}</td>
+                    <td>
+                      <a
+                        (nzOnConfirm)="addShip(ship)"
+                        (nzOnCancel)="cancel()"
+                        nz-popconfirm
+                        nzPopconfirmTitle="Sure to add?"
+                        >Add</a
+                      >
+                    </td>
+                  </tr>
+                </tbody>
+              </nz-table>
+            </ng-template>
           </ng-container>
         </nz-modal>
       </nz-form-item>
@@ -48,7 +106,12 @@
           nzErrorTip="Please input website!"
         >
           <nz-input-group nzSearch>
-            <input formControlName="imoNumber" type="text" nz-input />
+            <input
+              [(ngModel)]="inIMO"
+              formControlName="imoNumber"
+              type="text"
+              nz-input
+            />
           </nz-input-group>
         </nz-form-control>
       </nz-form-item>
@@ -61,7 +124,12 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <input formControlName="absIdentificationNumber" nz-input id="" />
+          <input
+            [(ngModel)]="inABS"
+            formControlName="absIdentificationNumber"
+            nz-input
+            id=""
+          />
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
@@ -73,7 +141,12 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <input formControlName="portOfRegistry" nz-input id="" />
+          <input
+            [(ngModel)]="inPortOf"
+            formControlName="portOfRegistry"
+            nz-input
+            id=""
+          />
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
@@ -85,7 +158,12 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <input formControlName="grossTons" nz-input id="" />
+          <input
+            [(ngModel)]="inGrossTon"
+            formControlName="grossTons"
+            nz-input
+            id=""
+          />
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
@@ -97,7 +175,12 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <input formControlName="deadweight" nz-input id="" />
+          <input
+            [(ngModel)]="inDeadWeith"
+            formControlName="deadweight"
+            nz-input
+            id=""
+          />
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
@@ -110,7 +193,8 @@
           nzErrorTip="Please input website!"
         >
           <nz-date-picker
-            style="width: 100%"
+            [(ngModel)]="inDateBuild"
+            style="width: 100%; font-weight: bold"
             formControlName="dateOfBuild"
           ></nz-date-picker>
         </nz-form-control>
@@ -124,7 +208,12 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <input formControlName="classificationSociety" nz-input id="" />
+          <input
+            [(ngModel)]="inClassi"
+            formControlName="classificationSociety"
+            nz-input
+            id=""
+          />
         </nz-form-control>
       </nz-form-item>
 
@@ -138,7 +227,9 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <span>VIET NAM MARINE INDUSTRY AND SERVICE JOINT STOCK COMPANY</span>
+          <span style="color: black; font-weight: bold"
+            >VIET NAM MARINE INDUSTRY AND SERVICE JOINT STOCK COMPANY</span
+          >
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
@@ -150,11 +241,35 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <input
+          <!-- <input
             formControlName="thicknessMeasurementCompanCertifiedBy"
             nz-input
             id=""
-          />
+          /> -->
+          <nz-select
+            [(ngModel)]="inCertificateName"
+            (ngModelChange)="seclectChange()"
+            formControlName="thicknessMeasurementCompanCertifiedBy"
+            style="width: 100%"
+          >
+            <nz-option
+              *ngFor="let certificate of certificates; let i = index"
+              [nzLabel]="certificate.certificateOrganization"
+              [nzValue]="certificate.certificateOrganization"
+            ></nz-option>
+          </nz-select>
+          <!-- <nz-select
+            nzMode="tags"
+            [nzTokenSeparators]="[',']"
+            nzPlaceHolder="Select form"
+            formControlName="formSelect"
+          >
+            <nz-option
+              *ngFor="let certificate of certificates"
+              [nzLabel]="certificate.certificateOrganization"
+              [nzValue]="certificate.certificateOrganization"
+            ></nz-option>
+          </nz-select> -->
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
@@ -166,7 +281,12 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <input formControlName="certificateNo" nz-input id="" />
+          <input
+            [(ngModel)]="inCertificateNo"
+            formControlName="certificateNo"
+            nz-input
+            id=""
+          />
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
@@ -179,6 +299,7 @@
           nzErrorTip="Please input website!"
         >
           <nz-range-picker
+            [(ngModel)]="inCertificateDate"
             style="width: 100%"
             formControlName="certificateValidFrom"
           ></nz-range-picker>
@@ -193,7 +314,12 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <input formControlName="placeOfMeasurement" nz-input id="" />
+          <input
+            [(ngModel)]="inPlaceOf"
+            formControlName="placeOfMeasurement"
+            nz-input
+            id=""
+          />
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
@@ -206,6 +332,7 @@
           nzErrorTip="Please input website!"
         >
           <nz-date-picker
+            [(ngModel)]="inFirstDate"
             style="width: 100%"
             formControlName="firstDateOfMeasurement"
           ></nz-date-picker>
@@ -221,6 +348,7 @@
           nzErrorTip="Please input website!"
         >
           <nz-date-picker
+            [(ngModel)]="inLastDate"
             style="width: 100%"
             formControlName="lastDateOfMeasurement"
           ></nz-date-picker>
@@ -235,10 +363,15 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <input formControlName="specialSurvey" nz-input id="" />
+          <input
+            [(ngModel)]="inSpecial"
+            formControlName="specialSurvey"
+            nz-input
+            id=""
+          />
         </nz-form-control>
       </nz-form-item>
-      <nz-form-item>
+      <nz-form-item *ngIf="mainData.editMode === true">
         <nz-form-label [nzSm]="7" [nzXs]="24" nzFor=""
           >Details of measurement equipment</nz-form-label
         >
@@ -248,13 +381,14 @@
           nzErrorTip="Please input website!"
         >
           <input
+            [(ngModel)]="inDetailOf"
             formControlName="detailsOfMeasurementEquipment"
             nz-input
             id=""
           />
         </nz-form-control>
       </nz-form-item>
-      <nz-form-item>
+      <nz-form-item *ngIf="mainData.editMode === false">
         <nz-form-label [nzSm]="7" [nzXs]="24" nzFor=""
           >Details of measurement equipment</nz-form-label
         >
@@ -264,26 +398,20 @@
           nzErrorTip="Please input website!"
         >
           <nz-select
-            nzShowSearch
-            nzAllowClear
-            [nzDropdownRender]="renderTemplate"
+            formControlName="detailsOfMeasurementEquipment"
+            nzMode="tags"
+            [nzTokenSeparators]="[',']"
+            nzPlaceHolder="Select"
           >
             <nz-option
-              *ngFor="let item of listOfItem"
-              [nzLabel]="item"
-              [nzValue]="item"
+              nzLabel="T-GAGE V (Serri 05058879)"
+              nzValue="T-GAGE V (Serri 05058879)"
+            ></nz-option>
+            <nz-option
+              nzLabel="OLYMPUS 27MG (Serri 150239211)"
+              nzValue="OLYMPUS 27MG (Serri 150239211)"
             ></nz-option>
           </nz-select>
-          <ng-template #renderTemplate>
-            <nz-divider></nz-divider>
-            <div class="container">
-              <input type="text" nz-input #inputElement />
-              <a class="add-item" (click)="addItem(inputElement)">
-                <span nz-icon nzType="plus"></span>
-                Add item
-              </a>
-            </div>
-          </ng-template>
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
@@ -308,7 +436,12 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <input formControlName="reportNumber" nz-input id="" />
+          <input
+            [(ngModel)]="inReport"
+            formControlName="reportNumber"
+            nz-input
+            id=""
+          />
         </nz-form-control>
         <nz-form-label [nzSm]="5" [nzXs]="24" nzFor=""
           >Consisting of</nz-form-label
@@ -325,7 +458,7 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <span style="color: black">Sheets</span>
+          <span>Sheets</span>
         </nz-form-control>
       </nz-form-item>
       <hr />
@@ -338,7 +471,28 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <input formControlName="nameOfOperator" nz-input id="" />
+          <input
+            *ngIf="mainData.editMode === true"
+            [(ngModel)]="inOperatorName"
+            formControlName="nameOfOperator"
+            nz-input
+            id=""
+          />
+          <nz-select
+            *ngIf="mainData.editMode === false"
+            [(ngModel)]="inOperatorName"
+            formControlName="nameOfOperator"
+            style="width: 100%"
+          >
+            <nz-option
+              nzLabel="Nguyen Van Luyen"
+              nzValue="Nguyen Van Luyen"
+            ></nz-option>
+            <nz-option
+              nzLabel="Nguyen Thanh An"
+              nzValue="Nguyen Thanh An"
+            ></nz-option>
+          </nz-select>
         </nz-form-control>
         <nz-form-label [nzSm]="6" [nzXs]="24" nzFor=""
           >Name of surveyor</nz-form-label
@@ -348,66 +502,54 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <input formControlName="nameOfSurveyor" nz-input id="" />
-        </nz-form-control>
-      </nz-form-item>
-      <nz-form-item>
-        <nz-form-label [nzSm]="4" [nzXs]="24" nzFor=""
-          >Signature of operator</nz-form-label
-        >
-        <nz-form-control
-          [nzSm]="6"
-          [nzXs]="24"
-          nzErrorTip="Please input website!"
-        >
-          <input formControlName="signatureOfOperator" nz-input id="" />
-        </nz-form-control>
-        <nz-form-label [nzSm]="6" [nzXs]="24" nzFor=""
-          >Signature of surveyor</nz-form-label
-        >
-        <nz-form-control
-          [nzSm]="6"
-          [nzXs]="24"
-          nzErrorTip="Please input website!"
-        >
-          <input formControlName="signatureOfSurveyor" nz-input id="" />
-        </nz-form-control>
-      </nz-form-item>
-      <nz-form-item>
-        <nz-form-label [nzSm]="4" [nzXs]="24" nzFor=""
-          >Company official stamp</nz-form-label
-        >
-        <nz-form-control
-          [nzSm]="6"
-          [nzXs]="24"
-          nzErrorTip="Please input website!"
-        >
-          <input formControlName="companyOfficialStamp" nz-input id="" />
-        </nz-form-control>
-        <nz-form-label [nzSm]="6" [nzXs]="24" nzFor=""
-          >Classification Society official stamp</nz-form-label
-        >
-        <nz-form-control
-          [nzSm]="6"
-          [nzXs]="24"
-          nzErrorTip="Please input website!"
-        >
           <input
-            formControlName="classificationSocietyOfficialStamp"
+            *ngIf="mainData.editMode === true"
+            [(ngModel)]="inSuveyor"
+            formControlName="nameOfSurveyor"
             nz-input
             id=""
           />
+          <nz-select
+            *ngIf="mainData.editMode === false"
+            [(ngModel)]="inSuveyor"
+            formControlName="nameOfSurveyor"
+            style="width: 100%"
+          >
+            <nz-option
+              nzLabel="Nguyen Van Luyen"
+              nzValue="Nguyen Van Luyen"
+            ></nz-option>
+            <nz-option
+              nzLabel="Nguyen Thanh An"
+              nzValue="Nguyen Thanh An"
+            ></nz-option>
+          </nz-select>
         </nz-form-control>
       </nz-form-item>
     </form>
   </div>
-  <div *ngIf="generalParticulars.length === 0; else updateBox"></div>
-  <a routerLink="/selectForm">
-    <button (click)="subMit()" nz-button nzType="primary">
-      Save and continue
-    </button></a
-  >
+  <div *ngIf="mainData.editMode === false; else updateBox">
+    <a routerLink="{{ link }}">
+      <button (click)="subMit()" nz-button nzType="primary">
+        <span
+          style="color: white"
+          nz-icon
+          nzType="save"
+          nzTheme="outline"
+        ></span>
+        <span style="color: white">Save and continue</span>
+      </button></a
+    >
+  </div>
   <ng-template #updateBox>
-    <button (click)="update()" nz-button nzType="primary">Update</button>
+    <button (click)="update()" nz-button nzType="primary">
+      <span
+        style="color: white"
+        nz-icon
+        nzType="delivered-procedure"
+        nzTheme="outline"
+      ></span>
+      <span style="color: white">Update</span>
+    </button>
   </ng-template>
 </section>

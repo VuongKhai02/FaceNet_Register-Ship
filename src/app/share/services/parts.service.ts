@@ -1,15 +1,15 @@
 import { Injectable } from '@angular/core';
-import { part } from '../models/part.model';
+import { partLocal } from '../models/local.model';
+import { partsData } from '../datas/local.data';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PartsService {
-  parts: part[] = [];
-
-  setParts(): part[] {
-    return this.parts;
-  }
-
+  Parts: partLocal[] = partsData;
   constructor() {}
+
+  setParts(): partLocal[] {
+    return this.Parts;
+  }
 }

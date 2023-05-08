@@ -40,10 +40,15 @@ import { ReviewComponent } from './Pages/review/review.component';
 import { NzMessageModule } from 'ng-zorro-antd/message';
 import { NzAffixModule } from 'ng-zorro-antd/affix';
 import { NzCollapseModule } from 'ng-zorro-antd/collapse';
-import { environment } from 'src/environments/env';
 import { NzModalModule } from 'ng-zorro-antd/modal';
+import { ShipFilterPipe } from './share/pipes/ship-filter.pipe';
+import { CertificateLoadPipe } from './share/pipes/certificate-load.pipe';
+import { LocalService } from './share/services/local.service';
 import { TableOfContentsComponent } from './Pages/table-of-contents/table-of-contents.component';
 import { ManagingDefaultValuesComponent } from './Pages/managing-default-values/managing-default-values.component';
+import { Tm2iComponent } from './Pages/tm2i/tm2i.component';
+import { Tm2iiComponent } from './Pages/tm2ii/tm2ii.component';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 registerLocaleData(en);
 
@@ -52,12 +57,16 @@ registerLocaleData(en);
     AppComponent,
     Tm1Component,
     Tm2Component,
+    Tm2iComponent,
+    Tm2iiComponent,
     Tm3Component,
     Tm4Component,
     Tm5Component,
     Tm6Component,
     Tm7Component,
     ReviewComponent,
+    ShipFilterPipe,
+    CertificateLoadPipe,
     AccountManagementComponent,
     GeneralParticularsComponent,
     LoginComponent,
@@ -93,8 +102,9 @@ registerLocaleData(en);
     NzAffixModule,
     NzCollapseModule,
     NzModalModule,
+    DragDropModule,
   ],
-  providers: [{ provide: NZ_I18N, useValue: en_US }],
+  providers: [{ provide: NZ_I18N, useValue: en_US }, LocalService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

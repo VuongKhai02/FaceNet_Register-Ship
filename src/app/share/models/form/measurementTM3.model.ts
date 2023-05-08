@@ -6,17 +6,20 @@ export interface measurementTM3 {
     maxAlwbDim: string;
     gaugedP: string;
     gaugedS: string;
+    percent: string;
   };
   secondTransverseSectionMeasurementDetail: {
     originalThickness: string;
     maxAlwbDim: string;
     gaugedP: string;
     gaugedS: string;
+    percent: string;
   };
   thirdTransverseSectionMeasurementDetail: {
     originalThickness: string;
     maxAlwbDim: string;
     gaugedP: string;
     gaugedS: string;
+    percent: string;
   };
 }

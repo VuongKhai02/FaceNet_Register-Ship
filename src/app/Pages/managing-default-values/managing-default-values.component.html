@@ -7,16 +7,16 @@
       [nzHeader]="panel.name"
       [nzActive]="panel.active"
       [nzDisabled]="panel.disabled"
+      (nzActiveChange)="showParamValue($event, i + 1)"
     >
       <div class="collapseBox">
         <div class="addNewBox">
           <input
-            [(ngModel)]="panel.newItem"
+            [(ngModel)]="newParamValue.param"
             placeholder="Enter the new item"
             nz-input
-            id=""
           />
-          <button (click)="addItem(i)" nz-button nzType="primary">
+          <button (click)="addParam(i + 1)" nz-button nzType="primary">
             Add new
           </button>
         </div>
@@ -28,26 +28,26 @@
               <th class="titleTable" nzWidth="150px">Action</th>
             </tr>
           </thead>
-          <tbody *ngFor="let item of panel.items; let j = index">
+          <tbody *ngFor="let item of listParamValue; let j = index">
             <tr>
-              <td>{{ i + 1 }}</td>
-              <td>{{ item }}</td>
+              <td>{{ j + 1 }}</td>
+              <td>{{ item.param }}</td>
               <td>
                 <a
-                  (nzOnConfirm)="editItem(i, j)"
+                  (nzOnConfirm)="editItem()"
                   (nzOnCancel)="cancel()"
                   nz-popconfirm
                 >
                   Edit</a
                 >
                 <nz-divider nzType="vertical"></nz-divider>
-                <a
+                <!-- <a
                   (nzOnConfirm)="deleteItem(i, j)"
                   (nzOnCancel)="cancel()"
                   nz-popconfirm
                   nzPopconfirmTitle="Sure to delete?"
                   >Delete</a
-                >
+                > -->
               </td>
             </tr>
           </tbody>

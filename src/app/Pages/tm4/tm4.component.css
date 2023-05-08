@@ -63,9 +63,8 @@ input {
 }
 
 .input-row-value {
-  max-width: 50px;
   text-align: center;
-  margin-left: 10px;
+  width: 30%;
 }
 
 input::-webkit-outer-spin-button,
@@ -76,4 +75,9 @@ input::-webkit-inner-spin-button {
 
 .btn-add-row {
   white-space: nowrap;
+}
+
+input.ng-dirty.ng-invalid {
+  color: red;
+  border-color: red;
 }

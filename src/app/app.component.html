@@ -13,9 +13,10 @@
       [nzTrigger]="null"
     >
       <div class="sidebar-logo">
-        <a href="https://ng.ant.design/" target="_blank">
-          <img src="https://ng.ant.design/assets/img/logo.svg" alt="logo" />
-          <h1>Register Shipping</h1>
+        <a routerLink="generalParticulars">
+          <img src="vinisco.jpg" alt="logo" />
+          <!-- <div class="imgLogo"></div> -->
+          <h1>Vimisco</h1>
         </a>
       </div>
       <ul
@@ -29,38 +30,17 @@
           <span>General Particulars</span>
           <a routerLink="generalParticulars"></a>
         </li>
-        <!-- <li nz-submenu nzOpen nzTitle="Biểu mẫu" nzIcon="dashboard">
-          <ul>
-            <li nz-menu-item nzMatchRouter>
-              <a routerLink="generalParticulars">General Particulars</a>
-            </li>
-          </ul>
-        </li> -->
-        <!-- <li nz-submenu nzOpen nzTitle="Mục lục" nzIcon="form">
-          <ul>
-            <li nz-menu-item nzMatchRouter>
-              <a routerLink="tm1">TM1</a>
-            </li>                   
-            <li nz-menu-item nzMatchRouter>
-              <a routerLink="tm2">TM2</a>
-            </li>
-            <li nz-menu-item nzMatchRouter>
-              <a routerLink="tm3">TM3</a>
-            </li>
-            <li nz-menu-item nzMatchRouter>
-              <a routerLink="tm4">TM4</a>
-            </li>
-            <li nz-menu-item nzMatchRouter>
-              <a routerLink="tm5">TM5</a>
-            </li>
-            <li nz-menu-item nzMatchRouter>
-              <a routerLink="tm6">TM6</a>
-            </li>
-            <li nz-menu-item nzMatchRouter>
-              <a routerLink="tm7">TM7</a>
-            </li>
-          </ul>
-        </li> -->
+        <!-- *ngIf="parts.length > 0" -->
+        <li
+          *ngIf="mainData.editMode === true && parts.length > 0"
+          nz-menu-item
+          nzMatchRouter
+        >
+          <a routerLink="index"
+            ><span nz-icon nzType="unordered-list" nzTheme="outline"></span>
+            <span>Index</span></a
+          >
+        </li>
         <li
           *ngFor="let part of parts; let i = index"
           nz-submenu
@@ -81,12 +61,12 @@
 
               <button
                 style="
-                  margin-left: 110px;
+                  margin-left: 50px;
                   background-color: transparent;
                   border: none;
                 "
                 nz-popconfirm
-                nzPopconfirmTitle="Bạn có chắc muốn xóa?"
+                nzPopconfirmTitle="Sure to delete?"
                 (nzOnConfirm)="deleteTm(i, j)"
                 (nzOnCancel)="cancel()"
                 nzPopconfirmPlacement="top"
@@ -135,9 +115,9 @@
                       <nz-option nzLabel="Tm7" nzValue="Tm7"></nz-option>
                     </nz-select>
                   </div>
-                  <a (click)="addForm(i)" nz-popconfirm> Submit</a>
+                  <a (click)="addForm(i)" nz-popconfirm> Add</a>
                   <nz-divider nzType="vertical"></nz-divider>
-                  <a (click)="clickMe(i)">Đóng</a>
+                  <a (click)="clickMe(i)">Close</a>
                 </div>
               </ng-template>
             </li>
@@ -147,7 +127,7 @@
               <span
                 ><a
                   nz-popconfirm
-                  nzPopconfirmTitle="Bạn có chắc muốn xóa?"
+                  nzPopconfirmTitle="Sure to delete?"
                   (nzOnConfirm)="deletePart(i)"
                   (nzOnCancel)="cancel()"
                   >Delete part</a
@@ -156,18 +136,14 @@
             </li>
           </ul>
         </li>
-        <li nz-menu-item nzMatchRouter>
+        <!-- *ngIf="mainData.editMode === true" -->
+        <li *ngIf="mainData.editMode === true" nz-menu-item nzMatchRouter>
           <a routerLink="selectForm"
             ><span nz-icon nzType="folder-add" nzTheme="outline"></span>
             <span>Add new part</span></a
           >
         </li>
-        <li nz-menu-item nzMatchRouter>
-          <a routerLink="index"
-            ><span nz-icon nzType="unordered-list" nzTheme="outline"></span>
-            <span>Index</span></a
-          >
-        </li>
+
         <li nz-menu-item nzMatchRouter>
           <a routerLink="review"
             ><span nz-icon nzType="folder-view" nzTheme="outline"></span
@@ -184,6 +160,16 @@
           <a routerLink="history"
             ><span nz-icon nzType="history" nzTheme="outline"></span
             ><span>History</span></a
+          >
+        </li>
+        <li nz-menu-item nzMatchRouter>
+          <a
+            nz-popconfirm
+            nzPopconfirmTitle="Sure to reset?"
+            (nzOnConfirm)="reset()"
+            (nzOnCancel)="cancel()"
+            ><span nz-icon nzType="retweet" nzTheme="outline"></span
+            ><span>Reset</span></a
           >
         </li>
       </ul>
@@ -213,7 +199,7 @@
           <router-outlet></router-outlet>
         </div>
       </nz-content>
-      <nz-footer>© Copyright Facenet. All Rights Reserved</nz-footer>
+      <nz-footer>© Copyright FaceNet. All Rights Reserved</nz-footer>
     </nz-layout>
   </nz-layout>
 </ng-template>
