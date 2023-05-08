@@ -3,6 +3,49 @@
   <nz-collapse style="margin-top: 10px; width: 100%">
     <nz-collapse-panel
       style="width: 100%"
+      *ngFor="let panel of panelOnlyEdit; let i = index"
+      [nzHeader]="panel.name"
+      [nzActive]="panel.active"
+      [nzDisabled]="panel.disabled"
+      (nzActiveChange)="showParamValue($event, i + 1)"
+    >
+      <div class="collapseBox">
+        <nz-table nzTemplateMode="true" #borderedTable nzBordered>
+          <thead class="titleTable">
+            <tr class="titleTable">
+              <th class="titleTable" nzWidth="80px">No.</th>
+              <th class="titleTable">Item</th>
+              <th class="titleTable" nzWidth="150px">Action</th>
+            </tr>
+          </thead>
+          <tbody *ngFor="let item of listParamValue; let j = index">
+            <tr>
+              <td>{{ j + 1 }}</td>
+              <td>{{ item.param }}</td>
+              <td>
+                <a
+                  (nzOnConfirm)="editItem()"
+                  (nzOnCancel)="cancel()"
+                  nz-popconfirm
+                >
+                  Edit</a
+                >
+                <!-- <nz-divider nzType="vertical"></nz-divider>
+                <a
+                  (nzOnConfirm)="deleteItem()"
+                  (nzOnCancel)="cancel()"
+                  nz-popconfirm
+                  nzPopconfirmTitle="Sure to delete?"
+                  >Delete</a
+                > -->
+              </td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </div>
+    </nz-collapse-panel>
+    <nz-collapse-panel
+      style="width: 100%"
       *ngFor="let panel of panels; let i = index"
       [nzHeader]="panel.name"
       [nzActive]="panel.active"

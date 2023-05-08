@@ -62,72 +62,81 @@ export class ManagingDefaultValuesComponent implements OnInit {
     type: -1,
   };
 
-  panels = [
+  panelOnlyEdit = [
     {
       active: false,
       name: 'Company name',
       disabled: false,
       adding: false,
-    },
-    {
-      active: false,
-      name: 'Surveyor',
-      disabled: false,
-      adding: false,
-    },
-    {
-      active: false,
-      name: 'Details of measurement equipment',
-      disabled: false,
-      adding: false,
-    },
-    {
-      active: false,
-      name: 'Operator',
-      disabled: false,
-      adding: false,
+      type: 1,
+      edit: false,
     },
     {
       active: false,
       name: 'Qualification of operator',
       disabled: false,
       adding: false,
+      type: 5,
+      edit: false,
     },
-    // {
-    //   active: false,
-    //   disabled: false,
-    //   name: 'Strake position of tm2',
-    //   adding: false,
-    // },
+  ];
+
+  panels = [
+    {
+      active: false,
+      name: 'Surveyor',
+      disabled: false,
+      adding: false,
+      type: 2,
+    },
+    {
+      active: false,
+      name: 'Details of measurement equipment',
+      disabled: false,
+      adding: false,
+      type: 3,
+    },
+    {
+      active: false,
+      name: 'Operator',
+      disabled: false,
+      adding: false,
+      type: 4,
+    },
     {
       active: false,
       name: 'Structural member of tm3',
       disabled: false,
       adding: false,
+      type: 6,
     },
     {
       active: false,
       disabled: false,
       name: 'Structural member of tm4',
       adding: false,
+      type: 7,
     },
     {
       active: false,
       disabled: false,
       name: 'Structural component (plating/stiffener) of tm5',
       adding: false,
+      type: 8,
     },
     {
       active: false,
       disabled: false,
       name: 'Description of tm6',
       adding: false,
+      type: 9,
     },
     {
       active: false,
       disabled: false,
       name: 'Frame number of tm7',
       adding: false,
+      type: 10,
     },
   ];
 
@@ -136,8 +145,6 @@ export class ManagingDefaultValuesComponent implements OnInit {
     this.certificateService.getCertificateFromAPI().subscribe(
       (data) => {
         newCertificates = data;
-        console.log('Data', data);
-        console.log('New', newCertificates);
       },
       (err) => {
         console.log(err);
@@ -195,19 +202,6 @@ export class ManagingDefaultValuesComponent implements OnInit {
       this.message.create('error', 'Enter missing informations');
     }
   }
-  test() {
-    this.certificateService.getCertificateFromAPI().subscribe(
-      (data) => {
-        this.certificates = data;
-        console.log(data);
-        console.log(this.certificates);
-      },
-      (err) => {
-        console.log(err);
-        alert('Failure to load data from server');
-      }
-    );
-  }
 
   deleteCerficate(id: number) {
     this.certificateService.deleteCertificateFormAPI(id).subscribe(
@@ -252,7 +246,7 @@ export class ManagingDefaultValuesComponent implements OnInit {
     this.newParamValue.type = type;
     if (this.newParamValue.type !== -1) {
       this.paramService
-        .addParamValue(this.newParamValue)
+        .addParamValue(type, this.newParamValue)
         .pipe(
           retry(3),
           catchError(() => {

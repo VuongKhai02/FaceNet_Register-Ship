@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { PartsService } from 'src/app/share/services/parts.service';
 import { Component, ViewChild, OnInit, AfterViewInit } from '@angular/core';
 import { part } from './share/models/part.model';
@@ -26,12 +27,12 @@ export class AppComponent implements OnInit {
   ) {}
 
   clickMe(i: number): void {
-    // this.parts[i].visible = false;
+    this.parts[i].visible = false;
   }
 
   addForm(i: number) {
     for (let j: number = 0; j < this.formSelect.length; j++) {
-      // this.parts[i].forms.push(this.formSelect[j]);
+      this.parts[i].forms.push(this.formSelect[j]);
     }
   }
 
