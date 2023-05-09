@@ -1,24 +1,21 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { paramValue } from '../models/paramValue.model';
+import { API_END_POINT } from 'src/environments/environment';
+import { newParamValue } from '../models/newParamValue.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ParamValueService {
   constructor(private httpClient: HttpClient) {}
+  API_URL: string = `${API_END_POINT}/param_value`;
 
   getParamValueByType(id: number): Observable<any> {
-    return this.httpClient.get<paramValue[]>(
-      `http://222.252.25.37:9080/api/v1/param_value?type=${id}`
-    );
+    return this.httpClient.get(`${this.API_URL}?type=${id}`);
   }
 
-  addParamValue(data: any): Observable<any> {
-    return this.httpClient.post(
-      `http://222.252.25.37:9080/api/v1/param_value`,
-      data
-    );
+  addParamValue(id: number, data: newParamValue): Observable<any> {
+    return this.httpClient.post(`${this.API_URL}/${id}`, data);
   }
 }

@@ -227,9 +227,9 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <span style="color: black; font-weight: bold"
-            >VIET NAM MARINE INDUSTRY AND SERVICE JOINT STOCK COMPANY</span
-          >
+          <span style="color: black; font-weight: bold">{{
+            NameOfCompanyPerformingThicknessMeasurement
+          }}</span>
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
@@ -404,12 +404,9 @@
             nzPlaceHolder="Select"
           >
             <nz-option
-              nzLabel="T-GAGE V (Serri 05058879)"
-              nzValue="T-GAGE V (Serri 05058879)"
-            ></nz-option>
-            <nz-option
-              nzLabel="OLYMPUS 27MG (Serri 150239211)"
-              nzValue="OLYMPUS 27MG (Serri 150239211)"
+              *ngFor="let detail of listDetail"
+              nzLabel="{{ detail }}"
+              nzValue="{{ detail }}"
             ></nz-option>
           </nz-select>
         </nz-form-control>

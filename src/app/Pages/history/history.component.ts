@@ -89,7 +89,7 @@ export class HistoryComponent implements OnInit {
   }
 
   /**
-   * Hàm dùng để sửa
+   * Hàm dùng để edit
    * @param id: id của General paticular
    * @param report : reportNo của General paticular
    */

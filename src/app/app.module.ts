@@ -49,6 +49,10 @@ import { ManagingDefaultValuesComponent } from './Pages/managing-default-values/
 import { Tm2iComponent } from './Pages/tm2i/tm2i.component';
 import { Tm2iiComponent } from './Pages/tm2ii/tm2ii.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { APP_INITIALIZER } from '@angular/core';
+import { KeycloakAngularModule, KeycloakService } from 'keycloak-angular';
+import { initializeKeycloak } from './utility/app.init';
+import { ExportPdfComponent } from './Pages/export-pdf/export-pdf.component';
 
 registerLocaleData(en);
 
@@ -75,6 +79,7 @@ registerLocaleData(en);
     ReviewComponent,
     TableOfContentsComponent,
     ManagingDefaultValuesComponent,
+    ExportPdfComponent,
   ],
   imports: [
     BrowserModule,
@@ -103,8 +108,18 @@ registerLocaleData(en);
     NzCollapseModule,
     NzModalModule,
     DragDropModule,
+    KeycloakAngularModule,
   ],
-  providers: [{ provide: NZ_I18N, useValue: en_US }, LocalService],
+  providers: [
+    { provide: NZ_I18N, useValue: en_US },
+    // {
+    //   provide: APP_INITIALIZER,
+    //   useFactory: initializeKeycloak,
+    //   multi: true,
+    //   deps: [KeycloakService],
+    // },
+    LocalService,
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

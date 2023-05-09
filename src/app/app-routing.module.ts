@@ -18,6 +18,7 @@ import { TableOfContentsComponent } from './Pages/table-of-contents/table-of-con
 import { ManagingDefaultValuesComponent } from './Pages/managing-default-values/managing-default-values.component';
 import { Tm2iComponent } from './Pages/tm2i/tm2i.component';
 import { Tm2iiComponent } from './Pages/tm2ii/tm2ii.component';
+import { ExportPdfComponent } from './Pages/export-pdf/export-pdf.component';
 
 const routes: Routes = [
   { path: '', component: GeneralParticularsComponent },
@@ -37,6 +38,7 @@ const routes: Routes = [
   { path: 'history', component: HistoryComponent },
   { path: 'review', component: ReviewComponent },
   { path: 'index', component: TableOfContentsComponent },
+  { path: 'export-pdf', component: ExportPdfComponent },
   {
     path: 'managing-default-values',
     component: ManagingDefaultValuesComponent,

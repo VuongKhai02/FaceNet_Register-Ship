@@ -10,6 +10,8 @@ import { CertificateService } from 'src/app/share/services/certificate.service';
 import { LocalService } from 'src/app/share/services/local.service';
 import { main } from 'src/app/share/models/local.model';
 import { GeneralParticularPush } from 'src/app/share/models/generalParticularsPush.model';
+import { paramValue } from 'src/app/share/models/paramValue.model';
+import { ParamValueService } from 'src/app/share/services/param-value.service';
 
 @Component({
   selector: 'app-general-particulars',
@@ -17,6 +19,7 @@ import { GeneralParticularPush } from 'src/app/share/models/generalParticularsPu
   styleUrls: ['./general-particulars.component.css'],
 })
 export class GeneralParticularsComponent implements OnInit {
+  param: paramValue[] = [];
   mainData!: main;
   link: string = '/selectForm';
   generalParticulars: GeneralParticular[] = [];
@@ -29,6 +32,7 @@ export class GeneralParticularsComponent implements OnInit {
   shipname: any = null;
   IMONum: any = null;
   ABSNum: any = null;
+  listDetail: string[] = [];
   inShipName: string = '';
   inIMO: string = '';
   inABS: string = '';
@@ -55,7 +59,8 @@ export class GeneralParticularsComponent implements OnInit {
     private certificateService: CertificateService,
     private getDataService: GetDataService,
     private message: NzMessageService,
-    private localService: LocalService
+    private localService: LocalService,
+    private paramValueService: ParamValueService
   ) {}
 
   /**
@@ -114,6 +119,30 @@ export class GeneralParticularsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.paramValueService.getParamValueByType(1).subscribe(
+      (data) => {
+        this.NameOfCompanyPerformingThicknessMeasurement = data[0].param;
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+
+    this.paramValueService.getParamValueByType(5).subscribe(
+      (data) => {
+        this.qualificationOfoperator = data[0].param;
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+
+    this.paramValueService.getParamValueByType(3).subscribe((data) => {
+      for (let i: number = 0; i < data.length; i++) {
+        this.listDetail.push(`${data[i].param} ( Serri ${data[i].value})`);
+      }
+    });
+
     this.shipSevice.getShipsFromAPI().subscribe(
       (data) => {
         this.ships = data;
@@ -130,7 +159,6 @@ export class GeneralParticularsComponent implements OnInit {
       (err) => {}
     );
     this.mainData = this.localService.getMainData();
-
     if (this.mainData.editMode === true) {
       this.getDataService.getGeneralParticularsFromAPI().subscribe(
         (data) => {
