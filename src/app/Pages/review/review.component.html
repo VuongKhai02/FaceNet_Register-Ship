@@ -6,10 +6,19 @@
       Download
     </button>
   </div>
-  <iframe
-    src="https://drive.google.com/file/d/1ZjAbCpOmixWKtg39D5330fr4h7Ii8tem/preview"
-    width="100%"
-    height="480"
-    allow="autoplay"
-  ></iframe>
+  <iframe src="https://drive.google.com/file/d/1ZjAbCpOmixWKtg39D5330fr4h7Ii8tem/preview" width="100%" height="480"
+    allow="autoplay"></iframe>
+
+  <div style="
+  width: 10%;
+  padding: 0.4rem;
+  display: flex;
+  justify-content: space-between;">
+    <label for="ck">Surveyor?</label>
+    <input style="box-shadow: none;" type="checkbox" name="ck" id="ck" (click)="ck($event)">
+  </div>
+  <div style="width:290px">
+    <button class="btn btn-primary w-100" (click)="exportPdf()">Convert landscape to PDF</button>
+
+  </div>
 </section>
