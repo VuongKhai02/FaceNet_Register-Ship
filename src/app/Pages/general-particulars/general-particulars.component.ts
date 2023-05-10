@@ -268,7 +268,7 @@ export class GeneralParticularsComponent implements OnInit {
   }
 
   NameOfCompanyPerformingThicknessMeasurement: string =
-    'VIET NAM MARINE INDUSTRY AND SERVICE JOINT STOCK COMPANY';
+    'VIET NAM SERVICE AND MARINE INDUSTRY JOINT STOCK COMPANY';
   qualificationOfoperator: string = 'SNT-TC-1A UT LEVEL 2';
   numberOfSheets: number = 1;
 
