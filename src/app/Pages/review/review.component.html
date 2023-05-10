@@ -1,5 +1,5 @@
 <section>
-  <div class="topBox">
+  <!-- <div class="topBox">
     <h1>Review</h1>
     <button nz-button nzType="primary">
       <span nz-icon nzType="download" nzTheme="outline"></span>
@@ -7,18 +7,23 @@
     </button>
   </div>
   <iframe src="https://drive.google.com/file/d/1ZjAbCpOmixWKtg39D5330fr4h7Ii8tem/preview" width="100%" height="480"
-    allow="autoplay"></iframe>
-
-  <div style="
-  width: 10%;
+    allow="autoplay"></iframe> -->
+  <div style="font-size: 20px;">
+    <div style="
+  width: 8%;
   padding: 0.4rem;
   display: flex;
   justify-content: space-between;">
-    <label for="ck">Surveyor?</label>
-    <input style="box-shadow: none;" type="checkbox" name="ck" id="ck" (click)="ck($event)">
-  </div>
-  <div style="width:290px">
-    <button class="btn btn-primary w-100" (click)="exportPdf()">Convert landscape to PDF</button>
+      <label for="ck">Surveyor?</label>
+      <input style="box-shadow: none;" type="checkbox" name="ck" id="ck" (click)="ckeckSurveyorSignature()">
+    </div>
+    <div style="width:290px">
+      <!-- <button class="btn btn-primary w-100" (click)="exportPdf()">Convert landscape to PDF</button> -->
+      <button (click)="exportPdf()" nz-button nzType="primary">
+        <span style="color: white" nz-icon nzTheme="outline"></span>
+        <span style="color: white">Export to PDF</span>
+      </button>
+    </div>
 
   </div>
 </section>
