@@ -8,22 +8,26 @@
   </div>
   <iframe src="https://drive.google.com/file/d/1ZjAbCpOmixWKtg39D5330fr4h7Ii8tem/preview" width="100%" height="480"
     allow="autoplay"></iframe> -->
-  <div style="font-size: 20px;">
+  <div style="font-size: 20px; width: 20%; margin-bottom: 5rem;">
     <div style="
-  width: 8%;
+    width: 100%;
   padding: 0.4rem;
-  display: flex;
-  justify-content: space-between;">
-      <label for="ck">Surveyor?</label>
-      <input style="box-shadow: none;" type="checkbox" name="ck" id="ck" (click)="ckeckSurveyorSignature()">
+  display: flex;">
+      <label style="padding-right: 1rem;" class="ck_surveyor" for="ck">Surveyor's signature?</label>
+      <input style="box-shadow: none;    width: 1rem" type="checkbox" name="ck" id="ck"
+        (click)="ckeckSurveyorSignature()">
     </div>
-    <div style="width:290px">
-      <!-- <button class="btn btn-primary w-100" (click)="exportPdf()">Convert landscape to PDF</button> -->
-      <button (click)="exportPdf()" nz-button nzType="primary">
-        <span style="color: white" nz-icon nzTheme="outline"></span>
-        <span style="color: white">Export to PDF</span>
+    <div>
+      <button style="    width: 75%;font-size: 16px" nz-popconfirm nzPopconfirmTitle="Are you sure export to Pdf?"
+        nzPopconfirmPlacement="bottom" (nzOnConfirm)="exportPdf()" nz-button nzType="primary">
+        <span nz-icon nzType="export" nzTheme="outline"></span>
+        <span style="color: white;">Export to PDF</span>
       </button>
     </div>
 
   </div>
+  <!-- <button (click)="exportTestPdf()" nz-button nzType="primary">
+    <span style="color: white" nz-icon nzTheme="outline"></span>
+    <span style="color: white">Export Test PDF</span>
+  </button> -->
 </section>

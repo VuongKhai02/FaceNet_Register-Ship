@@ -31,6 +31,8 @@ import { main } from 'src/app/share/models/local.model';
 import { ParamValueService } from 'src/app/share/services/param-value.service';
 import { ReportIndexesService } from 'src/app/share/services/report-indexes.service';
 import { ReportIndex } from 'src/app/share/models/report-index.model';
+import { formTM1 } from 'src/app/share/models/form/formTM1.model';
+import { part } from 'src/app/share/models/part.model';
 (<any>pdfMake).vfs = pdfFonts.pdfMake.vfs;
 
 interface TM4 {
@@ -90,30 +92,26 @@ export class ReviewComponent implements OnInit {
   inSuveyor: string = '';
 
   inParam_qualification: string = '';
-
   mainData!: main;
-
   reportIndex!: ReportIndex;
   ship: ship[] = [];
   generalParticular: GeneralParticular[] = [];
-
   books: any = [];
-  isSurveyorCheck: boolean = false;
   certificate: certificate[] = [];
+
+  parts: part[] = [];
+  formTm1: formTM1[] = [];
+
+  imgN: string =
+    'https://scontent.fhan17-1.fna.fbcdn.net/v/t1.6435-9/67246509_111387816859260_2386012619652726784_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=e3f864&_nc_ohc=mq_yiuP1cvEAX8MvYsU&_nc_ht=scontent.fhan17-1.fna&oh=00_AfDw51jhjfX5tfjXBaYXDj8k51y19mb9SGycIt5cqMpoVw&oe=6482AE6A';
+  isSurveyorCheck: boolean = false;
 
   ckeckSurveyorSignature() {
     this.isSurveyorCheck = !this.isSurveyorCheck;
-    console.log(this.isSurveyorCheck);
   }
-  typeForm: string = 'DHT(i)';
   exportPdf() {
-    const bookNames = this.books.map((item: any) => item.author);
-    var abc = '123';
     var checkSignature = this.isSurveyorCheck;
     this.ckeckSurveyorSignature();
-    let a = bookNames[0];
-    let b = bookNames[1];
-    let c = bookNames[2];
     // Defind Table of content
     var tableOfContent = {
       headerRow: 1,
@@ -189,423 +187,532 @@ export class ReviewComponent implements OnInit {
       pageOrientation: 'portrait' as PageOrientation,
       pageSize: 'A4' as PageSize,
       content: [
+        [
+          {
+            style: ['txt_center', 'fontS15', { color: 'blue' }],
+            text: 'VIET NAM MARINE INDUSTRY AND SERVICE JOINT STOCK COMPANY',
+          },
+
+          {
+            table: {
+              widths: ['*'],
+              body: [
+                [
+                  {
+                    border: [false, false, false, true],
+                    text: '',
+                    margin: [0, 1, 0, 0], // Khoảng cách giữa đường kẻ và văn bản
+                  },
+                ],
+              ],
+            },
+          },
+          {
+            table: {
+              widths: ['*'],
+              body: [
+                [
+                  {
+                    border: [false, false, false, true],
+                    text: '',
+                    margin: [0, 0, 0, 5], // Khoảng cách giữa đường kẻ và văn bản
+                  },
+                ],
+              ],
+            },
+          },
+          {
+            text: 'ULTRASONIC THICKNESS MEASUREMENT REPORT',
+            style: ['txt_center', 'mg_t', 'fontS15'],
+          },
+          {
+            text: `${this.generalParticular[0].surveyType}`,
+            style: ['txt_center', 'fontS15', { color: 'blue' }],
+          },
+          {
+            text: `SHIP'S NAME: `,
+            style: ['txt_center', 'mg_25', 'fontS18'],
+          },
+          {
+            text: `${this.inShipName}`,
+            style: ['txt_center', 'fontS30'],
+          },
+          {
+            columns: [
+              {
+                text: 'IMO No.',
+                style: ['mg_25'],
+              },
+              {
+                text: `${this.inIMO}`,
+                decoration: 'underline' as Decoration,
+                style: ['mg_25'],
+                bold: true,
+              },
+            ],
+            style: ['fontS18', 'mg_l_90'],
+          },
+          {
+            style: ['fontS18', 'mg_l_90'],
+            columns: [
+              {
+                text: 'CLASS ID. ',
+              },
+              {
+                text: `${this.inABS}`,
+                decoration: 'underline' as Decoration,
+                bold: true,
+              },
+            ],
+          },
+          {
+            columns: [
+              {
+                text: 'REPORT No. ',
+              },
+              {
+                text: `VMC.UTM/12/12/32 `,
+                decoration: 'underline' as Decoration,
+                bold: true,
+              },
+            ],
+            style: ['fontS18', 'mg_l_90'],
+          },
+          {
+            table: {
+              widths: ['*'],
+              body: [
+                [
+                  {
+                    border: [false, false, false, true],
+                    text: '',
+                    margin: [0, 250, 0, 0], // Khoảng cách giữa đường kẻ và văn bản
+                    style: ['mg_25'],
+                  },
+                ],
+              ],
+            },
+          },
+        ],
         // this.a==true ? [{ table:  table  }] : [{table:  table1 }],
-        {
-          text: 'GENERAL PARTICULAR',
-          style: ['header', 'fontS18', 'txt_center'],
-          bold: true,
-        },
-        {
-          columns: [
-            {
-              text: "Ship's name: ",
-            },
-            {
-              text: `${this.inShipName}`,
-              bold: true,
-            },
-          ],
-          style: ['mg_t'],
-        },
-        {
-          columns: [
-            {
-              text: 'IMO number: ',
-            },
-            {
-              text: `${this.inIMO}`,
-              bold: true,
-            },
-          ],
-          style: ['mg_t'],
-        },
-        {
-          columns: [
-            {
-              text: 'ABS identification number: ',
-            },
-            {
-              text: `${this.inCertificateNo}`,
-              bold: true,
-            },
-          ],
-          style: ['mg_t'],
-        },
-        {
-          columns: [
-            {
-              text: 'Port of registry : ',
-            },
-            {
-              text: `${this.inPortOf}`,
-              bold: true,
-            },
-          ],
-          style: ['mg_t'],
-        },
-        {
-          columns: [
-            {
-              text: 'Gross tons : ',
-            },
-            {
-              text: `${this.inGrossTon}`,
-              bold: true,
-            },
-          ],
-          style: ['mg_t'],
-        },
-        {
-          columns: [
-            {
-              text: 'Deadweight : ',
-            },
-            {
-              text: `${this.inDeadWeith}`,
-              bold: true,
-            },
-          ],
-          style: ['mg_t'],
-        },
-        {
-          columns: [
-            {
-              text: 'Date of build : ',
-            },
-            {
-              text: `${this.inDateBuild}`,
-              bold: true,
-            },
-          ],
-          style: ['mg_t'],
-        },
-        {
-          columns: [
-            {
-              text: 'Classification society : ',
-            },
-            {
-              text: `${this.inClassi}`,
-              bold: true,
-            },
-          ],
-          style: ['mg_t'],
-        },
-        {
-          table: {
-            widths: ['*'],
-            body: [
-              [
-                {
-                  border: [false, false, false, true],
-                  text: '',
-                  margin: [0, 5, 0, 5], // Khoảng cách giữa đường kẻ và văn bản
-                },
-              ],
-            ],
+        [
+          {
+            pageBreak: 'before' as PageBreak,
+            text: 'GENERAL PARTICULAR',
+            style: ['header', 'fontS18', 'txt_center'],
+            bold: true,
           },
-        },
-        {
-          text: 'Name of company performing thickness measurement :',
-          margin: [0, 10, 0, 10] as Margins,
-        },
-        {
-          text: 'VIET NAM MARINE INDUSTRY AND SERVICE JOINT STOCK COMPANY :',
-          bold: true,
-          style: ['txt_center', 'fontS11'],
-        },
-        {
-          columns: [
-            {
-              text: 'Thickness measurement company certified by :',
-            },
-            {
-              text: `${this.generalParticular[0].certificateDTO.certificateOrganization}`,
-              bold: true,
-            },
-          ],
-          style: ['mg_t'],
-        },
-        {
-          columns: [
-            {
-              text: 'Certificate No. ',
-            },
-            {
-              text: `${this.generalParticular[0].certificateDTO.certificateNo}`,
-              bold: true,
-            },
-          ],
-          style: ['mg_t'],
-        },
-        {
-          columns: [
-            {
-              text: 'Certificate valid from ',
-            },
-            {
-              decoration: 'underline' as Decoration,
-              text: `${this.generalParticular[0].certificateDTO.validStartDate} to ${this.generalParticular[0].certificateDTO.validEndDate}`,
-              bold: true,
-            },
-          ],
-          style: ['mg_t'],
-        },
-        {
-          columns: [
-            {
-              text: 'Place of measurement : ',
-            },
-            {
-              text: `${this.generalParticular[0].placeOfMeasurement}`,
-              bold: true,
-            },
-          ],
-          style: ['mg_t'],
-        },
-        {
-          columns: [
-            {
-              text: 'Firt date of measurement : ',
-            },
-            {
-              text: `${this.generalParticular[0].firstDateOfMeasurement}`,
-              bold: true,
-            },
-          ],
-          style: ['mg_t'],
-        },
-        {
-          columns: [
-            {
-              text: 'Last date of measurement : ',
-            },
-            {
-              text: `${this.generalParticular[0].lastDateOfMeasurement}`,
-              bold: true,
-            },
-          ],
-          style: ['mg_t'],
-        },
-        {
-          columns: [
-            {
-              text: 'Special survey / Intermediate survey due: ',
-            },
-            {
-              text: `${this.generalParticular[0].surveyType}`,
-              bold: true,
-            },
-          ],
-          style: ['mg_t'],
-        },
-        {
-          columns: [
-            {
-              text: 'Details of measurement equipment : ',
-            },
-            {
-              text: `${this.generalParticular[0].measurementEquipmentInfo}`,
-              bold: true,
-            },
-          ],
-          style: ['mg_t'],
-        },
-        {
-          columns: [
-            {
-              text: 'Qualification of operator : ',
-            },
-            {
-              text: `${this.inParam_qualification}`,
-              bold: true,
-            },
-          ],
-          style: ['mg_t'],
-        },
-        {
-          table: {
-            widths: ['*'],
-            body: [
-              [
-                {
-                  border: [false, false, false, true],
-                  text: '',
-                  margin: [0, 5, 0, 5],
-                },
-              ],
+          {
+            columns: [
+              {
+                text: "Ship's name: ",
+              },
+              {
+                text: `${this.inShipName}`,
+                bold: true,
+              },
             ],
+            style: ['mg_t'],
           },
-        },
-        {
-          columns: [
-            {
-              text: `Report Number : `,
-            },
-            {
-              text: ` ${this.generalParticular[0].reportNo}`,
-              bold: true,
-            },
-            {
-              text: `consisting of :`,
-            },
-            {
-              text: `Sheets`,
-              bold: true,
-            },
-          ],
-          style: ['mg_t'],
-        },
-        {
-          table: {
-            widths: ['*'],
-            body: [
-              [
-                {
-                  border: [false, false, false, true],
-                  text: '',
-                  margin: [0, 5, 0, 5], // Khoảng cách giữa đường kẻ và văn bản
-                },
-              ],
+          {
+            columns: [
+              {
+                text: 'IMO number: ',
+              },
+              {
+                text: `${this.inIMO}`,
+                bold: true,
+              },
             ],
+            style: ['mg_t'],
           },
-        },
-        {
-          columns: [
-            {
-              text: 'Name of operator : ',
+          {
+            columns: [
+              {
+                text: 'ABS identification number: ',
+              },
+              {
+                text: `${this.inCertificateNo}`,
+                bold: true,
+              },
+            ],
+            style: ['mg_t'],
+          },
+          {
+            columns: [
+              {
+                text: 'Port of registry : ',
+              },
+              {
+                text: `${this.inPortOf}`,
+                bold: true,
+              },
+            ],
+            style: ['mg_t'],
+          },
+          {
+            columns: [
+              {
+                text: 'Gross tons : ',
+              },
+              {
+                text: `${this.inGrossTon}`,
+                bold: true,
+              },
+            ],
+            style: ['mg_t'],
+          },
+          {
+            columns: [
+              {
+                text: 'Deadweight : ',
+              },
+              {
+                text: `${this.inDeadWeith}`,
+                bold: true,
+              },
+            ],
+            style: ['mg_t'],
+          },
+          {
+            columns: [
+              {
+                text: 'Date of build : ',
+              },
+              {
+                text: `${this.inDateBuild}`,
+                bold: true,
+              },
+            ],
+            style: ['mg_t'],
+          },
+          {
+            columns: [
+              {
+                text: 'Classification society : ',
+              },
+              {
+                text: `${this.inClassi}`,
+                bold: true,
+              },
+            ],
+            style: ['mg_t'],
+          },
+          {
+            table: {
+              widths: ['*'],
+              body: [
+                [
+                  {
+                    border: [false, false, false, true],
+                    text: '',
+                    margin: [0, 5, 0, 5], // Khoảng cách giữa đường kẻ và văn bản
+                  },
+                ],
+              ],
             },
-            {
-              text: `${this.inOperatorName}`,
-              bold: true,
+          },
+          {
+            text: 'Name of company performing thickness measurement :',
+            margin: [0, 10, 0, 10] as Margins,
+          },
+          {
+            text: 'VIET NAM MARINE INDUSTRY AND SERVICE JOINT STOCK COMPANY :',
+            bold: true,
+            style: ['txt_center', 'fontS11'],
+          },
+          {
+            columns: [
+              {
+                text: 'Thickness measurement company certified by :',
+              },
+              {
+                text: `${this.generalParticular[0].certificateDTO.certificateOrganization}`,
+                bold: true,
+              },
+            ],
+            style: ['mg_t'],
+          },
+          {
+            columns: [
+              {
+                text: 'Certificate No. ',
+              },
+              {
+                text: `${this.generalParticular[0].certificateDTO.certificateNo}`,
+                bold: true,
+              },
+            ],
+            style: ['mg_t'],
+          },
+          {
+            columns: [
+              {
+                text: 'Certificate valid from ',
+              },
+              {
+                decoration: 'underline' as Decoration,
+                text: `${this.generalParticular[0].certificateDTO.validStartDate} to ${this.generalParticular[0].certificateDTO.validEndDate}`,
+                bold: true,
+              },
+            ],
+            style: ['mg_t'],
+          },
+          {
+            columns: [
+              {
+                text: 'Place of measurement : ',
+              },
+              {
+                text: `${this.generalParticular[0].placeOfMeasurement}`,
+                bold: true,
+              },
+            ],
+            style: ['mg_t'],
+          },
+          {
+            columns: [
+              {
+                text: 'Firt date of measurement : ',
+              },
+              {
+                text: `${this.generalParticular[0].firstDateOfMeasurement}`,
+                bold: true,
+              },
+            ],
+            style: ['mg_t'],
+          },
+          {
+            columns: [
+              {
+                text: 'Last date of measurement : ',
+              },
+              {
+                text: `${this.generalParticular[0].lastDateOfMeasurement}`,
+                bold: true,
+              },
+            ],
+            style: ['mg_t'],
+          },
+          {
+            columns: [
+              {
+                text: 'Special survey / Intermediate survey due: ',
+              },
+              {
+                text: `${this.generalParticular[0].surveyType}`,
+                bold: true,
+              },
+            ],
+            style: ['mg_t'],
+          },
+          {
+            columns: [
+              {
+                text: 'Details of measurement equipment : ',
+              },
+              {
+                text: `${this.generalParticular[0].measurementEquipmentInfo}`,
+                bold: true,
+              },
+            ],
+            style: ['mg_t'],
+          },
+          {
+            columns: [
+              {
+                text: 'Qualification of operator : ',
+              },
+              {
+                text: `${this.inParam_qualification}`,
+                bold: true,
+              },
+            ],
+            style: ['mg_t'],
+          },
+          {
+            table: {
+              widths: ['*'],
+              body: [
+                [
+                  {
+                    border: [false, false, false, true],
+                    text: '',
+                    margin: [0, 5, 0, 5],
+                  },
+                ],
+              ],
             },
-            {
-              text: 'Name of suveyor : ',
+          },
+          {
+            columns: [
+              {
+                text: `Report Number : `,
+              },
+              {
+                text: ` ${this.generalParticular[0].reportNo}`,
+                bold: true,
+              },
+              {
+                text: `consisting of :  Sheets`,
+              },
+            ],
+            style: ['mg_t'],
+          },
+          {
+            table: {
+              widths: ['*'],
+              body: [
+                [
+                  {
+                    border: [false, false, false, true],
+                    text: '',
+                    margin: [0, 5, 0, 5], // Khoảng cách giữa đường kẻ và văn bản
+                  },
+                ],
+              ],
             },
-            {
-              text: `${this.generalParticular[0].surveyorInfo}`,
-              bold: true,
-            },
-          ],
-          style: ['mg_t'],
-        },
-        {
-          columns: [
-            {
-              text: 'Signature of operator : ',
-            },
-            {
-              text: `...........................`,
-              bold: true,
-            },
-            {
-              text: 'Signature of suveyor : ',
-            },
-            {
-              text: `...........................`,
-              bold: true,
-            },
-          ],
-          style: ['mg_t'],
-        },
-        {
-          columns: [
-            {
-              text: 'Company official stamp :',
-            },
-            {
-              text: `...........................`,
-              bold: true,
-            },
-            {
-              text: 'Classification Society official stamp : ',
-            },
-            {
-              text: `...........................`,
-              bold: true,
-            },
-          ],
-          style: ['mg_t'],
-        },
+          },
+          {
+            columns: [
+              {
+                text: 'Name of operator : ',
+              },
+              {
+                text: `${this.inOperatorName}`,
+                bold: true,
+              },
+              {
+                text: 'Name of suveyor : ',
+              },
+              {
+                text: `${this.generalParticular[0].surveyorInfo}`,
+                bold: true,
+              },
+            ],
+            style: ['mg_t'],
+          },
+          {
+            columns: [
+              {
+                text: 'Signature of operator : ',
+              },
+              {
+                text: `...........................`,
+                bold: true,
+              },
+              {
+                text: 'Signature of suveyor : ',
+              },
+              {
+                text: `...........................`,
+                bold: true,
+              },
+            ],
+            style: ['mg_t'],
+          },
+          {
+            columns: [
+              {
+                text: 'Company official stamp :',
+              },
+              {
+                text: `...........................`,
+                bold: true,
+              },
+              {
+                text: 'Classification Society official stamp : ',
+              },
+              {
+                text: `...........................`,
+                bold: true,
+              },
+            ],
+            style: ['mg_t'],
+          },
+        ],
+
         //Table of Content
-        {
-          text: 'THICKNESS MEASUREMENT REPORT INDEX',
-          style: ['header', 'txt_center'],
-          bold: true,
-          pageBreak: 'before' as PageBreak,
-        },
-        {
-          columns: [
-            {
-              style: ['mg_l_90'],
-              text: "Ship's name: ",
-            },
-            {
-              text: `${this.inShipName}`,
-              bold: true,
-              decoration: 'underline' as Decoration,
-            },
-          ],
-          style: ['mg_t_8'],
-        },
-        {
-          columns: [
-            {
-              style: ['mg_l_90'],
-              text: 'IMO No.',
-            },
-            {
-              text: `${this.inIMO}`,
-              decoration: 'underline' as Decoration,
-              bold: true,
-            },
-          ],
-          style: ['mg_t_8'],
-        },
-        {
-          columns: [
-            {
-              style: ['mg_l_90'],
-              text: 'CLASS ID. ',
-            },
-            {
-              text: `${this.inABS}`,
-              decoration: 'underline' as Decoration,
-              bold: true,
-            },
-          ],
-          style: ['mg_t_8'],
-        },
-        {
-          columns: [
-            {
-              text: 'REPORT No. ',
-              style: ['mg_l_90'],
-            },
-            {
-              text: `${this.inReport}`,
-              decoration: 'underline' as Decoration,
-              bold: true,
-            },
-          ],
-          style: ['mg_t_8'],
-        },
-        {
-          columns: [
-            {
-              style: ['mg_l_90'],
-              text: 'TYPE OF SURVEY: ',
-            },
-            {
-              decoration: 'underline' as Decoration,
-              text: `${this.generalParticular[0].surveyType}`,
-              bold: true,
-            },
-          ],
-          style: ['mg_t_8'],
-          // columnGap: -100,
-        },
-        { table: tableOfContent, style: ['mg_t_8'] },
+        [
+          {
+            text: 'THICKNESS MEASUREMENT REPORT INDEX',
+            style: ['header', 'txt_center', 'fontS18'],
+            bold: true,
+            pageBreak: 'before' as PageBreak,
+          },
+          {
+            columns: [
+              {
+                style: ['mg_l_90', 'fontS11'],
+                text: "Ship's name: ",
+              },
+              {
+                text: `${this.inShipName}`,
+                bold: true,
+                decoration: 'underline' as Decoration,
+              },
+            ],
+            style: ['mg_t_8'],
+          },
+          {
+            columns: [
+              {
+                style: ['mg_l_90', 'fontS11'],
+                text: 'IMO No.',
+              },
+              {
+                text: `${this.inIMO}`,
+                decoration: 'underline' as Decoration,
+                bold: true,
+              },
+            ],
+            style: ['mg_t_8'],
+          },
+          {
+            columns: [
+              {
+                style: ['mg_l_90', 'fontS11'],
+                text: 'CLASS ID. ',
+              },
+              {
+                text: `${this.inABS}`,
+                decoration: 'underline' as Decoration,
+                bold: true,
+              },
+            ],
+            style: ['mg_t_8'],
+          },
+          {
+            columns: [
+              {
+                text: 'REPORT No. ',
+                style: ['mg_l_90', 'fontS11'],
+              },
+              {
+                text: `${this.inReport}`,
+                decoration: 'underline' as Decoration,
+                bold: true,
+              },
+            ],
+            style: ['mg_t_8'],
+          },
+          {
+            columns: [
+              {
+                style: ['mg_l_90', 'fontS11'],
+                text: 'TYPE OF SURVEY: ',
+              },
+              {
+                decoration: 'underline' as Decoration,
+                text: `${this.generalParticular[0].surveyType}`,
+                bold: true,
+              },
+            ],
+            style: ['mg_t_8'],
+            // columnGap: -100,
+          },
+          { table: tableOfContent, style: ['mg_t_8', 'fontS11'] },
+        ],
         // pageTitle
         [
           {
@@ -911,7 +1018,7 @@ export class ReviewComponent implements OnInit {
 
       images: {
         // in browser is supported loading images via url (https or http protocol) (minimal verion: 0.1.67)
-        snow: 'https://scontent.fhan17-1.fna.fbcdn.net/v/t1.6435-9/67246509_111387816859260_2386012619652726784_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=e3f864&_nc_ohc=mq_yiuP1cvEAX8MvYsU&_nc_ht=scontent.fhan17-1.fna&oh=00_AfDw51jhjfX5tfjXBaYXDj8k51y19mb9SGycIt5cqMpoVw&oe=6482AE6A',
+        snow: `${this.imgN}`,
       },
 
       styles: {
@@ -922,6 +1029,9 @@ export class ReviewComponent implements OnInit {
         },
         mg_50: {
           margin: [0, 300, 0, 10] as Margins,
+        },
+        mg_25: {
+          margin: [0, 150, 0, 0] as Margins,
         },
         txt_center: {
           alignment: 'center' as Alignment,
@@ -969,6 +1079,9 @@ export class ReviewComponent implements OnInit {
         fontS11: {
           fontSize: 11,
         },
+        fontS15: {
+          fontSize: 15,
+        },
         fontS18: {
           fontSize: 18,
         },
@@ -982,17 +1095,26 @@ export class ReviewComponent implements OnInit {
       },
     };
 
-    // if (this.checkb) {
-    //   pdfMake.createPdf(pdfDocument).open({}, window);
-    // } else {
-    //   pdfMake.createPdf(pdfDocumentNoSurveyor).open({}, window);
-    // }
     pdfMake.createPdf(pdfDocument).open({}, window);
+  }
+
+  exportTestPdf() {
+    var pdfTest = {
+      content: [
+        {
+          image: 'snow',
+        },
+      ],
+      images: {
+        // in browser is supported loading images via url (https or http protocol) (minimal verion: 0.1.67)
+        snow: 'https://scontent.fhan17-1.fna.fbcdn.net/v/t1.6435-9/67246509_111387816859260_2386012619652726784_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=e3f864&_nc_ohc=mq_yiuP1cvEAX8MvYsU&_nc_ht=scontent.fhan17-1.fna&oh=00_AfDw51jhjfX5tfjXBaYXDj8k51y19mb9SGycIt5cqMpoVw&oe=6482AE6A',
+      },
+    };
+    pdfMake.createPdf(pdfTest).open({}, window);
   }
 
   ngOnInit() {
     this.mainData = this.localService.getMainData();
-    console.log('This is mainDT' + this.mainData);
 
     this.generalParticularervice.getGeneralParticularsFromAPI().subscribe(
       (data) => {
@@ -1000,8 +1122,6 @@ export class ReviewComponent implements OnInit {
         this.generalParticular = this.generalParticular.filter(
           (x) => x.id === this.mainData.mainId
         );
-        console.log(this.generalParticular);
-
         this.inShipName = this.generalParticular[0].shipInfo.name;
         this.inIMO = this.generalParticular[0].shipInfo.imoNumber;
         this.inABS = this.generalParticular[0].shipInfo.absIdentification;
@@ -1053,11 +1173,5 @@ export class ReviewComponent implements OnInit {
           console.log('error');
         }
       );
-    // this.certificateService.getCertificateFromAPI().subscribe((data) => {
-    //   this.certificate = data;
-    //   console.log(this.certificate);
-    // });
-
-    // console.log(this.ship);
   }
 }
