@@ -1,15 +1,17 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnInit } from '@angular/core';
 import { GeneralParticular } from '../models/generalParticulars.model';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { API_END_POINT } from 'src/environments/environment';
 import { GeneralParticularPush } from '../models/generalParticularsPush.model';
+import { LocalService } from './local.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class GetDataService {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private localService: LocalService) {}
+
   API_URL: string = `${API_END_POINT}/generals_particulars`;
 
   generalParticulars: GeneralParticular[] = [];
@@ -54,6 +56,12 @@ export class GetDataService {
   }
 
   getGeneralParticulars(): GeneralParticular[] {
+    this.getGeneralParticularsFromAPI().subscribe((data) => {
+      this.generalParticulars = data;
+    });
+    this.generalParticulars = this.generalParticulars.filter((e) => {
+      return e.id === this.localService.getId();
+    });
     return this.generalParticulars;
   }
 }

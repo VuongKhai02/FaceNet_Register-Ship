@@ -129,6 +129,12 @@ export class ManagingDefaultValuesComponent implements OnInit {
       name: 'Frame number of tm7',
       adding: false,
     },
+    {
+      active: false,
+      disabled: false,
+      name: 'Form codes',
+      adding: false,
+    },
   ];
 
   checkCertificate() {

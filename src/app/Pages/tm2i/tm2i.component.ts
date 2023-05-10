@@ -29,7 +29,7 @@ export class Tm2iComponent {
   listRow: measurementTM2[] = [];
   formTM2: formTM2 = {
     code: '',
-    name: '',
+    name: 'FORM TM2(I)',
     firstFrameNoTM2: '',
     secondFrameNoTM2: '',
     thirdFrameNoTM2: '',

@@ -7,6 +7,7 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { catchError, retry } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 import { LocalService } from 'src/app/share/services/local.service';
+import { GetDataService } from 'src/app/share/services/get-data.service';
 
 @Component({
   selector: 'app-tm1',
@@ -17,7 +18,8 @@ export class Tm1Component implements OnInit {
   constructor(
     public formService: FormService,
     private message: NzMessageService,
-    public localService: LocalService
+    public localService: LocalService,
+    public getDataService: GetDataService
   ) {}
 
   addRowValue: number = 0;
@@ -84,6 +86,7 @@ export class Tm1Component implements OnInit {
           percent: '',
         },
       });
+    console.log(this.getDataService.getGeneralParticulars());
   }
 
   addRow() {
