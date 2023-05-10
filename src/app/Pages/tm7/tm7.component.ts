@@ -28,6 +28,7 @@ export class Tm7Component implements OnInit {
   listFrameNumber: frameNumberTM7[] = [];
 
   formTM7: formTM7 = {
+    code: '',
     description: '',
     name: '',
     frameNumberList: this.listFrameNumber,
@@ -102,6 +103,10 @@ export class Tm7Component implements OnInit {
           percent: '',
         },
       });
+
+    this.paramValueService.getParamValueByType(10).subscribe((data) => {
+      this.listStructuralMember = data;
+    });
   }
 
   addRow() {

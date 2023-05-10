@@ -1,6 +1,7 @@
 import { measurementTM2 } from './measurementTM2.model';
 
 export interface formTM2 {
+  code: string;
   name: string;
   firstFrameNoTM2: string;
   secondFrameNoTM2: string;

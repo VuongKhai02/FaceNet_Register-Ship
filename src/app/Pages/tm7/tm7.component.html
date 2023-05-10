@@ -287,7 +287,56 @@
                   )
                 )
                 ? '#0000FF'
-                : '#FF3300'
+                : '#FF3300',
+            'background-color':
+              formService.checkBeforeCalculate(
+                row.upperPart.originalThickness,
+                row.upperPart.gaugedP
+              ) &&
+              row.upperPart.originalThickness !== '' &&
+              convertToNumber(row.upperPart.percent) !== 0
+                ? convertToNumber(
+                    formService.calculateForMm(
+                      row.upperPart.originalThickness,
+                      row.upperPart.gaugedP
+                    )
+                  ) >=
+                    convertToNumber(
+                      formService.threePartsFourOfMaxAlwbDim(
+                        formService.calculateForMaxAlwbDim(
+                          row.upperPart.originalThickness,
+                          convertToNumber(row.upperPart.percent)
+                        )
+                      )
+                    ) &&
+                  convertToNumber(
+                    formService.calculateForMm(
+                      row.upperPart.originalThickness,
+                      row.upperPart.gaugedP
+                    )
+                  ) <=
+                    convertToNumber(
+                      formService.calculateForMaxAlwbDim(
+                        row.upperPart.originalThickness,
+                        convertToNumber(row.upperPart.percent)
+                      )
+                    )
+                  ? 'rgba(0,0,255,0.2)'
+                  : convertToNumber(
+                      formService.calculateForMm(
+                        row.upperPart.originalThickness,
+                        row.upperPart.gaugedP
+                      )
+                    ) >
+                    convertToNumber(
+                      formService.calculateForMaxAlwbDim(
+                        row.upperPart.originalThickness,
+                        convertToNumber(row.upperPart.percent)
+                      )
+                    )
+                  ? 'rgba(255,0,0,0.1)'
+                  : ''
+                : ''
           }"
           style="font-weight: 600; font-size: 18px"
         >
@@ -398,7 +447,56 @@
                   )
                 )
                 ? '#0000FF'
-                : '#FF3300'
+                : '#FF3300',
+            'background-color':
+              formService.checkBeforeCalculate(
+                row.upperPart.originalThickness,
+                row.upperPart.gaugedS
+              ) &&
+              row.upperPart.originalThickness !== '' &&
+              convertToNumber(row.upperPart.percent) !== 0
+                ? convertToNumber(
+                    formService.calculateForMm(
+                      row.upperPart.originalThickness,
+                      row.upperPart.gaugedS
+                    )
+                  ) >=
+                    convertToNumber(
+                      formService.threePartsFourOfMaxAlwbDim(
+                        formService.calculateForMaxAlwbDim(
+                          row.upperPart.originalThickness,
+                          convertToNumber(row.upperPart.percent)
+                        )
+                      )
+                    ) &&
+                  convertToNumber(
+                    formService.calculateForMm(
+                      row.upperPart.originalThickness,
+                      row.upperPart.gaugedS
+                    )
+                  ) <=
+                    convertToNumber(
+                      formService.calculateForMaxAlwbDim(
+                        row.upperPart.originalThickness,
+                        convertToNumber(row.upperPart.percent)
+                      )
+                    )
+                  ? 'rgba(0,0,255,0.2)'
+                  : convertToNumber(
+                      formService.calculateForMm(
+                        row.upperPart.originalThickness,
+                        row.upperPart.gaugedS
+                      )
+                    ) >
+                    convertToNumber(
+                      formService.calculateForMaxAlwbDim(
+                        row.upperPart.originalThickness,
+                        convertToNumber(row.upperPart.percent)
+                      )
+                    )
+                  ? 'rgba(255,0,0,0.1)'
+                  : ''
+                : ''
           }"
           style="font-weight: 600; font-size: 18px"
         >
@@ -546,7 +644,56 @@
                   )
                 )
                 ? '#0000FF'
-                : '#FF3300'
+                : '#FF3300',
+            'background-color':
+              formService.checkBeforeCalculate(
+                row.midPart.originalThickness,
+                row.midPart.gaugedP
+              ) &&
+              row.midPart.originalThickness !== '' &&
+              convertToNumber(row.midPart.percent) !== 0
+                ? convertToNumber(
+                    formService.calculateForMm(
+                      row.midPart.originalThickness,
+                      row.midPart.gaugedP
+                    )
+                  ) >=
+                    convertToNumber(
+                      formService.threePartsFourOfMaxAlwbDim(
+                        formService.calculateForMaxAlwbDim(
+                          row.midPart.originalThickness,
+                          convertToNumber(row.midPart.percent)
+                        )
+                      )
+                    ) &&
+                  convertToNumber(
+                    formService.calculateForMm(
+                      row.midPart.originalThickness,
+                      row.midPart.gaugedP
+                    )
+                  ) <=
+                    convertToNumber(
+                      formService.calculateForMaxAlwbDim(
+                        row.midPart.originalThickness,
+                        convertToNumber(row.midPart.percent)
+                      )
+                    )
+                  ? 'rgba(0,0,255,0.2)'
+                  : convertToNumber(
+                      formService.calculateForMm(
+                        row.midPart.originalThickness,
+                        row.midPart.gaugedP
+                      )
+                    ) >
+                    convertToNumber(
+                      formService.calculateForMaxAlwbDim(
+                        row.midPart.originalThickness,
+                        convertToNumber(row.midPart.percent)
+                      )
+                    )
+                  ? 'rgba(255,0,0,0.1)'
+                  : ''
+                : ''
           }"
           style="font-weight: 600; font-size: 18px"
         >
@@ -657,7 +804,56 @@
                   )
                 )
                 ? '#0000FF'
-                : '#FF3300'
+                : '#FF3300',
+            'background-color':
+              formService.checkBeforeCalculate(
+                row.midPart.originalThickness,
+                row.midPart.gaugedS
+              ) &&
+              row.midPart.originalThickness !== '' &&
+              convertToNumber(row.midPart.percent) !== 0
+                ? convertToNumber(
+                    formService.calculateForMm(
+                      row.midPart.originalThickness,
+                      row.midPart.gaugedS
+                    )
+                  ) >=
+                    convertToNumber(
+                      formService.threePartsFourOfMaxAlwbDim(
+                        formService.calculateForMaxAlwbDim(
+                          row.midPart.originalThickness,
+                          convertToNumber(row.midPart.percent)
+                        )
+                      )
+                    ) &&
+                  convertToNumber(
+                    formService.calculateForMm(
+                      row.midPart.originalThickness,
+                      row.midPart.gaugedS
+                    )
+                  ) <=
+                    convertToNumber(
+                      formService.calculateForMaxAlwbDim(
+                        row.midPart.originalThickness,
+                        convertToNumber(row.midPart.percent)
+                      )
+                    )
+                  ? 'rgba(0,0,255,0.2)'
+                  : convertToNumber(
+                      formService.calculateForMm(
+                        row.midPart.originalThickness,
+                        row.midPart.gaugedS
+                      )
+                    ) >
+                    convertToNumber(
+                      formService.calculateForMaxAlwbDim(
+                        row.midPart.originalThickness,
+                        convertToNumber(row.midPart.percent)
+                      )
+                    )
+                  ? 'rgba(255,0,0,0.1)'
+                  : ''
+                : ''
           }"
           style="font-weight: 600; font-size: 18px"
         >
@@ -805,7 +1001,56 @@
                   )
                 )
                 ? '#0000FF'
-                : '#FF3300'
+                : '#FF3300',
+            'background-color':
+              formService.checkBeforeCalculate(
+                row.lowerPart.originalThickness,
+                row.lowerPart.gaugedP
+              ) &&
+              row.lowerPart.originalThickness !== '' &&
+              convertToNumber(row.lowerPart.percent) !== 0
+                ? convertToNumber(
+                    formService.calculateForMm(
+                      row.lowerPart.originalThickness,
+                      row.lowerPart.gaugedP
+                    )
+                  ) >=
+                    convertToNumber(
+                      formService.threePartsFourOfMaxAlwbDim(
+                        formService.calculateForMaxAlwbDim(
+                          row.lowerPart.originalThickness,
+                          convertToNumber(row.lowerPart.percent)
+                        )
+                      )
+                    ) &&
+                  convertToNumber(
+                    formService.calculateForMm(
+                      row.lowerPart.originalThickness,
+                      row.lowerPart.gaugedP
+                    )
+                  ) <=
+                    convertToNumber(
+                      formService.calculateForMaxAlwbDim(
+                        row.lowerPart.originalThickness,
+                        convertToNumber(row.lowerPart.percent)
+                      )
+                    )
+                  ? 'rgba(0,0,255,0.2)'
+                  : convertToNumber(
+                      formService.calculateForMm(
+                        row.lowerPart.originalThickness,
+                        row.lowerPart.gaugedP
+                      )
+                    ) >
+                    convertToNumber(
+                      formService.calculateForMaxAlwbDim(
+                        row.lowerPart.originalThickness,
+                        convertToNumber(row.lowerPart.percent)
+                      )
+                    )
+                  ? 'rgba(255,0,0,0.1)'
+                  : ''
+                : ''
           }"
           style="font-weight: 600; font-size: 18px"
         >
@@ -916,7 +1161,56 @@
                   )
                 )
                 ? '#0000FF'
-                : '#FF3300'
+                : '#FF3300',
+            'background-color':
+              formService.checkBeforeCalculate(
+                row.lowerPart.originalThickness,
+                row.lowerPart.gaugedS
+              ) &&
+              row.lowerPart.originalThickness !== '' &&
+              convertToNumber(row.lowerPart.percent) !== 0
+                ? convertToNumber(
+                    formService.calculateForMm(
+                      row.lowerPart.originalThickness,
+                      row.lowerPart.gaugedS
+                    )
+                  ) >=
+                    convertToNumber(
+                      formService.threePartsFourOfMaxAlwbDim(
+                        formService.calculateForMaxAlwbDim(
+                          row.lowerPart.originalThickness,
+                          convertToNumber(row.lowerPart.percent)
+                        )
+                      )
+                    ) &&
+                  convertToNumber(
+                    formService.calculateForMm(
+                      row.lowerPart.originalThickness,
+                      row.lowerPart.gaugedS
+                    )
+                  ) <=
+                    convertToNumber(
+                      formService.calculateForMaxAlwbDim(
+                        row.lowerPart.originalThickness,
+                        convertToNumber(row.lowerPart.percent)
+                      )
+                    )
+                  ? 'rgba(0,0,255,0.2)'
+                  : convertToNumber(
+                      formService.calculateForMm(
+                        row.lowerPart.originalThickness,
+                        row.lowerPart.gaugedS
+                      )
+                    ) >
+                    convertToNumber(
+                      formService.calculateForMaxAlwbDim(
+                        row.lowerPart.originalThickness,
+                        convertToNumber(row.lowerPart.percent)
+                      )
+                    )
+                  ? 'rgba(255,0,0,0.1)'
+                  : ''
+                : ''
           }"
           style="font-weight: 600; font-size: 18px"
         >

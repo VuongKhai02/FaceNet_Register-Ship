@@ -28,6 +28,7 @@ export class Tm4Component implements OnInit {
   listStructuralMemberTitle: structuralMemberTM4[] = [];
 
   formTM4: formTM4 = {
+    code: '',
     tankDescription: '',
     locationOfStructure: '',
     structuralMemberTM4List: this.listStructuralMemberTitle,

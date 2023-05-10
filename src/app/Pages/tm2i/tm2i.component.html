@@ -62,7 +62,7 @@
     cdkDropList
     [cdkDropListData]="listRow"
     (cdkDropListDropped)="onDrop($event)"
-    [nzScroll]="{ x: '2300px', y: '480px' }"
+    [nzScroll]="{ x: '3000px', y: '480px' }"
     [nzPageSize]="5"
     nzBordered
     class="table"
@@ -288,7 +288,64 @@
                   )
                 )
                 ? '#0000FF'
-                : '#FF3300'
+                : '#FF3300',
+            'background-color':
+              formService.checkBeforeCalculate(
+                row.firstTransverseSectionMeasurementDetailTM2
+                  .originalThickness,
+                row.firstTransverseSectionMeasurementDetailTM2.gaugedP
+              ) &&
+              row.firstTransverseSectionMeasurementDetailTM2
+                .originalThickness !== '' &&
+              percentSelected !== 0
+                ? convertToNumber(
+                    formService.calculateForMm(
+                      row.firstTransverseSectionMeasurementDetailTM2
+                        .originalThickness,
+                      row.firstTransverseSectionMeasurementDetailTM2.gaugedP
+                    )
+                  ) >=
+                    convertToNumber(
+                      formService.threePartsFourOfMaxAlwbDim(
+                        formService.calculateForMaxAlwbDim(
+                          row.firstTransverseSectionMeasurementDetailTM2
+                            .originalThickness,
+                          percentSelected
+                        )
+                      )
+                    ) &&
+                  convertToNumber(
+                    formService.calculateForMm(
+                      row.firstTransverseSectionMeasurementDetailTM2
+                        .originalThickness,
+                      row.firstTransverseSectionMeasurementDetailTM2.gaugedP
+                    )
+                  ) <=
+                    convertToNumber(
+                      formService.calculateForMaxAlwbDim(
+                        row.firstTransverseSectionMeasurementDetailTM2
+                          .originalThickness,
+                        percentSelected
+                      )
+                    )
+                  ? 'rgba(0,0,255,0.2)'
+                  : convertToNumber(
+                      formService.calculateForMm(
+                        row.firstTransverseSectionMeasurementDetailTM2
+                          .originalThickness,
+                        row.firstTransverseSectionMeasurementDetailTM2.gaugedP
+                      )
+                    ) >
+                    convertToNumber(
+                      formService.calculateForMaxAlwbDim(
+                        row.firstTransverseSectionMeasurementDetailTM2
+                          .originalThickness,
+                        percentSelected
+                      )
+                    )
+                  ? 'rgba(255,0,0,0.1)'
+                  : ''
+                : ''
           }"
           style="font-weight: 600; font-size: 18px"
         >
@@ -412,7 +469,64 @@
                   )
                 )
                 ? '#0000FF'
-                : '#FF3300'
+                : '#FF3300',
+            'background-color':
+              formService.checkBeforeCalculate(
+                row.firstTransverseSectionMeasurementDetailTM2
+                  .originalThickness,
+                row.firstTransverseSectionMeasurementDetailTM2.gaugedS
+              ) &&
+              row.firstTransverseSectionMeasurementDetailTM2
+                .originalThickness !== '' &&
+              percentSelected !== 0
+                ? convertToNumber(
+                    formService.calculateForMm(
+                      row.firstTransverseSectionMeasurementDetailTM2
+                        .originalThickness,
+                      row.firstTransverseSectionMeasurementDetailTM2.gaugedS
+                    )
+                  ) >=
+                    convertToNumber(
+                      formService.threePartsFourOfMaxAlwbDim(
+                        formService.calculateForMaxAlwbDim(
+                          row.firstTransverseSectionMeasurementDetailTM2
+                            .originalThickness,
+                          percentSelected
+                        )
+                      )
+                    ) &&
+                  convertToNumber(
+                    formService.calculateForMm(
+                      row.firstTransverseSectionMeasurementDetailTM2
+                        .originalThickness,
+                      row.firstTransverseSectionMeasurementDetailTM2.gaugedS
+                    )
+                  ) <=
+                    convertToNumber(
+                      formService.calculateForMaxAlwbDim(
+                        row.firstTransverseSectionMeasurementDetailTM2
+                          .originalThickness,
+                        percentSelected
+                      )
+                    )
+                  ? 'rgba(0,0,255,0.2)'
+                  : convertToNumber(
+                      formService.calculateForMm(
+                        row.firstTransverseSectionMeasurementDetailTM2
+                          .originalThickness,
+                        row.firstTransverseSectionMeasurementDetailTM2.gaugedS
+                      )
+                    ) >
+                    convertToNumber(
+                      formService.calculateForMaxAlwbDim(
+                        row.firstTransverseSectionMeasurementDetailTM2
+                          .originalThickness,
+                        percentSelected
+                      )
+                    )
+                  ? 'rgba(255,0,0,0.1)'
+                  : ''
+                : ''
           }"
           style="font-weight: 600; font-size: 18px"
         >
@@ -583,7 +697,64 @@
                   )
                 )
                 ? '#0000FF'
-                : '#FF3300'
+                : '#FF3300',
+            'background-color':
+              formService.checkBeforeCalculate(
+                row.secondTransverseSectionMeasurementDetailTM2
+                  .originalThickness,
+                row.secondTransverseSectionMeasurementDetailTM2.gaugedP
+              ) &&
+              row.secondTransverseSectionMeasurementDetailTM2
+                .originalThickness !== '' &&
+              percentSelected !== 0
+                ? convertToNumber(
+                    formService.calculateForMm(
+                      row.secondTransverseSectionMeasurementDetailTM2
+                        .originalThickness,
+                      row.secondTransverseSectionMeasurementDetailTM2.gaugedP
+                    )
+                  ) >=
+                    convertToNumber(
+                      formService.threePartsFourOfMaxAlwbDim(
+                        formService.calculateForMaxAlwbDim(
+                          row.secondTransverseSectionMeasurementDetailTM2
+                            .originalThickness,
+                          percentSelected
+                        )
+                      )
+                    ) &&
+                  convertToNumber(
+                    formService.calculateForMm(
+                      row.secondTransverseSectionMeasurementDetailTM2
+                        .originalThickness,
+                      row.secondTransverseSectionMeasurementDetailTM2.gaugedP
+                    )
+                  ) <=
+                    convertToNumber(
+                      formService.calculateForMaxAlwbDim(
+                        row.secondTransverseSectionMeasurementDetailTM2
+                          .originalThickness,
+                        percentSelected
+                      )
+                    )
+                  ? 'rgba(0,0,255,0.2)'
+                  : convertToNumber(
+                      formService.calculateForMm(
+                        row.secondTransverseSectionMeasurementDetailTM2
+                          .originalThickness,
+                        row.secondTransverseSectionMeasurementDetailTM2.gaugedP
+                      )
+                    ) >
+                    convertToNumber(
+                      formService.calculateForMaxAlwbDim(
+                        row.secondTransverseSectionMeasurementDetailTM2
+                          .originalThickness,
+                        percentSelected
+                      )
+                    )
+                  ? 'rgba(255,0,0,0.1)'
+                  : ''
+                : ''
           }"
           style="font-weight: 600; font-size: 18px"
         >
@@ -707,7 +878,64 @@
                   )
                 )
                 ? '#0000FF'
-                : '#FF3300'
+                : '#FF3300',
+            'background-color':
+              formService.checkBeforeCalculate(
+                row.secondTransverseSectionMeasurementDetailTM2
+                  .originalThickness,
+                row.secondTransverseSectionMeasurementDetailTM2.gaugedS
+              ) &&
+              row.secondTransverseSectionMeasurementDetailTM2
+                .originalThickness !== '' &&
+              percentSelected !== 0
+                ? convertToNumber(
+                    formService.calculateForMm(
+                      row.secondTransverseSectionMeasurementDetailTM2
+                        .originalThickness,
+                      row.secondTransverseSectionMeasurementDetailTM2.gaugedS
+                    )
+                  ) >=
+                    convertToNumber(
+                      formService.threePartsFourOfMaxAlwbDim(
+                        formService.calculateForMaxAlwbDim(
+                          row.secondTransverseSectionMeasurementDetailTM2
+                            .originalThickness,
+                          percentSelected
+                        )
+                      )
+                    ) &&
+                  convertToNumber(
+                    formService.calculateForMm(
+                      row.secondTransverseSectionMeasurementDetailTM2
+                        .originalThickness,
+                      row.secondTransverseSectionMeasurementDetailTM2.gaugedS
+                    )
+                  ) <=
+                    convertToNumber(
+                      formService.calculateForMaxAlwbDim(
+                        row.secondTransverseSectionMeasurementDetailTM2
+                          .originalThickness,
+                        percentSelected
+                      )
+                    )
+                  ? 'rgba(0,0,255,0.2)'
+                  : convertToNumber(
+                      formService.calculateForMm(
+                        row.secondTransverseSectionMeasurementDetailTM2
+                          .originalThickness,
+                        row.secondTransverseSectionMeasurementDetailTM2.gaugedS
+                      )
+                    ) >
+                    convertToNumber(
+                      formService.calculateForMaxAlwbDim(
+                        row.secondTransverseSectionMeasurementDetailTM2
+                          .originalThickness,
+                        percentSelected
+                      )
+                    )
+                  ? 'rgba(255,0,0,0.1)'
+                  : ''
+                : ''
           }"
           style="font-weight: 600; font-size: 18px"
         >
@@ -874,7 +1102,64 @@
                   )
                 )
                 ? '#0000FF'
-                : '#FF3300'
+                : '#FF3300',
+            'background-color':
+              formService.checkBeforeCalculate(
+                row.thirdTransverseSectionMeasurementDetailTM2
+                  .originalThickness,
+                row.thirdTransverseSectionMeasurementDetailTM2.gaugedP
+              ) &&
+              row.thirdTransverseSectionMeasurementDetailTM2
+                .originalThickness !== '' &&
+              percentSelected !== 0
+                ? convertToNumber(
+                    formService.calculateForMm(
+                      row.thirdTransverseSectionMeasurementDetailTM2
+                        .originalThickness,
+                      row.thirdTransverseSectionMeasurementDetailTM2.gaugedP
+                    )
+                  ) >=
+                    convertToNumber(
+                      formService.threePartsFourOfMaxAlwbDim(
+                        formService.calculateForMaxAlwbDim(
+                          row.thirdTransverseSectionMeasurementDetailTM2
+                            .originalThickness,
+                          percentSelected
+                        )
+                      )
+                    ) &&
+                  convertToNumber(
+                    formService.calculateForMm(
+                      row.thirdTransverseSectionMeasurementDetailTM2
+                        .originalThickness,
+                      row.thirdTransverseSectionMeasurementDetailTM2.gaugedP
+                    )
+                  ) <=
+                    convertToNumber(
+                      formService.calculateForMaxAlwbDim(
+                        row.thirdTransverseSectionMeasurementDetailTM2
+                          .originalThickness,
+                        percentSelected
+                      )
+                    )
+                  ? 'rgba(0,0,255,0.2)'
+                  : convertToNumber(
+                      formService.calculateForMm(
+                        row.thirdTransverseSectionMeasurementDetailTM2
+                          .originalThickness,
+                        row.thirdTransverseSectionMeasurementDetailTM2.gaugedP
+                      )
+                    ) >
+                    convertToNumber(
+                      formService.calculateForMaxAlwbDim(
+                        row.thirdTransverseSectionMeasurementDetailTM2
+                          .originalThickness,
+                        percentSelected
+                      )
+                    )
+                  ? 'rgba(255,0,0,0.1)'
+                  : ''
+                : ''
           }"
           style="font-weight: 600; font-size: 18px"
         >
@@ -998,7 +1283,64 @@
                   )
                 )
                 ? '#0000FF'
-                : '#FF3300'
+                : '#FF3300',
+            'background-color':
+              formService.checkBeforeCalculate(
+                row.thirdTransverseSectionMeasurementDetailTM2
+                  .originalThickness,
+                row.thirdTransverseSectionMeasurementDetailTM2.gaugedS
+              ) &&
+              row.thirdTransverseSectionMeasurementDetailTM2
+                .originalThickness !== '' &&
+              percentSelected !== 0
+                ? convertToNumber(
+                    formService.calculateForMm(
+                      row.thirdTransverseSectionMeasurementDetailTM2
+                        .originalThickness,
+                      row.thirdTransverseSectionMeasurementDetailTM2.gaugedS
+                    )
+                  ) >=
+                    convertToNumber(
+                      formService.threePartsFourOfMaxAlwbDim(
+                        formService.calculateForMaxAlwbDim(
+                          row.thirdTransverseSectionMeasurementDetailTM2
+                            .originalThickness,
+                          percentSelected
+                        )
+                      )
+                    ) &&
+                  convertToNumber(
+                    formService.calculateForMm(
+                      row.thirdTransverseSectionMeasurementDetailTM2
+                        .originalThickness,
+                      row.thirdTransverseSectionMeasurementDetailTM2.gaugedS
+                    )
+                  ) <=
+                    convertToNumber(
+                      formService.calculateForMaxAlwbDim(
+                        row.thirdTransverseSectionMeasurementDetailTM2
+                          .originalThickness,
+                        percentSelected
+                      )
+                    )
+                  ? 'rgba(0,0,255,0.2)'
+                  : convertToNumber(
+                      formService.calculateForMm(
+                        row.thirdTransverseSectionMeasurementDetailTM2
+                          .originalThickness,
+                        row.thirdTransverseSectionMeasurementDetailTM2.gaugedS
+                      )
+                    ) >
+                    convertToNumber(
+                      formService.calculateForMaxAlwbDim(
+                        row.thirdTransverseSectionMeasurementDetailTM2
+                          .originalThickness,
+                        percentSelected
+                      )
+                    )
+                  ? 'rgba(255,0,0,0.1)'
+                  : ''
+                : ''
           }"
           style="font-weight: 600; font-size: 18px"
         >

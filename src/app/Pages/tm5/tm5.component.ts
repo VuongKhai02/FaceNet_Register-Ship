@@ -29,6 +29,7 @@ export class Tm5Component implements OnInit {
   listRow: measurementTM5[] = [];
 
   formTM5: formTM5 = {
+    code: '',
     description: '',
     name: '',
     locationOfStructure: '',

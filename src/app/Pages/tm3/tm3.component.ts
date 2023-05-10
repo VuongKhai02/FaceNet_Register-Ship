@@ -32,9 +32,10 @@ export class Tm3Component {
   listRow: measurementTM3[] = [];
 
   formTM3: formTM3 = {
-    firstFrameNo: 'string',
-    secondFrameNo: 'string',
-    thirdFrameNo: 'string',
+    code: '',
+    firstFrameNo: '',
+    secondFrameNo: '',
+    thirdFrameNo: '',
     measurementTM3List: this.listRow,
   };
 

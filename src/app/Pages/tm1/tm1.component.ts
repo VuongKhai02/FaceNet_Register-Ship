@@ -6,6 +6,7 @@ import { CdkDragEnd, CdkDragDrop } from '@angular/cdk/drag-drop';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { catchError, retry } from 'rxjs/operators';
 import { throwError } from 'rxjs';
+import { LocalService } from 'src/app/share/services/local.service';
 
 @Component({
   selector: 'app-tm1',
@@ -15,12 +16,14 @@ import { throwError } from 'rxjs';
 export class Tm1Component implements OnInit {
   constructor(
     public formService: FormService,
-    private message: NzMessageService
+    private message: NzMessageService,
+    public localService: LocalService
   ) {}
 
   addRowValue: number = 0;
   listRow: measurementTM1[] = [];
   formTM1: formTM1 = {
+    code: '',
     strakePosition: '',
     measurementTM1List: this.listRow,
   };
