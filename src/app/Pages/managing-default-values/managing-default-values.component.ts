@@ -261,6 +261,12 @@ export class ManagingDefaultValuesComponent implements OnInit {
       type: 10,
       param: this.tm7s,
     },
+    {
+      active: false,
+      disabled: false,
+      name: 'Form codes',
+      adding: false,
+    },
   ];
 
   panels = [

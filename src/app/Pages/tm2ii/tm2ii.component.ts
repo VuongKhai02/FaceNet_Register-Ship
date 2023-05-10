@@ -28,7 +28,8 @@ export class Tm2iiComponent {
 
   listRow: measurementTM2[] = [];
   formTM2: formTM2 = {
-    name: '',
+    code: '',
+    name: 'FORM TM2(II)',
     firstFrameNoTM2: '',
     secondFrameNoTM2: '',
     thirdFrameNoTM2: '',
