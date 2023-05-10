@@ -44,7 +44,7 @@ export class CertificateService {
    * @param data : Thông tin của certificate cần sửa
    * @returns
    */
-  updateCertificateToAPI(id: string, data: certificate): Observable<any> {
+  updateCertificateToAPI(id: number, data: certificatePush): Observable<any> {
     return this.http.put(`${this.API_URL}/${id}`, data);
   }
 }

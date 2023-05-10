@@ -10,7 +10,7 @@ import { CertificateService } from 'src/app/share/services/certificate.service';
 import { LocalService } from 'src/app/share/services/local.service';
 import { main } from 'src/app/share/models/local.model';
 import { GeneralParticularPush } from 'src/app/share/models/generalParticularsPush.model';
-import { paramValue } from 'src/app/share/models/paramValue.model';
+import { ParamValue } from 'src/app/share/models/paramValue.model';
 import { ParamValueService } from 'src/app/share/services/param-value.service';
 
 @Component({
@@ -19,7 +19,7 @@ import { ParamValueService } from 'src/app/share/services/param-value.service';
   styleUrls: ['./general-particulars.component.css'],
 })
 export class GeneralParticularsComponent implements OnInit {
-  param: paramValue[] = [];
+  param: ParamValue[] = [];
   mainData!: main;
   link: string = '/selectForm';
   generalParticulars: GeneralParticular[] = [];
@@ -33,6 +33,8 @@ export class GeneralParticularsComponent implements OnInit {
   IMONum: any = null;
   ABSNum: any = null;
   listDetail: string[] = [];
+  listSuveyor: string[] = [];
+  listOperator: string[] = [];
   inShipName: string = '';
   inIMO: string = '';
   inABS: string = '';
@@ -85,6 +87,48 @@ export class GeneralParticularsComponent implements OnInit {
     this.isVisible = true;
     this.shipSevice.getShipsFromAPI().subscribe((data) => {
       this.ships = data;
+      if (this.generalParticularsForm.value.shipName !== '') {
+        this.ships = this.ships.filter((x) =>
+          x.name
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .includes(
+              this.generalParticularsForm.value.shipName
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+            )
+        );
+      }
+      if (this.generalParticularsForm.value.imoNumber !== '') {
+        this.ships = this.ships.filter((x) =>
+          x.name
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .includes(
+              this.generalParticularsForm.value.imoNumber
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+            )
+        );
+      }
+      if (this.generalParticularsForm.value.absIdentificationNumber !== '') {
+        this.ships = this.ships.filter((x) =>
+          x.name
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .includes(
+              this.generalParticularsForm.value.absIdentificationNumber
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+            )
+        );
+      }
     });
     this.shipname = this.generalParticularsForm.value.shipName;
     this.IMONum = this.generalParticularsForm.value.imoNumber;
@@ -131,6 +175,28 @@ export class GeneralParticularsComponent implements OnInit {
     this.paramValueService.getParamValueByType(5).subscribe(
       (data) => {
         this.qualificationOfoperator = data[0].param;
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+
+    this.paramValueService.getParamValueByType(2).subscribe(
+      (data) => {
+        for (let i: number = 0; i < data.length; i++) {
+          this.listSuveyor.push(data[i].param);
+        }
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+
+    this.paramValueService.getParamValueByType(4).subscribe(
+      (data) => {
+        for (let i: number = 0; i < data.length; i++) {
+          this.listOperator.push(data[i].param);
+        }
       },
       (err) => {
         console.log(err);

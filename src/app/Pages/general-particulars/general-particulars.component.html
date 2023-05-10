@@ -43,15 +43,10 @@
           nzFooter=" "
         >
           <ng-container *nzModalContent>
-            <div
-              *ngIf="
-                shipname === null && IMONum === null && ABSNum === null;
-                else tableBox
-              "
-            >
+            <div *ngIf="ships.length === 0">
               <h1>No result</h1>
             </div>
-            <ng-template #tableBox>
+            <div *ngIf="ships.length > 0">
               <nz-table
                 [nzScroll]="{ y: '300px' }"
                 nzTemplateMode="true"
@@ -69,12 +64,7 @@
                     <th class="titleTable" nzWidth="80px">Action</th>
                   </tr>
                 </thead>
-                <tbody
-                  *ngFor="
-                    let ship of ships | shipFilter : shipname : IMONum : ABSNum;
-                    let i = index
-                  "
-                >
+                <tbody *ngFor="let ship of ships; let i = index">
                   <tr>
                     <td>{{ i + 1 }}</td>
                     <td>{{ ship.name }}</td>
@@ -92,7 +82,7 @@
                   </tr>
                 </tbody>
               </nz-table>
-            </ng-template>
+            </div>
           </ng-container>
         </nz-modal>
       </nz-form-item>
@@ -420,7 +410,7 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <span>SNT-TC-1A UT LEVEL 2</span>
+          <span>{{ qualificationOfoperator }}</span>
         </nz-form-control>
       </nz-form-item>
       <hr />
@@ -482,12 +472,9 @@
             style="width: 100%"
           >
             <nz-option
-              nzLabel="Nguyen Van Luyen"
-              nzValue="Nguyen Van Luyen"
-            ></nz-option>
-            <nz-option
-              nzLabel="Nguyen Thanh An"
-              nzValue="Nguyen Thanh An"
+              *ngFor="let operator of listOperator"
+              nzLabel="{{ operator }}"
+              nzValue="{{ operator }}"
             ></nz-option>
           </nz-select>
         </nz-form-control>
@@ -513,12 +500,9 @@
             style="width: 100%"
           >
             <nz-option
-              nzLabel="Nguyen Van Luyen"
-              nzValue="Nguyen Van Luyen"
-            ></nz-option>
-            <nz-option
-              nzLabel="Nguyen Thanh An"
-              nzValue="Nguyen Thanh An"
+              *ngFor="let surveyor of listSuveyor"
+              nzLabel="{{ surveyor }}"
+              nzValue="{{ surveyor }}"
             ></nz-option>
           </nz-select>
         </nz-form-control>

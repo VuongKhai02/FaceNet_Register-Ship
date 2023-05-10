@@ -3,7 +3,7 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { formTM3 } from 'src/app/share/models/form/formTM3.model';
 import { measurementTM3 } from 'src/app/share/models/form/measurementTM3.model';
 import { FormService } from 'src/app/share/services/form/form.service';
-import { paramValue } from 'src/app/share/models/paramValue.model';
+import { ParamValue } from 'src/app/share/models/paramValue.model';
 import { ParamValueService } from 'src/app/share/services/param-value.service';
 import { catchError, retry, throwError } from 'rxjs';
 import { CdkDragEnd, CdkDragDrop } from '@angular/cdk/drag-drop';
@@ -44,7 +44,7 @@ export class Tm3Component {
 
   percentSelected: number = 0;
 
-  listStructuralMember: paramValue[] = [];
+  listStructuralMember: ParamValue[] = [];
 
   API_URL: string = `http://222.252.25.37:9080/api/v1/report-indexes/1/tm3s`;
 

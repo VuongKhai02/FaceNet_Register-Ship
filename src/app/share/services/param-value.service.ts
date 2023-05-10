@@ -8,14 +8,22 @@ import { newParamValue } from '../models/newParamValue.model';
   providedIn: 'root',
 })
 export class ParamValueService {
-  constructor(private httpClient: HttpClient) {}
+  constructor(private http: HttpClient) {}
   API_URL: string = `${API_END_POINT}/param_value`;
 
   getParamValueByType(id: number): Observable<any> {
-    return this.httpClient.get(`${this.API_URL}?type=${id}`);
+    return this.http.get(`${this.API_URL}?type=${id}`);
   }
 
-  addParamValue(id: number, data: newParamValue): Observable<any> {
-    return this.httpClient.post(`${this.API_URL}/${id}`, data);
+  addParamValue(data: newParamValue): Observable<any> {
+    return this.http.post(`${this.API_URL}`, data);
+  }
+
+  deleteParamValue(id: number): Observable<any> {
+    return this.http.delete(`${this.API_URL}/${id}`);
+  }
+
+  updateParamValue(id: number, data: newParamValue): Observable<any> {
+    return this.http.put(`${this.API_URL}/${id}`, data);
   }
 }

@@ -4,7 +4,7 @@ import { catchError, retry, throwError } from 'rxjs';
 import { formTM6 } from 'src/app/share/models/form/formTM6.model';
 import { measurementTM6 } from 'src/app/share/models/form/measurementTM6.model';
 import { structuralDescriptionTM6 } from 'src/app/share/models/form/structuralDescriptionTM6.model';
-import { paramValue } from 'src/app/share/models/paramValue.model';
+import { ParamValue } from 'src/app/share/models/paramValue.model';
 import { FormService } from 'src/app/share/services/form/form.service';
 import { ParamValueService } from 'src/app/share/services/param-value.service';
 import { CdkDragEnd, CdkDragDrop } from '@angular/cdk/drag-drop';
@@ -24,7 +24,7 @@ export class Tm6Component implements OnInit {
   addRowValue: number = 0;
   listRow: measurementTM6[] = [];
 
-  listStructuralMember: paramValue[] = [];
+  listStructuralMember: ParamValue[] = [];
   listStructuralDescription: structuralDescriptionTM6[] = [];
 
   formTM6: formTM6 = {

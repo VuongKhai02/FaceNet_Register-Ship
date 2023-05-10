@@ -4,4 +4,5 @@ export interface certificate {
   certificateNo: string;
   validStartDate: Date;
   validEndDate: Date;
+  edit: boolean;
 }
