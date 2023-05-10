@@ -55,8 +55,8 @@
               nzMatchRouter
             >
               <span nz-icon nzType="file-text" nzTheme="outline"></span>
-              <span
-                ><a routerLink="{{ form }}">{{ form }}</a>
+              <span>
+                <a (click)="link(part.index, form)">{{ form.name }}</a>
               </span>
 
               <button

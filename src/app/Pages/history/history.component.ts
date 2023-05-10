@@ -12,6 +12,7 @@ import { ReportIndex } from 'src/app/share/models/report-index.model';
 import { partLocal } from 'src/app/share/models/local.model';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { Router } from '@angular/router';
+import { Form } from 'src/app/share/models/form.model';
 
 @Component({
   selector: 'app-history',
@@ -103,11 +104,15 @@ export class HistoryComponent implements OnInit {
       .subscribe(
         (data) => {
           for (let i: number = 0; i < data.parts.length; i++) {
-            let newForm: string[] = [];
+            let newForm: Form[] = [];
             for (let j: number = 0; j < data.parts[i].forms.length; j++) {
-              newForm.push(data.parts[i].forms[j].name);
+              newForm.push({
+                index: data.parts[i].forms[j].index,
+                name: data.parts[i].forms[j].name,
+              });
             }
             this.parts.push({
+              index: data.parts[i].index,
               partName: data.parts[i].item,
               forms: newForm,
               visible: false,

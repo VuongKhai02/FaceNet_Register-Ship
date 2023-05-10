@@ -9,6 +9,7 @@ import { main } from './share/models/local.model';
 import { ReportIndexesService } from './share/services/report-indexes.service';
 import { ReportIndex } from './share/models/report-index.model';
 import { partLocal } from './share/models/local.model';
+import { Form } from './share/models/form.model';
 
 @Component({
   selector: 'app-root',
@@ -20,10 +21,12 @@ export class AppComponent implements OnInit {
   parts: partLocal[] = [];
   formSelect: string[] = [];
   mainData!: main;
+  tmName: string = '';
   constructor(
     private partsService: PartsService,
     private localService: LocalService,
-    private reportIndexService: ReportIndexesService
+    private reportIndexService: ReportIndexesService,
+    private router: Router
   ) {}
 
   clickMe(i: number): void {
@@ -32,7 +35,7 @@ export class AppComponent implements OnInit {
 
   addForm(i: number) {
     for (let j: number = 0; j < this.formSelect.length; j++) {
-      this.parts[i].forms.push(this.formSelect[j]);
+      this.parts[i].forms.push({ index: -1, name: this.formSelect[j] });
     }
   }
 
@@ -52,11 +55,13 @@ export class AppComponent implements OnInit {
             this.reportIndex = data;
             for (let i: number = 0; i < this.reportIndex.parts.length; i++) {
               this.parts.push({
+                index: this.reportIndex.parts[i].index,
                 partName: this.reportIndex.parts[i].item,
-                forms: [],
+                forms: this.reportIndex.parts[i].forms,
                 visible: false,
               });
             }
+            console.log(this.reportIndex);
           },
           (err) => {
             console.log(err);
@@ -95,5 +100,29 @@ export class AppComponent implements OnInit {
   deletePart(i: number) {
     this.parts.splice(i, 1);
   }
+
+  link(id: number, info: Form) {
+    if (info.name === 'FORM TM1') {
+      this.tmName = 'tm1';
+    } else if (info.name === 'FORM TM2') {
+      this.tmName = 'tm2';
+    } else if (info.name === 'FORM TM2(I)') {
+      this.tmName = 'tm2(i)';
+    } else if (info.name === 'FORM TM2(II)') {
+      this.tmName = 'tm2(ii)';
+    } else if (info.name === 'FORM TM3') {
+      this.tmName = 'tm3';
+    } else if (info.name === 'FORM TM4') {
+      this.tmName = 'tm4';
+    } else if (info.name === 'FORM TM5') {
+      this.tmName = 'tm5';
+    } else if (info.name === 'FORM TM6') {
+      this.tmName = 'tm6';
+    } else if (info.name === 'FORM TM7') {
+      this.tmName = 'tm7';
+    }
+    this.router.navigate(['part', id, this.tmName, info.index]);
+  }
+
   cancel() {}
 }

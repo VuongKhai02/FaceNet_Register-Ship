@@ -57,6 +57,7 @@ export class SelectformComponent implements OnInit {
               .getReportIndexFromAPI(this.mainData.mainId)
               .subscribe((data) => {
                 let newPart: partLocal = {
+                  index: 0,
                   partName: this.item,
                   forms: this.selectForm.value.formSelect,
                   visible: false,
