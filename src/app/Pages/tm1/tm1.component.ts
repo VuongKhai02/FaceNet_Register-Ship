@@ -40,8 +40,7 @@ export class Tm1Component implements OnInit {
 
   API_URL: string = `http://222.252.25.37:9080/api/v1/report-indexes/1/tm1s`;
 
-  selectedRow: number = -1;
-  selectedRowValue: measurementTM1 = {
+  emptyRow: measurementTM1 = {
     platePosition: '',
     noOrLetter: '',
     forwardReadingMeasurementDetail: {
@@ -60,11 +59,10 @@ export class Tm1Component implements OnInit {
     },
   };
 
-  startIndex: number = -1;
-  endIndex: number = -1;
-
   isVisible: boolean = false;
   isLoadingSaveButton: boolean = false;
+
+  selectedRow: number[] = [];
 
   ngOnInit(): void {
     for (let i = 1; i <= 20; i++)
@@ -86,7 +84,6 @@ export class Tm1Component implements OnInit {
           percent: '',
         },
       });
-    console.log(this.getDataService.getGeneralParticulars());
   }
 
   addRow() {
@@ -164,49 +161,29 @@ export class Tm1Component implements OnInit {
     event.source.reset();
   }
 
-  selectRow(index: number) {
-    this.selectedRow = index;
-    this.selectedRowValue = this.listRow[index];
+  selectRow(index: number): void {
+    if (
+      index === this.selectedRow.sort()[0] - 1 ||
+      index === this.selectedRow.sort()[this.selectedRow.length - 1] + 1 ||
+      index === this.selectedRow.sort()[0] ||
+      index === this.selectedRow.sort()[this.selectedRow.length - 1]
+    ) {
+      if (this.selectedRow.includes(index) === false)
+        this.selectedRow.push(index);
+      else this.selectedRow = this.selectedRow.filter((e) => e !== index);
+    } else if (this.selectedRow.length === 0) this.selectedRow.push(index);
   }
 
   onDrop(event: CdkDragDrop<measurementTM1[]>) {
-    this.startIndex = event.previousIndex;
-    this.endIndex = event.currentIndex;
-    if (this.startIndex < this.endIndex) {
-      for (let i = this.startIndex + 1; i <= this.endIndex; i++) {
-        this.listRow[i].platePosition = this.selectedRowValue.platePosition;
-        this.listRow[i].noOrLetter = this.selectedRowValue.noOrLetter;
-        this.listRow[i].forwardReadingMeasurementDetail.originalThickness =
-          this.selectedRowValue.forwardReadingMeasurementDetail.originalThickness;
-        this.listRow[i].forwardReadingMeasurementDetail.gaugedP =
-          this.selectedRowValue.forwardReadingMeasurementDetail.gaugedP;
-        this.listRow[i].forwardReadingMeasurementDetail.gaugedS =
-          this.selectedRowValue.forwardReadingMeasurementDetail.gaugedS;
-        this.listRow[i].afterReadingMeasurementDetail.originalThickness =
-          this.selectedRowValue.afterReadingMeasurementDetail.originalThickness;
-        this.listRow[i].afterReadingMeasurementDetail.gaugedP =
-          this.selectedRowValue.afterReadingMeasurementDetail.gaugedP;
-        this.listRow[i].afterReadingMeasurementDetail.gaugedS =
-          this.selectedRowValue.afterReadingMeasurementDetail.gaugedS;
+    this.selectedRow.forEach((row) => {
+      for (
+        let i = row + this.selectedRow.length;
+        i <= event.currentIndex;
+        i += this.selectedRow.length
+      ) {
+        this.listRow[i] = JSON.parse(JSON.stringify(this.listRow[row]));
       }
-    } else {
-      for (let i = this.startIndex - 1; i >= this.endIndex; i--) {
-        this.listRow[i].platePosition = this.selectedRowValue.platePosition;
-        this.listRow[i].noOrLetter = this.selectedRowValue.noOrLetter;
-        this.listRow[i].forwardReadingMeasurementDetail.originalThickness =
-          this.selectedRowValue.forwardReadingMeasurementDetail.originalThickness;
-        this.listRow[i].forwardReadingMeasurementDetail.gaugedP =
-          this.selectedRowValue.forwardReadingMeasurementDetail.gaugedP;
-        this.listRow[i].forwardReadingMeasurementDetail.gaugedS =
-          this.selectedRowValue.forwardReadingMeasurementDetail.gaugedS;
-        this.listRow[i].afterReadingMeasurementDetail.originalThickness =
-          this.selectedRowValue.afterReadingMeasurementDetail.originalThickness;
-        this.listRow[i].afterReadingMeasurementDetail.gaugedP =
-          this.selectedRowValue.afterReadingMeasurementDetail.gaugedP;
-        this.listRow[i].afterReadingMeasurementDetail.gaugedS =
-          this.selectedRowValue.afterReadingMeasurementDetail.gaugedS;
-      }
-    }
+    });
   }
 
   showModal(): void {
@@ -238,5 +215,13 @@ export class Tm1Component implements OnInit {
       this.listRow[i].afterReadingMeasurementDetail.percent =
         this.percentSelected.toString();
     }
+  }
+
+  clearRow(index: number) {
+    this.listRow[index] = JSON.parse(JSON.stringify(this.emptyRow));
+  }
+
+  deleteRow(index: number) {
+    this.listRow.splice(index, 1);
   }
 }

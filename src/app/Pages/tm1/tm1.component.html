@@ -70,20 +70,19 @@
     [nzScroll]="{ x: '1900px', y: '500px' }"
     [nzPageSize]="5"
     nzBordered
-    class="table"
-    nzTemplateMode=""
     nzSize="small"
   >
     <!-- Start table header -->
     <thead>
       <tr class="th">
+        <th rowSpan="4" nzLeft>No.</th>
         <th colspan="3">STRAKE POSITION :</th>
-        <th colspan="21">
+        <th colspan="20">
           <input nz-input type="text" [(ngModel)]="formTM1.strakePosition" />
         </th>
+        <th class="table-header-right" colSpan="2" rowspan="4">Action</th>
       </tr>
       <tr class="th">
-        <th rowSpan="3" nzLeft>No.</th>
         <th rowspan="3" colspan="2">PLATE POSITION</th>
         <th rowspan="3">No. or Letter</th>
         <th rowspan="3">Original Thickness (mm)</th>
@@ -119,6 +118,7 @@
       </tr>
     </thead>
     <!-- End table header -->
+    <!-- (mousedown)="selectRow(index)" -->
 
     <!-- Start table body -->
     <tbody>
@@ -129,9 +129,16 @@
         cdkDragBoundary="table"
         (cdkDragEnded)="onDragEnded($event)"
         cdkDrag
-        (mousedown)="selectRow(index)"
+        [cdkDragDisabled]="selectedRow.includes(index) === false"
+        [style.background]="
+          selectedRow.includes(index) ? '#FFE6C1 !important' : ''
+        "
       >
-        <td nzLeft>
+        <td
+          class="table-body-left"
+          style="background-color: white"
+          (click)="selectRow(index)"
+        >
           {{ index + 1 }}
         </td>
         <td colspan="2">
@@ -883,6 +890,24 @@
           }}
         </td>
         <!-- End calculator for Mean Diminution -->
+        <td
+          class="table-body-right"
+          style="background-color: white"
+          colSpan="2"
+        >
+          <nz-button-group>
+            <button
+              class="ant-btn-icon-only"
+              nz-button
+              (click)="clearRow(index)"
+            >
+              <span nz-icon nzType="clear" nzTheme="outline"></span>
+            </button>
+            <button nz-button (click)="deleteRow(index)">
+              <span nz-icon nzType="delete" nzTheme="outline"></span>
+            </button>
+          </nz-button-group>
+        </td>
       </tr>
     </tbody>
     <!-- End table body -->

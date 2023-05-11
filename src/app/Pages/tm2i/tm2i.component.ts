@@ -47,8 +47,7 @@ export class Tm2iComponent {
 
   percentSelected: number = 0;
 
-  selectedRow: number = -1;
-  selectedRowValue: measurementTM2 = {
+  emptyRow: measurementTM2 = {
     strakePosition: '',
     noOrLetter: '',
     firstTransverseSectionMeasurementDetailTM2: {
@@ -79,6 +78,8 @@ export class Tm2iComponent {
 
   isVisible = false;
   isLoadingSaveButton: boolean = false;
+
+  selectedRow: number[] = [];
 
   ngOnInit(): void {
     for (let i = 1; i <= 20; i++)
@@ -199,73 +200,29 @@ export class Tm2iComponent {
     event.source.reset();
   }
 
-  selectRow(index: number) {
-    this.selectedRow = index;
-    this.selectedRowValue = this.listRow[index];
+  selectRow(index: number): void {
+    if (
+      index === this.selectedRow.sort()[0] - 1 ||
+      index === this.selectedRow.sort()[this.selectedRow.length - 1] + 1 ||
+      index === this.selectedRow.sort()[0] ||
+      index === this.selectedRow.sort()[this.selectedRow.length - 1]
+    ) {
+      if (this.selectedRow.includes(index) === false)
+        this.selectedRow.push(index);
+      else this.selectedRow = this.selectedRow.filter((e) => e !== index);
+    } else if (this.selectedRow.length === 0) this.selectedRow.push(index);
   }
 
   onDrop(event: CdkDragDrop<measurementTM2[]>) {
-    this.startIndex = event.previousIndex;
-    this.endIndex = event.currentIndex;
-    if (this.startIndex < this.endIndex) {
-      for (let i = this.startIndex + 1; i <= this.endIndex; i++) {
-        this.listRow[i].strakePosition = this.selectedRowValue.strakePosition;
-        this.listRow[i].noOrLetter = this.selectedRowValue.noOrLetter;
-        this.listRow[
-          i
-        ].firstTransverseSectionMeasurementDetailTM2.originalThickness =
-          this.selectedRowValue.firstTransverseSectionMeasurementDetailTM2.originalThickness;
-        this.listRow[i].firstTransverseSectionMeasurementDetailTM2.gaugedP =
-          this.selectedRowValue.firstTransverseSectionMeasurementDetailTM2.gaugedP;
-        this.listRow[i].firstTransverseSectionMeasurementDetailTM2.gaugedS =
-          this.selectedRowValue.firstTransverseSectionMeasurementDetailTM2.gaugedS;
-        this.listRow[
-          i
-        ].secondTransverseSectionMeasurementDetailTM2.originalThickness =
-          this.selectedRowValue.secondTransverseSectionMeasurementDetailTM2.originalThickness;
-        this.listRow[i].secondTransverseSectionMeasurementDetailTM2.gaugedP =
-          this.selectedRowValue.secondTransverseSectionMeasurementDetailTM2.gaugedP;
-        this.listRow[i].secondTransverseSectionMeasurementDetailTM2.gaugedS =
-          this.selectedRowValue.secondTransverseSectionMeasurementDetailTM2.gaugedS;
-        this.listRow[
-          i
-        ].thirdTransverseSectionMeasurementDetailTM2.originalThickness =
-          this.selectedRowValue.thirdTransverseSectionMeasurementDetailTM2.originalThickness;
-        this.listRow[i].thirdTransverseSectionMeasurementDetailTM2.gaugedP =
-          this.selectedRowValue.thirdTransverseSectionMeasurementDetailTM2.gaugedP;
-        this.listRow[i].thirdTransverseSectionMeasurementDetailTM2.gaugedS =
-          this.selectedRowValue.thirdTransverseSectionMeasurementDetailTM2.gaugedS;
+    this.selectedRow.forEach((row) => {
+      for (
+        let i = row + this.selectedRow.length;
+        i <= event.currentIndex;
+        i += this.selectedRow.length
+      ) {
+        this.listRow[i] = JSON.parse(JSON.stringify(this.listRow[row]));
       }
-    } else {
-      for (let i = this.startIndex - 1; i >= this.endIndex; i--) {
-        this.listRow[i].strakePosition = this.selectedRowValue.strakePosition;
-        this.listRow[i].noOrLetter = this.selectedRowValue.noOrLetter;
-        this.listRow[
-          i
-        ].firstTransverseSectionMeasurementDetailTM2.originalThickness =
-          this.selectedRowValue.firstTransverseSectionMeasurementDetailTM2.originalThickness;
-        this.listRow[i].firstTransverseSectionMeasurementDetailTM2.gaugedP =
-          this.selectedRowValue.firstTransverseSectionMeasurementDetailTM2.gaugedP;
-        this.listRow[i].firstTransverseSectionMeasurementDetailTM2.gaugedS =
-          this.selectedRowValue.firstTransverseSectionMeasurementDetailTM2.gaugedS;
-        this.listRow[
-          i
-        ].secondTransverseSectionMeasurementDetailTM2.originalThickness =
-          this.selectedRowValue.secondTransverseSectionMeasurementDetailTM2.originalThickness;
-        this.listRow[i].secondTransverseSectionMeasurementDetailTM2.gaugedP =
-          this.selectedRowValue.secondTransverseSectionMeasurementDetailTM2.gaugedP;
-        this.listRow[i].secondTransverseSectionMeasurementDetailTM2.gaugedS =
-          this.selectedRowValue.secondTransverseSectionMeasurementDetailTM2.gaugedS;
-        this.listRow[
-          i
-        ].thirdTransverseSectionMeasurementDetailTM2.originalThickness =
-          this.selectedRowValue.thirdTransverseSectionMeasurementDetailTM2.originalThickness;
-        this.listRow[i].thirdTransverseSectionMeasurementDetailTM2.gaugedP =
-          this.selectedRowValue.thirdTransverseSectionMeasurementDetailTM2.gaugedP;
-        this.listRow[i].thirdTransverseSectionMeasurementDetailTM2.gaugedS =
-          this.selectedRowValue.thirdTransverseSectionMeasurementDetailTM2.gaugedS;
-      }
-    }
+    });
   }
 
   showModal(): void {
@@ -299,5 +256,13 @@ export class Tm2iComponent {
       this.listRow[i].thirdTransverseSectionMeasurementDetailTM2.percent =
         this.percentSelected.toString();
     }
+  }
+
+  clearRow(index: number) {
+    this.listRow[index] = JSON.parse(JSON.stringify(this.emptyRow));
+  }
+
+  deleteRow(index: number) {
+    this.listRow.splice(index, 1);
   }
 }

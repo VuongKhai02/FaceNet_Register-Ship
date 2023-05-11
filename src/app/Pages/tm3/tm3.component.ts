@@ -49,7 +49,7 @@ export class Tm3Component {
 
   API_URL: string = `http://222.252.25.37:9080/api/v1/report-indexes/1/tm3s`;
 
-  selectedRowValue: measurementTM3 = {
+  emptyRow: measurementTM3 = {
     structuralMember: '',
     noOrLetter: '',
     firstTransverseSectionMeasurementDetail: {
@@ -75,11 +75,10 @@ export class Tm3Component {
     },
   };
 
-  startIndex: number = -1;
-  endIndex: number = -1;
-
   isVisible = false;
   isLoadingSaveButton: boolean = false;
+
+  selectedRow: number[] = [];
 
   ngOnInit(): void {
     for (let i = 1; i <= 20; i++)
@@ -116,31 +115,7 @@ export class Tm3Component {
 
   addRow() {
     for (let i = 1; i <= this.addRowValue; i++)
-      this.listRow.push({
-        structuralMember: '',
-        noOrLetter: '',
-        firstTransverseSectionMeasurementDetail: {
-          originalThickness: '',
-          maxAlwbDim: '',
-          gaugedP: '',
-          gaugedS: '',
-          percent: '',
-        },
-        secondTransverseSectionMeasurementDetail: {
-          originalThickness: '',
-          maxAlwbDim: '',
-          gaugedP: '',
-          gaugedS: '',
-          percent: '',
-        },
-        thirdTransverseSectionMeasurementDetail: {
-          originalThickness: '',
-          maxAlwbDim: '',
-          gaugedP: '',
-          gaugedS: '',
-          percent: '',
-        },
-      });
+      this.listRow.push(JSON.parse(JSON.stringify(this.emptyRow)));
   }
 
   showModalPercentManage() {
@@ -253,73 +228,28 @@ export class Tm3Component {
     event.source.reset();
   }
 
-  selectRow(index: number) {
-    this.selectedRowValue = this.listRow[index];
+  selectRow(index: number): void {
+    if (
+      index === this.selectedRow.sort()[0] - 1 ||
+      index === this.selectedRow.sort()[this.selectedRow.length - 1] + 1 ||
+      index === this.selectedRow.sort()[0] ||
+      index === this.selectedRow.sort()[this.selectedRow.length - 1]
+    ) {
+      if (this.selectedRow.includes(index) === false)
+        this.selectedRow.push(index);
+      else this.selectedRow = this.selectedRow.filter((e) => e !== index);
+    } else if (this.selectedRow.length === 0) this.selectedRow.push(index);
   }
 
   onDrop(event: CdkDragDrop<measurementTM3[]>) {
-    this.startIndex = event.previousIndex;
-    this.endIndex = event.currentIndex;
-    if (this.startIndex < this.endIndex) {
-      for (let i = this.startIndex + 1; i <= this.endIndex; i++) {
-        this.listRow[i].structuralMember =
-          this.selectedRowValue.structuralMember;
-        this.listRow[i].noOrLetter = this.selectedRowValue.noOrLetter;
-        this.listRow[
-          i
-        ].firstTransverseSectionMeasurementDetail.originalThickness =
-          this.selectedRowValue.firstTransverseSectionMeasurementDetail.originalThickness;
-        this.listRow[i].firstTransverseSectionMeasurementDetail.gaugedP =
-          this.selectedRowValue.firstTransverseSectionMeasurementDetail.gaugedP;
-        this.listRow[i].firstTransverseSectionMeasurementDetail.gaugedS =
-          this.selectedRowValue.firstTransverseSectionMeasurementDetail.gaugedS;
-        this.listRow[
-          i
-        ].secondTransverseSectionMeasurementDetail.originalThickness =
-          this.selectedRowValue.secondTransverseSectionMeasurementDetail.originalThickness;
-        this.listRow[i].secondTransverseSectionMeasurementDetail.gaugedP =
-          this.selectedRowValue.secondTransverseSectionMeasurementDetail.gaugedP;
-        this.listRow[i].secondTransverseSectionMeasurementDetail.gaugedS =
-          this.selectedRowValue.secondTransverseSectionMeasurementDetail.gaugedS;
-        this.listRow[
-          i
-        ].secondTransverseSectionMeasurementDetail.originalThickness =
-          this.selectedRowValue.secondTransverseSectionMeasurementDetail.originalThickness;
-        this.listRow[i].secondTransverseSectionMeasurementDetail.gaugedP =
-          this.selectedRowValue.secondTransverseSectionMeasurementDetail.gaugedP;
-        this.listRow[i].secondTransverseSectionMeasurementDetail.gaugedS =
-          this.selectedRowValue.secondTransverseSectionMeasurementDetail.gaugedS;
+    this.selectedRow.forEach((row) => {
+      for (
+        let i = row + this.selectedRow.length;
+        i <= event.currentIndex;
+        i += this.selectedRow.length
+      ) {
+        this.listRow[i] = JSON.parse(JSON.stringify(this.listRow[row]));
       }
-    } else {
-      for (let i = this.startIndex - 1; i >= this.endIndex; i--) {
-        this.listRow[i].structuralMember =
-          this.selectedRowValue.structuralMember;
-        this.listRow[i].noOrLetter = this.selectedRowValue.noOrLetter;
-        this.listRow[
-          i
-        ].firstTransverseSectionMeasurementDetail.originalThickness =
-          this.selectedRowValue.firstTransverseSectionMeasurementDetail.originalThickness;
-        this.listRow[i].firstTransverseSectionMeasurementDetail.gaugedP =
-          this.selectedRowValue.firstTransverseSectionMeasurementDetail.gaugedP;
-        this.listRow[i].firstTransverseSectionMeasurementDetail.gaugedS =
-          this.selectedRowValue.firstTransverseSectionMeasurementDetail.gaugedS;
-        this.listRow[
-          i
-        ].secondTransverseSectionMeasurementDetail.originalThickness =
-          this.selectedRowValue.secondTransverseSectionMeasurementDetail.originalThickness;
-        this.listRow[i].secondTransverseSectionMeasurementDetail.gaugedP =
-          this.selectedRowValue.secondTransverseSectionMeasurementDetail.gaugedP;
-        this.listRow[i].secondTransverseSectionMeasurementDetail.gaugedS =
-          this.selectedRowValue.secondTransverseSectionMeasurementDetail.gaugedS;
-        this.listRow[
-          i
-        ].secondTransverseSectionMeasurementDetail.originalThickness =
-          this.selectedRowValue.secondTransverseSectionMeasurementDetail.originalThickness;
-        this.listRow[i].secondTransverseSectionMeasurementDetail.gaugedP =
-          this.selectedRowValue.secondTransverseSectionMeasurementDetail.gaugedP;
-        this.listRow[i].secondTransverseSectionMeasurementDetail.gaugedS =
-          this.selectedRowValue.secondTransverseSectionMeasurementDetail.gaugedS;
-      }
-    }
+    });
   }
 }

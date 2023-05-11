@@ -86,3 +86,31 @@ input.ng-dirty.ng-invalid {
   color: red;
   border-color: red;
 }
+
+.ant-table-tbody > tr.ant-table-row:hover > td {
+  background: none;
+}
+
+.table-header-right {
+  position: sticky;
+  right: 0;
+  z-index: 2;
+  border-left: 1px solid #f0f0f0;
+}
+
+.table-body-right {
+  position: sticky;
+  right: 0;
+  z-index: 2;
+  background-color: #f0f0f0;
+  border-left: 1px solid #f0f0f0;
+}
+
+.table-body-left {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background-color: #f0f0f0;
+  border-left: 1px solid #f0f0f0;
+  cursor: pointer;
+}
