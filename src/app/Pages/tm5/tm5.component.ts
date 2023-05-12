@@ -3,7 +3,7 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { catchError, retry, throwError } from 'rxjs';
 import { formTM5 } from 'src/app/share/models/form/formTM5.model';
 import { measurementTM5 } from 'src/app/share/models/form/measurementTM5.model';
-import { paramValue } from 'src/app/share/models/paramValue.model';
+import { ParamValue } from 'src/app/share/models/paramValue.model';
 import { FormService } from 'src/app/share/services/form/form.service';
 import { ParamValueService } from 'src/app/share/services/param-value.service';
 import { CdkDragEnd, CdkDragDrop } from '@angular/cdk/drag-drop';
@@ -58,7 +58,7 @@ export class Tm5Component implements OnInit {
 
   API_URL: string = `http://222.252.25.37:9080/api/v1/report-indexes/1/tm5s`;
 
-  listStructuralMember: paramValue[] = [];
+  listStructuralMember: ParamValue[] = [];
 
   selectedRowValue: measurementTM5 = {
     structuralComponentType: '',

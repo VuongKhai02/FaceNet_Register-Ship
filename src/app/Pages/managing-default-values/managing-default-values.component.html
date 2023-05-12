@@ -3,23 +3,22 @@
   <nz-collapse style="margin-top: 10px; width: 100%">
     <nz-collapse-panel
       style="width: 100%"
-      *ngFor="let panel of panels; let i = index"
+      *ngFor="let panel of panelOneParam; let i = index"
       [nzHeader]="panel.name"
       [nzActive]="panel.active"
       [nzDisabled]="panel.disabled"
-      (nzActiveChange)="showParamValue($event, i + 1)"
     >
+      <div class="addNewBox">
+        <input
+          [(ngModel)]="panel.newItem"
+          placeholder="Enter the new item"
+          nz-input
+        />
+        <button (click)="addItem(i, panel.type)" nz-button nzType="primary">
+          Add new
+        </button>
+      </div>
       <div class="collapseBox">
-        <div class="addNewBox">
-          <input
-            [(ngModel)]="newParamValue.param"
-            placeholder="Enter the new item"
-            nz-input
-          />
-          <button (click)="addParam(i + 1)" nz-button nzType="primary">
-            Add new
-          </button>
-        </div>
         <nz-table nzTemplateMode="true" #borderedTable nzBordered>
           <thead class="titleTable">
             <tr class="titleTable">
@@ -28,25 +27,123 @@
               <th class="titleTable" nzWidth="150px">Action</th>
             </tr>
           </thead>
-          <tbody *ngFor="let item of listParamValue; let j = index">
+          <tbody *ngFor="let item of panel.param; let j = index">
             <tr>
               <td>{{ j + 1 }}</td>
-              <td>{{ item.param }}</td>
-              <td>
+              <td *ngIf="item.edit === false; else td2">{{ item.param }}</td>
+              <ng-template #td2>
+                <input style="margin: 15px" [(ngModel)]="item.param" nz-input />
+              </ng-template>
+              <td *ngIf="item.edit === false">
                 <a
-                  (nzOnConfirm)="editItem()"
+                  (nzOnConfirm)="editItem(i, j)"
                   (nzOnCancel)="cancel()"
                   nz-popconfirm
+                  nzPopconfirmTitle="Sure to edit?"
                 >
                   Edit</a
                 >
                 <nz-divider nzType="vertical"></nz-divider>
                 <a
-                  (nzOnConfirm)="deleteItem()"
+                  (nzOnConfirm)="deleteItem(item.id)"
                   (nzOnCancel)="cancel()"
                   nz-popconfirm
                   nzPopconfirmTitle="Sure to delete?"
                   >Delete</a
+                >
+              </td>
+              <td *ngIf="item.edit === true">
+                <a
+                  (nzOnConfirm)="saveItem(i, j)"
+                  (nzOnCancel)="cancel()"
+                  nz-popconfirm
+                  nzPopconfirmTitle="Sure to save?"
+                >
+                  Save</a
+                >
+              </td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </div>
+    </nz-collapse-panel>
+    <nz-collapse-panel
+      style="width: 100%"
+      *ngFor="let panel of panels; let i = index"
+      [nzHeader]="panel.name"
+      [nzActive]="panel.active"
+      [nzDisabled]="panel.disabled"
+    >
+      <div class="collapseBox">
+        <nz-table nzTemplateMode="true" #borderedTable nzBordered>
+          <thead class="titleTable">
+            <tr class="titleTable">
+              <th class="titleTable" nzWidth="80px">No.</th>
+              <th class="titleTable">Item</th>
+              <th class="titleTable">Serri</th>
+              <th class="titleTable" nzWidth="150px">Action</th>
+            </tr>
+          </thead>
+          <tbody *ngFor="let item of details; let j = index">
+            <tr>
+              <td>{{ j + 1 }}</td>
+              <td>{{ item.param }}</td>
+              <td>{{ item.value }}</td>
+              <td *ngIf="item.edit === false; else editActionCertificate">
+                <a
+                  (nzOnConfirm)="editItem(i, j)"
+                  (nzOnCancel)="cancel()"
+                  nz-popconfirm
+                  nzPopconfirmTitle="Sure to edit?"
+                >
+                  Edit</a
+                >
+                <nz-divider nzType="vertical"></nz-divider>
+                <a
+                  (nzOnConfirm)="deleteItem(item.id)"
+                  (nzOnCancel)="cancel()"
+                  nz-popconfirm
+                  nzPopconfirmTitle="Sure to delete?"
+                  >Delete</a
+                >
+              </td>
+              <ng-template #editActionCertificate>
+                <a
+                  (nzOnConfirm)="saveItem(i, j)"
+                  (nzOnCancel)="cancel()"
+                  nz-popconfirm
+                  nzPopconfirmTitle="Sure to save?"
+                >
+                  Save</a
+                >
+              </ng-template>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>Null</td>
+              <td>
+                <input
+                  [(ngModel)]="newParam.param"
+                  nz-input
+                  placeholder="Enter item"
+                />
+              </td>
+              <td>
+                <input
+                  [(ngModel)]="newParam.value"
+                  nz-input
+                  placeholder="Enter Serri"
+                />
+              </td>
+              <td>
+                <a
+                  (nzOnConfirm)="addDetail(panel.type)"
+                  (nzOnCancel)="cancel()"
+                  nz-popconfirm
+                  nzPopconfirmTitle="Sure to add?"
+                >
+                  Add new</a
                 >
               </td>
             </tr>
@@ -75,26 +172,65 @@
           <tbody *ngFor="let item of certificates; let i = index">
             <tr>
               <td>{{ i + 1 }}</td>
-              <td>{{ item.certificateOrganization }}</td>
-              <td>{{ item.certificateNo }}</td>
-              <td>{{ item.validStartDate }}</td>
-              <td>{{ item.validEndDate }}</td>
-              <td>
-                <!-- <a
-                  (nzOnConfirm)="editItem()"
+              <td *ngIf="item.edit === false; else editOrgran">
+                {{ item.certificateOrganization }}
+              </td>
+              <ng-template #editOrgran>
+                <input
+                  style="margin-top: 17px"
+                  nz-input
+                  [(ngModel)]="item.certificateOrganization"
+                />
+              </ng-template>
+              <td *ngIf="item.edit === false; else editNO">
+                {{ item.certificateNo }}
+              </td>
+              <ng-template #editNO>
+                <input nz-input [(ngModel)]="item.certificateNo" />
+              </ng-template>
+              <td *ngIf="item.edit === false">
+                {{ item.validStartDate }}
+              </td>
+              <td *ngIf="item.edit === true">
+                <nz-date-picker
+                  [(ngModel)]="item.validStartDate"
+                ></nz-date-picker>
+              </td>
+
+              <td *ngIf="item.edit === false">
+                {{ item.validEndDate }}
+              </td>
+              <td *ngIf="item.edit === true">
+                <nz-date-picker
+                  [(ngModel)]="item.validEndDate"
+                ></nz-date-picker>
+              </td>
+              <td *ngIf="item.edit === false">
+                <a
+                  (nzOnConfirm)="editCertificate(i)"
                   (nzOnCancel)="cancel()"
                   nz-popconfirm
                   nzPopconfirmTitle="Sure to edit?"
                 >
                   Edit</a
                 >
-                <nz-divider nzType="vertical"></nz-divider> -->
+                <nz-divider nzType="vertical"></nz-divider>
                 <a
-                  (nzOnConfirm)="deleteCerficate(item.id)"
+                  (nzOnConfirm)="deleteCerficate(item.id, i)"
                   (nzOnCancel)="cancel()"
                   nz-popconfirm
                   nzPopconfirmTitle="Sure to delete?"
                   >Delete</a
+                >
+              </td>
+              <td *ngIf="item.edit === true">
+                <a
+                  (nzOnConfirm)="saveCertififcate(i)"
+                  (nzOnCancel)="cancel()"
+                  nz-popconfirm
+                  nzPopconfirmTitle="Sure to save?"
+                >
+                  Save</a
                 >
               </td>
             </tr>

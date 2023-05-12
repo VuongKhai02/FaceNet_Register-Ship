@@ -1,3 +1,5 @@
+import { Form } from './form.model';
+
 export interface main {
   editMode: boolean;
   reportNumber: string;
@@ -5,7 +7,9 @@ export interface main {
 }
 
 export interface partLocal {
+  id: number;
+  index: number;
   partName: string;
-  forms: any;
+  forms: Form[];
   visible: boolean;
 }

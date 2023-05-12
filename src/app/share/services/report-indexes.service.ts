@@ -25,11 +25,11 @@ export class ReportIndexesService {
     );
   }
 
-  deleteReportIndexFormAPI(id: string): Observable<any> {
-    return this.http.delete(`${this.API_URL}/${id}`);
+  deleteReportIndexFormAPI(id: number): Observable<any> {
+    return this.http.delete(`${API_END_POINT}/report-indexes/${id}`);
   }
 
-  updateReportIndexToAPI(id: string, data: ReportIndex): Observable<any> {
+  updateReportIndexToAPI(id: number, data: ReportIndex): Observable<any> {
     return this.http.put(`${this.API_URL}/${id}`, data);
   }
 }

@@ -1,15 +1,33 @@
 <section>
-  <div class="topBox">
+  <!-- <div class="topBox">
     <h1>Review</h1>
     <button nz-button nzType="primary">
       <span nz-icon nzType="download" nzTheme="outline"></span>
       Download
     </button>
   </div>
-  <iframe
-    src="https://drive.google.com/file/d/1ZjAbCpOmixWKtg39D5330fr4h7Ii8tem/preview"
-    width="100%"
-    height="480"
-    allow="autoplay"
-  ></iframe>
+  <iframe src="https://drive.google.com/file/d/1ZjAbCpOmixWKtg39D5330fr4h7Ii8tem/preview" width="100%" height="480"
+    allow="autoplay"></iframe> -->
+  <div style="font-size: 20px; width: 20%; margin-bottom: 5rem;">
+    <div style="
+    width: 100%;
+  padding: 0.4rem;
+  display: flex;">
+      <label style="padding-right: 1rem;" class="ck_surveyor" for="ck">Surveyor's signature?</label>
+      <input style="box-shadow: none;    width: 1rem" type="checkbox" name="ck" id="ck"
+        (click)="ckeckSurveyorSignature()">
+    </div>
+    <div>
+      <button style="    width: 75%;font-size: 16px" nz-popconfirm nzPopconfirmTitle="Are you sure export to Pdf?"
+        nzPopconfirmPlacement="bottom" (nzOnConfirm)="exportPdf()" nz-button nzType="primary">
+        <span nz-icon nzType="export" nzTheme="outline"></span>
+        <span style="color: white;">Export to PDF</span>
+      </button>
+    </div>
+
+  </div>
+  <!-- <button (click)="exportTestPdf()" nz-button nzType="primary">
+    <span style="color: white" nz-icon nzTheme="outline"></span>
+    <span style="color: white">Export Test PDF</span>
+  </button> -->
 </section>

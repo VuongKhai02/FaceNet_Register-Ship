@@ -115,3 +115,19 @@ nz-footer {
 .none-arrow ::ng-deep .ant-menu-submenu-arrow {
   display: none;
 }
+
+/* li a {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 365px;
+} */
+
+::ng-deep .ant-menu-submenu .ng-star-inserted {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}

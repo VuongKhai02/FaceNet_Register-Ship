@@ -10,6 +10,8 @@ import { CertificateService } from 'src/app/share/services/certificate.service';
 import { LocalService } from 'src/app/share/services/local.service';
 import { main } from 'src/app/share/models/local.model';
 import { GeneralParticularPush } from 'src/app/share/models/generalParticularsPush.model';
+import { ParamValue } from 'src/app/share/models/paramValue.model';
+import { ParamValueService } from 'src/app/share/services/param-value.service';
 
 @Component({
   selector: 'app-general-particulars',
@@ -17,6 +19,7 @@ import { GeneralParticularPush } from 'src/app/share/models/generalParticularsPu
   styleUrls: ['./general-particulars.component.css'],
 })
 export class GeneralParticularsComponent implements OnInit {
+  param: ParamValue[] = [];
   mainData!: main;
   link: string = '/selectForm';
   generalParticulars: GeneralParticular[] = [];
@@ -29,6 +32,9 @@ export class GeneralParticularsComponent implements OnInit {
   shipname: any = null;
   IMONum: any = null;
   ABSNum: any = null;
+  listDetail: string[] = [];
+  listSuveyor: string[] = [];
+  listOperator: string[] = [];
   inShipName: string = '';
   inIMO: string = '';
   inABS: string = '';
@@ -55,7 +61,8 @@ export class GeneralParticularsComponent implements OnInit {
     private certificateService: CertificateService,
     private getDataService: GetDataService,
     private message: NzMessageService,
-    private localService: LocalService
+    private localService: LocalService,
+    private paramValueService: ParamValueService
   ) {}
 
   /**
@@ -80,6 +87,48 @@ export class GeneralParticularsComponent implements OnInit {
     this.isVisible = true;
     this.shipSevice.getShipsFromAPI().subscribe((data) => {
       this.ships = data;
+      if (this.generalParticularsForm.value.shipName !== '') {
+        this.ships = this.ships.filter((x) =>
+          x.name
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .includes(
+              this.generalParticularsForm.value.shipName
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+            )
+        );
+      }
+      if (this.generalParticularsForm.value.imoNumber !== '') {
+        this.ships = this.ships.filter((x) =>
+          x.name
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .includes(
+              this.generalParticularsForm.value.imoNumber
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+            )
+        );
+      }
+      if (this.generalParticularsForm.value.absIdentificationNumber !== '') {
+        this.ships = this.ships.filter((x) =>
+          x.name
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .includes(
+              this.generalParticularsForm.value.absIdentificationNumber
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+            )
+        );
+      }
     });
     this.shipname = this.generalParticularsForm.value.shipName;
     this.IMONum = this.generalParticularsForm.value.imoNumber;
@@ -114,6 +163,52 @@ export class GeneralParticularsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.paramValueService.getParamValueByType(1).subscribe(
+      (data) => {
+        this.NameOfCompanyPerformingThicknessMeasurement = data[0].param;
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+
+    this.paramValueService.getParamValueByType(5).subscribe(
+      (data) => {
+        this.qualificationOfoperator = data[0].param;
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+
+    this.paramValueService.getParamValueByType(2).subscribe(
+      (data) => {
+        for (let i: number = 0; i < data.length; i++) {
+          this.listSuveyor.push(data[i].param);
+        }
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+
+    this.paramValueService.getParamValueByType(4).subscribe(
+      (data) => {
+        for (let i: number = 0; i < data.length; i++) {
+          this.listOperator.push(data[i].param);
+        }
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+
+    this.paramValueService.getParamValueByType(3).subscribe((data) => {
+      for (let i: number = 0; i < data.length; i++) {
+        this.listDetail.push(`${data[i].param} ( Serri ${data[i].value})`);
+      }
+    });
+
     this.shipSevice.getShipsFromAPI().subscribe(
       (data) => {
         this.ships = data;
@@ -130,7 +225,6 @@ export class GeneralParticularsComponent implements OnInit {
       (err) => {}
     );
     this.mainData = this.localService.getMainData();
-
     if (this.mainData.editMode === true) {
       this.getDataService.getGeneralParticularsFromAPI().subscribe(
         (data) => {
@@ -138,7 +232,6 @@ export class GeneralParticularsComponent implements OnInit {
           this.generalParticulars = this.generalParticulars.filter(
             (x) => x.id === this.mainData.mainId
           );
-          console.log(this.generalParticulars);
 
           this.inShipName = this.generalParticulars[0].shipInfo.name;
           this.inIMO = this.generalParticulars[0].shipInfo.imoNumber;
@@ -174,7 +267,7 @@ export class GeneralParticularsComponent implements OnInit {
   }
 
   NameOfCompanyPerformingThicknessMeasurement: string =
-    'VIET NAM MARINE INDUSTRY AND SERVICE JOINT STOCK COMPANY';
+    'VIET NAM SERVICE AND MARINE INDUSTRY JOINT STOCK COMPANY';
   qualificationOfoperator: string = 'SNT-TC-1A UT LEVEL 2';
   numberOfSheets: number = 1;
 
@@ -272,7 +365,6 @@ export class GeneralParticularsComponent implements OnInit {
                 this.mainData.mainId = newGeneral[0].id;
                 this.mainData.reportNumber = newGeneral[0].reportNo;
                 this.mainData.editMode = true;
-                console.log(this.mainData);
               },
               (err) => {
                 console.log(err);
@@ -284,7 +376,6 @@ export class GeneralParticularsComponent implements OnInit {
           }
         );
       this.message.create('success', 'Save success');
-      console.log(this.link);
     } else {
       this.message.create('error', 'Enter missing information');
       this.link = '/generalParticulars';
@@ -293,5 +384,76 @@ export class GeneralParticularsComponent implements OnInit {
 
   searchShip() {}
 
-  update(): void {}
+  update(): void {
+    if (
+      this.inShipName !== '' &&
+      this.inIMO !== '' &&
+      this.inABS !== '' &&
+      this.inPortOf !== '' &&
+      this.inGrossTon !== '' &&
+      this.inDeadWeith !== '' &&
+      this.inDateBuild !== '' &&
+      this.inClassi !== '' &&
+      this.inCertificateName !== '' &&
+      this.inCertificateDate !== '' &&
+      this.inCertificateNo !== '' &&
+      this.inPlaceOf !== '' &&
+      this.inFirstDate !== '' &&
+      this.inLastDate !== '' &&
+      this.inSpecial !== '' &&
+      this.inQualification !== '' &&
+      this.inReport !== '' &&
+      this.inOperatorName !== '' &&
+      this.inSuveyor !== ''
+    ) {
+      let newShip: ship = {
+        name: this.generalParticularsForm.value.shipName,
+        imoNumber: this.generalParticularsForm.value.imoNumber,
+        absIdentification:
+          this.generalParticularsForm.value.absIdentificationNumber,
+        postOfRegistry: this.generalParticularsForm.value.portOfRegistry,
+        grossTons: this.generalParticularsForm.value.grossTons,
+        deadweight: this.generalParticularsForm.value.deadweight,
+        dateOfBuild: this.generalParticularsForm.value.dateOfBuild,
+        classificationSociety:
+          this.generalParticularsForm.value.classificationSociety,
+      };
+
+      let newGeneralParticulars: GeneralParticularPush = {
+        ship: newShip,
+        certificateNo: this.generalParticularsForm.value.certificateNo,
+        placeOfMeasurement:
+          this.generalParticularsForm.value.placeOfMeasurement,
+        firstDateOfMeasurement:
+          this.generalParticularsForm.value.firstDateOfMeasurement,
+        lastDateOfMeasurement:
+          this.generalParticularsForm.value.lastDateOfMeasurement,
+        measurementEquipmentInfo:
+          this.generalParticularsForm.value.detailsOfMeasurementEquipment,
+        surveyType: this.generalParticularsForm.value.specialSurvey,
+        reportNo: this.generalParticularsForm.value.reportNumber,
+        nameOfOperator: this.generalParticularsForm.value.nameOfOperator,
+        surveyorInfo: this.generalParticularsForm.value.nameOfSurveyor,
+      };
+      console.log(newGeneralParticulars);
+
+      this.getDataService
+        .updateGeneralParticularsToAPI(
+          this.mainData.mainId,
+          newGeneralParticulars
+        )
+        .subscribe(
+          (data) => {
+            console.log(data);
+          },
+          (err) => {
+            console.log(err);
+          }
+        );
+      this.message.create('success', 'Save success');
+    } else {
+      this.message.create('error', 'Enter missing information');
+      this.link = '/generalParticulars';
+    }
+  }
 }
