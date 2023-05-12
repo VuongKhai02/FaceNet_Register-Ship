@@ -8,8 +8,9 @@ import { catchError, retry } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 import { LocalService } from 'src/app/share/services/local.service';
 import { GetDataService } from 'src/app/share/services/get-data.service';
-import { paramValue } from 'src/app/share/models/paramValue.model';
+import { ParamValue } from 'src/app/share/models/paramValue.model';
 import { ParamValueService } from 'src/app/share/services/param-value.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-tm1',
@@ -22,7 +23,8 @@ export class Tm1Component implements OnInit {
     private message: NzMessageService,
     public localService: LocalService,
     public getDataService: GetDataService,
-    private paramValueService: ParamValueService
+    private paramValueService: ParamValueService,
+    private router: Router
   ) {}
 
   addRowValue: number = 0;
@@ -41,7 +43,8 @@ export class Tm1Component implements OnInit {
   percentSelected: number = 0;
   visible: boolean = false;
 
-  API_URL: string = `http://222.252.25.37:9080/api/v1/report-indexes/1/tm1s`;
+  partId: string = this.router.url.split('/')[2];
+  API_URL: string = `http://222.252.25.37:9080/api/v1/report-indexes/${this.partId}/tm1s`;
 
   emptyRow: measurementTM1 = {
     platePosition: '',
@@ -66,7 +69,7 @@ export class Tm1Component implements OnInit {
   isLoadingSaveButton: boolean = false;
 
   selectedRow: number[] = [];
-  listFormCode: paramValue[] = [];
+  listFormCode: ParamValue[] = [];
 
   ngOnInit(): void {
     for (let i = 1; i <= 20; i++)
