@@ -43,7 +43,7 @@ export class AppComponent implements OnInit {
     // for (let j: number = 0; j < this.formSelect.length; j++) {
     //   this.parts[i].forms.push({ index: -1, name: this.formSelect[j] });
     // }
-    this.parts[i].forms.push({ index: -1, name: formName });
+    this.parts[i].forms.push({ formID: -1, index: -1, name: formName });
     this.parts[i].visible = false;
   }
 

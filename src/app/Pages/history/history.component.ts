@@ -107,6 +107,7 @@ export class HistoryComponent implements OnInit {
             let newForm: Form[] = [];
             for (let j: number = 0; j < data.parts[i].forms.length; j++) {
               newForm.push({
+                formID: data.parts[i].forms[j].formID,
                 index: data.parts[i].forms[j].index,
                 name: data.parts[i].forms[j].name,
               });

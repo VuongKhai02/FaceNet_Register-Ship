@@ -65,6 +65,7 @@ export class SelectformComponent implements OnInit {
                   i++
                 ) {
                   newForm.push({
+                    formID: -1,
                     index: -1,
                     name: this.selectForm.value.formSelect[i],
                   });
