@@ -8,6 +8,8 @@ import { catchError, retry } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 import { LocalService } from 'src/app/share/services/local.service';
 import { GetDataService } from 'src/app/share/services/get-data.service';
+import { paramValue } from 'src/app/share/models/paramValue.model';
+import { ParamValueService } from 'src/app/share/services/param-value.service';
 
 @Component({
   selector: 'app-tm1',
@@ -19,7 +21,8 @@ export class Tm1Component implements OnInit {
     public formService: FormService,
     private message: NzMessageService,
     public localService: LocalService,
-    public getDataService: GetDataService
+    public getDataService: GetDataService,
+    private paramValueService: ParamValueService
   ) {}
 
   addRowValue: number = 0;
@@ -63,27 +66,14 @@ export class Tm1Component implements OnInit {
   isLoadingSaveButton: boolean = false;
 
   selectedRow: number[] = [];
+  listFormCode: paramValue[] = [];
 
   ngOnInit(): void {
     for (let i = 1; i <= 20; i++)
-      this.listRow.push({
-        platePosition: '',
-        noOrLetter: '',
-        forwardReadingMeasurementDetail: {
-          originalThickness: '',
-          maxAlwbDim: '',
-          gaugedP: '',
-          gaugedS: '',
-          percent: '',
-        },
-        afterReadingMeasurementDetail: {
-          originalThickness: '',
-          maxAlwbDim: '',
-          gaugedP: '',
-          gaugedS: '',
-          percent: '',
-        },
-      });
+      this.listRow.push(JSON.parse(JSON.stringify(this.emptyRow)));
+    this.paramValueService.getParamValueByType(11).subscribe((data) => {
+      this.listFormCode = data;
+    });
   }
 
   addRow() {

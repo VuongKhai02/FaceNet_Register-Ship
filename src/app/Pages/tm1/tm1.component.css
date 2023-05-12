@@ -108,3 +108,9 @@ input.ng-dirty.ng-invalid {
   border-left: 1px solid #f0f0f0;
   cursor: pointer;
 }
+
+.form-code {
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px;
+}

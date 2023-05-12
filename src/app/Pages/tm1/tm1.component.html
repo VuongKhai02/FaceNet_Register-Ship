@@ -1,4 +1,23 @@
 <section>
+  <div class="form-code">
+    <div style="float: right">
+      <nz-input-group nzAddOnBefore="TM1">
+        <nz-select
+          nzShowSearch
+          nzAllowClear
+          nzPlaceHolder="Select a person"
+          [(ngModel)]="formTM1.code"
+          style="min-width: 150px"
+        >
+          <nz-option
+            *ngFor="let option of listFormCode"
+            nzLabel="{{ option.param }}"
+            nzValue="{{ option.param }}"
+          ></nz-option>
+        </nz-select>
+      </nz-input-group>
+    </div>
+  </div>
   <div class="header">
     <h1 class="title">
       Report on THICKNESS MEASUREMENT of ALL DECK PLATING, ALL BOTTOM SHELL
