@@ -112,16 +112,16 @@ export class HistoryComponent implements OnInit {
               });
             }
             this.parts.push({
+              id: data.parts[i].id,
               index: data.parts[i].index,
               partName: data.parts[i].item,
               forms: newForm,
               visible: false,
             });
           }
-          console.log(this.parts);
         },
         (err) => {
-          console.log(err);
+          console.log('report', err);
         }
       );
     this.router.navigateByUrl('/generalParticulars');

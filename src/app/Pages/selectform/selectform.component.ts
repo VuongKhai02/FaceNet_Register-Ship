@@ -71,6 +71,7 @@ export class SelectformComponent implements OnInit {
                 }
 
                 let newPart: partLocal = {
+                  id: data.parts[data.parts.length - 1].id,
                   index: 0,
                   partName: this.item,
                   forms: newForm,

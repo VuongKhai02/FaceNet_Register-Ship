@@ -26,7 +26,7 @@ export class ReportIndexesService {
   }
 
   deleteReportIndexFormAPI(id: number): Observable<any> {
-    return this.http.delete(`${this.API_URL}/${id}`);
+    return this.http.delete(`${API_END_POINT}/report-indexes/${id}`);
   }
 
   updateReportIndexToAPI(id: number, data: ReportIndex): Observable<any> {

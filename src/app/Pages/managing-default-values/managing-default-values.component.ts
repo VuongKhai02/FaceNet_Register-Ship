@@ -191,6 +191,7 @@ export class ManagingDefaultValuesComponent implements OnInit {
   panelOneParam = [
     {
       active: false,
+      newItem: '',
       name: 'Company name',
       disabled: false,
       adding: false,
@@ -199,6 +200,7 @@ export class ManagingDefaultValuesComponent implements OnInit {
     },
     {
       active: false,
+      newItem: '',
       name: 'Qualification of operator',
       disabled: false,
       adding: false,
@@ -207,6 +209,7 @@ export class ManagingDefaultValuesComponent implements OnInit {
     },
     {
       active: false,
+      newItem: '',
       name: 'Surveyor',
       disabled: false,
       adding: false,
@@ -215,6 +218,7 @@ export class ManagingDefaultValuesComponent implements OnInit {
     },
     {
       active: false,
+      newItem: '',
       name: 'Operator',
       disabled: false,
       adding: false,
@@ -223,6 +227,7 @@ export class ManagingDefaultValuesComponent implements OnInit {
     },
     {
       active: false,
+      newItem: '',
       name: 'Structural member of tm3',
       disabled: false,
       adding: false,
@@ -231,6 +236,7 @@ export class ManagingDefaultValuesComponent implements OnInit {
     },
     {
       active: false,
+      newItem: '',
       disabled: false,
       name: 'Structural member of tm4',
       adding: false,
@@ -239,6 +245,7 @@ export class ManagingDefaultValuesComponent implements OnInit {
     },
     {
       active: false,
+      newItem: '',
       disabled: false,
       name: 'Structural component (plating/stiffener) of tm5',
       adding: false,
@@ -247,6 +254,7 @@ export class ManagingDefaultValuesComponent implements OnInit {
     },
     {
       active: false,
+      newItem: '',
       disabled: false,
       name: 'Description of tm6',
       adding: false,
@@ -255,6 +263,7 @@ export class ManagingDefaultValuesComponent implements OnInit {
     },
     {
       active: false,
+      newItem: '',
       disabled: false,
       name: 'Frame number of tm7',
       adding: false,
@@ -369,22 +378,23 @@ export class ManagingDefaultValuesComponent implements OnInit {
     );
   }
 
-  addItem(type: number) {
+  addItem(i: number, type: number) {
     this.paramService
       .addParamValue({
-        param: this.newOneParam,
-        value: this.newOneParam,
+        param: this.panelOneParam[i].newItem,
+        value: this.panelOneParam[i].newItem,
         type: type,
       })
       .subscribe((data) => {
+        this.panelOneParam[i].newItem = '';
         this.ngOnInit();
       });
   }
 
   addDetail(type: number) {
     this.newParam = {
-      param: this.panels[0].newParam,
-      value: this.panels[0].newValue,
+      param: this.newParam.param,
+      value: this.newParam.value,
       type: type,
     };
     this.paramService.addParamValue(this.newParam).subscribe((data) => {
@@ -401,7 +411,9 @@ export class ManagingDefaultValuesComponent implements OnInit {
 
   deleteItem(id: number) {
     this.paramService.deleteParamValue(id).subscribe(
-      (data) => {},
+      (data) => {
+        this.ngOnInit();
+      },
       (err) => {
         this.ngOnInit();
       }

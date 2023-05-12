@@ -10,11 +10,11 @@
     >
       <div class="addNewBox">
         <input
-          [(ngModel)]="newOneParam"
+          [(ngModel)]="panel.newItem"
           placeholder="Enter the new item"
           nz-input
         />
-        <button (click)="addItem(panel.type)" nz-button nzType="primary">
+        <button (click)="addItem(i, panel.type)" nz-button nzType="primary">
           Add new
         </button>
       </div>
@@ -124,14 +124,14 @@
               <td>Null</td>
               <td>
                 <input
-                  [(ngModel)]="panels[i].newParam"
+                  [(ngModel)]="newParam.param"
                   nz-input
                   placeholder="Enter item"
                 />
               </td>
               <td>
                 <input
-                  [(ngModel)]="panels[i].newValue"
+                  [(ngModel)]="newParam.value"
                   nz-input
                   placeholder="Enter Serri"
                 />

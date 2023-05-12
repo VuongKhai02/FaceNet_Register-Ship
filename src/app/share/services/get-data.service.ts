@@ -49,8 +49,8 @@ export class GetDataService {
    * @returns
    */
   updateGeneralParticularsToAPI(
-    id: string,
-    data: GeneralParticular
+    id: number,
+    data: GeneralParticularPush
   ): Observable<any> {
     return this.http.put(`${this.API_URL}/${id}`, data);
   }
