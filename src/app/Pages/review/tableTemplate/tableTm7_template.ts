@@ -12,7 +12,7 @@ export var tableTm7_template = {
   headerRows: 10,
   widths: [
     '2.2%',
-    '17.8%',
+    '23.4%',
     //2
     '2.9%',
     '2.9%',
