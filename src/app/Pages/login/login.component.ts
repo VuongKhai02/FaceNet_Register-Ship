@@ -28,12 +28,9 @@ export class LoginComponent {
       this.validateForm.value.password === 'admin'
     ) {
       this.Islogin = false;
-      console.log(this.validateForm.value.userName);
-      console.log(this.validateForm.value.password);
-      console.log(this.Islogin);
       this.out.emit(this.Islogin);
     } else {
-      alert('Nhập sai');
+      alert('Account or password is incorrect');
     }
   }
 

@@ -23,6 +23,7 @@ import { Form } from './share/models/form.model';
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnInit {
+  logOutVisible: boolean = false;
   reportIndex!: ReportIndex;
   parts: partLocal[] = [];
   formSelect: string[] = [];
@@ -97,6 +98,7 @@ export class AppComponent implements OnInit {
 
   logOut(): void {
     this.Islogin = true;
+    this.logOutVisible = false;
   }
 
   deleteTm(i: number, j: number) {
@@ -123,9 +125,9 @@ export class AppComponent implements OnInit {
     } else if (formName === 'FORM TM2') {
       this.tmName = 'tm2';
     } else if (formName === 'FORM TM2(I)') {
-      this.tmName = 'tm2(i)';
+      this.tmName = 'tm2i';
     } else if (formName === 'FORM TM2(II)') {
-      this.tmName = 'tm2(ii)';
+      this.tmName = 'tm2ii';
     } else if (formName === 'FORM TM3') {
       this.tmName = 'tm3';
     } else if (formName === 'FORM TM4') {
@@ -138,6 +140,12 @@ export class AppComponent implements OnInit {
       this.tmName = 'tm7';
     }
     this.router.navigate(['part', id, this.tmName, formIndex]);
+  }
+
+  changelogOut($value: boolean): void {}
+
+  accLose() {
+    this.logOutVisible = false;
   }
 
   cancel() {}

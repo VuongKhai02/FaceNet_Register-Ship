@@ -103,6 +103,7 @@ export class HistoryComponent implements OnInit {
       .getReportIndexFromAPI(this.mainData.mainId)
       .subscribe(
         (data) => {
+          this.parts.splice(0, this.parts.length);
           for (let i: number = 0; i < data.parts.length; i++) {
             let newForm: Form[] = [];
             for (let j: number = 0; j < data.parts[i].forms.length; j++) {

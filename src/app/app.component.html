@@ -14,9 +14,13 @@
     >
       <div class="sidebar-logo">
         <a routerLink="generalParticulars">
-          <img src="http://vimisco.com/img/logo/logo%20trong.gif" alt="logo" />
+          <img
+            style="width: 50px; height: 50px"
+            src="http://vimisco.com/img/logo/logo%20trong.gif"
+            alt="logo"
+          />
           <!-- <div class="imgLogo"></div> -->
-          <h1>Vimisco</h1>
+          <h1 style="font-size: 25px">Vimisco</h1>
         </a>
       </div>
       <ul
@@ -130,50 +134,8 @@
                     <a (click)="addForm(i, 'FORM TM7')" nz-popconfirm
                       >FORM TM7</a
                     >
-                    <!-- <nz-select
-                      style="width: 100%"
-                      nzMode="tags"
-                      [nzTokenSeparators]="[',']"
-                      nzPlaceHolder="Select form"
-                      [(ngModel)]="formSelect"
-                    >
-                      <nz-option
-                        nzLabel="FORM TM1"
-                        nzValue="FORM TM1"
-                      ></nz-option>
-                      <nz-option
-                        nzLabel="FORM TM2(i)"
-                        nzValue="FORM TM2(i)"
-                      ></nz-option>
-                      <nz-option
-                        nzLabel="FORM TM2(ii)"
-                        nzValue="FORM TM2(ii)"
-                      ></nz-option>
-                      <nz-option
-                        nzLabel="FORM TM3"
-                        nzValue="FORM TM3"
-                      ></nz-option>
-                      <nz-option
-                        nzLabel="FORM TM4"
-                        nzValue="FORM TM4"
-                      ></nz-option>
-                      <nz-option
-                        nzLabel="FORM TM5"
-                        nzValue="FORM TM5"
-                      ></nz-option>
-                      <nz-option
-                        nzLabel="FORM TM6"
-                        nzValue="FORM TM6"
-                      ></nz-option>
-                      <nz-option
-                        nzLabel="FORM TM7"
-                        nzValue="FORM TM7"
-                      ></nz-option>
-                    </nz-select> -->
                   </div>
                   <hr />
-                  <!-- <a (click)="addForm(i)" nz-popconfirm> Add</a>
-                  <nz-divider nzType="vertical"></nz-divider> -->
                   <a (click)="clickMe(i)">Close</a>
                 </div>
               </ng-template>
@@ -241,14 +203,23 @@
               [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"
             ></span>
           </span>
-          <button
-            (click)="logOut()"
+          <a
+            nz-popover
+            [(nzPopoverVisible)]="logOutVisible"
+            (nzPopoverVisibleChange)="changelogOut($event)"
+            nzPopoverTrigger="click"
+            [nzPopoverContent]="contentAccount"
             class="btnLogout"
-            nz-button
-            nzType="primary"
           >
-            <span nz-icon nzType="logout" nzTheme="outline"></span> Log out
-          </button>
+            <div class="accImg"></div>
+            Nguyễn Văn Luyện
+          </a>
+          <ng-template #contentAccount>
+            <a>Change password</a>
+            <br />
+            <a (click)="logOut()">Log out</a>
+            <!-- <a (click)="accLose()">Close</a> -->
+          </ng-template>
         </div>
       </nz-header>
       <nz-content>
