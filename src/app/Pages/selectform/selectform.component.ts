@@ -9,6 +9,7 @@ import { main } from 'src/app/share/models/local.model';
 import { LocalService } from 'src/app/share/services/local.service';
 import { ReportIndexPush } from 'src/app/share/models/report-indexPush.model';
 import { partLocal } from 'src/app/share/models/local.model';
+import { Form } from 'src/app/share/models/form.model';
 
 @Component({
   selector: 'app-selectform',
@@ -56,10 +57,25 @@ export class SelectformComponent implements OnInit {
             this.reportIndexService
               .getReportIndexFromAPI(this.mainData.mainId)
               .subscribe((data) => {
+                let newForm: Form[] = [];
+
+                for (
+                  let i: number = 0;
+                  i < this.selectForm.value.formSelect.length;
+                  i++
+                ) {
+                  newForm.push({
+                    formID: -1,
+                    index: -1,
+                    name: this.selectForm.value.formSelect[i],
+                  });
+                }
+
                 let newPart: partLocal = {
+                  id: data.parts[data.parts.length - 1].id,
                   index: 0,
                   partName: this.item,
-                  forms: this.selectForm.value.formSelect,
+                  forms: newForm,
                   visible: false,
                 };
                 this.parts.push(newPart);

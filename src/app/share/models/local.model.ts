@@ -7,6 +7,7 @@ export interface main {
 }
 
 export interface partLocal {
+  id: number;
   index: number;
   partName: string;
   forms: Form[];

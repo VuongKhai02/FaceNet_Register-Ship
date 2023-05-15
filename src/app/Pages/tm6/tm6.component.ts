@@ -28,6 +28,7 @@ export class Tm6Component implements OnInit {
   listStructuralDescription: structuralDescriptionTM6[] = [];
 
   formTM6: formTM6 = {
+    code: '',
     structuralMembers: '',
     locationOfStructure: '',
     structuralDescriptionTM6List: this.listStructuralDescription,

@@ -263,7 +263,56 @@
                   )
                 )
                 ? '#0000FF'
-                : '#FF3300'
+                : '#FF3300',
+            'background-color':
+              formService.checkBeforeCalculate(
+                row.measurementDetail.originalThickness,
+                row.measurementDetail.gaugedP
+              ) &&
+              row.measurementDetail.originalThickness !== '' &&
+              convertToNumber(row.measurementDetail.percent) !== 0
+                ? convertToNumber(
+                    formService.calculateForMm(
+                      row.measurementDetail.originalThickness,
+                      row.measurementDetail.gaugedP
+                    )
+                  ) >=
+                    convertToNumber(
+                      formService.threePartsFourOfMaxAlwbDim(
+                        formService.calculateForMaxAlwbDim(
+                          row.measurementDetail.originalThickness,
+                          convertToNumber(row.measurementDetail.percent)
+                        )
+                      )
+                    ) &&
+                  convertToNumber(
+                    formService.calculateForMm(
+                      row.measurementDetail.originalThickness,
+                      row.measurementDetail.gaugedP
+                    )
+                  ) <=
+                    convertToNumber(
+                      formService.calculateForMaxAlwbDim(
+                        row.measurementDetail.originalThickness,
+                        convertToNumber(row.measurementDetail.percent)
+                      )
+                    )
+                  ? 'rgba(0,0,255,0.2)'
+                  : convertToNumber(
+                      formService.calculateForMm(
+                        row.measurementDetail.originalThickness,
+                        row.measurementDetail.gaugedP
+                      )
+                    ) >
+                    convertToNumber(
+                      formService.calculateForMaxAlwbDim(
+                        row.measurementDetail.originalThickness,
+                        convertToNumber(row.measurementDetail.percent)
+                      )
+                    )
+                  ? 'rgba(255,0,0,0.1)'
+                  : ''
+                : ''
           }"
           style="font-weight: 600; font-size: 18px"
         >
@@ -374,7 +423,56 @@
                   )
                 )
                 ? '#0000FF'
-                : '#FF3300'
+                : '#FF3300',
+            'background-color':
+              formService.checkBeforeCalculate(
+                row.measurementDetail.originalThickness,
+                row.measurementDetail.gaugedS
+              ) &&
+              row.measurementDetail.originalThickness !== '' &&
+              convertToNumber(row.measurementDetail.percent) !== 0
+                ? convertToNumber(
+                    formService.calculateForMm(
+                      row.measurementDetail.originalThickness,
+                      row.measurementDetail.gaugedS
+                    )
+                  ) >=
+                    convertToNumber(
+                      formService.threePartsFourOfMaxAlwbDim(
+                        formService.calculateForMaxAlwbDim(
+                          row.measurementDetail.originalThickness,
+                          convertToNumber(row.measurementDetail.percent)
+                        )
+                      )
+                    ) &&
+                  convertToNumber(
+                    formService.calculateForMm(
+                      row.measurementDetail.originalThickness,
+                      row.measurementDetail.gaugedS
+                    )
+                  ) <=
+                    convertToNumber(
+                      formService.calculateForMaxAlwbDim(
+                        row.measurementDetail.originalThickness,
+                        convertToNumber(row.measurementDetail.percent)
+                      )
+                    )
+                  ? 'rgba(0,0,255,0.2)'
+                  : convertToNumber(
+                      formService.calculateForMm(
+                        row.measurementDetail.originalThickness,
+                        row.measurementDetail.gaugedS
+                      )
+                    ) >
+                    convertToNumber(
+                      formService.calculateForMaxAlwbDim(
+                        row.measurementDetail.originalThickness,
+                        convertToNumber(row.measurementDetail.percent)
+                      )
+                    )
+                  ? 'rgba(255,0,0,0.1)'
+                  : ''
+                : ''
           }"
           style="font-weight: 600; font-size: 18px"
         >

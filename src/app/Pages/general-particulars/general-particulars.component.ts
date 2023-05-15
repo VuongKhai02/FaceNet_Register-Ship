@@ -232,7 +232,6 @@ export class GeneralParticularsComponent implements OnInit {
           this.generalParticulars = this.generalParticulars.filter(
             (x) => x.id === this.mainData.mainId
           );
-          console.log(this.generalParticulars);
 
           this.inShipName = this.generalParticulars[0].shipInfo.name;
           this.inIMO = this.generalParticulars[0].shipInfo.imoNumber;
@@ -268,7 +267,7 @@ export class GeneralParticularsComponent implements OnInit {
   }
 
   NameOfCompanyPerformingThicknessMeasurement: string =
-    'VIET NAM MARINE INDUSTRY AND SERVICE JOINT STOCK COMPANY';
+    'VIET NAM SERVICE AND MARINE INDUSTRY JOINT STOCK COMPANY';
   qualificationOfoperator: string = 'SNT-TC-1A UT LEVEL 2';
   numberOfSheets: number = 1;
 
@@ -366,7 +365,6 @@ export class GeneralParticularsComponent implements OnInit {
                 this.mainData.mainId = newGeneral[0].id;
                 this.mainData.reportNumber = newGeneral[0].reportNo;
                 this.mainData.editMode = true;
-                console.log(this.mainData);
               },
               (err) => {
                 console.log(err);
@@ -378,7 +376,6 @@ export class GeneralParticularsComponent implements OnInit {
           }
         );
       this.message.create('success', 'Save success');
-      console.log(this.link);
     } else {
       this.message.create('error', 'Enter missing information');
       this.link = '/generalParticulars';
@@ -387,5 +384,76 @@ export class GeneralParticularsComponent implements OnInit {
 
   searchShip() {}
 
-  update(): void {}
+  update(): void {
+    if (
+      this.inShipName !== '' &&
+      this.inIMO !== '' &&
+      this.inABS !== '' &&
+      this.inPortOf !== '' &&
+      this.inGrossTon !== '' &&
+      this.inDeadWeith !== '' &&
+      this.inDateBuild !== '' &&
+      this.inClassi !== '' &&
+      this.inCertificateName !== '' &&
+      this.inCertificateDate !== '' &&
+      this.inCertificateNo !== '' &&
+      this.inPlaceOf !== '' &&
+      this.inFirstDate !== '' &&
+      this.inLastDate !== '' &&
+      this.inSpecial !== '' &&
+      this.inQualification !== '' &&
+      this.inReport !== '' &&
+      this.inOperatorName !== '' &&
+      this.inSuveyor !== ''
+    ) {
+      let newShip: ship = {
+        name: this.generalParticularsForm.value.shipName,
+        imoNumber: this.generalParticularsForm.value.imoNumber,
+        absIdentification:
+          this.generalParticularsForm.value.absIdentificationNumber,
+        postOfRegistry: this.generalParticularsForm.value.portOfRegistry,
+        grossTons: this.generalParticularsForm.value.grossTons,
+        deadweight: this.generalParticularsForm.value.deadweight,
+        dateOfBuild: this.generalParticularsForm.value.dateOfBuild,
+        classificationSociety:
+          this.generalParticularsForm.value.classificationSociety,
+      };
+
+      let newGeneralParticulars: GeneralParticularPush = {
+        ship: newShip,
+        certificateNo: this.generalParticularsForm.value.certificateNo,
+        placeOfMeasurement:
+          this.generalParticularsForm.value.placeOfMeasurement,
+        firstDateOfMeasurement:
+          this.generalParticularsForm.value.firstDateOfMeasurement,
+        lastDateOfMeasurement:
+          this.generalParticularsForm.value.lastDateOfMeasurement,
+        measurementEquipmentInfo:
+          this.generalParticularsForm.value.detailsOfMeasurementEquipment,
+        surveyType: this.generalParticularsForm.value.specialSurvey,
+        reportNo: this.generalParticularsForm.value.reportNumber,
+        nameOfOperator: this.generalParticularsForm.value.nameOfOperator,
+        surveyorInfo: this.generalParticularsForm.value.nameOfSurveyor,
+      };
+      console.log(newGeneralParticulars);
+
+      this.getDataService
+        .updateGeneralParticularsToAPI(
+          this.mainData.mainId,
+          newGeneralParticulars
+        )
+        .subscribe(
+          (data) => {
+            console.log(data);
+          },
+          (err) => {
+            console.log(err);
+          }
+        );
+      this.message.create('success', 'Save success');
+    } else {
+      this.message.create('error', 'Enter missing information');
+      this.link = '/generalParticulars';
+    }
+  }
 }

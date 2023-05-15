@@ -46,7 +46,7 @@
           nz-submenu
           nzOpen
           nzTitle="{{ part.partName }}"
-          nzIcon="folder"
+          nzIcon="folder-open"
         >
           <ul>
             <li
@@ -56,7 +56,9 @@
             >
               <span nz-icon nzType="file-text" nzTheme="outline"></span>
               <span>
-                <a (click)="link(part.index, form)">{{ form.name }}</a>
+                <a (click)="link(part.id, form.name, form.formID)">{{
+                  form.name
+                }}</a>
               </span>
 
               <button
@@ -99,7 +101,36 @@
               <ng-template #contentTemplate>
                 <div>
                   <div style="width: 100%">
-                    <nz-select
+                    <a (click)="addForm(i, 'FORM TM1')" nz-popconfirm
+                      >FORM TM1</a
+                    ><nz-divider nzType="vertical"></nz-divider>
+                    <a (click)="addForm(i, 'FORM TM2(I)')" nz-popconfirm
+                      >FORM TM2(I)</a
+                    >
+                    <br />
+                    <a (click)="addForm(i, 'FORM TM2(II)')" nz-popconfirm
+                      >FORM TM2(II)</a
+                    ><nz-divider nzType="vertical"></nz-divider>
+                    <a (click)="addForm(i, 'FORM TM3')" nz-popconfirm
+                      >FORM TM3</a
+                    >
+                    <br />
+
+                    <a (click)="addForm(i, 'FORM TM4')" nz-popconfirm
+                      >FORM TM4</a
+                    ><nz-divider nzType="vertical"></nz-divider>
+                    <a (click)="addForm(i, 'FORM TM5')" nz-popconfirm
+                      >FORM TM5</a
+                    >
+                    <br />
+
+                    <a (click)="addForm(i, 'FORM TM6')" nz-popconfirm
+                      >FORM TM6</a
+                    ><nz-divider nzType="vertical"></nz-divider>
+                    <a (click)="addForm(i, 'FORM TM7')" nz-popconfirm
+                      >FORM TM7</a
+                    >
+                    <!-- <nz-select
                       style="width: 100%"
                       nzMode="tags"
                       [nzTokenSeparators]="[',']"
@@ -138,10 +169,11 @@
                         nzLabel="FORM TM7"
                         nzValue="FORM TM7"
                       ></nz-option>
-                    </nz-select>
+                    </nz-select> -->
                   </div>
-                  <a (click)="addForm(i)" nz-popconfirm> Add</a>
-                  <nz-divider nzType="vertical"></nz-divider>
+                  <hr />
+                  <!-- <a (click)="addForm(i)" nz-popconfirm> Add</a>
+                  <nz-divider nzType="vertical"></nz-divider> -->
                   <a (click)="clickMe(i)">Close</a>
                 </div>
               </ng-template>
@@ -153,7 +185,7 @@
                 ><a
                   nz-popconfirm
                   nzPopconfirmTitle="Sure to delete?"
-                  (nzOnConfirm)="deletePart(i)"
+                  (nzOnConfirm)="deletePart(part.id)"
                   (nzOnCancel)="cancel()"
                   >Delete part</a
                 ></span
