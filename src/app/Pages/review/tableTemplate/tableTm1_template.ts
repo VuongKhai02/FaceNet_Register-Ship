@@ -1,3 +1,4 @@
+import { OnInit, Component } from '@angular/core';
 import {
   Margins,
   PageOrientation,
@@ -7,7 +8,28 @@ import {
   Column,
   PageBreak,
 } from 'pdfmake/interfaces';
-export class TableTm1_Template {
+import { GeneralParticular } from 'src/app/share/models/generalParticulars.model';
+import { GetDataService } from 'src/app/share/services/get-data.service';
+import { LocalService } from 'src/app/share/services/local.service';
+
+@Component({
+  selector: 'app-review',
+  template: '<h2>hteml</h2>',
+  styles: ['h1 { font-weight: normal; }'],
+})
+export class TableTm1_Template implements OnInit {
+  constructor(private generalParticularervice: GetDataService) {}
+
+  generalParticular: GeneralParticular[] = [];
+  ngOnInit(): void {
+    console.log('adsadsa');
+    this.generalParticularervice
+      .getGeneralParticularsFromAPI()
+      .subscribe((data) => {
+        this.generalParticular = data;
+      });
+    console.log('tm1' + this.generalParticular);
+  }
   a = [1, 2];
   formsGet = [
     {
@@ -89,25 +111,25 @@ export class TableTm1_Template {
     //23 rows
     widths: [
       '4%',
-      '30%',
+      '34.5%',
       '6%',
+      '4.5%',
       '3%',
       '3%',
       '3%',
       '3%',
+      '1.5%', //9
+      '3%',
+      '3%',
+      '1.5%', //12
       '3%',
       '3%',
       '3%',
       '3%',
+      '1.5%', //17
       '3%',
       '3%',
-      '3%',
-      '3%',
-      '3%',
-      '3%',
-      '3%',
-      '3%',
-      '3%',
+      '1.5%', //20
       '3%',
       '3%',
       '3%',
@@ -285,20 +307,20 @@ export class TableTm1_Template {
 
         {
           text: 'Report No. ',
-          colSpan: 2,
+          colSpan: 3,
           border: [false, false, false, false],
         },
+        {},
         {},
         {
           decoration: 'underline' as Decoration,
 
           text: 'VMC.TUM 123',
-          colSpan: 6,
+          colSpan: 5,
           bold: true,
           border: [false, false, false, false],
         },
 
-        {},
         {},
         {},
         {},
@@ -450,19 +472,19 @@ export class TableTm1_Template {
         { text: 'P', style: 'txt_center' },
         { text: 'S', style: 'txt_center' },
         { text: 'mm', style: 'txt_center' },
-        { text: '%', style: 'txt_center' },
+        { text: '%', style: 'txt_center', colSpan: 2 },
         {},
         { text: 'mm', style: 'txt_center' },
-        { text: '%', style: 'txt_center' },
+        { text: '%', style: 'txt_center', colSpan: 2 },
         {},
 
         { text: 'P', style: 'txt_center' },
         { text: 'S', style: 'txt_center' },
         { text: 'mm', style: 'txt_center' },
-        { text: '%', style: 'txt_center' },
+        { text: '%', style: 'txt_center', colSpan: 2 },
         {},
         { text: 'mm', style: 'txt_center' },
-        { text: '%', style: 'txt_center' },
+        { text: '%', style: 'txt_center', colSpan: 2 },
         {},
 
         { text: 'P', style: 'txt_center' },
@@ -477,19 +499,50 @@ export class TableTm1_Template {
         x.detailEquipment.gaugedS,
         x.id,
         x.originThickness,
+        {
+          text: `${x.id}`,
+          style: 'txt_center',
+          border: [true, true, false, true],
+        },
+        {
+          text: `${x.originThickness}`,
+          border: [false, true, true, true],
+        },
+        x.detailEquipment.gaugedS,
+
+        {
+          text: `${x.id}`,
+          style: 'txt_center',
+          border: [true, true, false, true],
+        },
+
+        {
+          text: `${x.originThickness}`,
+          border: [false, true, true, true],
+        }, //12
         x.structural,
         x.detailEquipment.gaugedP,
         x.detailEquipment.gaugedS,
-        x.id,
-        x.originThickness,
+        {
+          //16
+          text: `${x.id}`,
+          style: 'txt_center',
+          border: [true, true, false, true],
+        },
+        {
+          text: `${x.originThickness}`,
+          border: [false, true, true, true],
+        },
         x.structural,
-        x.detailEquipment.gaugedP,
-        x.detailEquipment.gaugedS,
-        x.id,
-        x.originThickness,
-        x.structural,
-        x.detailEquipment.gaugedP,
-        x.detailEquipment.gaugedS,
+        {
+          text: `${x.id}`,
+          style: 'txt_center',
+          border: [true, true, false, true],
+        },
+        {
+          text: `${x.originThickness}`,
+          border: [false, true, true, true],
+        },
         x.id,
         x.originThickness,
         x.structural,
@@ -501,25 +554,25 @@ export class TableTm1_Template {
     //23 rows
     widths: [
       '4%',
-      '30%',
+      '34.5%',
       '6%',
+      '4.5%',
       '3%',
       '3%',
       '3%',
       '3%',
+      '1.5%', //9
+      '3%',
+      '3%',
+      '1.5%', //12
       '3%',
       '3%',
       '3%',
       '3%',
+      '1.5%', //17
       '3%',
       '3%',
-      '3%',
-      '3%',
-      '3%',
-      '3%',
-      '3%',
-      '3%',
-      '3%',
+      '1.5%', //20
       '3%',
       '3%',
       '3%',
@@ -697,20 +750,20 @@ export class TableTm1_Template {
 
         {
           text: 'Report No. ',
-          colSpan: 2,
+          colSpan: 3,
           border: [false, false, false, false],
         },
+        {},
         {},
         {
           decoration: 'underline' as Decoration,
 
           text: 'VMC.TUM 123',
-          colSpan: 6,
+          colSpan: 5,
           bold: true,
           border: [false, false, false, false],
         },
 
-        {},
         {},
         {},
         {},
@@ -757,7 +810,7 @@ export class TableTm1_Template {
         },
         {},
         {
-          text: `${this.formsGet[1].test}`,
+          text: `${this.formsGet[0].test}`,
           colSpan: 21,
           rowSpan: 1,
           bold: true,
@@ -862,19 +915,19 @@ export class TableTm1_Template {
         { text: 'P', style: 'txt_center' },
         { text: 'S', style: 'txt_center' },
         { text: 'mm', style: 'txt_center' },
-        { text: '%', style: 'txt_center' },
+        { text: '%', style: 'txt_center', colSpan: 2 },
         {},
         { text: 'mm', style: 'txt_center' },
-        { text: '%', style: 'txt_center' },
+        { text: '%', style: 'txt_center', colSpan: 2 },
         {},
 
         { text: 'P', style: 'txt_center' },
         { text: 'S', style: 'txt_center' },
         { text: 'mm', style: 'txt_center' },
-        { text: '%', style: 'txt_center' },
+        { text: '%', style: 'txt_center', colSpan: 2 },
         {},
         { text: 'mm', style: 'txt_center' },
-        { text: '%', style: 'txt_center' },
+        { text: '%', style: 'txt_center', colSpan: 2 },
         {},
 
         { text: 'P', style: 'txt_center' },

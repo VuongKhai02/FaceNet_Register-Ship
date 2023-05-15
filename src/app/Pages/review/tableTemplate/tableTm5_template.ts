@@ -268,10 +268,10 @@ export var tableTm5_template = {
       { text: 'P', style: 'txt_center' },
       { text: 'S', style: 'txt_center' },
       { text: 'mm', style: 'txt_center' },
-      { text: '%', style: 'txt_center' },
+      { text: '%', style: 'txt_center', colSpan: 2 },
       {},
       { text: 'mm', style: 'txt_center' },
-      { text: '%', style: 'txt_center' },
+      { text: '%', style: 'txt_center', colSpan: 2 },
       {},
     ],
     // ...this.tm4.map((x) => [
