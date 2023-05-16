@@ -3,11 +3,13 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { catchError, retry, throwError } from 'rxjs';
 import { formTM4 } from 'src/app/share/models/form/formTM4.model';
 import { measurementTM4 } from 'src/app/share/models/form/measurementTM4.model';
-import { structuralMemberTM4 } from 'src/app/share/models/form/structuralMemberTM4.model';
 import { ParamValue } from 'src/app/share/models/paramValue.model';
 import { FormService } from 'src/app/share/services/form/form.service';
 import { ParamValueService } from 'src/app/share/services/param-value.service';
 import { CdkDragEnd, CdkDragDrop } from '@angular/cdk/drag-drop';
+import { NavigationEnd, Router } from '@angular/router';
+import { GeneralParticular } from 'src/app/share/models/generalParticulars.model';
+import { API_END_POINT } from 'src/environments/environment';
 
 @Component({
   selector: 'app-tm4',
@@ -18,27 +20,31 @@ export class Tm4Component implements OnInit {
   constructor(
     public formService: FormService,
     public paramValueService: ParamValueService,
-    private message: NzMessageService
+    private message: NzMessageService,
+    private router: Router
   ) {}
 
   addRowValue: number = 0;
   listRow: measurementTM4[] = [];
 
   listStructuralMember: ParamValue[] = [];
-  listStructuralMemberTitle: structuralMemberTM4[] = [];
 
   formTM4: formTM4 = {
     code: '',
     tankDescription: '',
     locationOfStructure: '',
-    structuralMemberTM4List: this.listStructuralMemberTitle,
+    structuralMemberTM4List: [],
   };
 
   isPercentVisible: boolean = false;
   percentSelected: number = 1;
   structuralMemberSelected: number = -2;
 
-  selectedRowValue: measurementTM4 = {
+  partId: string = this.router.url.split('/')[2];
+  tmId: string = this.router.url.split('/')[4];
+  API_URL: string = `http://222.252.25.37:9080/api/v1/report-indexes/${this.partId}/tm4s`;
+
+  emptyRow: measurementTM4 = {
     structuralMember: '',
     item: '',
     detailMeasurement: {
@@ -50,75 +56,137 @@ export class Tm4Component implements OnInit {
     },
   };
 
-  startIndex: number = -1;
-  endIndex: number = -1;
-
   isLoadingSaveButton: boolean = false;
 
   isAddRowVisible: boolean = false;
 
+  selectedRow: number[] = [];
+  selectedListRow: number = -1;
+  listFormCode: ParamValue[] = [];
+
+  isLoadingImportExcel: boolean = false;
+
+  generalParticular!: GeneralParticular;
+
   ngOnInit(): void {
-    this.listStructuralMemberTitle.push({
-      structuralMemberTitle: '',
-      measurementTM4List: this.listRow,
+    this.router.events.subscribe((event) => {
+      if (
+        event instanceof NavigationEnd &&
+        this.router.url.split('/')[1] === 'part' &&
+        this.router.url.split('/')[3].slice(0, 3) === 'tm4' &&
+        this.router.url.split('/')[4] !== '-1'
+      ) {
+        this.partId = this.router.url.split('/')[2];
+        this.tmId = this.router.url.split('/')[4];
+        this.formService.getDataForm('tm4s', this.tmId).subscribe((data) => {
+          this.formTM4.code = data.code;
+          this.formTM4.tankDescription = data.tankDescription;
+          this.formTM4.locationOfStructure = data.locationOfStructure;
+          this.formTM4.structuralMemberTM4List = data.structuralMemberTM4List;
+
+          for (
+            let i = 0;
+            i < this.formTM4.structuralMemberTM4List.length;
+            i++
+          ) {
+            this.formTM4.structuralMemberTM4List[i].measurementTM4List =
+              data.structuralMemberTM4List[i].measurementTM4DTOList;
+          }
+
+          this.listStructuralMember.map((member) => {
+            data.measurementTM4DTOList.forEach((e: any) => {
+              if (member.param == e.structuralMember) {
+                member.value =
+                  e.firstTransverseSectionMeasurementDetail.percent;
+                return;
+              }
+            });
+          });
+        });
+      } else if (
+        event instanceof NavigationEnd &&
+        this.router.url.split('/')[4] === '-1'
+      ) {
+        this.formTM4.structuralMemberTM4List = [];
+        this.formTM4.structuralMemberTM4List.push({
+          structuralMemberTitle: 'New list',
+          measurementTM4List: [],
+        });
+
+        for (let i = 1; i <= 20; i++) {
+          this.formTM4.structuralMemberTM4List[0].measurementTM4List.push(
+            JSON.parse(JSON.stringify(this.emptyRow))
+          );
+        }
+      }
     });
 
-    for (let i = 1; i <= 20; i++)
-      this.listRow.push({
-        structuralMember: '',
-        item: '',
-        detailMeasurement: {
-          originalThickness: '',
-          maxAlwbDim: '',
-          gaugedP: '',
-          gaugedS: '',
-          percent: '',
-        },
+    if (Number(this.tmId) === -1) {
+      this.formTM4.structuralMemberTM4List = [];
+      this.formTM4.structuralMemberTM4List.push({
+        structuralMemberTitle: 'New list',
+        measurementTM4List: [],
       });
+      for (let i = 1; i <= 20; i++) {
+        this.formTM4.structuralMemberTM4List[0].measurementTM4List.push(
+          JSON.parse(JSON.stringify(this.emptyRow))
+        );
+      }
+    } else {
+      this.formService.getDataForm('tm4s', this.tmId).subscribe((data) => {
+        this.formTM4.code = data.code;
+        this.formTM4.tankDescription = data.tankDescription;
+        this.formTM4.locationOfStructure = data.locationOfStructure;
+        this.formTM4.structuralMemberTM4List = data.structuralMemberTM4List;
+
+        for (let i = 0; i < this.formTM4.structuralMemberTM4List.length; i++) {
+          this.formTM4.structuralMemberTM4List[i].measurementTM4List =
+            data.structuralMemberTM4List[i].measurementTM4DTOList;
+        }
+
+        this.listStructuralMember.map((member) => {
+          data.structuralMemberTM4List.forEach((structural: any) => {
+            structural.measurementTM4DTOList.forEach((measurement: any) => {
+              if (member.param == measurement.structuralMember) {
+                member.value = measurement.detailMeasurement.percent;
+                return;
+              }
+            });
+          });
+        });
+      });
+    }
 
     this.paramValueService.getParamValueByType(7).subscribe((data) => {
       this.listStructuralMember = data;
     });
+
+    this.paramValueService.getParamValueByType(11).subscribe((data) => {
+      this.listFormCode = data;
+    });
+
+    if (this.formService.getParticularData() != null)
+      this.generalParticular = this.formService.getParticularData();
   }
 
-  API_URL: string = `http://222.252.25.37:9080/api/v1/report-indexes/1/tm4s`;
-
   addRow() {
-    if (this.structuralMemberSelected >= 0) {
-      for (let i = 1; i <= this.addRowValue; i++)
-        this.listStructuralMemberTitle[
-          this.structuralMemberSelected
-        ].measurementTM4List.push({
-          structuralMember: '',
-          item: '',
-          detailMeasurement: {
-            originalThickness: '',
-            maxAlwbDim: '',
-            gaugedP: '',
-            gaugedS: '',
-            percent: '',
-          },
+    if (this.addRowValue > 0 && this.addRowValue <= 100) {
+      if (this.structuralMemberSelected >= 0) {
+        for (let i = 1; i <= this.addRowValue; i++)
+          this.formTM4.structuralMemberTM4List[
+            this.structuralMemberSelected
+          ].measurementTM4List.push(JSON.parse(JSON.stringify(this.emptyRow)));
+      } else if (this.structuralMemberSelected == -1) {
+        this.formTM4.structuralMemberTM4List.push({
+          structuralMemberTitle: 'New list',
+          measurementTM4List: [],
         });
-    } else if (this.structuralMemberSelected == -1) {
-      this.listStructuralMemberTitle.push({
-        structuralMemberTitle: 'New list',
-        measurementTM4List: [],
-      });
 
-      for (let i = 1; i <= this.addRowValue; i++)
-        this.listStructuralMemberTitle[
-          this.listStructuralMemberTitle.length - 1
-        ].measurementTM4List.push({
-          structuralMember: '',
-          item: '',
-          detailMeasurement: {
-            originalThickness: '',
-            maxAlwbDim: '',
-            gaugedP: '',
-            gaugedS: '',
-            percent: '',
-          },
-        });
+        for (let i = 1; i <= this.addRowValue; i++)
+          this.formTM4.structuralMemberTM4List[
+            this.formTM4.structuralMemberTM4List.length - 1
+          ].measurementTM4List.push(JSON.parse(JSON.stringify(this.emptyRow)));
+      }
     }
   }
 
@@ -193,115 +261,162 @@ export class Tm4Component implements OnInit {
   onSaveForm() {
     this.isLoadingSaveButton = true;
 
-    var newFormTM4 = JSON.parse(JSON.stringify(this.formTM4));
-
-    for (let i = 0; i < this.formTM4.structuralMemberTM4List.length; i++) {
-      newFormTM4.structuralMemberTM4List[i].measurementTM4List =
-        this.formTM4.structuralMemberTM4List[i].measurementTM4List.filter(
-          (e) => {
-            return (
-              e.structuralMember !== '' ||
-              e.item !== '' ||
-              e.detailMeasurement.originalThickness !== '' ||
-              e.detailMeasurement.gaugedP !== '' ||
-              e.detailMeasurement.gaugedS !== ''
-            );
-          }
-        );
-    }
-
-    this.formService
-      .addFormToAPI(this.API_URL, newFormTM4)
-      .pipe(
-        retry(3),
-        catchError(() => {
-          return throwError('Something went wrong');
-        })
-      )
-      .subscribe({
-        next: (result) => {
-          this.isLoadingSaveButton = false;
-          this.message.create('success', 'Save form success');
-        },
-        error: (error) => {
-          this.isLoadingSaveButton = false;
-          this.message.create(
-            'error',
-            'Something went wrong, please try later'
+    this.formTM4.structuralMemberTM4List.forEach((structuralMember) => {
+      structuralMember.measurementTM4List =
+        structuralMember.measurementTM4List.filter((measurementTM4) => {
+          return (
+            measurementTM4.structuralMember !== '' ||
+            measurementTM4.item !== '' ||
+            measurementTM4.detailMeasurement.originalThickness !== '' ||
+            measurementTM4.detailMeasurement.gaugedP !== '' ||
+            measurementTM4.detailMeasurement.gaugedS !== ''
           );
-        },
-      });
+        });
+    });
+
+    if (Number(this.tmId) === -1) {
+      this.formService
+        .addFormToAPI(this.API_URL, this.formTM4)
+        .pipe(
+          retry(3),
+          catchError(() => {
+            return throwError('Something went wrong');
+          })
+        )
+        .subscribe({
+          next: (result) => {
+            this.isLoadingSaveButton = false;
+            this.message.create('success', 'Save form success');
+            this.router.navigate([
+              'part',
+              this.partId,
+              this.router.url.split('/')[3],
+              result.id,
+            ]);
+          },
+          error: (error) => {
+            this.isLoadingSaveButton = false;
+            this.message.create(
+              'error',
+              'Something went wrong, please try later'
+            );
+          },
+        });
+    } else {
+      this.formService
+        .updateForm('tm4s', this.tmId, this.formTM4)
+        .pipe(
+          retry(3),
+          catchError(() => {
+            return throwError('Something went wrong');
+          })
+        )
+        .subscribe({
+          next: (result) => {
+            this.isLoadingSaveButton = false;
+            this.message.create('success', 'Save form success');
+          },
+          error: (error) => {
+            this.isLoadingSaveButton = false;
+            this.message.create(
+              'error',
+              'Something went wrong, please try later'
+            );
+          },
+        });
+    }
   }
 
   onDragEnded(event: CdkDragEnd) {
     event.source.reset();
   }
 
-  selectRow(structuralMemberTitleIndex: number, structuralMemberIndex: number) {
-    this.selectedRowValue =
-      this.formTM4.structuralMemberTM4List[
-        structuralMemberTitleIndex
-      ].measurementTM4List[structuralMemberIndex];
+  selectRow(rowIndex: number, listRowIndex: number): void {
+    if (this.selectedListRow === -1 || this.selectedRow.length === 0) {
+      this.selectedListRow = listRowIndex;
+      if (
+        rowIndex === this.selectedRow.sort()[0] - 1 ||
+        rowIndex === this.selectedRow.sort()[this.selectedRow.length - 1] + 1 ||
+        rowIndex === this.selectedRow.sort()[0] ||
+        rowIndex === this.selectedRow.sort()[this.selectedRow.length - 1]
+      ) {
+        if (this.selectedRow.includes(rowIndex) === false)
+          this.selectedRow.push(rowIndex);
+        else this.selectedRow = this.selectedRow.filter((e) => e !== rowIndex);
+      } else if (this.selectedRow.length === 0) this.selectedRow.push(rowIndex);
+    } else {
+      if (this.selectedListRow === listRowIndex) {
+        if (
+          rowIndex === this.selectedRow.sort()[0] - 1 ||
+          rowIndex ===
+            this.selectedRow.sort()[this.selectedRow.length - 1] + 1 ||
+          rowIndex === this.selectedRow.sort()[0] ||
+          rowIndex === this.selectedRow.sort()[this.selectedRow.length - 1]
+        ) {
+          if (this.selectedRow.includes(rowIndex) === false)
+            this.selectedRow.push(rowIndex);
+          else
+            this.selectedRow = this.selectedRow.filter((e) => e !== rowIndex);
+        } else if (this.selectedRow.length === 0)
+          this.selectedRow.push(rowIndex);
+      }
+    }
   }
 
   onDrop(event: CdkDragDrop<measurementTM4[]>, index: number) {
-    this.startIndex = event.previousIndex;
-    this.endIndex = event.currentIndex;
-    if (this.startIndex < this.endIndex) {
-      for (let i = this.startIndex + 1; i <= this.endIndex; i++) {
-        this.formTM4.structuralMemberTM4List[index].measurementTM4List[
-          i
-        ].structuralMember = this.selectedRowValue.structuralMember;
-        this.formTM4.structuralMemberTM4List[index].measurementTM4List[i].item =
-          this.selectedRowValue.item;
-        this.formTM4.structuralMemberTM4List[index].measurementTM4List[
-          i
-        ].detailMeasurement.originalThickness =
-          this.selectedRowValue.detailMeasurement.originalThickness;
-        this.formTM4.structuralMemberTM4List[index].measurementTM4List[
-          i
-        ].detailMeasurement.gaugedP =
-          this.selectedRowValue.detailMeasurement.gaugedP;
-        this.formTM4.structuralMemberTM4List[index].measurementTM4List[
-          i
-        ].detailMeasurement.gaugedS =
-          this.selectedRowValue.detailMeasurement.gaugedS;
-        this.formTM4.structuralMemberTM4List[index].measurementTM4List[
-          i
-        ].detailMeasurement.percent =
-          this.selectedRowValue.detailMeasurement.percent;
+    this.selectedRow.forEach((row) => {
+      for (
+        let i = row + this.selectedRow.length;
+        i <= event.currentIndex;
+        i += this.selectedRow.length
+      ) {
+        this.formTM4.structuralMemberTM4List[index].measurementTM4List[i] =
+          JSON.parse(
+            JSON.stringify(
+              this.formTM4.structuralMemberTM4List[index].measurementTM4List[
+                row
+              ]
+            )
+          );
       }
-    } else {
-      for (let i = this.startIndex - 1; i >= this.endIndex; i--) {
-        this.formTM4.structuralMemberTM4List[index].measurementTM4List[
-          i
-        ].structuralMember = this.selectedRowValue.structuralMember;
-        this.formTM4.structuralMemberTM4List[index].measurementTM4List[i].item =
-          this.selectedRowValue.item;
-        this.formTM4.structuralMemberTM4List[index].measurementTM4List[
-          i
-        ].detailMeasurement.originalThickness =
-          this.selectedRowValue.detailMeasurement.originalThickness;
-        this.formTM4.structuralMemberTM4List[index].measurementTM4List[
-          i
-        ].detailMeasurement.gaugedP =
-          this.selectedRowValue.detailMeasurement.gaugedP;
-        this.formTM4.structuralMemberTM4List[index].measurementTM4List[
-          i
-        ].detailMeasurement.gaugedS =
-          this.selectedRowValue.detailMeasurement.gaugedS;
-        this.formTM4.structuralMemberTM4List[index].measurementTM4List[
-          i
-        ].detailMeasurement.percent =
-          this.selectedRowValue.detailMeasurement.percent;
-      }
-    }
+    });
   }
 
   countRowBefore(index: number): number {
     var sum: number = 0;
     for (let i = 0; i < index; i++)
-      sum += this.listStructuralMemberTitle[i].measurementTM4List.length + 1;
+      sum +=
+        this.formTM4.structuralMemberTM4List[i].measurementTM4List.length + 1;
     return sum;
+  }
+
+  clearRow(i: number, j: number) {
+    this.formTM4.structuralMemberTM4List[i].measurementTM4List[j] = JSON.parse(
+      JSON.stringify(this.emptyRow)
+    );
+  }
+
+  deleteRow(i: number, j: number) {
+    this.formTM4.structuralMemberTM4List[i].measurementTM4List.splice(j, 1);
+  }
+
+  deleteListRow(index: number) {
+    this.formTM4.structuralMemberTM4List.splice(index, 1);
+    if (this.formTM4.structuralMemberTM4List.length === 0) {
+      this.formTM4.structuralMemberTM4List = [];
+    } else {
+      this.formTM4.structuralMemberTM4List =
+        this.formTM4.structuralMemberTM4List;
+    }
+  }
+
+  onImportExcel(event: any) {
+    const formData = new FormData();
+    formData.append('excelFile', event.target.files[0]);
+    this.formService
+      .importExcel(`${API_END_POINT}/report-indexes/1/tm3s/sheet`, formData)
+      .subscribe((data) => {
+        data.measurementTM4DTOList.forEach((data: any) => {});
+      });
   }
 }

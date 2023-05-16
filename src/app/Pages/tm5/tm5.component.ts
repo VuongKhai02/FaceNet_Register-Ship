@@ -7,6 +7,9 @@ import { ParamValue } from 'src/app/share/models/paramValue.model';
 import { FormService } from 'src/app/share/services/form/form.service';
 import { ParamValueService } from 'src/app/share/services/param-value.service';
 import { CdkDragEnd, CdkDragDrop } from '@angular/cdk/drag-drop';
+import { NavigationEnd, Router } from '@angular/router';
+import { GeneralParticular } from 'src/app/share/models/generalParticulars.model';
+import { API_END_POINT } from 'src/environments/environment';
 
 @Component({
   selector: 'app-tm5',
@@ -17,12 +20,9 @@ export class Tm5Component implements OnInit {
   constructor(
     public formService: FormService,
     public paramValueService: ParamValueService,
-    private message: NzMessageService
+    private message: NzMessageService,
+    private router: Router
   ) {}
-
-  shipName: string = 'M/V "AFRICAN EAGLE"';
-  classIdentity: number = 3112356;
-  reportNo: string = 'VMC.UTM.22.046/5255939';
 
   addRowValue: number = 0;
 
@@ -35,32 +35,21 @@ export class Tm5Component implements OnInit {
     locationOfStructure: '',
     tankHolDescription: '',
     frameNo: '',
-    measurementTM5List: [
-      {
-        structuralComponentType: '',
-        structuralComponent: '',
-        measurementDetail: {
-          originalThickness: '',
-          maxAlwbDim: '',
-          gaugedP: '',
-          gaugedS: '',
-          percent: '',
-        },
-      },
-    ],
+    measurementTM5List: this.listRow,
   };
 
   isPercentVisible: boolean = false;
-
   isAddRowVisible: boolean = false;
 
-  percentSelected: number = 1;
-
-  API_URL: string = `http://222.252.25.37:9080/api/v1/report-indexes/1/tm5s`;
+  percentSelected: number = 0;
 
   listStructuralMember: ParamValue[] = [];
 
-  selectedRowValue: measurementTM5 = {
+  partId: string = this.router.url.split('/')[2];
+  tmId: string = this.router.url.split('/')[4];
+  API_URL: string = `http://222.252.25.37:9080/api/v1/report-indexes/${this.partId}/tm5s`;
+
+  emptyRow: measurementTM5 = {
     structuralComponentType: '',
     structuralComponent: '',
     measurementDetail: {
@@ -72,44 +61,89 @@ export class Tm5Component implements OnInit {
     },
   };
 
-  startIndex: number = -1;
-  endIndex: number = -1;
-
   isVisible = false;
   isLoadingSaveButton: boolean = false;
 
+  selectedRow: number[] = [];
+  listFormCode: ParamValue[] = [];
+
+  isLoadingImportExcel: boolean = false;
+
+  generalParticular!: GeneralParticular;
+
   ngOnInit(): void {
-    for (let i = 1; i <= 20; i++)
-      this.listRow.push({
-        structuralComponentType: '',
-        structuralComponent: '',
-        measurementDetail: {
-          originalThickness: '',
-          maxAlwbDim: '',
-          gaugedP: '',
-          gaugedS: '',
-          percent: '',
-        },
+    this.router.events.subscribe((event) => {
+      if (
+        event instanceof NavigationEnd &&
+        this.router.url.split('/')[1] === 'part' &&
+        this.router.url.split('/')[3].slice(0, 3) === 'tm5' &&
+        this.router.url.split('/')[4] !== '-1'
+      ) {
+        this.partId = this.router.url.split('/')[2];
+        this.tmId = this.router.url.split('/')[4];
+        this.formService.getDataForm('tm5s', this.tmId).subscribe((data) => {
+          this.formTM5.code = data.code;
+          this.formTM5.tankHolDescription = data.tankHolDescription;
+          this.formTM5.locationOfStructure = data.locationOfStructure;
+          this.formTM5.frameNo = data.frameNo;
+          this.listRow = data.measurementTM5List;
+
+          this.listStructuralMember.map((member) => {
+            data.measurementTM5List.forEach((e: any) => {
+              if (member.param == e.structuralComponent) {
+                member.value = e.measurementDetail.percent;
+                return;
+              }
+            });
+          });
+        });
+      } else if (
+        event instanceof NavigationEnd &&
+        this.router.url.split('/')[4] === '-1'
+      ) {
+        for (let i = 1; i <= 20; i++)
+          this.listRow.push(JSON.parse(JSON.stringify(this.emptyRow)));
+      }
+    });
+
+    if (Number(this.tmId) === -1) {
+      for (let i = 1; i <= 20; i++)
+        this.listRow.push(JSON.parse(JSON.stringify(this.emptyRow)));
+    } else {
+      this.formService.getDataForm('tm5s', this.tmId).subscribe((data) => {
+        this.formTM5.code = data.code;
+        this.formTM5.tankHolDescription = data.tankHolDescription;
+        this.formTM5.locationOfStructure = data.locationOfStructure;
+        this.formTM5.frameNo = data.frameNo;
+        this.listRow = data.measurementTM5List;
+
+        this.listStructuralMember.map((member) => {
+          data.measurementTM5List.forEach((e: any) => {
+            if (member.param == e.structuralComponent) {
+              member.value = e.measurementDetail.percent;
+              return;
+            }
+          });
+        });
       });
+    }
 
     this.paramValueService.getParamValueByType(8).subscribe((data) => {
       this.listStructuralMember = data;
     });
+
+    this.paramValueService.getParamValueByType(11).subscribe((data) => {
+      this.listFormCode = data;
+    });
+
+    if (this.formService.getParticularData() != null)
+      this.generalParticular = this.formService.getParticularData();
   }
 
   addRow() {
-    for (let i = 1; i <= this.addRowValue; i++)
-      this.listRow.push({
-        structuralComponentType: '',
-        structuralComponent: '',
-        measurementDetail: {
-          originalThickness: '',
-          maxAlwbDim: '',
-          gaugedP: '',
-          gaugedS: '',
-          percent: '',
-        },
-      });
+    if (this.addRowValue > 0 && this.addRowValue <= 100)
+      for (let i = 1; i <= this.addRowValue; i++)
+        this.listRow.push(JSON.parse(JSON.stringify(this.emptyRow)));
   }
 
   showModalPercentManage() {
@@ -168,7 +202,8 @@ export class Tm5Component implements OnInit {
 
   onSaveForm() {
     this.isLoadingSaveButton = true;
-    this.formTM5.measurementTM5List.filter(
+    this.formTM5.measurementTM5List = this.listRow;
+    this.formTM5.measurementTM5List = this.formTM5.measurementTM5List.filter(
       (form) =>
         form.structuralComponentType !== '' ||
         form.structuralComponent !== '' ||
@@ -177,70 +212,110 @@ export class Tm5Component implements OnInit {
         form.measurementDetail.gaugedS !== ''
     );
 
-    this.formService
-      .addFormToAPI(this.API_URL, this.formTM5)
-      .pipe(
-        retry(3),
-        catchError(() => {
-          return throwError('Something went wrong');
-        })
-      )
-      .subscribe({
-        next: (result) => {
-          this.isLoadingSaveButton = false;
-          this.message.create('success', 'Save form success');
-        },
-        error: (error) => {
-          this.isLoadingSaveButton = false;
-          this.message.create(
-            'error',
-            'Something went wrong, please try later'
-          );
-        },
-      });
+    this.listRow = this.formTM5.measurementTM5List;
+
+    if (Number(this.tmId) === -1) {
+      this.formService
+        .addFormToAPI(this.API_URL, this.formTM5)
+        .pipe(
+          retry(3),
+          catchError(() => {
+            return throwError('Something went wrong');
+          })
+        )
+        .subscribe({
+          next: (result) => {
+            this.isLoadingSaveButton = false;
+            this.message.create('success', 'Save form success');
+            this.router.navigate([
+              'part',
+              this.partId,
+              this.router.url.split('/')[3],
+              result.id,
+            ]);
+          },
+          error: (error) => {
+            this.isLoadingSaveButton = false;
+            this.message.create(
+              'error',
+              'Something went wrong, please try later'
+            );
+          },
+        });
+    } else {
+      this.formService
+        .updateForm('tm5s', this.tmId, this.formTM5)
+        .pipe(
+          retry(3),
+          catchError(() => {
+            return throwError('Something went wrong');
+          })
+        )
+        .subscribe({
+          next: (result) => {
+            this.isLoadingSaveButton = false;
+            this.message.create('success', 'Save form success');
+          },
+          error: (error) => {
+            this.isLoadingSaveButton = false;
+            this.message.create(
+              'error',
+              'Something went wrong, please try later'
+            );
+          },
+        });
+    }
   }
 
   onDragEnded(event: CdkDragEnd) {
     event.source.reset();
   }
 
-  selectRow(index: number) {
-    this.selectedRowValue = this.listRow[index];
+  selectRow(index: number): void {
+    if (
+      index === this.selectedRow.sort()[0] - 1 ||
+      index === this.selectedRow.sort()[this.selectedRow.length - 1] + 1 ||
+      index === this.selectedRow.sort()[0] ||
+      index === this.selectedRow.sort()[this.selectedRow.length - 1]
+    ) {
+      if (this.selectedRow.includes(index) === false)
+        this.selectedRow.push(index);
+      else this.selectedRow = this.selectedRow.filter((e) => e !== index);
+    } else if (this.selectedRow.length === 0) this.selectedRow.push(index);
   }
 
   onDrop(event: CdkDragDrop<measurementTM5[]>) {
-    this.startIndex = event.previousIndex;
-    this.endIndex = event.currentIndex;
-    if (this.startIndex < this.endIndex) {
-      for (let i = this.startIndex + 1; i <= this.endIndex; i++) {
-        this.listRow[i].structuralComponent =
-          this.selectedRowValue.structuralComponent;
-        this.listRow[i].structuralComponentType =
-          this.selectedRowValue.structuralComponentType;
-        this.listRow[i].measurementDetail.originalThickness =
-          this.selectedRowValue.measurementDetail.originalThickness;
-        this.listRow[i].measurementDetail.gaugedP =
-          this.selectedRowValue.measurementDetail.gaugedP;
-        this.listRow[i].measurementDetail.gaugedS =
-          this.selectedRowValue.measurementDetail.gaugedS;
-        this.listRow[i].measurementDetail.percent =
-          this.selectedRowValue.measurementDetail.percent;
+    this.selectedRow.forEach((row) => {
+      for (
+        let i = row + this.selectedRow.length;
+        i <= event.currentIndex;
+        i += this.selectedRow.length
+      ) {
+        this.listRow[i] = JSON.parse(JSON.stringify(this.listRow[row]));
       }
+    });
+  }
+
+  clearRow(index: number) {
+    this.listRow[index] = JSON.parse(JSON.stringify(this.emptyRow));
+  }
+
+  deleteRow(index: number) {
+    this.listRow.splice(index, 1);
+    if (this.listRow.length === 0) {
+      this.listRow = [];
     } else {
-      for (let i = this.startIndex - 1; i >= this.endIndex; i--) {
-        this.listRow[i].structuralComponent =
-          this.selectedRowValue.structuralComponent;
-        this.listRow[i].structuralComponentType =
-          this.selectedRowValue.structuralComponentType;
-        this.listRow[i].measurementDetail.originalThickness =
-          this.selectedRowValue.measurementDetail.originalThickness;
-        this.listRow[i].measurementDetail.gaugedP =
-          this.selectedRowValue.measurementDetail.gaugedP;
-        this.listRow[i].measurementDetail.gaugedS =
-          this.selectedRowValue.measurementDetail.gaugedS;
-        this.listRow[i].measurementDetail.percent =
-          this.selectedRowValue.measurementDetail.percent;
-      }
+      this.listRow = this.listRow;
     }
+  }
+
+  onImportExcel(event: any) {
+    const formData = new FormData();
+    formData.append('excelFile', event.target.files[0]);
+    this.formService
+      .importExcel(`${API_END_POINT}/report-indexes/1/tm5s/sheet`, formData)
+      .subscribe((data) => {
+        data.measurementTM5List.forEach((data: any) => {});
+      });
   }
 }

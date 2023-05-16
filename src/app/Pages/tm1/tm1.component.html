@@ -5,7 +5,7 @@
         <nz-select
           nzShowSearch
           nzAllowClear
-          nzPlaceHolder="Select a person"
+          nzPlaceHolder="Select a code"
           [(ngModel)]="formTM1.code"
           style="min-width: 150px"
         >
@@ -18,15 +18,28 @@
       </nz-input-group>
     </div>
   </div>
+
   <div class="header">
     <h1 class="title">
       Report on THICKNESS MEASUREMENT of ALL DECK PLATING, ALL BOTTOM SHELL
       PLATING or SIDE SHELL PLATING
     </h1>
     <div class="infor">
-      <p>Ship's name<span>M/V "AFRICAN EAGLE"</span></p>
-      <p>Class Identity No.<span>03112356</span></p>
-      <p>Report No.<span>VMC.UTM.22.046/5255939</span></p>
+      <p>
+        Ship's name<span>{{
+          generalParticular ? generalParticular.shipInfo.name : ""
+        }}</span>
+      </p>
+      <p>
+        Class Identity No.<span>{{
+          generalParticular ? generalParticular.shipInfo.absIdentification : ""
+        }}</span>
+      </p>
+      <p>
+        Report No.<span>{{
+          generalParticular ? generalParticular.reportNo : ""
+        }}</span>
+      </p>
     </div>
   </div>
 
@@ -35,13 +48,14 @@
     <nz-input-group nzAddOnAfter="%">
       <nz-select
         nzPlaceHolder="Choose percent"
-        [(ngModel)]="percentSelected"
+        [(ngModel)]="percentValue"
         (ngModelChange)="onChangePercent()"
+        style="min-width: 100px"
       >
         <nz-option
           *ngFor="let option of listPercentOption"
           nzLabel="{{ option.label }}"
-          nzValue="{{ option.value }}"
+          nzValue="{{ option.label }}"
         ></nz-option>
       </nz-select>
     </nz-input-group>
@@ -70,6 +84,22 @@
       </div>
     </nz-modal>
 
+    <button style="width: fit-content; padding: 0">
+      <label for="import-excel">
+        <div class="import-excel">
+          <span nz-icon nzType="upload" nzTheme="outline"></span
+          ><span style="margin-left: 8px">Import excel</span>
+        </div>
+      </label>
+      <input
+        type="file"
+        accept=".xls"
+        style="display: none"
+        id="import-excel"
+        (change)="onImportExcel($event)"
+      />
+    </button>
+
     <button
       nz-button
       nzType="primary"
@@ -84,6 +114,8 @@
   <!-- Start table -->
   <nz-table
     cdkDropList
+    [nzData]="listRow"
+    [nzFrontPagination]="false"
     [cdkDropListData]="listRow"
     (cdkDropListDropped)="onDrop($event)"
     [nzScroll]="{ x: '1900px', y: '500px' }"
@@ -137,7 +169,6 @@
       </tr>
     </thead>
     <!-- End table header -->
-    <!-- (mousedown)="selectRow(index)" -->
 
     <!-- Start table body -->
     <tbody>
@@ -918,11 +949,18 @@
             <button
               class="ant-btn-icon-only"
               nz-button
-              (click)="clearRow(index)"
+              nz-popconfirm
+              nzPopconfirmTitle="Sure to clear?"
+              (nzOnConfirm)="clearRow(index)"
             >
               <span nz-icon nzType="clear" nzTheme="outline"></span>
             </button>
-            <button nz-button (click)="deleteRow(index)">
+            <button
+              nz-button
+              nz-popconfirm
+              nzPopconfirmTitle="Sure to delete?"
+              (nzOnConfirm)="deleteRow(index)"
+            >
               <span nz-icon nzType="delete" nzTheme="outline"></span>
             </button>
           </nz-button-group>

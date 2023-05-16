@@ -5,6 +5,11 @@ import { measurementTM2 } from 'src/app/share/models/form/measurementTM2.model';
 import { FormService } from 'src/app/share/services/form/form.service';
 import { CdkDragEnd, CdkDragDrop } from '@angular/cdk/drag-drop';
 import { catchError, retry, throwError } from 'rxjs';
+import { NavigationEnd, Router } from '@angular/router';
+import { ParamValueService } from 'src/app/share/services/param-value.service';
+import { ParamValue } from 'src/app/share/models/paramValue.model';
+import { GeneralParticular } from 'src/app/share/models/generalParticulars.model';
+import { API_END_POINT } from 'src/environments/environment';
 
 @Component({
   selector: 'app-tm2ii',
@@ -14,7 +19,9 @@ import { catchError, retry, throwError } from 'rxjs';
 export class Tm2iiComponent {
   constructor(
     public formService: FormService,
-    private message: NzMessageService
+    private message: NzMessageService,
+    private router: Router,
+    private paramValueService: ParamValueService
   ) {}
 
   addRowValue: number = 0;
@@ -36,7 +43,9 @@ export class Tm2iiComponent {
     measurementTM2List: this.listRow,
   };
 
-  API_URL: string = `http://222.252.25.37:9080/api/v1/report-indexes/1/tm2s`;
+  partId: string = this.router.url.split('/')[2];
+  tmId: string = this.router.url.split('/')[4];
+  API_URL: string = `http://222.252.25.37:9080/api/v1/report-indexes/${this.partId}/tm2s`;
 
   listPercentOption = [
     { label: '20%', value: 1 },
@@ -46,6 +55,7 @@ export class Tm2iiComponent {
   ];
 
   percentSelected: number = 0;
+  percentValue: string = '';
 
   emptyRow: measurementTM2 = {
     strakePosition: '',
@@ -81,62 +91,67 @@ export class Tm2iiComponent {
 
   selectedRow: number[] = [];
 
+  listFormCode: ParamValue[] = [];
+
+  generalParticular!: GeneralParticular;
+
   ngOnInit(): void {
-    for (let i = 1; i <= 20; i++)
-      this.listRow.push({
-        strakePosition: '',
-        noOrLetter: '',
-        firstTransverseSectionMeasurementDetailTM2: {
-          originalThickness: '',
-          maxAlwbDim: '',
-          gaugedP: '',
-          gaugedS: '',
-          percent: '',
-        },
-        secondTransverseSectionMeasurementDetailTM2: {
-          originalThickness: '',
-          maxAlwbDim: '',
-          gaugedP: '',
-          gaugedS: '',
-          percent: '',
-        },
-        thirdTransverseSectionMeasurementDetailTM2: {
-          originalThickness: '',
-          maxAlwbDim: '',
-          gaugedP: '',
-          gaugedS: '',
-          percent: '',
-        },
+    this.router.events.subscribe((event) => {
+      if (
+        event instanceof NavigationEnd &&
+        this.router.url.split('/')[1] === 'part' &&
+        this.router.url.split('/')[3].slice(0, 3) === 'tm2' &&
+        this.router.url.split('/')[4] === '-1'
+      ) {
+        this.partId = this.router.url.split('/')[2];
+        this.tmId = this.router.url.split('/')[4];
+        this.formService.getDataForm('tm2s', this.tmId).subscribe((data) => {
+          this.formTM2.code = data.code;
+          this.listRow = data.measurementTM2DTOList;
+          if (data.measurementTM2DTOList.length > 0) {
+            this.percentValue =
+              data.measurementTM2DTOList[0].firstTransverseSectionMeasurementDetailTM2.percent;
+            this.percentSelected = this.listPercentOption.filter(
+              (percent) => percent.label === this.percentValue
+            )[0].value;
+          }
+        });
+      } else if (
+        event instanceof NavigationEnd &&
+        this.router.url.split('/')[4] === '-1'
+      ) {
+        for (let i = 1; i <= 20; i++)
+          this.listRow.push(JSON.parse(JSON.stringify(this.emptyRow)));
+      }
+    });
+
+    if (Number(this.tmId) === -1) {
+      for (let i = 1; i <= 20; i++)
+        this.listRow.push(JSON.parse(JSON.stringify(this.emptyRow)));
+    } else {
+      this.formService.getDataForm('tm2s', this.tmId).subscribe((data) => {
+        this.formTM2.code = data.code;
+        this.listRow = data.measurementTM2DTOList;
+        this.percentValue =
+          data.measurementTM2DTOList[0].firstTransverseSectionMeasurementDetailTM2.percent;
+        this.percentSelected = this.listPercentOption.filter(
+          (percent) => percent.label === this.percentValue
+        )[0].value;
       });
+    }
+
+    this.paramValueService.getParamValueByType(11).subscribe((data) => {
+      this.listFormCode = data;
+    });
+
+    if (this.formService.getParticularData() != null)
+      this.generalParticular = this.formService.getParticularData();
   }
 
   addRow() {
-    for (let i = 1; i <= this.addRowValue; i++)
-      this.listRow.push({
-        strakePosition: '',
-        noOrLetter: '',
-        firstTransverseSectionMeasurementDetailTM2: {
-          originalThickness: '',
-          maxAlwbDim: '',
-          gaugedP: '',
-          gaugedS: '',
-          percent: '',
-        },
-        secondTransverseSectionMeasurementDetailTM2: {
-          originalThickness: '',
-          maxAlwbDim: '',
-          gaugedP: '',
-          gaugedS: '',
-          percent: '',
-        },
-        thirdTransverseSectionMeasurementDetailTM2: {
-          originalThickness: '',
-          maxAlwbDim: '',
-          gaugedP: '',
-          gaugedS: '',
-          percent: '',
-        },
-      });
+    if (this.addRowValue > 0 && this.addRowValue <= 100)
+      for (let i = 1; i <= this.addRowValue; i++)
+        this.listRow.push(JSON.parse(JSON.stringify(this.emptyRow)));
   }
 
   convertToNumber(str: string) {
@@ -153,6 +168,8 @@ export class Tm2iiComponent {
 
   onSaveForm() {
     this.isLoadingSaveButton = true;
+    this.formTM2.measurementTM2List = this.listRow;
+    this.onChangePercent();
     this.formTM2.measurementTM2List = this.formTM2.measurementTM2List.filter(
       (form) =>
         form.strakePosition !== '' ||
@@ -173,27 +190,52 @@ export class Tm2iiComponent {
     this.formTM2.firstFrameNoTM2 = `${this.firstTransverseSectionFrom} ~ ${this.firstTransverseSectionTo}`;
     this.formTM2.secondFrameNoTM2 = `${this.secondTransverseSectionFrom} ~ ${this.secondTransverseSectionTo}`;
     this.formTM2.thirdFrameNoTM2 = `${this.thirdTransverseSectionFrom} ~ ${this.thirdTransverseSectionTo}`;
-    this.formService
-      .addFormToAPI(this.API_URL, this.formTM2)
-      .pipe(
-        retry(3),
-        catchError(() => {
-          return throwError('Something went wrong');
-        })
-      )
-      .subscribe({
-        next: (result) => {
-          this.isLoadingSaveButton = false;
-          this.message.create('success', 'Save form success');
-        },
-        error: (error) => {
-          this.isLoadingSaveButton = false;
-          this.message.create(
-            'error',
-            'Something went wrong, please try later'
-          );
-        },
-      });
+
+    if (Number(this.tmId) === -1) {
+      this.formService
+        .addFormToAPI(this.API_URL, this.formTM2)
+        .pipe(
+          retry(3),
+          catchError(() => {
+            return throwError('Something went wrong');
+          })
+        )
+        .subscribe({
+          next: (result) => {
+            this.isLoadingSaveButton = false;
+            this.message.create('success', 'Save form success');
+          },
+          error: (error) => {
+            this.isLoadingSaveButton = false;
+            this.message.create(
+              'error',
+              'Something went wrong, please try later'
+            );
+          },
+        });
+    } else {
+      this.formService
+        .updateForm('tm2s', this.tmId, this.formTM2)
+        .pipe(
+          retry(3),
+          catchError(() => {
+            return throwError('Something went wrong');
+          })
+        )
+        .subscribe({
+          next: (result) => {
+            this.isLoadingSaveButton = false;
+            this.message.create('success', 'Save form success');
+          },
+          error: (error) => {
+            this.isLoadingSaveButton = false;
+            this.message.create(
+              'error',
+              'Something went wrong, please try later'
+            );
+          },
+        });
+    }
   }
 
   onDragEnded(event: CdkDragEnd) {
@@ -250,11 +292,11 @@ export class Tm2iiComponent {
   onChangePercent() {
     for (let i = 0; i < this.listRow.length; i++) {
       this.listRow[i].firstTransverseSectionMeasurementDetailTM2.percent =
-        this.percentSelected.toString();
+        this.percentValue;
       this.listRow[i].secondTransverseSectionMeasurementDetailTM2.percent =
-        this.percentSelected.toString();
+        this.percentValue;
       this.listRow[i].thirdTransverseSectionMeasurementDetailTM2.percent =
-        this.percentSelected.toString();
+        this.percentValue;
     }
   }
 
@@ -264,5 +306,55 @@ export class Tm2iiComponent {
 
   deleteRow(index: number) {
     this.listRow.splice(index, 1);
+    if (this.listRow.length === 0) {
+      this.listRow = [];
+    } else {
+      this.listRow = this.listRow;
+    }
+  }
+
+  onImportExcel(event: any) {
+    const formData = new FormData();
+    formData.append('excelFile', event.target.files[0]);
+    this.formService
+      .importExcel(`${API_END_POINT}/report-indexes/1/tm2s/sheet`, formData)
+      .subscribe((data) => {
+        data.measurementTM2DTOList.forEach((data: any) => {
+          this.listRow.push({
+            strakePosition: data.strakePosition,
+            noOrLetter: data.noOrLetter,
+            firstTransverseSectionMeasurementDetailTM2: {
+              originalThickness:
+                data.firstTransverseSectionMeasurementDetailTM2
+                  .originalThickness,
+              maxAlwbDim:
+                data.firstTransverseSectionMeasurementDetailTM2.maxAlwbDim,
+              gaugedP: data.firstTransverseSectionMeasurementDetailTM2.gaugedP,
+              gaugedS: data.firstTransverseSectionMeasurementDetailTM2.gaugedS,
+              percent: data.firstTransverseSectionMeasurementDetailTM2.percent,
+            },
+            secondTransverseSectionMeasurementDetailTM2: {
+              originalThickness:
+                data.secondTransverseSectionMeasurementDetailTM2
+                  .originalThickness,
+              maxAlwbDim:
+                data.secondTransverseSectionMeasurementDetailTM2.maxAlwbDim,
+              gaugedP: data.secondTransverseSectionMeasurementDetailTM2.gaugedP,
+              gaugedS: data.secondTransverseSectionMeasurementDetailTM2.gaugedS,
+              percent: data.secondTransverseSectionMeasurementDetailTM2.percent,
+            },
+            thirdTransverseSectionMeasurementDetailTM2: {
+              originalThickness:
+                data.thirdTransverseSectionMeasurementDetailTM2
+                  .originalThickness,
+              maxAlwbDim:
+                data.thirdTransverseSectionMeasurementDetailTM2.maxAlwbDim,
+              gaugedP: data.thirdTransverseSectionMeasurementDetailTM2.gaugedP,
+              gaugedS: data.thirdTransverseSectionMeasurementDetailTM2.gaugedS,
+              percent: data.thirdTransverseSectionMeasurementDetailTM2.percent,
+            },
+          });
+        });
+      });
   }
 }

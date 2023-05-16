@@ -1,16 +1,19 @@
 import { Injectable } from '@angular/core';
-import { BaseServiceService } from '../base-service.service';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { GeneralParticular } from '../../models/generalParticulars.model';
+import { LocalService } from '../local.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FormService {
   constructor(
-    private baseService: BaseServiceService,
-    private httpClient: HttpClient
+    private httpClient: HttpClient,
+    private localService: LocalService
   ) {}
+
+  generalParticular: GeneralParticular[] = [];
 
   // Check arguments are qualified for calculation
   // Condition:
@@ -78,5 +81,38 @@ export class FormService {
 
   addFormToAPI(API_URL: string, data: any): Observable<any> {
     return this.httpClient.post(API_URL, data);
+  }
+
+  getDataForm(formName: string, tmId: string): Observable<any> {
+    return this.httpClient.get(
+      `http://222.252.25.37:9080/api/v1/forms/${formName}/${tmId}`
+    );
+  }
+
+  updateForm(formName: string, tmId: string, newData: any): Observable<any> {
+    return this.httpClient.put(
+      `http://222.252.25.37:9080/api/v1/forms/${formName}/${tmId}`,
+      newData
+    );
+  }
+
+  importExcel(url: string, fileExcel: any): Observable<any> {
+    return this.httpClient.post(url, fileExcel);
+  }
+
+  getParticularData() {
+    this.httpClient
+      .get<GeneralParticular[]>(
+        `http://222.252.25.37:9080/api/v1/generals_particulars`
+      )
+      .subscribe((data) => {
+        this.generalParticular = data;
+      });
+
+    if (this.localService.getId())
+      return this.generalParticular.filter(
+        (element) => element.id === this.localService.getId()
+      )[0];
+    else return this.generalParticular[0];
   }
 }

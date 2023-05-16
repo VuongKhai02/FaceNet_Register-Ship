@@ -6,11 +6,11 @@ import { CdkDragEnd, CdkDragDrop } from '@angular/cdk/drag-drop';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { catchError, retry } from 'rxjs/operators';
 import { throwError } from 'rxjs';
-import { LocalService } from 'src/app/share/services/local.service';
-import { GetDataService } from 'src/app/share/services/get-data.service';
 import { ParamValue } from 'src/app/share/models/paramValue.model';
 import { ParamValueService } from 'src/app/share/services/param-value.service';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
+import { API_END_POINT } from 'src/environments/environment';
+import { GeneralParticular } from 'src/app/share/models/generalParticulars.model';
 
 @Component({
   selector: 'app-tm1',
@@ -21,30 +21,33 @@ export class Tm1Component implements OnInit {
   constructor(
     public formService: FormService,
     private message: NzMessageService,
-    public localService: LocalService,
-    public getDataService: GetDataService,
     private paramValueService: ParamValueService,
     private router: Router
   ) {}
 
   addRowValue: number = 0;
+
   listRow: measurementTM1[] = [];
   formTM1: formTM1 = {
     code: '',
     strakePosition: '',
     measurementTM1List: this.listRow,
   };
+
   listPercentOption = [
     { label: '20%', value: 1 },
     { label: '20% + 1', value: 2 },
     { label: '25%', value: 3 },
     { label: '30%', value: 4 },
   ];
+
   percentSelected: number = 0;
+  percentValue: string = '';
   visible: boolean = false;
 
   partId: string = this.router.url.split('/')[2];
-  API_URL: string = `http://222.252.25.37:9080/api/v1/report-indexes/${this.partId}/tm1s`;
+  tmId: string = this.router.url.split('/')[4];
+  API_URL: string = `${API_END_POINT}/report-indexes/${this.partId}/tm1s`;
 
   emptyRow: measurementTM1 = {
     platePosition: '',
@@ -71,35 +74,67 @@ export class Tm1Component implements OnInit {
   selectedRow: number[] = [];
   listFormCode: ParamValue[] = [];
 
+  isLoadingImportExcel: boolean = false;
+
+  generalParticular!: GeneralParticular;
+
   ngOnInit(): void {
-    for (let i = 1; i <= 20; i++)
-      this.listRow.push(JSON.parse(JSON.stringify(this.emptyRow)));
+    this.router.events.subscribe((event) => {
+      if (
+        event instanceof NavigationEnd &&
+        this.router.url.split('/')[1] === 'part' &&
+        this.router.url.split('/')[3].slice(0, 3) === 'tm1' &&
+        this.router.url.split('/')[4] === '-1'
+      ) {
+        this.partId = this.router.url.split('/')[2];
+        this.tmId = this.router.url.split('/')[4];
+        this.formService.getDataForm('tm1s', this.tmId).subscribe((data) => {
+          this.formTM1.code = data.code;
+          this.formTM1.strakePosition = data.strakePosition;
+          this.listRow = data.measurementTM1DTOList;
+          this.percentValue =
+            data.measurementTM1DTOList[0].forwardReadingMeasurementDetail.percent;
+          this.percentSelected = this.listPercentOption.filter(
+            (percent) => percent.label === this.percentValue
+          )[0].value;
+        });
+      } else if (
+        event instanceof NavigationEnd &&
+        this.router.url.split('/')[4] === '-1'
+      ) {
+        for (let i = 1; i <= 20; i++)
+          this.listRow.push(JSON.parse(JSON.stringify(this.emptyRow)));
+      }
+    });
+
+    if (Number(this.tmId) === -1) {
+      for (let i = 1; i <= 20; i++)
+        this.listRow.push(JSON.parse(JSON.stringify(this.emptyRow)));
+    } else {
+      this.formService.getDataForm('tm1s', this.tmId).subscribe((data) => {
+        this.formTM1.code = data.code;
+        this.formTM1.strakePosition = data.strakePosition;
+        this.listRow = data.measurementTM1DTOList;
+        this.percentValue =
+          data.measurementTM1DTOList[0].forwardReadingMeasurementDetail.percent;
+        this.percentSelected = this.listPercentOption.filter(
+          (percent) => percent.label === this.percentValue
+        )[0].value;
+      });
+    }
+
     this.paramValueService.getParamValueByType(11).subscribe((data) => {
       this.listFormCode = data;
     });
+
+    if (this.formService.getParticularData() != null)
+      this.generalParticular = this.formService.getParticularData();
   }
 
   addRow() {
     if (this.addRowValue > 0 && this.addRowValue <= 100)
       for (let i = 1; i <= this.addRowValue; i++)
-        this.listRow.push({
-          platePosition: '',
-          noOrLetter: '',
-          forwardReadingMeasurementDetail: {
-            originalThickness: '',
-            maxAlwbDim: '',
-            gaugedP: '',
-            gaugedS: '',
-            percent: '',
-          },
-          afterReadingMeasurementDetail: {
-            originalThickness: '',
-            maxAlwbDim: '',
-            gaugedP: '',
-            gaugedS: '',
-            percent: '',
-          },
-        });
+        this.listRow.push(JSON.parse(JSON.stringify(this.emptyRow)));
   }
 
   convertToNumber(str: string): number {
@@ -116,6 +151,8 @@ export class Tm1Component implements OnInit {
 
   onSaveForm() {
     this.isLoadingSaveButton = true;
+    this.formTM1.measurementTM1List = this.listRow;
+    this.onChangePercent();
     this.formTM1.measurementTM1List = this.formTM1.measurementTM1List.filter(
       (form) =>
         form.platePosition !== '' ||
@@ -123,31 +160,64 @@ export class Tm1Component implements OnInit {
         form.forwardReadingMeasurementDetail.originalThickness !== '' ||
         form.forwardReadingMeasurementDetail.gaugedP !== '' ||
         form.forwardReadingMeasurementDetail.gaugedS !== '' ||
-        form.forwardReadingMeasurementDetail.originalThickness !== '' ||
-        form.forwardReadingMeasurementDetail.gaugedP !== '' ||
-        form.forwardReadingMeasurementDetail.gaugedS !== ''
+        form.afterReadingMeasurementDetail.originalThickness !== '' ||
+        form.afterReadingMeasurementDetail.gaugedP !== '' ||
+        form.afterReadingMeasurementDetail.gaugedS !== ''
     );
-    this.formService
-      .addFormToAPI(this.API_URL, this.formTM1)
-      .pipe(
-        retry(3),
-        catchError(() => {
-          return throwError('Something went wrong');
-        })
-      )
-      .subscribe({
-        next: (result) => {
-          this.isLoadingSaveButton = false;
-          this.message.create('success', 'Save form success');
-        },
-        error: (error) => {
-          this.isLoadingSaveButton = false;
-          this.message.create(
-            'error',
-            'Something went wrong, please try later'
-          );
-        },
-      });
+
+    this.listRow = this.formTM1.measurementTM1List;
+
+    if (Number(this.tmId) === -1) {
+      this.formService
+        .addFormToAPI(this.API_URL, this.formTM1)
+        .pipe(
+          retry(3),
+          catchError(() => {
+            return throwError('Something went wrong');
+          })
+        )
+        .subscribe({
+          next: (result) => {
+            this.isLoadingSaveButton = false;
+            this.message.create('success', 'Save form success');
+            this.router.navigate([
+              'part',
+              this.partId,
+              this.router.url.split('/')[3],
+              result.id,
+            ]);
+          },
+          error: (error) => {
+            this.isLoadingSaveButton = false;
+            this.message.create(
+              'error',
+              'Something went wrong, please try later'
+            );
+          },
+        });
+    } else {
+      this.formService
+        .updateForm('tm1s', this.tmId, this.formTM1)
+        .pipe(
+          retry(3),
+          catchError(() => {
+            return throwError('Something went wrong');
+          })
+        )
+        .subscribe({
+          next: (result) => {
+            this.isLoadingSaveButton = false;
+            this.message.create('success', 'Save form success');
+          },
+          error: (error) => {
+            this.isLoadingSaveButton = false;
+            this.message.create(
+              'error',
+              'Something went wrong, please try later'
+            );
+          },
+        });
+    }
   }
 
   onDragEnded(event: CdkDragEnd) {
@@ -204,9 +274,8 @@ export class Tm1Component implements OnInit {
   onChangePercent() {
     for (let i = 0; i < this.listRow.length; i++) {
       this.listRow[i].forwardReadingMeasurementDetail.percent =
-        this.percentSelected.toString();
-      this.listRow[i].afterReadingMeasurementDetail.percent =
-        this.percentSelected.toString();
+        this.percentValue;
+      this.listRow[i].afterReadingMeasurementDetail.percent = this.percentValue;
     }
   }
 
@@ -216,5 +285,41 @@ export class Tm1Component implements OnInit {
 
   deleteRow(index: number) {
     this.listRow.splice(index, 1);
+    if (this.listRow.length === 0) {
+      this.listRow = [];
+    } else {
+      this.listRow = this.listRow;
+    }
+  }
+
+  onImportExcel(event: any) {
+    const formData = new FormData();
+    formData.append('excelFile', event.target.files[0]);
+    this.formService
+      .importExcel(`${API_END_POINT}/report-indexes/1/tm1s/sheet`, formData)
+      .subscribe((data) => {
+        data.measurementTM1DTOList.forEach((data: any) => {
+          this.listRow.push({
+            platePosition: data.platePosition,
+            noOrLetter: data.noOrLetter,
+            forwardReadingMeasurementDetail: {
+              originalThickness:
+                data.forwardReadingMeasurementDetail.originalThickness,
+              maxAlwbDim: data.forwardReadingMeasurementDetail.maxAlwbDim,
+              gaugedP: data.forwardReadingMeasurementDetail.gaugedP,
+              gaugedS: data.forwardReadingMeasurementDetail.gaugedS,
+              percent: data.forwardReadingMeasurementDetail.percent,
+            },
+            afterReadingMeasurementDetail: {
+              originalThickness:
+                data.afterReadingMeasurementDetail.originalThickness,
+              maxAlwbDim: data.afterReadingMeasurementDetail.maxAlwbDim,
+              gaugedP: data.afterReadingMeasurementDetail.gaugedP,
+              gaugedS: data.afterReadingMeasurementDetail.gaugedS,
+              percent: data.afterReadingMeasurementDetail.percent,
+            },
+          });
+        });
+      });
   }
 }

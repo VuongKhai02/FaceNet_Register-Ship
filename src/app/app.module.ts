@@ -53,7 +53,7 @@ import { APP_INITIALIZER } from '@angular/core';
 import { KeycloakAngularModule, KeycloakService } from 'keycloak-angular';
 import { initializeKeycloak } from './utility/app.init';
 import { ExportPdfComponent } from './Pages/export-pdf/export-pdf.component';
-
+import { NzUploadModule } from 'ng-zorro-antd/upload';
 registerLocaleData(en);
 
 @NgModule({
@@ -109,6 +109,7 @@ registerLocaleData(en);
     NzModalModule,
     DragDropModule,
     KeycloakAngularModule,
+    NzUploadModule,
   ],
   providers: [
     { provide: NZ_I18N, useValue: en_US },
