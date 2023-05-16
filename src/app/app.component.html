@@ -1,4 +1,4 @@
-<div class="LoginForm" *ngIf="Islogin === true; else mainLayout">
+<div class="LoginForm" *ngIf="inLogIn.Islogin === true; else mainLayout">
   <app-login (out)="logIn($event)"></app-login>
 </div>
 
@@ -14,9 +14,13 @@
     >
       <div class="sidebar-logo">
         <a routerLink="generalParticulars">
-          <img src="http://vimisco.com/img/logo/logo%20trong.gif" alt="logo" />
+          <img
+            style="width: 50px; height: 50px"
+            src="http://vimisco.com/img/logo/logo%20trong.gif"
+            alt="logo"
+          />
           <!-- <div class="imgLogo"></div> -->
-          <h1>Vimisco</h1>
+          <h1 style="font-size: 25px">Vimisco</h1>
         </a>
       </div>
       <ul
@@ -30,7 +34,6 @@
           <span>General Particulars</span>
           <a routerLink="generalParticulars"></a>
         </li>
-        <!-- *ngIf="parts.length > 0" -->
         <li
           *ngIf="mainData.editMode === true && parts.length > 0"
           nz-menu-item
@@ -69,7 +72,7 @@
                 "
                 nz-popconfirm
                 nzPopconfirmTitle="Sure to delete?"
-                (nzOnConfirm)="deleteTm(i, j)"
+                (nzOnConfirm)="deleteTm(part.id, form.index)"
                 (nzOnCancel)="cancel()"
                 nzPopconfirmPlacement="top"
                 nz-button
@@ -130,50 +133,8 @@
                     <a (click)="addForm(i, 'FORM TM7')" nz-popconfirm
                       >FORM TM7</a
                     >
-                    <!-- <nz-select
-                      style="width: 100%"
-                      nzMode="tags"
-                      [nzTokenSeparators]="[',']"
-                      nzPlaceHolder="Select form"
-                      [(ngModel)]="formSelect"
-                    >
-                      <nz-option
-                        nzLabel="FORM TM1"
-                        nzValue="FORM TM1"
-                      ></nz-option>
-                      <nz-option
-                        nzLabel="FORM TM2(i)"
-                        nzValue="FORM TM2(i)"
-                      ></nz-option>
-                      <nz-option
-                        nzLabel="FORM TM2(ii)"
-                        nzValue="FORM TM2(ii)"
-                      ></nz-option>
-                      <nz-option
-                        nzLabel="FORM TM3"
-                        nzValue="FORM TM3"
-                      ></nz-option>
-                      <nz-option
-                        nzLabel="FORM TM4"
-                        nzValue="FORM TM4"
-                      ></nz-option>
-                      <nz-option
-                        nzLabel="FORM TM5"
-                        nzValue="FORM TM5"
-                      ></nz-option>
-                      <nz-option
-                        nzLabel="FORM TM6"
-                        nzValue="FORM TM6"
-                      ></nz-option>
-                      <nz-option
-                        nzLabel="FORM TM7"
-                        nzValue="FORM TM7"
-                      ></nz-option>
-                    </nz-select> -->
                   </div>
                   <hr />
-                  <!-- <a (click)="addForm(i)" nz-popconfirm> Add</a>
-                  <nz-divider nzType="vertical"></nz-divider> -->
                   <a (click)="clickMe(i)">Close</a>
                 </div>
               </ng-template>
@@ -193,7 +154,6 @@
             </li>
           </ul>
         </li>
-        <!-- *ngIf="mainData.editMode === true" -->
         <li *ngIf="mainData.editMode === true" nz-menu-item nzMatchRouter>
           <a routerLink="selectForm"
             ><span nz-icon nzType="folder-add" nzTheme="outline"></span>
@@ -241,14 +201,57 @@
               [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"
             ></span>
           </span>
-          <button
-            (click)="logOut()"
+          <a
+            nz-popover
+            [(nzPopoverVisible)]="logOutVisible"
+            (nzPopoverVisibleChange)="changelogOut($event)"
+            nzPopoverTrigger="click"
+            [nzPopoverContent]="contentAccount"
             class="btnLogout"
-            nz-button
-            nzType="primary"
           >
-            <span nz-icon nzType="logout" nzTheme="outline"></span> Log out
-          </button>
+            <div class="accImg"></div>
+            {{ inLogIn.nameUser }}
+          </a>
+          <ng-template #contentAccount>
+            <a
+              nz-popover
+              [(nzPopoverVisible)]="changePassVisible"
+              (nzPopoverVisibleChange)="changelogOut($event)"
+              nzPopoverTrigger="click"
+              [nzPopoverContent]="changePass"
+              >Change password</a
+            >
+            <br />
+            <hr />
+            <a (click)="logOut()">Log out</a>
+            <!-- <a (click)="accLose()">Close</a> -->
+          </ng-template>
+          <ng-template #changePass>
+            <input
+              [(ngModel)]="oldPassword"
+              nz-input
+              placeholder="Old password"
+              type="password"
+            />
+            <br />
+            <input
+              [(ngModel)]="newPassword"
+              style="margin-top: 5px"
+              nz-input
+              placeholder="New password"
+              type="password"
+            />
+            <hr />
+            <a (click)="changeClose()">Close</a>
+            <nz-divider nzType="vertical"></nz-divider>
+            <a
+              nz-popconfirm
+              nzPopconfirmTitle="Sure to change?"
+              (nzOnConfirm)="changePassword()"
+              (nzOnCancel)="cancel()"
+              >Change</a
+            >
+          </ng-template>
         </div>
       </nz-header>
       <nz-content>

@@ -8,7 +8,7 @@ import { Form } from './form.model';
 
 export interface part {
   id: number;
-  index: number;
+  partIndex: number;
   item: string;
   forms: Form[];
   visible: boolean;

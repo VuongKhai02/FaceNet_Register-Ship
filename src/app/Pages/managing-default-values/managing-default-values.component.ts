@@ -31,6 +31,7 @@ export class ManagingDefaultValuesComponent implements OnInit {
   tm5s: ParamValue[] = [];
   tm6s: ParamValue[] = [];
   tm7s: ParamValue[] = [];
+  formCode: ParamValue[] = [];
 
   constructor(
     private message: NzMessageService,
@@ -78,12 +79,17 @@ export class ManagingDefaultValuesComponent implements OnInit {
     this.tm5s = [];
     this.tm6s = [];
     this.tm7s = [];
+    this.formCode = [];
     this.panelOneParam[0].param = [];
     this.panelOneParam[1].param = [];
     this.panelOneParam[2].param = [];
     this.panelOneParam[3].param = [];
     this.panelOneParam[4].param = [];
     this.panelOneParam[5].param = [];
+    this.panelOneParam[6].param = [];
+    this.panelOneParam[7].param = [];
+    this.panelOneParam[8].param = [];
+    this.panelOneParam[9].param = [];
     this.getCertificates();
     this.paramService.getParamValueByType(3).subscribe((data) => {
       let newDetail!: ParamValue;
@@ -160,7 +166,7 @@ export class ManagingDefaultValuesComponent implements OnInit {
           type: data[i].type,
           edit: false,
         };
-        this.panelOneParam[5].param.push(newName);
+        this.panelOneParam[4].param.push(newName);
       }
     });
     this.paramService.getParamValueByType(7).subscribe((data) => {
@@ -173,7 +179,59 @@ export class ManagingDefaultValuesComponent implements OnInit {
           type: data[i].type,
           edit: false,
         };
+        this.panelOneParam[5].param.push(newName);
+      }
+    });
+    this.paramService.getParamValueByType(8).subscribe((data) => {
+      let newName!: ParamValue;
+      for (let i: number = 0; i < data.length; i++) {
+        newName = {
+          id: data[i].id,
+          param: data[i].param,
+          value: data[i].value,
+          type: data[i].type,
+          edit: false,
+        };
         this.panelOneParam[6].param.push(newName);
+      }
+    });
+    this.paramService.getParamValueByType(9).subscribe((data) => {
+      let newName!: ParamValue;
+      for (let i: number = 0; i < data.length; i++) {
+        newName = {
+          id: data[i].id,
+          param: data[i].param,
+          value: data[i].value,
+          type: data[i].type,
+          edit: false,
+        };
+        this.panelOneParam[7].param.push(newName);
+      }
+    });
+    this.paramService.getParamValueByType(10).subscribe((data) => {
+      let newName!: ParamValue;
+      for (let i: number = 0; i < data.length; i++) {
+        newName = {
+          id: data[i].id,
+          param: data[i].param,
+          value: data[i].value,
+          type: data[i].type,
+          edit: false,
+        };
+        this.panelOneParam[8].param.push(newName);
+      }
+    });
+    this.paramService.getParamValueByType(11).subscribe((data) => {
+      let newName!: ParamValue;
+      for (let i: number = 0; i < data.length; i++) {
+        newName = {
+          id: data[i].id,
+          param: data[i].param,
+          value: data[i].value,
+          type: data[i].type,
+          edit: false,
+        };
+        this.panelOneParam[9].param.push(newName);
       }
     });
   }
@@ -231,7 +289,7 @@ export class ManagingDefaultValuesComponent implements OnInit {
       name: 'Structural member of tm3',
       disabled: false,
       adding: false,
-      type: 8,
+      type: 6,
       param: this.tm3s,
     },
     {
@@ -240,7 +298,7 @@ export class ManagingDefaultValuesComponent implements OnInit {
       disabled: false,
       name: 'Structural member of tm4',
       adding: false,
-      type: 6,
+      type: 7,
       param: this.tm4s,
     },
     {
@@ -249,7 +307,7 @@ export class ManagingDefaultValuesComponent implements OnInit {
       disabled: false,
       name: 'Structural component (plating/stiffener) of tm5',
       adding: false,
-      type: 7,
+      type: 8,
       param: this.tm5s,
     },
     {
@@ -269,6 +327,15 @@ export class ManagingDefaultValuesComponent implements OnInit {
       adding: false,
       type: 10,
       param: this.tm7s,
+    },
+    {
+      active: false,
+      newItem: '',
+      disabled: false,
+      name: 'Form code',
+      adding: false,
+      type: 11,
+      param: this.formCode,
     },
   ];
 
@@ -387,6 +454,23 @@ export class ManagingDefaultValuesComponent implements OnInit {
       })
       .subscribe((data) => {
         this.panelOneParam[i].newItem = '';
+        this.ngOnInit();
+      });
+  }
+
+  editdetail(j: number) {
+    this.details[j].edit = true;
+  }
+
+  saveDetai(j: number) {
+    this.details[j].edit = false;
+    this.paramService
+      .updateParamValue(this.details[j].id, {
+        param: this.details[j].param,
+        value: this.details[j].value,
+        type: 3,
+      })
+      .subscribe((data) => {
         this.ngOnInit();
       });
   }

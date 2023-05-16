@@ -103,6 +103,7 @@ export class HistoryComponent implements OnInit {
       .getReportIndexFromAPI(this.mainData.mainId)
       .subscribe(
         (data) => {
+          this.parts.splice(0, this.parts.length);
           for (let i: number = 0; i < data.parts.length; i++) {
             let newForm: Form[] = [];
             for (let j: number = 0; j < data.parts[i].forms.length; j++) {
@@ -114,10 +115,11 @@ export class HistoryComponent implements OnInit {
             }
             this.parts.push({
               id: data.parts[i].id,
-              index: data.parts[i].index,
+              partIndex: data.parts[i].partIndex,
               partName: data.parts[i].item,
               forms: newForm,
               visible: false,
+              edit: false,
             });
           }
         },

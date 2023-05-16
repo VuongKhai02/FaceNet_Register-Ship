@@ -111,16 +111,7 @@ registerLocaleData(en);
     KeycloakAngularModule,
     NzUploadModule,
   ],
-  providers: [
-    { provide: NZ_I18N, useValue: en_US },
-    // {
-    //   provide: APP_INITIALIZER,
-    //   useFactory: initializeKeycloak,
-    //   multi: true,
-    //   deps: [KeycloakService],
-    // },
-    LocalService,
-  ],
+  providers: [{ provide: NZ_I18N, useValue: en_US }, LocalService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

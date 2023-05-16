@@ -49,12 +49,20 @@ export class TableOfContentsComponent implements OnInit {
         .subscribe(
           (data) => {
             this.reportIndex = data;
-            console.log('Data:', data);
-            console.log('Report Index:', this.reportIndex);
+            // for (let i: number = 0; i < this.reportIndex.parts.length; i++) {
+            //   this.parts.push({
+            //     id: this.reportIndex.parts[i].id,
+            //     index: this.reportIndex.parts[i].partIndex,
+            //     partName: this.reportIndex.parts[i].item,
+            //     forms: this.reportIndex.parts[i].forms,
+            //     visible: false,
+            //   });
+            // }
+            console.log('report', this.reportIndex);
+            console.log(this.parts);
           },
           (err) => {
             console.log(err);
-            console.log('error');
           }
         );
       this.generalSevice.getGeneralParticularsFromAPI().subscribe(
@@ -119,6 +127,20 @@ export class TableOfContentsComponent implements OnInit {
     //   this.parts[num1].forms.splice(num2, 1, temporaryForm);
     //   this.message.create('success', 'Move down success');
     // }
+  }
+
+  editPart(i: number) {
+    this.parts[i].edit = true;
+  }
+
+  savePart(i: number) {
+    this.parts[i].edit = false;
+    this.reportIndexService
+      .updateReportIndexToAPI(this.parts[i].id, {
+        item: this.parts[i].partName,
+        partIndex: this.parts[i].partIndex,
+      })
+      .subscribe((data) => {});
   }
 
   cancel() {}
