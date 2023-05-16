@@ -32,9 +32,11 @@
               <td>{{ j + 1 }}</td>
               <td *ngIf="item.edit === false; else td2">{{ item.param }}</td>
               <ng-template #td2>
-                <input style="margin: 15px" [(ngModel)]="item.param" nz-input />
+                <td>
+                  <input [(ngModel)]="item.param" nz-input />
+                </td>
               </ng-template>
-              <td *ngIf="item.edit === false">
+              <td *ngIf="item.edit === false" style="text-align: center">
                 <a
                   (nzOnConfirm)="editItem(i, j)"
                   (nzOnCancel)="cancel()"
@@ -52,8 +54,9 @@
                   >Delete</a
                 >
               </td>
-              <td *ngIf="item.edit === true">
+              <td *ngIf="item.edit === true" style="text-align: center">
                 <a
+                  style="margin: 15px"
                   (nzOnConfirm)="saveItem(i, j)"
                   (nzOnCancel)="cancel()"
                   nz-popconfirm
@@ -87,11 +90,36 @@
           <tbody *ngFor="let item of details; let j = index">
             <tr>
               <td>{{ j + 1 }}</td>
-              <td>{{ item.param }}</td>
-              <td>{{ item.value }}</td>
-              <td *ngIf="item.edit === false; else editActionCertificate">
+              <td *ngIf="item.edit === false; else editParamDetail">
+                {{ item.param }}
+              </td>
+              <ng-template #editParamDetail>
+                <td>
+                  <input
+                    [(ngModel)]="item.param"
+                    nz-input
+                    placeholder="Enter item"
+                  />
+                </td>
+              </ng-template>
+              <td *ngIf="item.edit === false; else editValueDetail">
+                {{ item.value }}
+              </td>
+              <ng-template #editValueDetail>
+                <td>
+                  <input
+                    [(ngModel)]="item.value"
+                    nz-input
+                    placeholder="Enter item"
+                  />
+                </td>
+              </ng-template>
+              <td
+                *ngIf="item.edit === false; else editActionCertificate"
+                style="text-align: center"
+              >
                 <a
-                  (nzOnConfirm)="editItem(i, j)"
+                  (nzOnConfirm)="editdetail(j)"
                   (nzOnCancel)="cancel()"
                   nz-popconfirm
                   nzPopconfirmTitle="Sure to edit?"
@@ -108,14 +136,16 @@
                 >
               </td>
               <ng-template #editActionCertificate>
-                <a
-                  (nzOnConfirm)="saveItem(i, j)"
-                  (nzOnCancel)="cancel()"
-                  nz-popconfirm
-                  nzPopconfirmTitle="Sure to save?"
-                >
-                  Save</a
-                >
+                <td style="text-align: center">
+                  <a
+                    (nzOnConfirm)="saveDetai(j)"
+                    (nzOnCancel)="cancel()"
+                    nz-popconfirm
+                    nzPopconfirmTitle="Sure to save?"
+                  >
+                    Save</a
+                  >
+                </td>
               </ng-template>
             </tr>
           </tbody>
@@ -136,7 +166,7 @@
                   placeholder="Enter Serri"
                 />
               </td>
-              <td>
+              <td style="text-align: center">
                 <a
                   (nzOnConfirm)="addDetail(panel.type)"
                   (nzOnCancel)="cancel()"
@@ -205,7 +235,7 @@
                   [(ngModel)]="item.validEndDate"
                 ></nz-date-picker>
               </td>
-              <td *ngIf="item.edit === false">
+              <td *ngIf="item.edit === false" style="text-align: center">
                 <a
                   (nzOnConfirm)="editCertificate(i)"
                   (nzOnCancel)="cancel()"
@@ -223,7 +253,7 @@
                   >Delete</a
                 >
               </td>
-              <td *ngIf="item.edit === true">
+              <td *ngIf="item.edit === true" style="text-align: center">
                 <a
                   (nzOnConfirm)="saveCertififcate(i)"
                   (nzOnCancel)="cancel()"

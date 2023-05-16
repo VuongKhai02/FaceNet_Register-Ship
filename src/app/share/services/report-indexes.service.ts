@@ -29,7 +29,16 @@ export class ReportIndexesService {
     return this.http.delete(`${API_END_POINT}/report-indexes/${id}`);
   }
 
-  updateReportIndexToAPI(id: number, data: ReportIndex): Observable<any> {
-    return this.http.put(`${this.API_URL}/${id}`, data);
+  deleteForm(id: number, index: number): Observable<any> {
+    return this.http.delete(
+      `${API_END_POINT}/report-indexes/${id}/form/${index}`
+    );
+  }
+
+  updateReportIndexToAPI(
+    id: number,
+    data: { item: string; partIndex: number }
+  ): Observable<any> {
+    return this.http.put(`${API_END_POINT}/report-indexes/${id}`, data);
   }
 }

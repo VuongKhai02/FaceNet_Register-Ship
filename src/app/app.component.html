@@ -1,4 +1,4 @@
-<div class="LoginForm" *ngIf="Islogin === true; else mainLayout">
+<div class="LoginForm" *ngIf="inLogIn.Islogin === true; else mainLayout">
   <app-login (out)="logIn($event)"></app-login>
 </div>
 
@@ -34,7 +34,6 @@
           <span>General Particulars</span>
           <a routerLink="generalParticulars"></a>
         </li>
-        <!-- *ngIf="parts.length > 0" -->
         <li
           *ngIf="mainData.editMode === true && parts.length > 0"
           nz-menu-item
@@ -73,7 +72,7 @@
                 "
                 nz-popconfirm
                 nzPopconfirmTitle="Sure to delete?"
-                (nzOnConfirm)="deleteTm(i, j)"
+                (nzOnConfirm)="deleteTm(part.id, form.index)"
                 (nzOnCancel)="cancel()"
                 nzPopconfirmPlacement="top"
                 nz-button
@@ -155,7 +154,6 @@
             </li>
           </ul>
         </li>
-        <!-- *ngIf="mainData.editMode === true" -->
         <li *ngIf="mainData.editMode === true" nz-menu-item nzMatchRouter>
           <a routerLink="selectForm"
             ><span nz-icon nzType="folder-add" nzTheme="outline"></span>
@@ -212,13 +210,47 @@
             class="btnLogout"
           >
             <div class="accImg"></div>
-            Nguyễn Văn Luyện
+            {{ inLogIn.nameUser }}
           </a>
           <ng-template #contentAccount>
-            <a>Change password</a>
+            <a
+              nz-popover
+              [(nzPopoverVisible)]="changePassVisible"
+              (nzPopoverVisibleChange)="changelogOut($event)"
+              nzPopoverTrigger="click"
+              [nzPopoverContent]="changePass"
+              >Change password</a
+            >
             <br />
+            <hr />
             <a (click)="logOut()">Log out</a>
             <!-- <a (click)="accLose()">Close</a> -->
+          </ng-template>
+          <ng-template #changePass>
+            <input
+              [(ngModel)]="oldPassword"
+              nz-input
+              placeholder="Old password"
+              type="password"
+            />
+            <br />
+            <input
+              [(ngModel)]="newPassword"
+              style="margin-top: 5px"
+              nz-input
+              placeholder="New password"
+              type="password"
+            />
+            <hr />
+            <a (click)="changeClose()">Close</a>
+            <nz-divider nzType="vertical"></nz-divider>
+            <a
+              nz-popconfirm
+              nzPopconfirmTitle="Sure to change?"
+              (nzOnConfirm)="changePassword()"
+              (nzOnCancel)="cancel()"
+              >Change</a
+            >
           </ng-template>
         </div>
       </nz-header>

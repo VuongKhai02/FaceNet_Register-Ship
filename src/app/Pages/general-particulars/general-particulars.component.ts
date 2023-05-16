@@ -419,7 +419,7 @@ export class GeneralParticularsComponent implements OnInit {
           this.generalParticularsForm.value.classificationSociety,
       };
 
-      let newGeneralParticulars: GeneralParticularPush = {
+      let generalParticularsput: GeneralParticularPush = {
         ship: newShip,
         certificateNo: this.generalParticularsForm.value.certificateNo,
         placeOfMeasurement:
@@ -435,24 +435,27 @@ export class GeneralParticularsComponent implements OnInit {
         nameOfOperator: this.generalParticularsForm.value.nameOfOperator,
         surveyorInfo: this.generalParticularsForm.value.nameOfSurveyor,
       };
-      console.log(newGeneralParticulars);
+      console.log('Id:', this.mainData.mainId);
+
+      console.log('New general:', generalParticularsput);
 
       this.getDataService
         .updateGeneralParticularsToAPI(
           this.mainData.mainId,
-          newGeneralParticulars
+          generalParticularsput
         )
         .subscribe(
           (data) => {
-            console.log(data);
+            console.log('data:', data);
+            this.message.create('success', 'Save success');
+            this.ngOnInit();
           },
           (err) => {
             console.log(err);
+            this.message.create('error', 'Enter missing information');
           }
         );
-      this.message.create('success', 'Save success');
     } else {
-      this.message.create('error', 'Enter missing information');
       this.link = '/generalParticulars';
     }
   }

@@ -8,8 +8,9 @@ export interface main {
 
 export interface partLocal {
   id: number;
-  index: number;
+  partIndex: number;
   partName: string;
   forms: Form[];
   visible: boolean;
+  edit: boolean;
 }
