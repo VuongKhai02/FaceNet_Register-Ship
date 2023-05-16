@@ -120,6 +120,7 @@ export class Tm2iiComponent {
         event instanceof NavigationEnd &&
         this.router.url.split('/')[4] === '-1'
       ) {
+        this.listRow = [];
         for (let i = 1; i <= 20; i++)
           this.listRow.push(JSON.parse(JSON.stringify(this.emptyRow)));
       }

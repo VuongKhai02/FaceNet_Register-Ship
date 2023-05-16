@@ -84,7 +84,7 @@ export class Tm1Component implements OnInit {
         event instanceof NavigationEnd &&
         this.router.url.split('/')[1] === 'part' &&
         this.router.url.split('/')[3].slice(0, 3) === 'tm1' &&
-        this.router.url.split('/')[4] === '-1'
+        this.router.url.split('/')[4] !== '-1'
       ) {
         this.partId = this.router.url.split('/')[2];
         this.tmId = this.router.url.split('/')[4];
@@ -102,6 +102,7 @@ export class Tm1Component implements OnInit {
         event instanceof NavigationEnd &&
         this.router.url.split('/')[4] === '-1'
       ) {
+        this.listRow = [];
         for (let i = 1; i <= 20; i++)
           this.listRow.push(JSON.parse(JSON.stringify(this.emptyRow)));
       }
