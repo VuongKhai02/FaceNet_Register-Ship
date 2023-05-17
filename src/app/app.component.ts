@@ -16,6 +16,9 @@ import { ReportIndexesService } from './share/services/report-indexes.service';
 import { ReportIndex } from './share/models/report-index.model';
 import { partLocal } from './share/models/local.model';
 import { Form } from './share/models/form.model';
+import { Account } from './share/models/account.model';
+import { AccountService } from './share/services/account.service';
+import { NzMessageService } from 'ng-zorro-antd/message';
 
 @Component({
   selector: 'app-root',
@@ -23,12 +26,19 @@ import { Form } from './share/models/form.model';
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnInit {
+  accounts: Account[] = [];
+  oldPassword: string = '';
+  newPassword: string = '';
+  logOutVisible: boolean = false;
+  changePassVisible: boolean = false;
   reportIndex!: ReportIndex;
   parts: partLocal[] = [];
   formSelect: string[] = [];
   mainData!: main;
   tmName: string = '';
   constructor(
+    private accountSevice: AccountService,
+    private message: NzMessageService,
     private partsService: PartsService,
     private localService: LocalService,
     private reportIndexService: ReportIndexesService,
@@ -40,16 +50,18 @@ export class AppComponent implements OnInit {
   }
 
   addForm(i: number, formName: string) {
-    // for (let j: number = 0; j < this.formSelect.length; j++) {
-    //   this.parts[i].forms.push({ index: -1, name: this.formSelect[j] });
-    // }
     this.parts[i].forms.push({ formID: -1, index: -1, name: formName });
     this.parts[i].visible = false;
+  }
+
+  changeClose() {
+    this.changePassVisible = false;
   }
 
   change(value: boolean): void {}
 
   ngOnInit(): void {
+    this.accounts = this.accountSevice.getAccounts();
     this.parts = [];
     this.parts = this.partsService.setParts();
     this.mainData = this.localService.getMainData();
@@ -63,10 +75,11 @@ export class AppComponent implements OnInit {
             for (let i: number = 0; i < this.reportIndex.parts.length; i++) {
               this.parts.push({
                 id: this.reportIndex.parts[i].id,
-                index: this.reportIndex.parts[i].index,
+                partIndex: this.reportIndex.parts[i].partIndex,
                 partName: this.reportIndex.parts[i].item,
                 forms: this.reportIndex.parts[i].forms,
                 visible: false,
+                edit: false,
               });
             }
           },
@@ -78,30 +91,42 @@ export class AppComponent implements OnInit {
   }
 
   reset() {
-    window.location.reload();
-    // this.mainData.editMode = false;
-    // this.mainData.mainId = 0;
-    // this.mainData.reportNumber = '';
-    // this.parts = [];
+    // window.location.reload();
+    this.mainData.editMode = false;
+    this.mainData.mainId = 0;
+    this.mainData.reportNumber = '';
+    this.parts.splice(0, this.parts.length);
+    this.router.navigateByUrl('history');
   }
 
   title(title: any) {
     throw new Error('Method not implemented.');
   }
   isCollapsed = false;
-  Islogin: boolean = false;
+  inLogIn: { Islogin: boolean; nameUser: string } = {
+    Islogin: false,
+    nameUser: 'Unknown',
+  };
 
-  logIn(title: boolean): void {
-    this.Islogin = title;
+  logIn(title: { Islogin: boolean; nameUser: string }): void {
+    this.inLogIn = title;
   }
 
   logOut(): void {
-    this.Islogin = true;
+    this.inLogIn.Islogin = true;
+    this.logOutVisible = false;
   }
 
   deleteTm(i: number, j: number) {
-    this.parts[i].forms.splice(j, 1);
-    console.log('ok');
+    this.reportIndexService.deleteForm(i, j).subscribe(
+      (data) => {
+        this.parts.splice(0, this.parts.length);
+        this.ngOnInit();
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
   }
 
   deletePart(i: number) {
@@ -123,9 +148,9 @@ export class AppComponent implements OnInit {
     } else if (formName === 'FORM TM2') {
       this.tmName = 'tm2';
     } else if (formName === 'FORM TM2(I)') {
-      this.tmName = 'tm2(i)';
+      this.tmName = 'tm2i';
     } else if (formName === 'FORM TM2(II)') {
-      this.tmName = 'tm2(ii)';
+      this.tmName = 'tm2ii';
     } else if (formName === 'FORM TM3') {
       this.tmName = 'tm3';
     } else if (formName === 'FORM TM4') {
@@ -138,6 +163,33 @@ export class AppComponent implements OnInit {
       this.tmName = 'tm7';
     }
     this.router.navigate(['part', id, this.tmName, formIndex]);
+  }
+
+  changePassword() {
+    for (let i: number = 0; i < this.accounts.length; i++) {
+      if (this.accounts[i].name === this.inLogIn.nameUser) {
+        if (this.accounts[i].password !== this.oldPassword) {
+          this.message.create('error', 'Old password is incorrect');
+        } else if (this.oldPassword === this.newPassword) {
+          this.message.create(
+            'error',
+            'The new password must be different from the old password'
+          );
+        } else {
+          this.accounts[i].password = this.newPassword;
+          this.changePassVisible = false;
+          this.oldPassword = '';
+          this.newPassword = '';
+          this.message.create('success', 'Change successful');
+        }
+      }
+    }
+  }
+
+  changelogOut($value: boolean): void {}
+
+  accLose() {
+    this.logOutVisible = false;
   }
 
   cancel() {}

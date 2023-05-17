@@ -10,6 +10,7 @@ import { LocalService } from 'src/app/share/services/local.service';
 import { ReportIndexPush } from 'src/app/share/models/report-indexPush.model';
 import { partLocal } from 'src/app/share/models/local.model';
 import { Form } from 'src/app/share/models/form.model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-selectform',
@@ -21,12 +22,14 @@ export class SelectformComponent implements OnInit {
   mainData!: main;
   reportIndex!: ReportIndex;
   item: string = '';
+  tmName: string = '';
 
   constructor(
     private partsService: PartsService,
     private message: NzMessageService,
     private reportIndexService: ReportIndexesService,
-    private localService: LocalService
+    private localService: LocalService,
+    private router: Router
   ) {}
   ngOnInit(): void {
     this.parts = this.partsService.setParts();
@@ -73,12 +76,42 @@ export class SelectformComponent implements OnInit {
 
                 let newPart: partLocal = {
                   id: data.parts[data.parts.length - 1].id,
-                  index: 0,
+                  partIndex: 0,
                   partName: this.item,
                   forms: newForm,
                   visible: false,
+                  edit: false,
                 };
                 this.parts.push(newPart);
+                if (this.selectForm.value.formSelect[0] === 'FORM TM1') {
+                  this.tmName = 'tm1';
+                } else if (this.selectForm.value.formSelect[0] === 'FORM TM2') {
+                  this.tmName = 'tm2';
+                } else if (
+                  this.selectForm.value.formSelect[0] === 'FORM TM2(I)'
+                ) {
+                  this.tmName = 'tm2i';
+                } else if (
+                  this.selectForm.value.formSelect[0] === 'FORM TM2(II)'
+                ) {
+                  this.tmName = 'tm2ii';
+                } else if (this.selectForm.value.formSelect[0] === 'FORM TM3') {
+                  this.tmName = 'tm3';
+                } else if (this.selectForm.value.formSelect[0] === 'FORM TM4') {
+                  this.tmName = 'tm4';
+                } else if (this.selectForm.value.formSelect[0] === 'FORM TM5') {
+                  this.tmName = 'tm5';
+                } else if (this.selectForm.value.formSelect[0] === 'FORM TM6') {
+                  this.tmName = 'tm6';
+                } else if (this.selectForm.value.formSelect[0] === 'FORM TM7') {
+                  this.tmName = 'tm7';
+                }
+                this.router.navigate([
+                  'part',
+                  data.parts[data.parts.length - 1],
+                  this.tmName,
+                  -1,
+                ]);
               });
           },
           (err) => {
@@ -90,11 +123,5 @@ export class SelectformComponent implements OnInit {
       this.selectForm.value.formSelect = ['selectForm'];
       this.message.create('error', 'Enter missing information');
     }
-    // if (
-    //   this.selectForm.value.formName !== '' &&
-    //   this.selectForm.value.formSelect.length > 0
-    // ) {
-    //   this.partsService.addPartsToAPI({})
-    // }
   }
 }

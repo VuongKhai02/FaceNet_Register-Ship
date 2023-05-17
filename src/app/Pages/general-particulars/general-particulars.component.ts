@@ -12,6 +12,7 @@ import { main } from 'src/app/share/models/local.model';
 import { GeneralParticularPush } from 'src/app/share/models/generalParticularsPush.model';
 import { ParamValue } from 'src/app/share/models/paramValue.model';
 import { ParamValueService } from 'src/app/share/services/param-value.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-general-particulars',
@@ -62,7 +63,8 @@ export class GeneralParticularsComponent implements OnInit {
     private getDataService: GetDataService,
     private message: NzMessageService,
     private localService: LocalService,
-    private paramValueService: ParamValueService
+    private paramValueService: ParamValueService,
+    private router: Router
   ) {}
 
   /**
@@ -318,6 +320,30 @@ export class GeneralParticularsComponent implements OnInit {
       this.inOperatorName !== '' &&
       this.inSuveyor !== ''
     ) {
+      /**
+       * {
+  "ship": {
+    "name": "string",
+    "imoNumber": "string",
+    "absIdentification": "string",
+    "postOfRegistry": "string",
+    "grossTons": 0,
+    "deadweight": 0,
+    "dateOfBuild": "2023-05-16",
+    "classificationSociety": "string"
+  },
+  "reportNo": "string",
+  "surveyorInfo": "string",
+  "certificateNo": "string",
+  "measurementEquipmentInfo": "string",
+  "surveyType": "string",
+  "placeOfMeasurement": "string",
+  "firstDateOfMeasurement": "2023-05-16",
+  "lastDateOfMeasurement": "2023-05-16",
+  "nameOfOperator": "string"
+}
+       */
+
       let newShip: ship = {
         name: this.generalParticularsForm.value.shipName,
         imoNumber: this.generalParticularsForm.value.imoNumber,
@@ -354,6 +380,8 @@ export class GeneralParticularsComponent implements OnInit {
         .addGeneralParticularsToAPI(newGeneralParticulars)
         .subscribe(
           (data) => {
+            console.log('data post: ', data);
+
             this.getDataService.getGeneralParticularsFromAPI().subscribe(
               (data) => {
                 this.generalParticulars = data;
@@ -365,6 +393,9 @@ export class GeneralParticularsComponent implements OnInit {
                 this.mainData.mainId = newGeneral[0].id;
                 this.mainData.reportNumber = newGeneral[0].reportNo;
                 this.mainData.editMode = true;
+                console.log(this.mainData);
+                this.message.create('success', 'Save success');
+                this.router.navigateByUrl('selectForm');
               },
               (err) => {
                 console.log(err);
@@ -373,12 +404,11 @@ export class GeneralParticularsComponent implements OnInit {
           },
           (err) => {
             console.log(err);
+            console.log(this.mainData);
           }
         );
-      this.message.create('success', 'Save success');
     } else {
       this.message.create('error', 'Enter missing information');
-      this.link = '/generalParticulars';
     }
   }
 
@@ -419,7 +449,7 @@ export class GeneralParticularsComponent implements OnInit {
           this.generalParticularsForm.value.classificationSociety,
       };
 
-      let newGeneralParticulars: GeneralParticularPush = {
+      let generalParticularsput: GeneralParticularPush = {
         ship: newShip,
         certificateNo: this.generalParticularsForm.value.certificateNo,
         placeOfMeasurement:
@@ -435,25 +465,26 @@ export class GeneralParticularsComponent implements OnInit {
         nameOfOperator: this.generalParticularsForm.value.nameOfOperator,
         surveyorInfo: this.generalParticularsForm.value.nameOfSurveyor,
       };
-      console.log(newGeneralParticulars);
+      console.log('Id:', this.mainData.mainId);
+
+      console.log('New general:', generalParticularsput);
 
       this.getDataService
         .updateGeneralParticularsToAPI(
           this.mainData.mainId,
-          newGeneralParticulars
+          generalParticularsput
         )
         .subscribe(
           (data) => {
-            console.log(data);
+            console.log('data:', data);
+            this.message.create('success', 'Save success');
+            this.ngOnInit();
           },
           (err) => {
             console.log(err);
+            this.message.create('error', 'Enter missing information');
           }
         );
-      this.message.create('success', 'Save success');
-    } else {
-      this.message.create('error', 'Enter missing information');
-      this.link = '/generalParticulars';
     }
   }
 }
