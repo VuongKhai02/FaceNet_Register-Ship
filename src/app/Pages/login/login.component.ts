@@ -38,19 +38,36 @@ export class LoginComponent {
   });
 
   submitForm(): void {
-    for (let i: number = 0; i < this.accounts.length; i++) {
-      if (
-        this.validateForm.value.userName === this.accounts[i].accountName &&
-        this.validateForm.value.password === this.accounts[i].password
-      ) {
-        this.inLogIn.Islogin = false;
-        this.inLogIn.nameUser = this.accounts[i].name;
-        this.out.emit(this.inLogIn);
-        return;
-      }
-    }
-    if ((this.inLogIn.Islogin = true)) {
-      this.message.create('error', 'Account or password is incorrect');
-    }
+    // for (let i: number = 0; i < this.accounts.length; i++) {
+    //   if (
+    //     this.validateForm.value.userName === this.accounts[i].accountName &&
+    //     this.validateForm.value.password === this.accounts[i].password
+    //   ) {
+    //     this.inLogIn.Islogin = false;
+    //     this.inLogIn.nameUser = this.accounts[i].name;
+    //     this.out.emit(this.inLogIn);
+    //     return;
+    //   }
+    // }
+    // if ((this.inLogIn.Islogin = true)) {
+    //   this.message.create('error', 'Account or password is incorrect');
+    // }
+    this.accountSevice
+      .postAccount({
+        username: this.validateForm.value.userName,
+        password: this.validateForm.value.password,
+      })
+      .subscribe(
+        (data) => {
+          this.inLogIn.Islogin = false;
+          this.inLogIn.nameUser = data.name;
+          this.out.emit(this.inLogIn);
+          localStorage.setItem('token', data.accessToken);
+          localStorage.setItem('refreshtoken', data.refreshToken);
+        },
+        (err) => {
+          this.message.create('error', 'Account or password is incorrect');
+        }
+      );
   }
 }

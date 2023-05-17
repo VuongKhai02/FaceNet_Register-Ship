@@ -53,6 +53,7 @@ import { APP_INITIALIZER } from '@angular/core';
 import { KeycloakAngularModule, KeycloakService } from 'keycloak-angular';
 import { initializeKeycloak } from './utility/app.init';
 import { ExportPdfComponent } from './Pages/export-pdf/export-pdf.component';
+import { AuthInterceptorProvider } from './share/services/auth.service';
 
 registerLocaleData(en);
 
@@ -110,7 +111,11 @@ registerLocaleData(en);
     DragDropModule,
     KeycloakAngularModule,
   ],
-  providers: [{ provide: NZ_I18N, useValue: en_US }, LocalService],
+  providers: [
+    { provide: NZ_I18N, useValue: en_US },
+    LocalService,
+    AuthInterceptorProvider,
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

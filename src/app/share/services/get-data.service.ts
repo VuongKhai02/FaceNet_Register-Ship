@@ -1,6 +1,6 @@
 import { Injectable, OnInit } from '@angular/core';
 import { GeneralParticular } from '../models/generalParticulars.model';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { API_END_POINT } from 'src/environments/environment';
 import { GeneralParticularPush } from '../models/generalParticularsPush.model';
@@ -30,7 +30,13 @@ export class GetDataService {
    * @returns
    */
   addGeneralParticularsToAPI(data: GeneralParticularPush): Observable<any> {
-    return this.http.post(this.API_URL, data);
+    // const header = new HttpHeaders();
+    // header.set('Authentication', `${sessionStorage.getItem('Token')}`);
+    // return this.http.post(this.API_URL, data, { headers: header });
+    // sessionStorage.setItem('Token', data.accessToken)
+    // sessionStorage.setItem('RefreshToken', data.refreshToken)
+    // sessionStorage.getItem('Token')
+    return this.http.post(`${this.API_URL}`, data);
   }
 
   /**

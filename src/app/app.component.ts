@@ -105,7 +105,7 @@ export class AppComponent implements OnInit {
   isCollapsed = false;
   inLogIn: { Islogin: boolean; nameUser: string } = {
     Islogin: false,
-    nameUser: '',
+    nameUser: 'Unknown',
   };
 
   logIn(title: { Islogin: boolean; nameUser: string }): void {

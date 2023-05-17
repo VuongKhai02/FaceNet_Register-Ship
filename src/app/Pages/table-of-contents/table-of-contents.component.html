@@ -36,7 +36,7 @@
       #borderedTable
       nzTemplateMode="true"
       nzBordered
-      [nzScroll]="{ y: '450px' }"
+      [nzScroll]="{ y: '500px' }"
     >
       <thead class="titleTable">
         <tr class="titleTable">
@@ -67,9 +67,37 @@
           </ng-template>
           <td
             *ngIf="part.edit === false; else savepart"
-            style="text-align: center; background-color: #f5f5f5"
+            style="
+              display: flex;
+              flex-direction: row;
+              justify-content: space-around;
+              text-align: center;
+              background-color: #f5f5f5;
+              align-items: center;
+            "
           >
             <a (click)="editPart(i)">Edit</a>
+            <div>
+              <a
+                ><span
+                  (click)="moveUpPart(i)"
+                  style="color: black"
+                  nz-icon
+                  nzType="up"
+                  nzTheme="outline"
+                ></span
+              ></a>
+              <br />
+              <a
+                ><span
+                  (click)="moveDownPart(i)"
+                  style="color: black"
+                  nz-icon
+                  nzType="down"
+                  nzTheme="outline"
+                ></span
+              ></a>
+            </div>
             <!-- <a
               (nzOnConfirm)="moveUpPart(i)"
               (nzOnCancel)="cancel()"

@@ -58,8 +58,6 @@ export class TableOfContentsComponent implements OnInit {
             //     visible: false,
             //   });
             // }
-            console.log('report', this.reportIndex);
-            console.log(this.parts);
           },
           (err) => {
             console.log(err);

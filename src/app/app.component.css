@@ -100,7 +100,7 @@ nz-header {
 .btnLogout {
   color: black;
   margin-left: auto;
-  margin-right: 20px;
+  margin-right: 40px;
   display: flex;
   align-items: center;
   flex-direction: row;
