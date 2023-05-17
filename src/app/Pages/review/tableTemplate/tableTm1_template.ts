@@ -8,28 +8,93 @@ import {
   Column,
   PageBreak,
 } from 'pdfmake/interfaces';
+import { measurementTM1 } from 'src/app/share/models/form/measurementTM1.model';
 import { GeneralParticular } from 'src/app/share/models/generalParticulars.model';
 import { GetDataService } from 'src/app/share/services/get-data.service';
 import { LocalService } from 'src/app/share/services/local.service';
+import { FormTm1Service } from '../form-tm1.service';
+import { formTM1 } from 'src/app/share/models/form/formTM1.model';
+import { ReportIndexesService } from 'src/app/share/services/report-indexes.service';
+import { main } from 'src/app/share/models/local.model';
+import { ReportIndex } from 'src/app/share/models/report-index.model';
+import { part } from 'src/app/share/models/part.model';
 
+interface form_id_name {
+  idForm: number;
+  nameForm: string;
+}
 @Component({
   selector: 'app-review',
   template: '<h2>hteml</h2>',
   styles: ['h1 { font-weight: normal; }'],
 })
-export class TableTm1_Template implements OnInit {
-  constructor(private generalParticularervice: GetDataService) {}
+export class TableTm1_Template {
+  form_id_name: form_id_name[] = [];
 
-  generalParticular: GeneralParticular[] = [];
-  ngOnInit(): void {
-    console.log('adsadsa');
-    this.generalParticularervice
-      .getGeneralParticularsFromAPI()
-      .subscribe((data) => {
-        this.generalParticular = data;
-      });
-    console.log('tm1' + this.generalParticular);
+  listRow: measurementTM1[] = [];
+
+  formTM1: formTM1 = {
+    code: '',
+    strakePosition: '',
+    measurementTM1List: this.listRow,
+  };
+  mainData!: main;
+  reportIndex!: ReportIndex;
+  parts: part[] = [];
+  test: string = 'abc';
+
+  constructor(
+    private dataTm1S: FormTm1Service,
+    private localService: LocalService,
+    private generalParticularervice: GetDataService,
+    private reportIndexService: ReportIndexesService
+  ) {
+    console.log('456');
+
+    generalParticularervice.getGeneralParticularsFromAPI().subscribe((data) => {
+      // this.generalParticular = data;
+      // console.log(this.generalParticular);
+      this.mainData = this.localService.getMainData();
+
+      this.reportIndexService
+        .getReportIndexFromAPI(this.mainData.mainId)
+        .subscribe(
+          (data) => {
+            this.reportIndex = data;
+            console.log('Data:', data);
+            console.log('Report Index:', this.reportIndex);
+            this.parts = this.reportIndex.parts;
+
+            this.form_id_name = this.parts.flatMap((part) =>
+              part.forms.map((form) => ({
+                idForm: form.formID,
+                nameForm: form.name,
+              }))
+            );
+            console.log(this.form_id_name);
+            this.test = 'bcd';
+
+            for (let i = 0; i < this.form_id_name.length; i++) {
+              if (this.form_id_name[i].nameForm === 'FORM TM1') {
+                this.dataTm1S
+                  .getDataTm1FromApi('tm1s', this.form_id_name[i].idForm)
+                  .subscribe((data) => {
+                    this.formTM1 = data;
+                    console.log(this.formTM1);
+                  });
+              }
+            }
+          },
+          (err) => {
+            console.log(err);
+            console.log('error');
+          }
+        );
+      console.log(this.test);
+    });
   }
+  generalParticular: GeneralParticular[] = [];
+
   a = [1, 2];
   formsGet = [
     {
@@ -138,7 +203,7 @@ export class TableTm1_Template implements OnInit {
       //Table header
       [
         {
-          text: `TM1-(1 July 2023)`,
+          text: `${this.test}`,
           //   text: `TM1-${this.typeForm}(1 July 2023)`,
           style: ['txt_center'],
           colSpan: 23,

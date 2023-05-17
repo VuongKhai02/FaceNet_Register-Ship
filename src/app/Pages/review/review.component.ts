@@ -34,6 +34,15 @@ import { ReportIndex } from 'src/app/share/models/report-index.model';
 import { formTM1 } from 'src/app/share/models/form/formTM1.model';
 import { part } from 'src/app/share/models/part.model';
 import { measurementTM1 } from 'src/app/share/models/form/measurementTM1.model';
+import { FormTm1Service } from './form-tm1.service';
+import { measurementTM3 } from 'src/app/share/models/form/measurementTM3.model';
+import { measurementTM5 } from 'src/app/share/models/form/measurementTM5.model';
+import { measurementTM4 } from 'src/app/share/models/form/measurementTM4.model';
+import { structuralDescriptionTM6 } from 'src/app/share/models/form/structuralDescriptionTM6.model';
+import { frameNumberTM7 } from 'src/app/share/models/form/frameNumberTM7.model';
+import { structuralMemberTM4 } from 'src/app/share/models/form/structuralMemberTM4.model';
+import { measurementTM6 } from 'src/app/share/models/form/measurementTM6.model';
+import { measurementTM7 } from 'src/app/share/models/form/measurementTM7.model';
 (<any>pdfMake).vfs = pdfFonts.pdfMake.vfs;
 
 interface TM4 {
@@ -53,7 +62,70 @@ interface TM4 {
   isStandardP: boolean;
   isStandardS: boolean;
 }
-
+interface form_id_name {
+  idForm: number;
+  nameForm: string;
+}
+interface formTM1n {
+  code: string;
+  strakePosition: string;
+  measurementTM1DTOList: measurementTM1[];
+}
+interface formTM3n {
+  code: string;
+  firstFrameNo: string;
+  secondFrameNo: string;
+  thirdFrameNo: string;
+  measurementTM3DTOList: measurementTM3[];
+}
+interface measurementTM4Listn {
+  structuralMemberTitle: string;
+  measurementTM4DTOList: measurementTM4[];
+}
+interface formTM4n {
+  code: string;
+  description: string;
+  name: string;
+  locationOfStructure: string;
+  tankHolDescription: string;
+  frameNo: string;
+  structuralMemberTM4List: measurementTM4Listn[];
+}
+interface formTM5n {
+  code: string;
+  description: string;
+  name: string;
+  locationOfStructure: string;
+  tankHolDescription: string;
+  frameNo: string;
+  measurementTM5List: measurementTM5[];
+}
+interface structuralDescriptionTM6n {
+  structuralDescriptionTitle: string;
+  measurementTM6DTOList: measurementTM6[];
+}
+interface formTM6n {
+  code: string;
+  description: string;
+  name: string;
+  locationOfStructure: string;
+  tankHolDescription: string;
+  frameNo: string;
+  structuralDescriptionTM6List: structuralDescriptionTM6n[];
+}
+interface frameNumberTM7n {
+  name: string;
+  measurementTM7DTOList: measurementTM7[];
+}
+interface formTM7n {
+  code: string;
+  description: string;
+  name: string;
+  locationOfStructure: string;
+  tankHolDescription: string;
+  frameNo: string;
+  frameNumberList: frameNumberTM7n[];
+}
 @Component({
   selector: 'app-review',
   templateUrl: './review.component.html',
@@ -61,6 +133,7 @@ interface TM4 {
 })
 export class ReviewComponent implements OnInit {
   constructor(
+    private dataTm1S: FormTm1Service,
     private shipSevice: ShipService,
     private generalParticularervice: GetDataService,
     private certificateService: CertificateService,
@@ -68,11 +141,18 @@ export class ReviewComponent implements OnInit {
     private paramService: ParamValueService,
     private reportIndexService: ReportIndexesService
   ) {}
-  a = new TableTm1_Template(this.generalParticularervice);
-  tableTm1_template = new TableTm1_Template(this.generalParticularervice)
-    .tableTm1_template;
-  tableTm1_template_cc = new TableTm1_Template(this.generalParticularervice)
-    .tableTm1_template_cc;
+  // tableTm1_template = new TableTm1_Template(
+  //   this.dataTm1S,
+  //   this.localService,
+  //   this.generalParticularervice,
+  //   this.reportIndexService
+  // ).tableTm1_template;
+  // tableTm1_template_cc = new TableTm1_Template(
+  //   this.dataTm1S,
+  //   this.localService,
+  //   this.generalParticularervice,
+  //   this.reportIndexService
+  // ).tableTm1_template_cc;
 
   inShipName: string = '';
   inIMO: string = '';
@@ -105,7 +185,28 @@ export class ReviewComponent implements OnInit {
   certificate: certificate[] = [];
 
   parts: part[] = [];
-  formTm1: formTM1[] = [];
+  isTm1OfPart: boolean = false;
+  isTm3OfPart: boolean = false;
+  partId: number[] = [];
+  form_id_name: form_id_name[] = [];
+
+  formTm1!: [{ code: string; strakePosition: string }];
+
+  // listRow: measurementTM1[] = [];
+
+  // formTM1n: formTM1n = {
+  //   code: '',
+  //   strakePosition: '',
+  //   measurementTM1DTOList: this.listRow,
+  // };
+
+  no: number = 1;
+  lsFormTm1: formTM1n[] = [];
+  lsFormTm3: formTM3n[] = [];
+  lsFormTm4: formTM4n[] = [];
+  lsFormTm5: formTM5n[] = [];
+  lsFormTm6: formTM6n[] = [];
+  lsFormTm7: formTM7n[] = [];
 
   forms = ['tm1', 'tm1_c'];
 
@@ -223,15 +324,2748 @@ export class ReviewComponent implements OnInit {
       ],
     };
     // Define tables
-    var tableTm1 = this.tableTm1_template;
-    var tableTm1_c = this.tableTm1_template_cc;
+    var tableTm1 = {
+      headerRows: 10,
+      //23 rows
+      widths: [
+        '4%',
+        '34.5%',
+        '6%',
+        '4.5%',
+        '3%',
+        '3%',
+        '3%',
+        '3%',
+        '1.5%', //9
+        '3%',
+        '3%',
+        '1.5%', //12
+        '3%',
+        '3%',
+        '3%',
+        '3%',
+        '1.5%', //17
+        '3%',
+        '3%',
+        '1.5%', //20
+        '3%',
+        '3%',
+        '3%',
+      ],
+      body: [
+        //Table header
+        [
+          {
+            text: `TM1`,
+            //   text: `TM1-${this.typeForm}(1 July 2023)`,
+            style: ['txt_center'],
+            colSpan: 23,
+            alignment: 'right' as Alignment,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        [
+          {
+            text: '',
+            colSpan: 23,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        // table info
+        [
+          {
+            text: 'Report on THICKNESS MEASUREMENT of ALL DECK PLATING, ALL BOTTOM SHELL PLATING or SIDE SHELL PLATING',
+            style: ['txt_center', 'fontS11'],
+            colSpan: 23,
+            decoration: 'underline' as Decoration,
+            bold: true,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        [
+          {
+            colSpan: 23,
+            text: '',
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        [
+          {
+            text: "Ship's name:",
+            alignment: 'center' as Alignment,
+            colSpan: 2,
+            border: [false, false, false, false],
+          },
+          {},
+          {
+            decoration: 'underline' as Decoration,
+            text: 'M/T "TM THAI HA"',
+            colSpan: 5,
+            bold: true,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {
+            text: 'Class Identity No. ',
+            colSpan: 3,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {
+            decoration: 'underline' as Decoration,
+            text: '2312321',
+            colSpan: 5,
+            bold: true,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+
+          {
+            text: 'Report No. ',
+            colSpan: 3,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {
+            decoration: 'underline' as Decoration,
+
+            text: 'VMC.TUM 123',
+            colSpan: 5,
+            bold: true,
+            border: [false, false, false, false],
+          },
+
+          {},
+          {},
+          {},
+          {},
+        ],
+        [
+          {
+            colSpan: 23,
+            text: '',
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        // table content
+        [
+          {
+            text: 'STRAKE POSITION',
+            alignment: 'left' as Alignment,
+            colSpan: 2,
+            style: 'txt_center',
+          },
+          {},
+          {
+            text: `q`,
+            colSpan: 21,
+            rowSpan: 1,
+            bold: true,
+          },
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        [
+          {
+            style: 'txt_center',
+            text: 'No.',
+            rowSpan: 3,
+          },
+          {
+            style: 'txt_center',
+            text: 'PLATE POSITION',
+            rowSpan: 3,
+          },
+          { style: 'txt_center', text: 'No. or Letter', rowSpan: 3 },
+          { style: 'txt_center', text: 'Org.Thk.', rowSpan: 3 },
+          { style: 'txt_center', text: 'Forward Reading', colSpan: 8 },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          { style: 'txt_center', text: 'Aft Reading', colSpan: 8 },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {
+            style: 'txt_center',
+            text: 'Mean Dimunution (%)',
+            colSpan: 2,
+            rowSpan: 2,
+          },
+          {},
+
+          { style: 'txt_center', text: 'Max Alwb Dim', rowSpan: 2 },
+        ],
+        [
+          {},
+          {},
+          {},
+          {},
+          { text: 'Gauged mm', colSpan: 2, style: 'txt_center' },
+          {},
+          { text: 'Diminution P', colSpan: 3, style: 'txt_center' },
+          {},
+          {},
+          { text: 'Diminution S', colSpan: 3, style: 'txt_center' },
+          {},
+          {},
+
+          { text: 'Gauged (mm)', colSpan: 2, style: 'txt_center' },
+          {},
+          { text: 'Diminution P', colSpan: 3, style: 'txt_center' },
+          {},
+          {},
+          { text: 'Diminution S', colSpan: 3, style: 'txt_center' },
+          {},
+          {},
+
+          { text: '', colSpan: 2, style: 'txt_center' },
+
+          {},
+          { text: 'Max Alwb Dim' },
+        ],
+        [
+          {},
+          {},
+          {},
+          {},
+          { text: 'P', style: 'txt_center' },
+          { text: 'S', style: 'txt_center' },
+          { text: 'mm', style: 'txt_center' },
+          { text: '%', style: 'txt_center', colSpan: 2 },
+          {},
+          { text: 'mm', style: 'txt_center' },
+          { text: '%', style: 'txt_center', colSpan: 2 },
+          {},
+
+          { text: 'P', style: 'txt_center' },
+          { text: 'S', style: 'txt_center' },
+          { text: 'mm', style: 'txt_center' },
+          { text: '%', style: 'txt_center', colSpan: 2 },
+          {},
+          { text: 'mm', style: 'txt_center' },
+          { text: '%', style: 'txt_center', colSpan: 2 },
+          {},
+
+          { text: 'P', style: 'txt_center' },
+          { text: 'S', style: 'txt_center' },
+          { text: 'mm', style: 'txt_center' },
+        ],
+        ...(this.lsFormTm1.length >= 1
+          ? this.lsFormTm1[0].measurementTM1DTOList!.map((x) => [
+              x.noOrLetter,
+              x.platePosition,
+              x.afterReadingMeasurementDetail.maxAlwbDim,
+              x.noOrLetter,
+              x.noOrLetter,
+
+              x.noOrLetter,
+              x.noOrLetter,
+              x.noOrLetter,
+              x.noOrLetter,
+              x.noOrLetter,
+              x.noOrLetter,
+              x.noOrLetter,
+              x.noOrLetter,
+              x.noOrLetter,
+              x.noOrLetter,
+              x.noOrLetter,
+              x.noOrLetter,
+              x.noOrLetter,
+              x.noOrLetter,
+              x.noOrLetter,
+              x.noOrLetter,
+              x.noOrLetter,
+              x.noOrLetter,
+            ])
+          : []),
+      ],
+    };
+    /*
+    var tableTm1_c = {
+      headerRows: 10,
+      //23 rows
+      widths: [
+        '4%',
+        '34.5%',
+        '6%',
+        '4.5%',
+        '3%',
+        '3%',
+        '3%',
+        '3%',
+        '1.5%', //9
+        '3%',
+        '3%',
+        '1.5%', //12
+        '3%',
+        '3%',
+        '3%',
+        '3%',
+        '1.5%', //17
+        '3%',
+        '3%',
+        '1.5%', //20
+        '3%',
+        '3%',
+        '3%',
+      ],
+      body: [
+        //Table header
+        [
+          {
+            text: `1`,
+            //   text: `TM1-${this.typeForm}(1 July 2023)`,
+            style: ['txt_center'],
+            colSpan: 23,
+            alignment: 'right' as Alignment,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        [
+          {
+            text: '',
+            colSpan: 23,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        // table info
+        [
+          {
+            text: 'Report on THICKNESS MEASUREMENT of ALL DECK PLATING, ALL BOTTOM SHELL PLATING or SIDE SHELL PLATING',
+            style: ['txt_center', 'fontS11'],
+            colSpan: 23,
+            decoration: 'underline' as Decoration,
+            bold: true,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        [
+          {
+            colSpan: 23,
+            text: '',
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        [
+          {
+            text: "Ship's name:",
+            alignment: 'center' as Alignment,
+            colSpan: 2,
+            border: [false, false, false, false],
+          },
+          {},
+          {
+            decoration: 'underline' as Decoration,
+            text: 'M/T "TM THAI HA"',
+            colSpan: 5,
+            bold: true,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {
+            text: 'Class Identity No. ',
+            colSpan: 3,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {
+            decoration: 'underline' as Decoration,
+            text: '2312321',
+            colSpan: 5,
+            bold: true,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+
+          {
+            text: 'Report No. ',
+            colSpan: 3,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {
+            decoration: 'underline' as Decoration,
+
+            text: 'VMC.TUM 123',
+            colSpan: 5,
+            bold: true,
+            border: [false, false, false, false],
+          },
+
+          {},
+          {},
+          {},
+          {},
+        ],
+        [
+          {
+            colSpan: 23,
+            text: '',
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        // table content
+        [
+          {
+            text: 'STRAKE POSITION',
+            alignment: 'left' as Alignment,
+            colSpan: 2,
+            style: 'txt_center',
+          },
+          {},
+          {
+            text: `q`,
+            colSpan: 21,
+            rowSpan: 1,
+            bold: true,
+          },
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        [
+          {
+            style: 'txt_center',
+            text: 'No.',
+            rowSpan: 3,
+          },
+          {
+            style: 'txt_center',
+            text: 'PLATE POSITION',
+            rowSpan: 3,
+          },
+          { style: 'txt_center', text: 'No. or Letter', rowSpan: 3 },
+          { style: 'txt_center', text: 'Org.Thk.', rowSpan: 3 },
+          { style: 'txt_center', text: 'Forward Reading', colSpan: 8 },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          { style: 'txt_center', text: 'Aft Reading', colSpan: 8 },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {
+            style: 'txt_center',
+            text: 'Mean Dimunution (%)',
+            colSpan: 2,
+            rowSpan: 2,
+          },
+          {},
+
+          { style: 'txt_center', text: 'Max Alwb Dim', rowSpan: 2 },
+        ],
+        [
+          {},
+          {},
+          {},
+          {},
+          { text: 'Gauged (mm)', colSpan: 2, style: 'txt_center' },
+          {},
+          { text: 'Diminution P (mm)', colSpan: 3, style: 'txt_center' },
+          {},
+          {},
+          { text: 'Diminution S (mm)', colSpan: 3, style: 'txt_center' },
+          {},
+          {},
+
+          { text: 'Gauged (mm)', colSpan: 2, style: 'txt_center' },
+          {},
+          { text: 'Diminution P (mm)', colSpan: 3, style: 'txt_center' },
+          {},
+          {},
+          { text: 'Diminution S (mm)', colSpan: 3, style: 'txt_center' },
+          {},
+          {},
+
+          { text: '', colSpan: 2, style: 'txt_center' },
+
+          {},
+          { text: 'Max Alwb Dim' },
+        ],
+        [
+          {},
+          {},
+          {},
+          {},
+          { text: 'P', style: 'txt_center' },
+          { text: 'S', style: 'txt_center' },
+          { text: 'mm', style: 'txt_center' },
+          { text: '%', style: 'txt_center', colSpan: 2 },
+          {},
+          { text: 'mm', style: 'txt_center' },
+          { text: '%', style: 'txt_center', colSpan: 2 },
+          {},
+
+          { text: 'P', style: 'txt_center' },
+          { text: 'S', style: 'txt_center' },
+          { text: 'mm', style: 'txt_center' },
+          { text: '%', style: 'txt_center', colSpan: 2 },
+          {},
+          { text: 'mm', style: 'txt_center' },
+          { text: '%', style: 'txt_center', colSpan: 2 },
+          {},
+
+          { text: 'P', style: 'txt_center' },
+          { text: 'S', style: 'txt_center' },
+          { text: 'mm', style: 'txt_center' },
+        ],
+        ...this.lsFormTm1[2]?.measurementTM1DTOList!.map((x) => [
+          x.noOrLetter,
+          x.platePosition,
+          x.afterReadingMeasurementDetail.maxAlwbDim,
+          x.noOrLetter,
+          x.noOrLetter,
+
+          x.noOrLetter,
+          x.noOrLetter,
+          x.noOrLetter,
+          x.noOrLetter,
+          x.noOrLetter,
+          x.noOrLetter,
+          x.noOrLetter,
+          x.noOrLetter,
+          x.noOrLetter,
+          x.noOrLetter,
+          x.noOrLetter,
+          x.noOrLetter,
+          x.noOrLetter,
+          x.noOrLetter,
+          x.noOrLetter,
+          x.noOrLetter,
+          x.noOrLetter,
+          x.noOrLetter,
+        ]),
+      ],
+    };
+    */
+    // var tableTm1_c = this.tableTm1_template_cc;
     var tableTm2i = tableTm2i_template;
     var tableTm2ii = tableTm2ii_template;
-    var tableTm3 = tableTm3_template;
-    var tableTm4 = tableTm4_template;
-    var tableTm5 = tableTm5_template;
-    var tableTm6 = tableTm6_template;
-    var tableTm7 = tableTm7_template;
+    // var tableTm3 = tableTm3_template;
+    var tableTm3 = {
+      headerRows: 9,
+      widths: [
+        '2.2%',
+        '20.2%',
+        //2
+        '2.6%',
+        '2.9%',
+        '2.9%',
+        '2.2%',
+        '2.2%',
+        '2.9%',
+        '2.2%',
+        '1.5%', //10
+        '2.9%',
+        '1.5%', //13
+        '2.2%',
+
+        '2.6%',
+        '2.9%',
+        '2.9%',
+        '2.2%',
+        '2.2%',
+        '2.9%',
+        '1.5%', //20
+        '2.2%',
+        '2.9%',
+        '2.2%',
+        '1.5%', //23
+
+        '2.6%',
+        '2.9%',
+        '2.9%',
+        '2.2%',
+        '2.2%',
+        '2.9%',
+        '2.2%',
+        '1.5%', //
+        '2.9%',
+        '2.2%',
+        '1.5%', //
+      ],
+      body: [
+        //Table header
+        [
+          {
+            text: `TM3-(1 July 2023)`,
+            //   text: `TM2ii-${this.typeForm}(1 July 2023)`,
+            style: ['txt_center'],
+            colSpan: 35,
+            alignment: 'right' as Alignment,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        [
+          {
+            text: '',
+            colSpan: 35,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        // Table content
+        [
+          {
+            text: 'Report on THICKNESS MEASUREMENT OF SHELL AND DECK PLATING (one, two or three transverse sections)',
+            style: ['txt_center', 'fontS11'],
+            colSpan: 35,
+            decoration: 'underline' as Decoration,
+            bold: true,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        [
+          {
+            colSpan: 35,
+            text: '',
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        [
+          {
+            text: "Ship's name:",
+
+            alignment: 'center' as Alignment,
+
+            colSpan: 4,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {
+            decoration: 'underline' as Decoration,
+            text: 'M/T "TM THAI HA"',
+            colSpan: 8,
+            bold: true,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {
+            text: 'Class Identity No. ',
+            colSpan: 4,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {
+            decoration: 'underline' as Decoration,
+            text: '2312321',
+            colSpan: 8,
+            bold: true,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {
+            text: 'Report No. ',
+            colSpan: 3,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {
+            decoration: 'underline' as Decoration,
+
+            text: 'VMC.TUM 123',
+            colSpan: 8,
+            bold: true,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        [
+          {
+            colSpan: 35,
+            text: '',
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+
+        [
+          {
+            style: 'txt_center',
+            text: '',
+            colSpan: 2,
+          },
+          {},
+          {
+            style: 'txt_center',
+            text: '1st TRANSVERSE SECTION at Fr.No: ',
+            colSpan: 8,
+            border: [true, true, false, true],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {
+            text: '42',
+            border: [false, true, true, true],
+            colSpan: 3,
+            bold: true,
+          },
+          {},
+          {},
+          {
+            style: 'txt_center',
+            text: '2nd TRANSVERSE SECTION at Fr.No: ',
+            colSpan: 8,
+            border: [true, true, false, true],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {
+            text: '42',
+            border: [false, true, true, true],
+            colSpan: 3,
+            bold: true,
+          },
+          {},
+          {},
+          {
+            style: 'txt_center',
+            text: '3rd TRANSVERSE SECTION at Fr.No: ',
+            colSpan: 8,
+            border: [true, true, false, true],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {
+            text: '42',
+            border: [false, true, true, true],
+            colSpan: 3,
+            bold: true,
+          },
+          {},
+          {},
+        ],
+        [
+          {
+            style: 'txt_center',
+            text: 'No.',
+            rowSpan: 2,
+          },
+          {
+            style: 'txt_center',
+            text: 'STRAKE POSITION',
+            rowSpan: 2,
+          },
+          { style: 'txt_center', text: 'No. or Letter', rowSpan: 2 },
+          { style: 'txt_center', text: 'Org.Thk.' },
+          { style: 'txt_center', text: 'Max.Alwb.Dim' },
+          { style: 'txt_center', text: 'Gauged mm  ', colSpan: 2 },
+          {},
+          { style: 'txt_center', text: 'Diminution P  ', colSpan: 3 },
+          {},
+          {},
+          { style: 'txt_center', text: '    Diminution S  ', colSpan: 3 },
+          {},
+          {},
+          { style: 'txt_center', text: 'No. or Letter', rowSpan: 2 },
+          { style: 'txt_center', text: 'Org.Thk.' },
+          { style: 'txt_center', text: 'Max.Alwb.Dim' },
+          { style: 'txt_center', text: 'Gauged mm', colSpan: 2 },
+          {},
+          { style: 'txt_center', text: 'Diminution P', colSpan: 3 },
+          {},
+          {},
+          { style: 'txt_center', text: 'Diminution S', colSpan: 3 },
+          {},
+          {},
+          { style: 'txt_center', text: 'No. or Letter', rowSpan: 2 },
+          { style: 'txt_center', text: 'Org.Thk.' },
+          { style: 'txt_center', text: 'Max.Alwb.Dim' },
+          { style: 'txt_center', text: 'Gauged mm', colSpan: 2 },
+          {},
+          { style: 'txt_center', text: 'Diminution P', colSpan: 3 },
+          {},
+          {},
+          { style: 'txt_center', text: 'Diminution S', colSpan: 3 },
+          {},
+          {},
+        ],
+        [
+          {},
+          {},
+          {},
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: 'P' },
+          { style: 'txt_center', text: 'S' },
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: '%', colSpan: 2 },
+          {},
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: '%', colSpan: 2 },
+          {},
+          {},
+
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: 'P' },
+          { style: 'txt_center', text: 'S' },
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: '%', colSpan: 2 },
+          {},
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: '%', colSpan: 2 },
+          {},
+          {},
+
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: 'P' },
+          { style: 'txt_center', text: 'S' },
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: '%', colSpan: 2 },
+          {},
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: '%', colSpan: 2 },
+          {},
+        ],
+        ...(this.lsFormTm3.length >= 1
+          ? this.lsFormTm3[0].measurementTM3DTOList!.map((x) => [
+              x.noOrLetter,
+              x.noOrLetter,
+              x.noOrLetter,
+              x.noOrLetter,
+              x.structuralMember,
+              x.noOrLetter,
+              x.firstTransverseSectionMeasurementDetail.originalThickness,
+              x.firstTransverseSectionMeasurementDetail.originalThickness,
+              x.firstTransverseSectionMeasurementDetail.maxAlwbDim,
+              x.firstTransverseSectionMeasurementDetail.gaugedP,
+              x.firstTransverseSectionMeasurementDetail.gaugedS,
+              x.noOrLetter,
+              x.noOrLetter,
+              x.noOrLetter,
+              x.noOrLetter,
+              x.noOrLetter,
+              x.noOrLetter,
+              x.noOrLetter,
+              x.firstTransverseSectionMeasurementDetail.originalThickness,
+              x.firstTransverseSectionMeasurementDetail.originalThickness,
+              x.firstTransverseSectionMeasurementDetail.maxAlwbDim,
+              x.firstTransverseSectionMeasurementDetail.gaugedP,
+              x.firstTransverseSectionMeasurementDetail.gaugedS,
+              x.noOrLetter,
+              x.noOrLetter,
+              x.noOrLetter,
+              x.noOrLetter,
+              x.noOrLetter,
+              x.noOrLetter,
+              x.noOrLetter,
+              x.firstTransverseSectionMeasurementDetail.originalThickness,
+              x.firstTransverseSectionMeasurementDetail.originalThickness,
+              x.firstTransverseSectionMeasurementDetail.maxAlwbDim,
+              x.firstTransverseSectionMeasurementDetail.gaugedP,
+              x.firstTransverseSectionMeasurementDetail.gaugedS,
+            ])
+          : []),
+      ],
+    };
+
+    // var tableTm4 = tableTm4_template;
+    var tableTm4 = {
+      headerRows: 10,
+      widths: [
+        '5%',
+        '25%',
+        '7%',
+        '10%',
+        '13%',
+        '5%',
+        '5%',
+        '5%',
+        '5%',
+        '5%',
+        '5%',
+        '5%',
+        '5%',
+      ],
+      body: [
+        //Table header
+        [
+          {
+            text: `TM4-(1 July 2023)`,
+            //   text: `TM4-${this.typeForm}(1 July 2023)`,
+            style: ['txt_center'],
+            colSpan: 13,
+            alignment: 'right' as Alignment,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        [
+          {
+            text: '',
+            colSpan: 13,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        // Table content
+        [
+          {
+            text: 'Report on THICKNESS MEASUREMENT OF TRANSVERSE STRUCTURAL MEMBERS in the cargo oil and water ballast tanks within the cargo tank length',
+            style: ['txt_center', 'fontS11'],
+            colSpan: 13,
+            decoration: 'underline' as Decoration,
+            bold: true,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        [
+          {
+            colSpan: 13,
+            text: '',
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        [
+          {
+            text: "Ship's name:",
+            alignment: 'center' as Alignment,
+            colSpan: 2,
+            border: [false, false, false, false],
+          },
+          {},
+          {
+            decoration: 'underline' as Decoration,
+            text: 'M/T "TM THAI HA"',
+            colSpan: 2,
+            bold: true,
+            border: [false, false, false, false],
+          },
+          {},
+          {
+            text: 'Class Identity No. ',
+            colSpan: 2,
+            border: [false, false, false, false],
+          },
+          {},
+          {
+            decoration: 'underline' as Decoration,
+            text: '2312321',
+            colSpan: 2,
+            bold: true,
+            border: [false, false, false, false],
+          },
+          {},
+
+          {
+            text: 'Report No. ',
+            colSpan: 2,
+            border: [false, false, false, false],
+          },
+          {},
+          {
+            decoration: 'underline' as Decoration,
+
+            text: 'VMC.TUM 123',
+            colSpan: 3,
+            bold: true,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+        ],
+        [
+          {
+            text: '',
+            colSpan: 13,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        //Table content
+        [
+          {
+            text: 'TANK DESCRIPTION:',
+            alignment: 'left' as Alignment,
+            colSpan: 2,
+            style: 'txt_center',
+          },
+          '',
+          { text: 'a', colSpan: 11, rowSpan: 1, bold: true },
+          'Price',
+          'Date',
+          'Image',
+          'isEdited',
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        [
+          {
+            text: 'LOCATION OF STRUCTURE:',
+            alignment: 'left' as Alignment,
+            colSpan: 2,
+            style: ['txt_center', 'txt_center'],
+          },
+          '',
+          {
+            text: 'a',
+            colSpan: 11,
+            bold: true,
+          },
+          'Price',
+          'Date',
+          'Image',
+          'isEdited',
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        [
+          { text: 'No.', rowSpan: 2, style: 'txt_center' },
+          {
+            text: 'STRUCTURAL MEMBER',
+            rowSpan: 2,
+            style: 'txt_center',
+          },
+          { text: 'Item', rowSpan: 2, style: 'txt_center' },
+
+          { text: 'Original Thickness(mm)', rowSpan: 2, style: 'txt_center' },
+          {
+            text: 'Maximum Allowable Dim(mm)',
+            rowSpan: 2,
+            style: ['txt_center'],
+          },
+          { text: 'Gauged', colSpan: 2, style: 'txt_center' },
+          {},
+          { text: 'Diminution P', colSpan: 3, style: 'txt_center' },
+          {},
+          {},
+          { text: 'Diminution S', colSpan: 3, style: 'txt_center' },
+          {},
+          {},
+        ],
+        [
+          {},
+          {},
+          {},
+          {},
+          {},
+          { text: 'P', style: 'txt_center' },
+          { text: 'S', style: 'txt_center' },
+          { text: 'mm', style: 'txt_center' },
+          { text: '%', style: 'txt_center', colSpan: 2 },
+          {},
+          { text: 'mm', style: 'txt_center' },
+          { text: '%', style: 'txt_center', colSpan: 2 },
+          {},
+        ],
+        ...(this.lsFormTm4.length >= 1
+          ? this.lsFormTm4[0].structuralMemberTM4List[0].measurementTM4DTOList!.map(
+              (x) => [
+                this.no++,
+                // x.structuralMemberTitle,
+                x.structuralMember,
+                x.item,
+                x.detailMeasurement.originalThickness,
+                x.detailMeasurement.maxAlwbDim,
+                x.detailMeasurement.gaugedP,
+                x.detailMeasurement.gaugedS,
+                x.structuralMember,
+                x.structuralMember,
+                x.structuralMember,
+                x.structuralMember,
+                x.structuralMember,
+                x.structuralMember,
+              ]
+            )
+          : []),
+      ],
+    };
+    // var tableTm5 = tableTm5_template;
+    var tableTm5 = {
+      headerRows: 10,
+      widths: [
+        '5%',
+        '25%',
+        '7%',
+        '10%',
+        '13%',
+        '5%',
+        '5%',
+        '5%',
+        '5%',
+        '5%',
+        '5%',
+        '5%',
+        '5%',
+      ],
+      body: [
+        //Table header
+        [
+          {
+            text: `TM5-(1 July 2023)`,
+            //   text: `TM5-${this.typeForm}(1 July 2023)`,
+            style: ['txt_center'],
+            colSpan: 13,
+            alignment: 'right' as Alignment,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        [
+          {
+            text: '',
+            colSpan: 13,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        // Table content
+        [
+          {
+            text: 'Report on THICKNESS MEASUREMENT OF W.T./O.T. TRANSVERSE BULKHEADS within the cargo tank or cargo hold spaces',
+            style: ['txt_center', 'fontS11'],
+            colSpan: 13,
+            decoration: 'underline' as Decoration,
+            bold: true,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        [
+          {
+            colSpan: 13,
+            text: '',
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        [
+          {
+            text: "Ship's name:",
+
+            alignment: 'center' as Alignment,
+
+            colSpan: 2,
+            border: [false, false, false, false],
+          },
+          {},
+          {
+            decoration: 'underline' as Decoration,
+            text: 'M/T "TM THAI HA"',
+            colSpan: 2,
+            bold: true,
+            border: [false, false, false, false],
+          },
+          {},
+          {
+            text: 'Class Identity No. ',
+            colSpan: 2,
+            border: [false, false, false, false],
+          },
+          {},
+          {
+            decoration: 'underline' as Decoration,
+            text: '2312321',
+            colSpan: 2,
+            bold: true,
+            border: [false, false, false, false],
+          },
+          {},
+
+          {
+            text: 'Report No. ',
+            colSpan: 2,
+            border: [false, false, false, false],
+          },
+          {},
+          {
+            decoration: 'underline' as Decoration,
+
+            text: 'VMC.TUM 123',
+            colSpan: 3,
+            bold: true,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+        ],
+        [
+          {
+            text: '',
+            colSpan: 13,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        [
+          {
+            alignment: 'left' as Alignment,
+
+            text: 'TANK/HOLD DESCRIPTION:',
+            colSpan: 2,
+            style: 'txt_center',
+          },
+          '',
+          { text: 'a', colSpan: 11, rowSpan: 1, bold: true },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        [
+          {
+            text: 'LOCATION OF STRUCTURE:',
+            alignment: 'left' as Alignment,
+
+            colSpan: 2,
+            style: ['txt_center', 'txt_center'],
+          },
+          {},
+          {
+            text: 'a',
+            colSpan: 6,
+            bold: true,
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {
+            text: 'Frame No. :',
+            alignment: 'center' as Alignment,
+            border: [false, false, false, false],
+            colSpan: 2,
+          },
+          {},
+          {
+            text: '42',
+            border: [false, false, true, false],
+            colSpan: 3,
+            bold: true,
+          },
+          {},
+          {},
+        ],
+        [
+          { text: 'No.', rowSpan: 2, style: 'txt_center' },
+          {
+            text: 'STRUCTURAL COMPONENT (PLATING/STIFFENER)',
+            rowSpan: 2,
+            style: 'txt_center',
+          },
+          { text: 'Item', rowSpan: 2, style: 'txt_center' },
+
+          { text: 'Original Thickness(mm)', rowSpan: 2, style: 'txt_center' },
+          {
+            text: 'Maximum Allowable Dim(mm)',
+            rowSpan: 2,
+            style: 'txt_center',
+          },
+          { text: 'Gauged', colSpan: 2, style: 'txt_center' },
+          {},
+          { text: 'Diminution P', colSpan: 3, style: 'txt_center' },
+          {},
+          {},
+          { text: 'Diminution S', colSpan: 3, style: 'txt_center' },
+          {},
+          {},
+        ],
+        [
+          {},
+          {},
+          {},
+          {},
+          {},
+          { text: 'P', style: 'txt_center' },
+          { text: 'S', style: 'txt_center' },
+          { text: 'mm', style: 'txt_center' },
+          { text: '%', style: 'txt_center', colSpan: 2 },
+          {},
+          { text: 'mm', style: 'txt_center' },
+          { text: '%', style: 'txt_center', colSpan: 2 },
+          {},
+        ],
+        ...(this.lsFormTm5.length >= 1
+          ? this.lsFormTm5[0].measurementTM5List!.map((x) => [
+              x.measurementDetail.gaugedP,
+              x.structuralComponent,
+              x.measurementDetail.gaugedP,
+              x.measurementDetail.originalThickness,
+              x.measurementDetail.maxAlwbDim,
+              x.measurementDetail.gaugedP,
+              x.measurementDetail.gaugedP,
+              x.measurementDetail.gaugedP,
+              x.measurementDetail.gaugedP,
+              x.measurementDetail.gaugedP,
+              x.measurementDetail.gaugedP,
+              x.measurementDetail.gaugedP,
+              x.measurementDetail.gaugedP,
+            ])
+          : []),
+      ],
+    };
+    // var tableTm6 = tableTm6_template;
+    var tableTm6 = {
+      headerRows: 10,
+      widths: [
+        '5%',
+        '25%',
+        '10%',
+        '10%',
+        '10%',
+        '5%',
+        '5%',
+        '5%',
+        '5%',
+        '5%',
+        '5%',
+        '5%',
+        '5%',
+      ],
+      body: [
+        //Table header
+        [
+          {
+            text: 'TM6-DHT (1July 2006)',
+            style: ['txt_center'],
+            colSpan: 13,
+            alignment: 'right' as Alignment,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        [
+          {
+            text: '',
+            colSpan: 13,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        //Table name
+
+        [
+          {
+            text: 'Report on THICKNESS MEASUREMENT OF MISCELLANEOUS STRUCTURAL MEMBERS',
+            style: ['txt_center', 'fontS11'],
+            colSpan: 13,
+            decoration: 'underline' as Decoration,
+            bold: true,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        [
+          {
+            colSpan: 13,
+            text: '',
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        [
+          {
+            text: "Ship's name:",
+
+            alignment: 'center' as Alignment,
+            colSpan: 2,
+            border: [false, false, false, false],
+          },
+          {},
+          {
+            decoration: 'underline' as Decoration,
+            text: 'M/T "TM THAI HA"',
+            colSpan: 2,
+            bold: true,
+            border: [false, false, false, false],
+          },
+          {},
+          {
+            text: 'Class Identity No. ',
+            colSpan: 2,
+            border: [false, false, false, false],
+          },
+          {},
+          {
+            decoration: 'underline' as Decoration,
+            text: '2312321',
+            colSpan: 2,
+            bold: true,
+            border: [false, false, false, false],
+          },
+          {},
+
+          {
+            text: 'Report No. ',
+            colSpan: 2,
+            border: [false, false, false, false],
+          },
+          {},
+          {
+            decoration: 'underline' as Decoration,
+
+            text: 'VMC.TUM 123',
+            colSpan: 3,
+            bold: true,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+        ],
+        [
+          {
+            text: '',
+            colSpan: 13,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        //Table content
+        [
+          {
+            text: 'STRUCTURAL MEMBERS :',
+            alignment: 'left' as Alignment,
+            colSpan: 2,
+            style: 'txt_center',
+          },
+          '',
+          { text: 'a', colSpan: 11, rowSpan: 1, bold: true },
+          'Price',
+          'Date',
+          'Image',
+          'isEdited',
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        [
+          {
+            text: 'LOCATION OF STRUCTURE:',
+            alignment: 'left' as Alignment,
+            colSpan: 2,
+            style: ['txt_center', 'txt_center'],
+          },
+          '',
+          {
+            text: 'a',
+            colSpan: 11,
+            bold: true,
+          },
+          'Price',
+          'Date',
+          'Image',
+          'isEdited',
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        [
+          { text: 'No.', rowSpan: 2, style: 'txt_center' },
+          {
+            text: 'Description',
+            rowSpan: 2,
+            style: 'txt_center',
+          },
+          { text: 'Item', rowSpan: 2, style: 'txt_center' },
+
+          { text: 'Original Thickness(mm)', rowSpan: 2, style: 'txt_center' },
+          {
+            text: 'Maximum Allowable Dim(mm)',
+            rowSpan: 2,
+            style: 'txt_center',
+          },
+          { text: 'Gauged', colSpan: 2, style: 'txt_center' },
+          {},
+          { text: 'Diminution P', colSpan: 3, style: 'txt_center' },
+          {},
+          {},
+          { text: 'Diminution S', colSpan: 3, style: 'txt_center' },
+          {},
+          {},
+        ],
+        [
+          {},
+          {},
+          {},
+          {},
+          {},
+          { text: 'P', style: 'txt_center' },
+          { text: 'S', style: 'txt_center' },
+          { text: 'mm', style: 'txt_center' },
+          { text: '%', style: 'txt_center', colSpan: 2 },
+          {},
+          { text: 'mm', style: 'txt_center' },
+          { text: '%', style: 'txt_center', colSpan: 2 },
+          {},
+        ],
+        ...(this.lsFormTm6.length >= 1
+          ? this.lsFormTm6[0].structuralDescriptionTM6List[0].measurementTM6DTOList!.map(
+              (x) => [
+                (this.no = 1),
+                // x.structuralDescriptionTitle,
+                x.description,
+                x.item,
+                x.detailMeasurement.originalThickness,
+                x.detailMeasurement.maxAlwbDim,
+                x.detailMeasurement.gaugedP,
+                x.detailMeasurement.gaugedS,
+                x.detailMeasurement.gaugedS,
+                x.detailMeasurement.gaugedS,
+                x.detailMeasurement.gaugedS,
+                x.detailMeasurement.gaugedS,
+                x.detailMeasurement.gaugedS,
+                x.detailMeasurement.gaugedS,
+              ],
+              this.no++
+            )
+          : []),
+      ],
+    };
+    // var tableTm7 = tableTm7_template;
+    var tableTm7 = {
+      headerRows: 10,
+      widths: [
+        '2.2%',
+        '23.4%',
+        //2
+        '2.9%',
+        '2.9%',
+        '2.2%',
+        '2.2%',
+        '2.9%',
+        '2.2%',
+        '2.2%',
+        '2.9%',
+        '2.2%',
+        '2.2%',
+
+        '2.9%',
+        '2.9%',
+        '2.2%',
+        '2.2%',
+        '2.9%',
+        '2.2%',
+        '2.2%',
+        '2.9%',
+        '2.2%',
+        '2.2%',
+
+        '2.9%',
+        '2.9%',
+        '2.2%',
+        '2.2%',
+        '2.9%',
+        '2.2%',
+        '2.2%',
+        '2.9%',
+        '2.2%',
+        '2.2%',
+      ],
+      body: [
+        //Table header
+        [
+          {
+            text: `TM7-(1 July 2023)`,
+            //   text: `TM7-${this.typeForm}(1 July 2023)`,
+            style: ['txt_center'],
+            colSpan: 32,
+            alignment: 'right' as Alignment,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        [
+          {
+            text: '',
+            colSpan: 32,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        // Table content
+        [
+          {
+            text: 'Report on THICKNESS MEASUREMENT OF SHELL AND DECK PLATING (one, two or three transverse sections)',
+            style: ['txt_center', 'fontS11'],
+            colSpan: 32,
+            decoration: 'underline' as Decoration,
+            bold: true,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        [
+          {
+            colSpan: 32,
+            text: '',
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        [
+          {
+            text: "Ship's name:",
+
+            alignment: 'center' as Alignment,
+
+            colSpan: 4,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {
+            decoration: 'underline' as Decoration,
+            text: 'M/T "TM THAI HA"',
+            colSpan: 8,
+            bold: true,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {
+            text: 'Class Identity No. ',
+            colSpan: 4,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {
+            decoration: 'underline' as Decoration,
+            text: '2312321',
+            colSpan: 8,
+            bold: true,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {
+            text: 'Report No. ',
+            colSpan: 3,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {
+            decoration: 'underline' as Decoration,
+
+            text: 'VMC.TUM 123',
+            colSpan: 5,
+            bold: true,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+        ],
+        [
+          {
+            colSpan: 32,
+            text: '',
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        [
+          {
+            style: 'txt_center',
+            text: 'CARGO HOLD NO. 1',
+            colSpan: 32,
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        [
+          {
+            style: 'txt_center',
+            text: '',
+            colSpan: 2,
+          },
+          {},
+          {
+            style: 'txt_center',
+            text: 'UPPER PART',
+            colSpan: 10,
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {
+            style: 'txt_center',
+            text: 'MID PART',
+            colSpan: 10,
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {
+            style: 'txt_center',
+            text: 'LOWER PART',
+            colSpan: 10,
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        [
+          {
+            style: 'txt_center',
+            text: 'No.',
+            rowSpan: 2,
+          },
+          {
+            style: 'txt_center',
+            text: 'FRAME NUMBER',
+            rowSpan: 2,
+          },
+          { style: 'txt_center', text: 'Org.Thk.' },
+          { style: 'txt_center', text: 'Max.Alwb.Dim' },
+          { style: 'txt_center', text: 'Gauged mm  ', colSpan: 2 },
+          {},
+          { style: 'txt_center', text: 'Diminution P  ', colSpan: 3 },
+          {},
+          {},
+          { style: 'txt_center', text: '    Diminution S  ', colSpan: 3 },
+          {},
+          {},
+          { style: 'txt_center', text: 'Org.Thk.' },
+          { style: 'txt_center', text: 'Max.Alwb.Dim' },
+          { style: 'txt_center', text: 'Gauged mm', colSpan: 2 },
+          {},
+          { style: 'txt_center', text: 'Diminution P', colSpan: 3 },
+          {},
+          {},
+          { style: 'txt_center', text: 'Diminution S', colSpan: 3 },
+          {},
+          {},
+          { style: 'txt_center', text: 'Org.Thk.' },
+          { style: 'txt_center', text: 'Max.Alwb.Dim' },
+          { style: 'txt_center', text: 'Gauged mm', colSpan: 2 },
+          {},
+          { style: 'txt_center', text: 'Diminution P', colSpan: 3 },
+          {},
+          {},
+          { style: 'txt_center', text: 'Diminution S', colSpan: 3 },
+          {},
+          {},
+        ],
+        [
+          {},
+          {},
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: 'P' },
+          { style: 'txt_center', text: 'S' },
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: '%', colSpan: 2 },
+          {},
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: '%', colSpan: 2 },
+          {},
+
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: 'P' },
+          { style: 'txt_center', text: 'S' },
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: '%', colSpan: 2 },
+          {},
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: '%', colSpan: 2 },
+          {},
+
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: 'P' },
+          { style: 'txt_center', text: 'S' },
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: '%', colSpan: 2 },
+          {},
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: '%', colSpan: 2 },
+          {},
+        ],
+        ...(this.lsFormTm7.length >= 1
+          ? this.lsFormTm7[0].frameNumberList[0].measurementTM7DTOList!.map(
+              (x) => [
+                this.no++,
+                // x.structuralMemberTitle,
+                x.upperPart.originalThickness,
+                x.upperPart.originalThickness,
+                x.upperPart.maxAlwbDim,
+                x.upperPart.gaugedP,
+                x.upperPart.gaugedS,
+
+                x.upperPart.gaugedS,
+                x.upperPart.gaugedS,
+                x.upperPart.gaugedS,
+                x.upperPart.gaugedS,
+                x.upperPart.gaugedS,
+                x.upperPart.gaugedS,
+
+                x.upperPart.originalThickness,
+                x.upperPart.maxAlwbDim,
+                x.upperPart.gaugedP,
+                x.upperPart.gaugedS,
+
+                x.upperPart.gaugedS,
+                x.upperPart.gaugedS,
+                x.upperPart.gaugedS,
+                x.upperPart.gaugedS,
+                x.upperPart.gaugedS,
+                x.upperPart.gaugedS,
+
+                x.upperPart.originalThickness,
+                x.upperPart.maxAlwbDim,
+                x.upperPart.gaugedP,
+                x.upperPart.gaugedS,
+
+                x.upperPart.gaugedS,
+                x.upperPart.gaugedS,
+                x.upperPart.gaugedS,
+                x.upperPart.gaugedS,
+                x.upperPart.gaugedS,
+                x.upperPart.gaugedS,
+              ]
+            )
+          : []),
+      ],
+    };
 
     // Define pdfDocument
     var pdfDocument = {
@@ -416,7 +3250,6 @@ export class ReviewComponent implements OnInit {
             },
           },
         ],
-        // this.a==true ? [{ table:  table  }] : [{table:  table1 }],
         [
           {
             pageBreak: 'before' as PageBreak,
@@ -836,67 +3669,212 @@ export class ReviewComponent implements OnInit {
           { table: tableOfContent, style: ['mg_t_8', 'fontS11'] },
         ],
         // pageTitle
-        [
-          {
-            pageBreak: 'before' as PageBreak,
-            decoration: 'underline' as Decoration,
-            alignment: 'center' as Alignment,
-            style: ['fontS11', 'mg_50'],
-            text: 'PART 1',
-            bold: true,
-          },
-          {
-            decoration: 'underline' as Decoration,
-            text: 'MAIN DECK',
-            alignment: 'center' as Alignment,
-            style: ['fontS45'],
-            bold: true,
-          },
-        ],
+
+        ...(this.parts.length >= 1
+          ? [
+              {
+                pageBreak: 'before' as PageBreak,
+                decoration: 'underline' as Decoration,
+                alignment: 'center' as Alignment,
+                style: ['fontS11', 'mg_50'],
+                text: `PART 1`,
+                bold: true,
+              },
+              {
+                decoration: 'underline' as Decoration,
+                text: `${this.parts[0].item}`,
+                alignment: 'center' as Alignment,
+                style: ['fontS45'],
+                bold: true,
+              },
+            ]
+          : []),
+        ...(this.parts[0].forms.some((x) => x.name === 'FORM TM1')
+          ? [
+              {
+                style: ['fontS8', 'tableStyle'],
+                pageBreak: 'before' as PageBreak,
+                pageOrientation: 'landscape' as PageOrientation,
+                table: tableTm1,
+              },
+            ]
+          : []),
+        ...(this.parts[0].forms.map((x) => x.name === 'FORM TM3')
+          ? [
+              {
+                style: ['fontS8', 'tableStyle'],
+                pageBreak: 'before' as PageBreak,
+                pageOrientation: 'landscape' as PageOrientation,
+                table: tableTm3,
+              },
+            ]
+          : []),
+        // ...(this.isTm1OfPart == true
+        //   ? [
+        //       {
+        //         style: ['fontS8', 'tableStyle'],
+        //         pageBreak: 'before' as PageBreak,
+        //         pageOrientation: 'landscape' as PageOrientation,
+        //         table: tableTm1,
+        //       },
+        //     ]
+        //   : []),
 
         // Form
-        [
-          {
-            pageBreak: 'before' as PageBreak,
-            pageOrientation: 'landscape' as PageOrientation,
-            table: tableTm4,
-            style: ['tableStyle', 'fontS8'],
-          },
-        ],
-        {
-          image: 'snow',
-          pageBreak: 'before' as PageBreak,
-          margin: [-50, -50, 0, 0] as Margins,
-          hasImage: true,
-        },
+        // this.lsFormTm4.length >= 1
+        ...(this.parts[0].forms.some((x) => x.name === 'FORM TM4')
+          ? [
+              {
+                pageBreak: 'before' as PageBreak,
+                pageOrientation: 'landscape' as PageOrientation,
+                table: tableTm4,
+                style: ['tableStyle', 'fontS8'],
+              },
+            ]
+          : []),
+        ...(this.parts[0].forms.some((x) => x.name === 'FORM TM5')
+          ? [
+              {
+                pageBreak: 'before' as PageBreak,
+                pageOrientation: 'landscape' as PageOrientation,
+                table: tableTm5,
+                style: ['tableStyle', 'fontS8'],
+              },
+            ]
+          : []),
+        ...(this.parts[0].forms.some((x) => x.name === 'FORM TM6')
+          ? [
+              {
+                pageBreak: 'before' as PageBreak,
+                pageOrientation: 'landscape' as PageOrientation,
+                table: tableTm6,
+                style: ['tableStyle', 'fontS8'],
+              },
+            ]
+          : []),
+        ...(this.parts[0].forms.some((x) => x.name === 'FORM TM7')
+          ? [
+              {
+                pageBreak: 'before' as PageBreak,
+                pageOrientation: 'landscape' as PageOrientation,
+                table: tableTm7,
+                style: ['tableStyle', 'fontS8'],
+              },
+            ]
+          : []),
+        // {
+        //   image: 'snow',
+        //   pageBreak: 'before' as PageBreak,
+        //   margin: [-50, -50, 0, 0] as Margins,
+        //   hasImage: true,
+        // },
         // pageTitle
-        [
-          {
-            pageBreak: 'before' as PageBreak,
-            pageOrientation: 'portrait' as PageOrientation,
-            decoration: 'underline' as Decoration,
-            alignment: 'center' as Alignment,
-            style: ['fontS11', 'mg_50'],
-            text: 'PART 2',
-            bold: true,
-          },
-          {
-            decoration: 'underline' as Decoration,
-            text: 'MAIN DECK',
-            alignment: 'center' as Alignment,
-            style: ['fontS45'],
-            bold: true,
-          },
-        ],
+        ...(this.parts.length >= 2
+          ? [
+              [
+                {
+                  pageBreak: 'before' as PageBreak,
+                  pageOrientation: 'portrait' as PageOrientation,
+                  decoration: 'underline' as Decoration,
+                  alignment: 'center' as Alignment,
+                  style: ['fontS11', 'mg_50'],
+                  text: 'PART 2',
+                  bold: true,
+                },
+                {
+                  decoration: 'underline' as Decoration,
+                  text: `${this.parts[1].item}`,
+                  alignment: 'center' as Alignment,
+                  style: ['fontS45'],
+                  bold: true,
+                },
+              ],
+              ...(this.parts[1].forms.some((x) => x.name === 'FORM TM1')
+                ? [
+                    {
+                      style: ['fontS8', 'tableStyle'],
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      table: tableTm1,
+                    },
+                  ]
+                : []),
+              ...(this.parts[1].forms.some((x) => x.name === 'FORM TM3')
+                ? [
+                    {
+                      style: ['fontS8', 'tableStyle'],
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      table: tableTm3,
+                    },
+                  ]
+                : []),
+              // ...(this.isTm1OfPart == true
+              //   ? [
+              //       {
+              //         style: ['fontS8', 'tableStyle'],
+              //         pageBreak: 'before' as PageBreak,
+              //         pageOrientation: 'landscape' as PageOrientation,
+              //         table: tableTm1,
+              //       },
+              //     ]
+              //   : []),
+
+              // Form
+              // this.lsFormTm4.length >= 1
+              ...(this.parts[1].forms.some((x) => x.name === 'FORM TM4')
+                ? [
+                    {
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      table: tableTm4,
+                      style: ['tableStyle', 'fontS8'],
+                    },
+                  ]
+                : []),
+              ...(this.parts[1].forms.some((x) => x.name === 'FORM TM5')
+                ? [
+                    {
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      table: tableTm5,
+                      style: ['tableStyle', 'fontS8'],
+                    },
+                  ]
+                : []),
+              ...(this.parts[1].forms.some((x) => x.name === 'FORM TM6')
+                ? [
+                    {
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      table: tableTm6,
+                      style: ['tableStyle', 'fontS8'],
+                    },
+                  ]
+                : []),
+              ...(this.parts[1].forms.some((x) => x.name === 'FORM TM7')
+                ? [
+                    {
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      table: tableTm7,
+                      style: ['tableStyle', 'fontS8'],
+                    },
+                  ]
+                : []),
+            ]
+          : []),
         // form
-        [
-          {
-            pageBreak: 'before' as PageBreak,
-            pageOrientation: 'landscape' as PageOrientation,
-            table: tableTm5,
-            style: ['tableStyle', 'fontS8'],
-          },
-        ],
+        // this.lsFormTm5.length >= 1
+        //   ? [
+        //       {
+        //         pageBreak: 'before' as PageBreak,
+        //         pageOrientation: 'landscape' as PageOrientation,
+        //         table: tableTm5,
+        //         style: ['tableStyle', 'fontS8'],
+        //       },
+        //     ]
+        //   : [],
 
         // pageTitle
         [
@@ -976,14 +3954,16 @@ export class ReviewComponent implements OnInit {
           },
         ],
         // form
-        [
-          {
-            style: ['fontS8', 'tableStyle'],
-            pageBreak: 'before' as PageBreak,
-            pageOrientation: 'landscape' as PageOrientation,
-            table: tableTm3,
-          },
-        ],
+        this.lsFormTm3.length >= 1
+          ? [
+              {
+                style: ['fontS8', 'tableStyle'],
+                pageBreak: 'before' as PageBreak,
+                pageOrientation: 'landscape' as PageOrientation,
+                table: tableTm3,
+              },
+            ]
+          : [],
 
         // // pageTitle Tm6
         [
@@ -1005,14 +3985,16 @@ export class ReviewComponent implements OnInit {
           },
         ],
         // form
-        [
-          {
-            style: ['fontS8', 'tableStyle'],
-            pageBreak: 'before' as PageBreak,
-            pageOrientation: 'landscape' as PageOrientation,
-            table: tableTm6,
-          },
-        ],
+        this.lsFormTm6.length >= 1
+          ? [
+              {
+                style: ['fontS8', 'tableStyle'],
+                pageBreak: 'before' as PageBreak,
+                pageOrientation: 'landscape' as PageOrientation,
+                table: tableTm6,
+              },
+            ]
+          : [],
 
         //  pageTitle Tm7
         [
@@ -1034,14 +4016,16 @@ export class ReviewComponent implements OnInit {
           },
         ],
 
-        [
-          {
-            style: ['fontS8', 'tableStyle'],
-            pageBreak: 'before' as PageBreak,
-            pageOrientation: 'landscape' as PageOrientation,
-            table: tableTm7,
-          },
-        ],
+        this.lsFormTm7.length >= 1
+          ? [
+              {
+                style: ['fontS8', 'tableStyle'],
+                pageBreak: 'before' as PageBreak,
+                pageOrientation: 'landscape' as PageOrientation,
+                table: tableTm7,
+              },
+            ]
+          : [],
         //  pageTitle Tm1
         [
           {
@@ -1061,24 +4045,26 @@ export class ReviewComponent implements OnInit {
             bold: true,
           },
         ],
-        [
-          {
-            style: ['fontS8', 'tableStyle'],
-            pageBreak: 'before' as PageBreak,
-            pageOrientation: 'landscape' as PageOrientation,
-            table: tableTm1,
-          },
-        ],
-        this.isTm1_c == true
+        this.lsFormTm1.length >= 1
           ? [
               {
                 style: ['fontS8', 'tableStyle'],
                 pageBreak: 'before' as PageBreak,
                 pageOrientation: 'landscape' as PageOrientation,
-                table: tableTm1_c,
+                table: tableTm1,
               },
             ]
           : [],
+        // this.isTm1_c == true
+        //   ? [
+        //       {
+        //         style: ['fontS8', 'tableStyle'],
+        //         pageBreak: 'before' as PageBreak,
+        //         pageOrientation: 'landscape' as PageOrientation,
+        //         table: tableTm1_c,
+        //       },
+        //     ]
+        //   : [],
 
         //  pageTitle new
         [
@@ -1098,46 +4084,6 @@ export class ReviewComponent implements OnInit {
             bold: true,
           },
         ],
-
-        // ...this.tm4.map((x) => [
-        //   { text: `${x.id}`, style: 'txt_center' },
-        //   { text: `${x.structuralMember}` },
-        //   { text: `${x.item}`, style: 'txt_center' },
-        //   { text: `${x.originalThickness}`, style: 'txt_center' },
-        //   { text: `${x.maximumAllowableDim}`, style: 'txt_center' },
-        //   { text: `${x.gaugedP}`, style: 'txt_center' },
-        //   { text: `${x.gaugedS}`, style: 'txt_center' },
-        //   { text: `${x.diminutionPmm}`, style: 'txt_center' },
-        //   { text: `${x.diminutionPpercent}`, style: 'txt_center' },
-        //   { text: `${x.isStandardP}`, style: 'txt_center' },
-        //   { text: `${x.diminutionSmm}`, style: 'txt_center' },
-        //   { text: `${x.diminutionSpercent}`, style: 'txt_center' },
-        //   { text: `${x.isStandardS}`, style: 'txt_center' },
-        // ]),
-        // this.arr.map((x, y) => [
-        //   ...(x.typeForm == 'tm4'
-        //     ? [
-        //         {
-        //           style: ['fontS8', 'tableStyleLarge'],
-        //           pageBreak: 'before' as PageBreak,
-        //           pageOrientation: 'landscape' as PageOrientation,
-        //           table: tableTm4,
-        //         },
-        //       ]
-        //     : []),
-        // ]),
-        // this.arr.map((x, y) => [
-        //   ...(x.typeForm == 'tm5'
-        //     ? [
-        //         {
-        //           style: ['fontS8', 'tableStyleLarge'],
-        //           pageBreak: 'before' as PageBreak,
-        //           pageOrientation: 'landscape' as PageOrientation,
-        //           table: tableTm5,
-        //         },
-        //       ]
-        //     : []),
-        // ]),
       ],
 
       images: {
@@ -1168,11 +4114,6 @@ export class ReviewComponent implements OnInit {
         shipNameGeneral: {
           margin: [100, 10, 100, 0] as Margins,
         },
-
-        //Ko cần nữa
-        // tableStyleLarge: {
-        //   margin: [-30, 0, -20, 0] as Margins,
-        // },
         table_name: {
           margin: [20, 0, 20, 0] as Margins,
         },
@@ -1182,7 +4123,6 @@ export class ReviewComponent implements OnInit {
         footerAndHeader: {
           margin: [0, 0, 0, 0] as Margins,
         },
-
         footer: {
           margin: [20, 10, 20, 30] as Margins,
         },
@@ -1297,8 +4237,6 @@ export class ReviewComponent implements OnInit {
         alert('Failure to load data from server');
       }
     );
-    this.shipSevice.getShipsFromAPI().subscribe((data) => {});
-
     this.paramService.getParamValueByType(5).subscribe((data) => {
       this.inParam_qualification = data[0].param;
       console.log('param' + this.inParam_qualification);
@@ -1312,10 +4250,97 @@ export class ReviewComponent implements OnInit {
           console.log('Data:', data);
           console.log('Report Index:', this.reportIndex);
           this.parts = this.reportIndex.parts;
+          console.log('part:');
           console.log(this.parts);
-          // this.mesur = this.reportIndex.parts[0].forms[0];
 
-          console.log('mes' + this.mesur);
+          for (let i = 0; i < this.parts.length; i++) {
+            for (let j = 0; j < this.parts[i].forms.length; j++) {
+              switch (this.parts[i].forms[j].name) {
+                case 'FORM TM1':
+                  this.isTm1OfPart = true;
+                  break;
+                case 'FORM TM3':
+                  this.isTm3OfPart = true;
+                  break;
+                default:
+                  break;
+              }
+              // if (this.parts[i].forms[j].name == 'FORM TM1') {
+              //   this.isTm1OfPart = true;
+              //   this.isTm3OfPart = true;
+              // }
+            }
+          }
+          this.form_id_name = this.parts.flatMap((part) =>
+            part.forms.map((form) => ({
+              idForm: form.formID,
+              nameForm: form.name,
+            }))
+          );
+          console.log(this.form_id_name);
+
+          for (let i = 0; i < this.form_id_name.length; i++) {
+            if (this.form_id_name[i].nameForm === 'FORM TM1') {
+              this.dataTm1S
+                .getDataTm1FromApi('tm1s', this.form_id_name[i].idForm)
+                .subscribe((data) => {
+                  this.lsFormTm1.push(data);
+                  console.log('tm1');
+
+                  console.log(this.lsFormTm1);
+                });
+            }
+            if (this.form_id_name[i].nameForm === 'FORM TM3') {
+              this.dataTm1S
+                .getDataTm1FromApi('tm3s', this.form_id_name[i].idForm)
+                .subscribe((data) => {
+                  this.lsFormTm3.push(data);
+                  console.log('tm3');
+
+                  console.log(this.lsFormTm3);
+                });
+            }
+            if (this.form_id_name[i].nameForm === 'FORM TM5') {
+              this.dataTm1S
+                .getDataTm1FromApi('tm5s', this.form_id_name[i].idForm)
+                .subscribe((data) => {
+                  this.lsFormTm5.push(data);
+                  console.log('tm5');
+
+                  console.log(this.lsFormTm5);
+                });
+            }
+            if (this.form_id_name[i].nameForm === 'FORM TM4') {
+              this.dataTm1S
+                .getDataTm1FromApi('tm4s', this.form_id_name[i].idForm)
+                .subscribe((data) => {
+                  this.lsFormTm4.push(data);
+                  console.log('tm4');
+
+                  console.log(this.lsFormTm4);
+                });
+            }
+            if (this.form_id_name[i].nameForm === 'FORM TM6') {
+              this.dataTm1S
+                .getDataTm1FromApi('tm6s', this.form_id_name[i].idForm)
+                .subscribe((data) => {
+                  this.lsFormTm6.push(data);
+                  console.log('tm6');
+
+                  console.log(this.lsFormTm6);
+                });
+            }
+            if (this.form_id_name[i].nameForm === 'FORM TM7') {
+              this.dataTm1S
+                .getDataTm1FromApi('tm7s', this.form_id_name[i].idForm)
+                .subscribe((data) => {
+                  this.lsFormTm7.push(data);
+                  console.log('tm7');
+
+                  console.log(this.lsFormTm7);
+                });
+            }
+          }
         },
         (err) => {
           console.log(err);
@@ -1323,14 +4348,19 @@ export class ReviewComponent implements OnInit {
         }
       );
 
-    for (let i = 0; i < this.forms.length; i++) {
-      if (this.forms[i] == 'tm1') {
-        this.isTm1 = true;
-      }
-      if (this.forms[i] == 'tm1_c') {
-        this.isTm1_c = true;
-      }
+    if (2 > 1) {
+      this.isTm1_c = true;
+      console.log('222');
     }
-    console.log(this.isTm1);
+
+    // for (let i = 0; i < this.forms.length; i++) {
+    //   if (this.forms[i] == 'tm1') {
+    //     this.isTm1 = true;
+    //   }
+    //   if (this.forms[i] == 'tm1_c') {
+    //     this.isTm1_c = true;
+    //   }
+    // }
+    // console.log(this.isTm1);
   }
 }
