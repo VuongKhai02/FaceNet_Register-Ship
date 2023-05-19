@@ -212,6 +212,8 @@ export class ReviewComponent implements OnInit {
   lsFormTm6: formTM6n[] = [];
   lsFormTm7: formTM7n[] = [];
 
+  isLoadingSaveButton: boolean = false;
+
   //Test mục lục
   partsGet = [
     {
@@ -2866,28 +2868,10 @@ export class ReviewComponent implements OnInit {
             colSpan: 1,
             style: 'txt_center',
           },
-          { text: 'a', colSpan: 11, rowSpan: 1, bold: true },
-          'Price',
-          'Date',
-          'Image',
-          'isEdited',
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        [
           {
-            text: 'LOCATION OF STRUCTURE:',
-            alignment: 'left' as Alignment,
-            colSpan: 1,
-            style: ['txt_center', 'txt_center'],
-          },
-          {
-            text: 'a',
+            text: `${this.lsFormTm4[0].tankHolDescription}`,
             colSpan: 11,
+            rowSpan: 1,
             bold: true,
           },
           'Price',
@@ -2901,6 +2885,31 @@ export class ReviewComponent implements OnInit {
           {},
           {},
         ],
+        this.lsFormTm4.length >= 1
+          ? [
+              {
+                text: 'LOCATION OF STRUCTURE:',
+                alignment: 'left' as Alignment,
+                colSpan: 1,
+                style: ['txt_center', 'txt_center'],
+              },
+              {
+                text: `${this.lsFormTm4[0].locationOfStructure}`,
+                colSpan: 11,
+                bold: true,
+              },
+              'Price',
+              'Date',
+              'Image',
+              'isEdited',
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+            ]
+          : [],
         [
           {
             text: 'STRUCTURAL MEMBER',
@@ -5780,6 +5789,8 @@ export class ReviewComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.isLoadingSaveButton = true;
+
     this.mainData = this.localService.getMainData();
 
     this.generalParticularervice.getGeneralParticularsFromAPI().subscribe(
@@ -5943,6 +5954,7 @@ export class ReviewComponent implements OnInit {
                 });
             }
           }
+          this.isLoadingSaveButton = false;
         },
         (err) => {
           console.log(err);
