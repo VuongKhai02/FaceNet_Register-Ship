@@ -43,6 +43,7 @@ import { frameNumberTM7 } from 'src/app/share/models/form/frameNumberTM7.model';
 import { structuralMemberTM4 } from 'src/app/share/models/form/structuralMemberTM4.model';
 import { measurementTM6 } from 'src/app/share/models/form/measurementTM6.model';
 import { measurementTM7 } from 'src/app/share/models/form/measurementTM7.model';
+import { measurementTM2 } from 'src/app/share/models/form/measurementTM2.model';
 (<any>pdfMake).vfs = pdfFonts.pdfMake.vfs;
 
 interface TM4 {
@@ -71,6 +72,15 @@ interface formTM1n {
   strakePosition: string;
   measurementTM1DTOList: measurementTM1[];
 }
+interface formTM2 {
+  code: string;
+  name: string;
+  firstFrameNoTM2: string;
+  secondFrameNoTM2: string;
+  thirdFrameNoTM2: string;
+  measurementTM2DTOList: measurementTM2[];
+}
+
 interface formTM3n {
   code: string;
   firstFrameNo: string;
@@ -192,23 +202,15 @@ export class ReviewComponent implements OnInit {
 
   formTm1!: [{ code: string; strakePosition: string }];
 
-  // listRow: measurementTM1[] = [];
-
-  // formTM1n: formTM1n = {
-  //   code: '',
-  //   strakePosition: '',
-  //   measurementTM1DTOList: this.listRow,
-  // };
-
   no: number = 1;
   lsFormTm1: formTM1n[] = [];
+  lsFormTm2i: formTM2[] = [];
+  lsFormTm2ii: formTM2[] = [];
   lsFormTm3: formTM3n[] = [];
   lsFormTm4: formTM4n[] = [];
   lsFormTm5: formTM5n[] = [];
   lsFormTm6: formTM6n[] = [];
   lsFormTm7: formTM7n[] = [];
-
-  forms = ['tm1', 'tm1_c'];
 
   //Test mục lục
   partsGet = [
@@ -221,57 +223,6 @@ export class ReviewComponent implements OnInit {
       item: 'Transverse',
     },
   ];
-  //Tets form
-  formsGet = [
-    {
-      name: 'tm1',
-      measure: [
-        {
-          id: 1,
-          structural: 'Plating',
-          originThickness: 18,
-        },
-        {
-          id: 2,
-          structural: 'Plating2',
-          originThickness: 182,
-        },
-      ],
-    },
-    {
-      name: 'tm1',
-      measure: [
-        {
-          id: 1,
-          structural: 'Plating',
-          originThickness: 18,
-        },
-        {
-          id: 2,
-          structural: 'Plating2',
-          originThickness: 182,
-        },
-      ],
-    },
-    {
-      name: 'tm1',
-      measure: [
-        {
-          id: 1,
-          structural: 'Plating',
-          originThickness: 18,
-        },
-        {
-          id: 2,
-          structural: 'Plating2',
-          originThickness: 182,
-        },
-      ],
-    },
-  ];
-
-  isTm1: boolean = false;
-  isTm1_c: boolean = false;
 
   imgN: string =
     'https://scontent.fhan17-1.fna.fbcdn.net/v/t1.6435-9/67246509_111387816859260_2386012619652726784_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=e3f864&_nc_ohc=mq_yiuP1cvEAX8MvYsU&_nc_ht=scontent.fhan17-1.fna&oh=00_AfDw51jhjfX5tfjXBaYXDj8k51y19mb9SGycIt5cqMpoVw&oe=6482AE6A';
@@ -309,7 +260,7 @@ export class ReviewComponent implements OnInit {
             style: 'txt_center',
           },
         ],
-        ...this.partsGet.map((x) => [
+        ...this.reportIndex.parts.map((x) => [
           {
             text: `${x.partIndex}`,
             style: ['txt_center'],
@@ -328,8 +279,8 @@ export class ReviewComponent implements OnInit {
       headerRows: 10,
       //23 rows
       widths: [
-        '4%',
-        '34.5%',
+        // '4%',
+        '38.5%',
         '6%',
         '4.5%',
         '3%',
@@ -359,11 +310,10 @@ export class ReviewComponent implements OnInit {
             text: `TM1`,
             //   text: `TM1-${this.typeForm}(1 July 2023)`,
             style: ['txt_center'],
-            colSpan: 23,
+            colSpan: 22,
             alignment: 'right' as Alignment,
             border: [false, false, false, false],
           },
-          {},
           {},
           {},
 
@@ -391,10 +341,9 @@ export class ReviewComponent implements OnInit {
         [
           {
             text: '',
-            colSpan: 23,
+            colSpan: 22,
             border: [false, false, false, false],
           },
-          {},
           {},
           {},
 
@@ -424,12 +373,11 @@ export class ReviewComponent implements OnInit {
           {
             text: 'Report on THICKNESS MEASUREMENT of ALL DECK PLATING, ALL BOTTOM SHELL PLATING or SIDE SHELL PLATING',
             style: ['txt_center', 'fontS11'],
-            colSpan: 23,
+            colSpan: 22,
             decoration: 'underline' as Decoration,
             bold: true,
             border: [false, false, false, false],
           },
-          {},
           {},
           {},
 
@@ -456,11 +404,10 @@ export class ReviewComponent implements OnInit {
         ],
         [
           {
-            colSpan: 23,
+            colSpan: 22,
             text: '',
             border: [false, false, false, false],
           },
-          {},
           {},
           {},
 
@@ -489,13 +436,12 @@ export class ReviewComponent implements OnInit {
           {
             text: "Ship's name:",
             alignment: 'center' as Alignment,
-            colSpan: 2,
+            // colSpan: 2,
             border: [false, false, false, false],
           },
-          {},
           {
             decoration: 'underline' as Decoration,
-            text: 'M/T "TM THAI HA"',
+            text: `${this.inShipName}`,
             colSpan: 5,
             bold: true,
             border: [false, false, false, false],
@@ -513,7 +459,7 @@ export class ReviewComponent implements OnInit {
           {},
           {
             decoration: 'underline' as Decoration,
-            text: '2312321',
+            text: `${this.inABS}`,
             colSpan: 5,
             bold: true,
             border: [false, false, false, false],
@@ -532,8 +478,7 @@ export class ReviewComponent implements OnInit {
           {},
           {
             decoration: 'underline' as Decoration,
-
-            text: 'VMC.TUM 123',
+            text: `${this.generalParticular[0].reportNo}`,
             colSpan: 5,
             bold: true,
             border: [false, false, false, false],
@@ -546,11 +491,10 @@ export class ReviewComponent implements OnInit {
         ],
         [
           {
-            colSpan: 23,
+            colSpan: 22,
             text: '',
             border: [false, false, false, false],
           },
-          {},
           {},
           {},
 
@@ -580,15 +524,17 @@ export class ReviewComponent implements OnInit {
           {
             text: 'STRAKE POSITION',
             alignment: 'left' as Alignment,
-            colSpan: 2,
             style: 'txt_center',
           },
-          {},
           {
-            text: `q`,
-            colSpan: 21,
-            rowSpan: 1,
-            bold: true,
+            ...(this.lsFormTm1.length >= 1
+              ? {
+                  text: `${this.lsFormTm1[0].strakePosition}`,
+                  colSpan: 21,
+                  rowSpan: 1,
+                  bold: true,
+                }
+              : {}),
           },
           {},
 
@@ -614,11 +560,6 @@ export class ReviewComponent implements OnInit {
           {},
         ],
         [
-          {
-            style: 'txt_center',
-            text: 'No.',
-            rowSpan: 3,
-          },
           {
             style: 'txt_center',
             text: 'PLATE POSITION',
@@ -655,7 +596,6 @@ export class ReviewComponent implements OnInit {
           { style: 'txt_center', text: 'Max Alwb Dim', rowSpan: 2 },
         ],
         [
-          {},
           {},
           {},
           {},
@@ -686,7 +626,6 @@ export class ReviewComponent implements OnInit {
           {},
           {},
           {},
-          {},
           { text: 'P', style: 'txt_center' },
           { text: 'S', style: 'txt_center' },
           { text: 'mm', style: 'txt_center' },
@@ -711,9 +650,9 @@ export class ReviewComponent implements OnInit {
         ],
         ...(this.lsFormTm1.length >= 1
           ? this.lsFormTm1[0].measurementTM1DTOList!.map((x) => [
-              x.noOrLetter,
+              // x.noOrLetter,
               x.platePosition,
-              x.afterReadingMeasurementDetail.maxAlwbDim,
+              x.afterReadingMeasurementDetail.originalThickness,
               x.noOrLetter,
               x.noOrLetter,
 
@@ -744,8 +683,8 @@ export class ReviewComponent implements OnInit {
       headerRows: 10,
       //23 rows
       widths: [
-        '4%',
-        '34.5%',
+        // '4%',
+        '38.5%',
         '6%',
         '4.5%',
         '3%',
@@ -772,14 +711,13 @@ export class ReviewComponent implements OnInit {
         //Table header
         [
           {
-            text: `1`,
+            text: `TM1`,
             //   text: `TM1-${this.typeForm}(1 July 2023)`,
             style: ['txt_center'],
-            colSpan: 23,
+            colSpan: 22,
             alignment: 'right' as Alignment,
             border: [false, false, false, false],
           },
-          {},
           {},
           {},
 
@@ -807,10 +745,9 @@ export class ReviewComponent implements OnInit {
         [
           {
             text: '',
-            colSpan: 23,
+            colSpan: 22,
             border: [false, false, false, false],
           },
-          {},
           {},
           {},
 
@@ -840,12 +777,11 @@ export class ReviewComponent implements OnInit {
           {
             text: 'Report on THICKNESS MEASUREMENT of ALL DECK PLATING, ALL BOTTOM SHELL PLATING or SIDE SHELL PLATING',
             style: ['txt_center', 'fontS11'],
-            colSpan: 23,
+            colSpan: 22,
             decoration: 'underline' as Decoration,
             bold: true,
             border: [false, false, false, false],
           },
-          {},
           {},
           {},
 
@@ -872,11 +808,10 @@ export class ReviewComponent implements OnInit {
         ],
         [
           {
-            colSpan: 23,
+            colSpan: 22,
             text: '',
             border: [false, false, false, false],
           },
-          {},
           {},
           {},
 
@@ -905,13 +840,12 @@ export class ReviewComponent implements OnInit {
           {
             text: "Ship's name:",
             alignment: 'center' as Alignment,
-            colSpan: 2,
+            // colSpan: 2,
             border: [false, false, false, false],
           },
-          {},
           {
             decoration: 'underline' as Decoration,
-            text: 'M/T "TM THAI HA"',
+            text: `${this.inShipName}`,
             colSpan: 5,
             bold: true,
             border: [false, false, false, false],
@@ -929,7 +863,7 @@ export class ReviewComponent implements OnInit {
           {},
           {
             decoration: 'underline' as Decoration,
-            text: '2312321',
+            text: `${this.inABS}`,
             colSpan: 5,
             bold: true,
             border: [false, false, false, false],
@@ -948,8 +882,7 @@ export class ReviewComponent implements OnInit {
           {},
           {
             decoration: 'underline' as Decoration,
-
-            text: 'VMC.TUM 123',
+            text: `${this.generalParticular[0].reportNo}`,
             colSpan: 5,
             bold: true,
             border: [false, false, false, false],
@@ -962,11 +895,10 @@ export class ReviewComponent implements OnInit {
         ],
         [
           {
-            colSpan: 23,
+            colSpan: 22,
             text: '',
             border: [false, false, false, false],
           },
-          {},
           {},
           {},
 
@@ -996,15 +928,17 @@ export class ReviewComponent implements OnInit {
           {
             text: 'STRAKE POSITION',
             alignment: 'left' as Alignment,
-            colSpan: 2,
             style: 'txt_center',
           },
-          {},
           {
-            text: `q`,
-            colSpan: 21,
-            rowSpan: 1,
-            bold: true,
+            ...(this.lsFormTm1.length >= 1
+              ? {
+                  text: `${this.lsFormTm1[0].strakePosition}`,
+                  colSpan: 21,
+                  rowSpan: 1,
+                  bold: true,
+                }
+              : {}),
           },
           {},
 
@@ -1030,11 +964,6 @@ export class ReviewComponent implements OnInit {
           {},
         ],
         [
-          {
-            style: 'txt_center',
-            text: 'No.',
-            rowSpan: 3,
-          },
           {
             style: 'txt_center',
             text: 'PLATE POSITION',
@@ -1074,22 +1003,21 @@ export class ReviewComponent implements OnInit {
           {},
           {},
           {},
+          { text: 'Gauged mm', colSpan: 2, style: 'txt_center' },
           {},
-          { text: 'Gauged (mm)', colSpan: 2, style: 'txt_center' },
-          {},
-          { text: 'Diminution P (mm)', colSpan: 3, style: 'txt_center' },
+          { text: 'Diminution P', colSpan: 3, style: 'txt_center' },
           {},
           {},
-          { text: 'Diminution S (mm)', colSpan: 3, style: 'txt_center' },
+          { text: 'Diminution S', colSpan: 3, style: 'txt_center' },
           {},
           {},
 
           { text: 'Gauged (mm)', colSpan: 2, style: 'txt_center' },
           {},
-          { text: 'Diminution P (mm)', colSpan: 3, style: 'txt_center' },
+          { text: 'Diminution P', colSpan: 3, style: 'txt_center' },
           {},
           {},
-          { text: 'Diminution S (mm)', colSpan: 3, style: 'txt_center' },
+          { text: 'Diminution S', colSpan: 3, style: 'txt_center' },
           {},
           {},
 
@@ -1102,7 +1030,6 @@ export class ReviewComponent implements OnInit {
           {},
           {},
           {},
-          {},
           { text: 'P', style: 'txt_center' },
           { text: 'S', style: 'txt_center' },
           { text: 'mm', style: 'txt_center' },
@@ -1125,44 +1052,44 @@ export class ReviewComponent implements OnInit {
           { text: 'S', style: 'txt_center' },
           { text: 'mm', style: 'txt_center' },
         ],
-        ...this.lsFormTm1[2]?.measurementTM1DTOList!.map((x) => [
-          x.noOrLetter,
-          x.platePosition,
-          x.afterReadingMeasurementDetail.maxAlwbDim,
-          x.noOrLetter,
-          x.noOrLetter,
+        ...(this.lsFormTm1.length >= 2
+        ...this.lsFormTm1[1]?.measurementTM1DTOList!.map((x) => [
+              // x.noOrLetter,
+              x.platePosition,
+              x.afterReadingMeasurementDetail.originalThickness,
+              x.noOrLetter,
+              x.noOrLetter,
 
-          x.noOrLetter,
-          x.noOrLetter,
-          x.noOrLetter,
-          x.noOrLetter,
-          x.noOrLetter,
-          x.noOrLetter,
-          x.noOrLetter,
-          x.noOrLetter,
-          x.noOrLetter,
-          x.noOrLetter,
-          x.noOrLetter,
-          x.noOrLetter,
-          x.noOrLetter,
-          x.noOrLetter,
-          x.noOrLetter,
-          x.noOrLetter,
-          x.noOrLetter,
-          x.noOrLetter,
-        ]),
+              x.noOrLetter,
+              x.noOrLetter,
+              x.noOrLetter,
+              x.noOrLetter,
+              x.noOrLetter,
+              x.noOrLetter,
+              x.noOrLetter,
+              x.noOrLetter,
+              x.noOrLetter,
+              x.noOrLetter,
+              x.noOrLetter,
+              x.noOrLetter,
+              x.noOrLetter,
+              x.noOrLetter,
+              x.noOrLetter,
+              x.noOrLetter,
+              x.noOrLetter,
+              x.noOrLetter,
+            ])
+          : []),
       ],
     };
     */
     // var tableTm1_c = this.tableTm1_template_cc;
-    var tableTm2i = tableTm2i_template;
-    var tableTm2ii = tableTm2ii_template;
-    // var tableTm3 = tableTm3_template;
-    var tableTm3 = {
-      headerRows: 9,
+    // var tableTm2i = tableTm2i_template;
+    var tableTm2i = {
+      headerRows: 10,
       widths: [
-        '2.2%',
-        '20.2%',
+        // '2.2%',
+        '22.4%',
         //2
         '2.6%',
         '2.9%',
@@ -1202,59 +1129,58 @@ export class ReviewComponent implements OnInit {
       ],
       body: [
         //Table header
-        [
-          {
-            text: `TM3-(1 July 2023)`,
-            //   text: `TM2ii-${this.typeForm}(1 July 2023)`,
-            style: ['txt_center'],
-            colSpan: 35,
-            alignment: 'right' as Alignment,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
+        this.lsFormTm2i.length >= 1
+          ? [
+              {
+                text: `TM2i-${this.lsFormTm2i[0].code}(1 July 2023)`,
+                style: ['txt_center'],
+                colSpan: 34,
+                alignment: 'right' as Alignment,
+                border: [false, false, false, false],
+              },
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
 
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
 
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+            ]
+          : [],
         [
           {
             text: '',
-            colSpan: 35,
+            colSpan: 34,
             border: [false, false, false, false],
           },
-          {},
           {},
           {},
           {},
@@ -1296,12 +1222,11 @@ export class ReviewComponent implements OnInit {
           {
             text: 'Report on THICKNESS MEASUREMENT OF SHELL AND DECK PLATING (one, two or three transverse sections)',
             style: ['txt_center', 'fontS11'],
-            colSpan: 35,
+            colSpan: 34,
             decoration: 'underline' as Decoration,
             bold: true,
             border: [false, false, false, false],
           },
-          {},
           {},
           {},
           {},
@@ -1340,11 +1265,10 @@ export class ReviewComponent implements OnInit {
         ],
         [
           {
-            colSpan: 35,
+            colSpan: 34,
             text: '',
             border: [false, false, false, false],
           },
-          {},
           {},
           {},
           {},
@@ -1387,15 +1311,14 @@ export class ReviewComponent implements OnInit {
 
             alignment: 'center' as Alignment,
 
-            colSpan: 4,
+            colSpan: 3,
             border: [false, false, false, false],
           },
           {},
           {},
-          {},
           {
             decoration: 'underline' as Decoration,
-            text: 'M/T "TM THAI HA"',
+            text: `${this.inShipName}`,
             colSpan: 8,
             bold: true,
             border: [false, false, false, false],
@@ -1417,7 +1340,7 @@ export class ReviewComponent implements OnInit {
           {},
           {
             decoration: 'underline' as Decoration,
-            text: '2312321',
+            text: `${this.inABS}`,
             colSpan: 8,
             bold: true,
             border: [false, false, false, false],
@@ -1439,8 +1362,7 @@ export class ReviewComponent implements OnInit {
           {},
           {
             decoration: 'underline' as Decoration,
-
-            text: 'VMC.TUM 123',
+            text: `${this.generalParticular[0].reportNo}`,
             colSpan: 8,
             bold: true,
             border: [false, false, false, false],
@@ -1455,7 +1377,7 @@ export class ReviewComponent implements OnInit {
         ],
         [
           {
-            colSpan: 35,
+            colSpan: 34,
             text: '',
             border: [false, false, false, false],
           },
@@ -1472,7 +1394,6 @@ export class ReviewComponent implements OnInit {
           {},
           {},
           {},
-          {},
 
           {},
           {},
@@ -1496,19 +1417,11 @@ export class ReviewComponent implements OnInit {
           {},
           {},
         ],
-
         [
           {
             style: 'txt_center',
-            text: '',
-            colSpan: 2,
-          },
-          {},
-          {
-            style: 'txt_center',
-            text: '1st TRANSVERSE SECTION at Fr.No: ',
-            colSpan: 8,
-            border: [true, true, false, true],
+            text: 'STRENGTH DECK AND SHEER STRAKE PLATING',
+            colSpan: 34,
           },
           {},
           {},
@@ -1517,20 +1430,6 @@ export class ReviewComponent implements OnInit {
           {},
           {},
           {},
-          {
-            text: '42',
-            border: [false, true, true, true],
-            colSpan: 3,
-            bold: true,
-          },
-          {},
-          {},
-          {
-            style: 'txt_center',
-            text: '2nd TRANSVERSE SECTION at Fr.No: ',
-            colSpan: 8,
-            border: [true, true, false, true],
-          },
           {},
           {},
           {},
@@ -1538,20 +1437,6 @@ export class ReviewComponent implements OnInit {
           {},
           {},
           {},
-          {
-            text: '42',
-            border: [false, true, true, true],
-            colSpan: 3,
-            bold: true,
-          },
-          {},
-          {},
-          {
-            style: 'txt_center',
-            text: '3rd TRANSVERSE SECTION at Fr.No: ',
-            colSpan: 8,
-            border: [true, true, false, true],
-          },
           {},
           {},
           {},
@@ -1559,21 +1444,88 @@ export class ReviewComponent implements OnInit {
           {},
           {},
           {},
-          {
-            text: '42',
-            border: [false, true, true, true],
-            colSpan: 3,
-            bold: true,
-          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
           {},
           {},
         ],
+        this.lsFormTm2i.length >= 1
+          ? [
+              {},
+              {
+                style: 'txt_center',
+                text: '1st TRANSVERSE SECTION at Fr.No: ',
+                colSpan: 8,
+                border: [true, true, false, true],
+              },
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {
+                text: `${this.lsFormTm2i[0].firstFrameNoTM2}`,
+                border: [false, true, true, true],
+                colSpan: 3,
+                bold: true,
+              },
+              {},
+              {},
+              {
+                style: 'txt_center',
+                text: '2nd TRANSVERSE SECTION at Fr.No: ',
+                colSpan: 8,
+                border: [true, true, false, true],
+              },
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {
+                text: `${this.lsFormTm2i[0].secondFrameNoTM2}`,
+                border: [false, true, true, true],
+                colSpan: 3,
+                bold: true,
+              },
+              {},
+              {},
+              {
+                style: 'txt_center',
+                text: '3rd TRANSVERSE SECTION at Fr.No: ',
+                colSpan: 8,
+                border: [true, true, false, true],
+              },
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {
+                text: `${this.lsFormTm2i[0].thirdFrameNoTM2}`,
+                border: [false, true, true, true],
+                colSpan: 3,
+                bold: true,
+              },
+              {},
+              {},
+            ]
+          : [],
         [
-          {
-            style: 'txt_center',
-            text: 'No.',
-            rowSpan: 2,
-          },
           {
             style: 'txt_center',
             text: 'STRAKE POSITION',
@@ -1616,6 +1568,1054 @@ export class ReviewComponent implements OnInit {
         [
           {},
           {},
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: 'P' },
+          { style: 'txt_center', text: 'S' },
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: '%', colSpan: 2 },
+          {},
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: '%', colSpan: 2 },
+          {},
+          {},
+
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: 'P' },
+          { style: 'txt_center', text: 'S' },
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: '%', colSpan: 2 },
+          {},
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: '%', colSpan: 2 },
+          {},
+          {},
+
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: 'P' },
+          { style: 'txt_center', text: 'S' },
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: '%', colSpan: 2 },
+          {},
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: '%', colSpan: 2 },
+          {},
+        ],
+      ],
+    };
+    // var tableTm2ii = tableTm2ii_template;
+    var tableTm2ii = {
+      headerRows: 10,
+      widths: [
+        // '2.2%',
+        '22.4%',
+        //2
+        '2.6%',
+        '2.9%',
+        '2.9%',
+        '2.2%',
+        '2.2%',
+        '2.9%',
+        '2.2%',
+        '1.5%', //10
+        '2.9%',
+        '1.5%', //13
+        '2.2%',
+
+        '2.6%',
+        '2.9%',
+        '2.9%',
+        '2.2%',
+        '2.2%',
+        '2.9%',
+        '1.5%', //20
+        '2.2%',
+        '2.9%',
+        '2.2%',
+        '1.5%', //23
+
+        '2.6%',
+        '2.9%',
+        '2.9%',
+        '2.2%',
+        '2.2%',
+        '2.9%',
+        '2.2%',
+        '1.5%', //
+        '2.9%',
+        '2.2%',
+        '1.5%', //
+      ],
+      body: [
+        //Table header
+        this.lsFormTm2ii.length >= 1
+          ? [
+              {
+                text: `TM2ii-${this.lsFormTm2ii[0].code}(1 July 2023)`,
+                style: ['txt_center'],
+                colSpan: 34,
+                alignment: 'right' as Alignment,
+                border: [false, false, false, false],
+              },
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+            ]
+          : [
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+            ],
+        [
+          {
+            text: '',
+            colSpan: 34,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        // Table content
+        [
+          {
+            text: 'Report on THICKNESS MEASUREMENT OF SHELL AND DECK PLATING (one, two or three transverse sections)',
+            style: ['txt_center', 'fontS11'],
+            colSpan: 34,
+            decoration: 'underline' as Decoration,
+            bold: true,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        [
+          {
+            colSpan: 34,
+            text: '',
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        [
+          {
+            text: "Ship's name:",
+
+            alignment: 'center' as Alignment,
+
+            colSpan: 3,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {
+            decoration: 'underline' as Decoration,
+            text: `${this.inShipName}`,
+            colSpan: 8,
+            bold: true,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {
+            text: 'Class Identity No. ',
+            colSpan: 4,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {
+            decoration: 'underline' as Decoration,
+            text: `${this.inABS}`,
+            colSpan: 8,
+            bold: true,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {
+            text: 'Report No. ',
+            colSpan: 3,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {
+            decoration: 'underline' as Decoration,
+
+            text: `${this.generalParticular[0].reportNo}`,
+            colSpan: 8,
+            bold: true,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        [
+          {
+            colSpan: 34,
+            text: '',
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        [
+          {
+            style: 'txt_center',
+            text: 'SHELL PLATING',
+            colSpan: 34,
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        this.lsFormTm2ii.length >= 1
+          ? [
+              {},
+              {
+                style: 'txt_center',
+                text: '1st TRANSVERSE SECTION at Fr.No: ',
+                colSpan: 8,
+                border: [true, true, false, true],
+              },
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {
+                text: `${this.lsFormTm2ii[0].firstFrameNoTM2}`,
+                border: [false, true, true, true],
+                colSpan: 3,
+                bold: true,
+              },
+              {},
+              {},
+              {
+                style: 'txt_center',
+                text: '2nd TRANSVERSE SECTION at Fr.No: ',
+                colSpan: 8,
+                border: [true, true, false, true],
+              },
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {
+                text: `${this.lsFormTm2i[0].secondFrameNoTM2}`,
+                border: [false, true, true, true],
+                colSpan: 3,
+                bold: true,
+              },
+              {},
+              {},
+              {
+                style: 'txt_center',
+                text: '3rd TRANSVERSE SECTION at Fr.No: ',
+                colSpan: 8,
+                border: [true, true, false, true],
+              },
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {
+                text: `${this.lsFormTm2i[0].thirdFrameNoTM2}`,
+                border: [false, true, true, true],
+                colSpan: 3,
+                bold: true,
+              },
+              {},
+              {},
+            ]
+          : [],
+        [
+          {
+            style: 'txt_center',
+            text: 'STRAKE POSITION',
+            rowSpan: 2,
+          },
+          { style: 'txt_center', text: 'No. or Letter', rowSpan: 2 },
+          { style: 'txt_center', text: 'Org.Thk.' },
+          { style: ['txt_center', 'fontS8'], text: 'Max.Alwb.Dim' },
+          { style: 'txt_center', text: 'Gauged mm  ', colSpan: 2 },
+          {},
+          { style: 'txt_center', text: 'Diminution P  ', colSpan: 3 },
+          {},
+          {},
+          { style: 'txt_center', text: '    Diminution S  ', colSpan: 3 },
+          {},
+          {},
+          { style: 'txt_center', text: 'No. or Letter', rowSpan: 2 },
+          { style: 'txt_center', text: 'Org.Thk.' },
+          { style: ['txt_center', 'fontS8'], text: 'Max.Alwb.Dim' },
+          { style: 'txt_center', text: 'Gauged mm', colSpan: 2 },
+          {},
+          { style: 'txt_center', text: 'Diminution P', colSpan: 3 },
+          {},
+          {},
+          { style: 'txt_center', text: 'Diminution S', colSpan: 3 },
+          {},
+          {},
+          { style: 'txt_center', text: 'No. or Letter', rowSpan: 2 },
+          { style: 'txt_center', text: 'Org.Thk.' },
+          { style: 'txt_center', text: 'Max.Alwb.Dim' },
+          { style: 'txt_center', text: 'Gauged mm', colSpan: 2 },
+          {},
+          { style: 'txt_center', text: 'Diminution P', colSpan: 3 },
+          {},
+          {},
+          { style: 'txt_center', text: 'Diminution S', colSpan: 3 },
+          {},
+          {},
+        ],
+        [
+          {},
+          {},
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: 'P' },
+          { style: 'txt_center', text: 'S' },
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: '%', colSpan: 2 },
+          {},
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: '%', colSpan: 2 },
+          {},
+          {},
+
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: 'P' },
+          { style: 'txt_center', text: 'S' },
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: '%', colSpan: 2 },
+          {},
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: '%', colSpan: 2 },
+          {},
+          {},
+
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: 'P' },
+          { style: 'txt_center', text: 'S' },
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: '%', colSpan: 2 },
+          {},
+          { style: 'txt_center', text: 'mm' },
+          { style: 'txt_center', text: '%', colSpan: 2 },
+          {},
+        ],
+      ],
+    };
+
+    // var tableTm3 = tableTm3_template;
+    var tableTm3 = {
+      headerRows: 9,
+      widths: [
+        // '2.2%',
+        '22.4%',
+        //2
+        '2.6%',
+        '2.9%',
+        '2.9%',
+        '2.2%',
+        '2.2%',
+        '2.9%',
+        '2.2%',
+        '1.5%', //10
+        '2.9%',
+        '1.5%', //13
+        '2.2%',
+
+        '2.6%',
+        '2.9%',
+        '2.9%',
+        '2.2%',
+        '2.2%',
+        '2.9%',
+        '1.5%', //20
+        '2.2%',
+        '2.9%',
+        '2.2%',
+        '1.5%', //23
+
+        '2.6%',
+        '2.9%',
+        '2.9%',
+        '2.2%',
+        '2.2%',
+        '2.9%',
+        '2.2%',
+        '1.5%', //
+        '2.9%',
+        '2.2%',
+        '1.5%', //
+      ],
+      body: [
+        //Table header
+        this.lsFormTm3.length >= 1
+          ? [
+              {
+                text: `TM3-${this.lsFormTm3[0].code}(1 July 2023)`,
+                //   text: `TM2ii-${this.typeForm}(1 July 2023)`,
+                style: ['txt_center'],
+                colSpan: 34,
+                alignment: 'right' as Alignment,
+                border: [false, false, false, false],
+              },
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+            ]
+          : [],
+        [
+          {
+            text: '',
+            colSpan: 34,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        // Table content
+        [
+          {
+            text: 'Report on THICKNESS MEASUREMENT OF SHELL AND DECK PLATING (one, two or three transverse sections)',
+            style: ['txt_center', 'fontS11'],
+            colSpan: 34,
+            decoration: 'underline' as Decoration,
+            bold: true,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        [
+          {
+            colSpan: 34,
+            text: '',
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        this.lsFormTm3.length >= 1
+          ? [
+              {
+                text: "Ship's name:",
+
+                alignment: 'center' as Alignment,
+
+                colSpan: 3,
+                border: [false, false, false, false],
+              },
+              {},
+              {},
+              {
+                decoration: 'underline' as Decoration,
+                text: `${this.inShipName}`,
+                colSpan: 8,
+                bold: true,
+                border: [false, false, false, false],
+              },
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {
+                text: 'Class Identity No. ',
+                colSpan: 4,
+                border: [false, false, false, false],
+              },
+              {},
+              {},
+              {},
+              {
+                decoration: 'underline' as Decoration,
+                text: `${this.inABS}`,
+                colSpan: 8,
+                bold: true,
+                border: [false, false, false, false],
+              },
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+
+              {
+                text: 'Report No. ',
+                colSpan: 3,
+                border: [false, false, false, false],
+              },
+              {},
+              {},
+              {
+                decoration: 'underline' as Decoration,
+                text: `${this.generalParticular[0].reportNo}`,
+
+                colSpan: 8,
+                bold: true,
+                border: [false, false, false, false],
+              },
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+            ]
+          : [],
+        [
+          {
+            colSpan: 34,
+            text: '',
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+
+        this.lsFormTm3.length >= 1
+          ? [
+              {
+                style: 'txt_center',
+                text: '',
+              },
+              {
+                style: 'txt_center',
+                text: `1st TRANSVERSE SECTION at Fr.No:`,
+                colSpan: 8,
+                border: [true, true, false, true],
+              },
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {
+                text: ` ${this.lsFormTm3[0].firstFrameNo}`,
+                border: [false, true, true, true],
+                colSpan: 3,
+                bold: true,
+              },
+              {},
+              {},
+              {
+                style: 'txt_center',
+                text: `2nd TRANSVERSE SECTION at Fr.No: `,
+                colSpan: 8,
+                border: [true, true, false, true],
+              },
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {
+                text: `${this.lsFormTm3[0].secondFrameNo}`,
+                border: [false, true, true, true],
+                colSpan: 3,
+                bold: true,
+              },
+              {},
+              {},
+              {
+                style: 'txt_center',
+                text: `1st TRANSVERSE SECTION at Fr.No: `,
+                colSpan: 8,
+                border: [true, true, false, true],
+              },
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {
+                text: `${this.lsFormTm3[0].thirdFrameNo}`,
+                border: [false, true, true, true],
+                colSpan: 3,
+                bold: true,
+              },
+              {},
+              {},
+            ]
+          : [],
+        [
+          {
+            style: 'txt_center',
+            text: 'STRAKE POSITION',
+            rowSpan: 2,
+          },
+          { style: 'txt_center', text: 'No. or Letter', rowSpan: 2 },
+          { style: 'txt_center', text: 'Org.Thk.' },
+          { style: 'txt_center', text: 'Max.Alwb.Dim' },
+          { style: 'txt_center', text: 'Gauged mm  ', colSpan: 2 },
+          {},
+          { style: 'txt_center', text: 'Diminution P  ', colSpan: 3 },
+          {},
+          {},
+          { style: 'txt_center', text: '    Diminution S  ', colSpan: 3 },
+          {},
+          {},
+          { style: 'txt_center', text: 'No. or Letter', rowSpan: 2 },
+          { style: 'txt_center', text: 'Org.Thk.' },
+          { style: 'txt_center', text: 'Max.Alwb.Dim' },
+          { style: 'txt_center', text: 'Gauged mm', colSpan: 2 },
+          {},
+          { style: 'txt_center', text: 'Diminution P', colSpan: 3 },
+          {},
+          {},
+          { style: 'txt_center', text: 'Diminution S', colSpan: 3 },
+          {},
+          {},
+          { style: 'txt_center', text: 'No. or Letter', rowSpan: 2 },
+          { style: 'txt_center', text: 'Org.Thk.' },
+          { style: 'txt_center', text: 'Max.Alwb.Dim' },
+          { style: 'txt_center', text: 'Gauged mm', colSpan: 2 },
+          {},
+          { style: 'txt_center', text: 'Diminution P', colSpan: 3 },
+          {},
+          {},
+          { style: 'txt_center', text: 'Diminution S', colSpan: 3 },
+          {},
+          {},
+        ],
+        [
+          {},
           {},
           { style: 'txt_center', text: 'mm' },
           { style: 'txt_center', text: 'mm' },
@@ -1654,7 +2654,6 @@ export class ReviewComponent implements OnInit {
         ],
         ...(this.lsFormTm3.length >= 1
           ? this.lsFormTm3[0].measurementTM3DTOList!.map((x) => [
-              x.noOrLetter,
               x.noOrLetter,
               x.noOrLetter,
               x.noOrLetter,
@@ -1698,8 +2697,8 @@ export class ReviewComponent implements OnInit {
     var tableTm4 = {
       headerRows: 10,
       widths: [
-        '5%',
-        '25%',
+        // '5%',
+        '30%',
         '7%',
         '10%',
         '13%',
@@ -1714,35 +2713,35 @@ export class ReviewComponent implements OnInit {
       ],
       body: [
         //Table header
-        [
-          {
-            text: `TM4-(1 July 2023)`,
-            //   text: `TM4-${this.typeForm}(1 July 2023)`,
-            style: ['txt_center'],
-            colSpan: 13,
-            alignment: 'right' as Alignment,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
+        this.lsFormTm4.length >= 1
+          ? [
+              {
+                text: `TM4-${this.lsFormTm4[0].code}(1 July 2023)`,
+                //   text: `TM4-${this.typeForm}(1 July 2023)`,
+                style: ['txt_center'],
+                colSpan: 12,
+                alignment: 'right' as Alignment,
+                border: [false, false, false, false],
+              },
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+            ]
+          : [],
         [
           {
             text: '',
-            colSpan: 13,
+            colSpan: 12,
             border: [false, false, false, false],
           },
-          {},
           {},
           {},
           {},
@@ -1760,7 +2759,7 @@ export class ReviewComponent implements OnInit {
           {
             text: 'Report on THICKNESS MEASUREMENT OF TRANSVERSE STRUCTURAL MEMBERS in the cargo oil and water ballast tanks within the cargo tank length',
             style: ['txt_center', 'fontS11'],
-            colSpan: 13,
+            colSpan: 12,
             decoration: 'underline' as Decoration,
             bold: true,
             border: [false, false, false, false],
@@ -1776,15 +2775,13 @@ export class ReviewComponent implements OnInit {
           {},
           {},
           {},
-          {},
         ],
         [
           {
-            colSpan: 13,
+            colSpan: 12,
             text: '',
             border: [false, false, false, false],
           },
-          {},
           {},
           {},
           {},
@@ -1801,13 +2798,12 @@ export class ReviewComponent implements OnInit {
           {
             text: "Ship's name:",
             alignment: 'center' as Alignment,
-            colSpan: 2,
+            colSpan: 1,
             border: [false, false, false, false],
           },
-          {},
           {
             decoration: 'underline' as Decoration,
-            text: 'M/T "TM THAI HA"',
+            text: `${this.inShipName}`,
             colSpan: 2,
             bold: true,
             border: [false, false, false, false],
@@ -1821,7 +2817,7 @@ export class ReviewComponent implements OnInit {
           {},
           {
             decoration: 'underline' as Decoration,
-            text: '2312321',
+            text: `${this.inABS}`,
             colSpan: 2,
             bold: true,
             border: [false, false, false, false],
@@ -1836,8 +2832,7 @@ export class ReviewComponent implements OnInit {
           {},
           {
             decoration: 'underline' as Decoration,
-
-            text: 'VMC.TUM 123',
+            text: `${this.generalParticular[0].reportNo}`,
             colSpan: 3,
             bold: true,
             border: [false, false, false, false],
@@ -1848,10 +2843,9 @@ export class ReviewComponent implements OnInit {
         [
           {
             text: '',
-            colSpan: 13,
+            colSpan: 12,
             border: [false, false, false, false],
           },
-          {},
           {},
           {},
           {},
@@ -1869,10 +2863,9 @@ export class ReviewComponent implements OnInit {
           {
             text: 'TANK DESCRIPTION:',
             alignment: 'left' as Alignment,
-            colSpan: 2,
+            colSpan: 1,
             style: 'txt_center',
           },
-          '',
           { text: 'a', colSpan: 11, rowSpan: 1, bold: true },
           'Price',
           'Date',
@@ -1889,10 +2882,9 @@ export class ReviewComponent implements OnInit {
           {
             text: 'LOCATION OF STRUCTURE:',
             alignment: 'left' as Alignment,
-            colSpan: 2,
+            colSpan: 1,
             style: ['txt_center', 'txt_center'],
           },
-          '',
           {
             text: 'a',
             colSpan: 11,
@@ -1910,7 +2902,6 @@ export class ReviewComponent implements OnInit {
           {},
         ],
         [
-          { text: 'No.', rowSpan: 2, style: 'txt_center' },
           {
             text: 'STRUCTURAL MEMBER',
             rowSpan: 2,
@@ -1938,6 +2929,350 @@ export class ReviewComponent implements OnInit {
           {},
           {},
           {},
+          { text: 'P', style: 'txt_center' },
+          { text: 'S', style: 'txt_center' },
+          { text: 'mm', style: 'txt_center' },
+          { text: '%', style: 'txt_center', colSpan: 2 },
+          {},
+          { text: 'mm', style: 'txt_center' },
+          { text: '%', style: 'txt_center', colSpan: 2 },
+          {},
+        ],
+        ...(this.lsFormTm4.length >= 1 &&
+        this.lsFormTm4[0].structuralMemberTM4List[0].structuralMemberTitle != ''
+          ? [
+              [
+                {
+                  text: `${this.lsFormTm4[0].structuralMemberTM4List[0].structuralMemberTitle}`,
+                },
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+              ],
+              ...this.lsFormTm4[0].structuralMemberTM4List[0].measurementTM4DTOList!.map(
+                (x) => [
+                  this.no++,
+                  // x.structuralMemberTitle,
+                  x.structuralMember,
+                  x.item,
+                  x.detailMeasurement.originalThickness,
+                  x.detailMeasurement.maxAlwbDim,
+                  x.detailMeasurement.gaugedP,
+                  x.detailMeasurement.gaugedS,
+                  x.structuralMember,
+                  x.structuralMember,
+                  x.structuralMember,
+                  x.structuralMember,
+                  x.structuralMember,
+                ]
+              ),
+            ]
+          : []),
+
+        ...(this.lsFormTm4.length >= 1 &&
+        this.lsFormTm4[0].structuralMemberTM4List.length >= 2 &&
+        this.lsFormTm4[0].structuralMemberTM4List[1].structuralMemberTitle != ''
+          ? [
+              [
+                {
+                  text: `${this.lsFormTm4[0].structuralMemberTM4List[1].structuralMemberTitle}`,
+                },
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+              ],
+              ...this.lsFormTm4[0].structuralMemberTM4List[1].measurementTM4DTOList!.map(
+                (x) => [
+                  this.no++,
+                  // x.structuralMemberTitle,
+                  x.structuralMember,
+                  x.item,
+                  x.detailMeasurement.originalThickness,
+                  x.detailMeasurement.maxAlwbDim,
+                  x.detailMeasurement.gaugedP,
+                  x.detailMeasurement.gaugedS,
+                  x.structuralMember,
+                  x.structuralMember,
+                  x.structuralMember,
+                  x.structuralMember,
+                  x.structuralMember,
+                ]
+              ),
+            ]
+          : []),
+
+        // ...(this.lsFormTm4.length >= 1
+        //   ? this.lsFormTm4[0].structuralMemberTM4List[0].measurementTM4DTOList!.map(
+        //       (x) => [
+        //         { text: this.no++ },
+        //         // x.structuralMemberTitle,
+        //         x.structuralMember,
+        //         x.item,
+        //         x.detailMeasurement.originalThickness,
+        //         x.detailMeasurement.maxAlwbDim,
+        //         x.detailMeasurement.gaugedP,
+        //         x.detailMeasurement.gaugedS,
+        //         x.structuralMember,
+        //         x.structuralMember,
+        //         x.structuralMember,
+        //         x.structuralMember,
+        //         x.structuralMember,
+        //         x.structuralMember,
+        //       ]
+        //     )
+        //   : []),
+      ],
+    };
+    var tableTm4_c = {
+      headerRows: 10,
+      widths: [
+        // '5%',
+        '30%',
+        '7%',
+        '10%',
+        '13%',
+        '5%',
+        '5%',
+        '5%',
+        '5%',
+        '5%',
+        '5%',
+        '5%',
+        '5%',
+      ],
+      body: [
+        //Table header
+        this.lsFormTm4.length >= 2
+          ? [
+              {
+                text: `TM4-${this.lsFormTm4[0].code}(1 July 2023)`,
+                //   text: `TM4-${this.typeForm}(1 July 2023)`,
+                style: ['txt_center'],
+                colSpan: 12,
+                alignment: 'right' as Alignment,
+                border: [false, false, false, false],
+              },
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+            ]
+          : [],
+        [
+          {
+            text: '',
+            colSpan: 12,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        // Table content
+        [
+          {
+            text: 'Report on THICKNESS MEASUREMENT OF TRANSVERSE STRUCTURAL MEMBERS in the cargo oil and water ballast tanks within the cargo tank length',
+            style: ['txt_center', 'fontS11'],
+            colSpan: 12,
+            decoration: 'underline' as Decoration,
+            bold: true,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        [
+          {
+            colSpan: 12,
+            text: '',
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        [
+          {
+            text: "Ship's name:",
+            alignment: 'center' as Alignment,
+            colSpan: 1,
+            border: [false, false, false, false],
+          },
+          {
+            decoration: 'underline' as Decoration,
+            text: `${this.inShipName}`,
+            colSpan: 2,
+            bold: true,
+            border: [false, false, false, false],
+          },
+          {},
+          {
+            text: 'Class Identity No. ',
+            colSpan: 2,
+            border: [false, false, false, false],
+          },
+          {},
+          {
+            decoration: 'underline' as Decoration,
+            text: `${this.inABS}`,
+            colSpan: 2,
+            bold: true,
+            border: [false, false, false, false],
+          },
+          {},
+
+          {
+            text: 'Report No. ',
+            colSpan: 2,
+            border: [false, false, false, false],
+          },
+          {},
+          {
+            decoration: 'underline' as Decoration,
+            text: `${this.generalParticular[0].reportNo}`,
+            colSpan: 3,
+            bold: true,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+        ],
+        [
+          {
+            text: '',
+            colSpan: 12,
+            border: [false, false, false, false],
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        //Table content
+        [
+          {
+            text: 'TANK DESCRIPTION:',
+            alignment: 'left' as Alignment,
+            colSpan: 1,
+            style: 'txt_center',
+          },
+          { text: 'a', colSpan: 11, rowSpan: 1, bold: true },
+          'Price',
+          'Date',
+          'Image',
+          'isEdited',
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        [
+          {
+            text: 'LOCATION OF STRUCTURE:',
+            alignment: 'left' as Alignment,
+            colSpan: 1,
+            style: ['txt_center', 'txt_center'],
+          },
+          {
+            text: 'a',
+            colSpan: 11,
+            bold: true,
+          },
+          'Price',
+          'Date',
+          'Image',
+          'isEdited',
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+        ],
+        [
+          {
+            text: 'STRUCTURAL MEMBER',
+            rowSpan: 2,
+            style: 'txt_center',
+          },
+          { text: 'Item', rowSpan: 2, style: 'txt_center' },
+
+          { text: 'Original Thickness(mm)', rowSpan: 2, style: 'txt_center' },
+          {
+            text: 'Maximum Allowable Dim(mm)',
+            rowSpan: 2,
+            style: ['txt_center'],
+          },
+          { text: 'Gauged', colSpan: 2, style: 'txt_center' },
+          {},
+          { text: 'Diminution P', colSpan: 3, style: 'txt_center' },
+          {},
+          {},
+          { text: 'Diminution S', colSpan: 3, style: 'txt_center' },
+          {},
+          {},
+        ],
+        [
+          {},
+          {},
+          {},
           {},
           { text: 'P', style: 'txt_center' },
           { text: 'S', style: 'txt_center' },
@@ -1948,8 +3283,8 @@ export class ReviewComponent implements OnInit {
           { text: '%', style: 'txt_center', colSpan: 2 },
           {},
         ],
-        ...(this.lsFormTm4.length >= 1
-          ? this.lsFormTm4[0].structuralMemberTM4List[0].measurementTM4DTOList!.map(
+        ...(this.lsFormTm4.length >= 2
+          ? this.lsFormTm4[1].structuralMemberTM4List[0].measurementTM4DTOList!.map(
               (x) => [
                 this.no++,
                 // x.structuralMemberTitle,
@@ -1964,17 +3299,17 @@ export class ReviewComponent implements OnInit {
                 x.structuralMember,
                 x.structuralMember,
                 x.structuralMember,
-                x.structuralMember,
               ]
             )
           : []),
       ],
     };
+
     // var tableTm5 = tableTm5_template;
     var tableTm5 = {
       headerRows: 10,
       widths: [
-        '5%',
+        '30%',
         '25%',
         '7%',
         '10%',
@@ -1990,35 +3325,34 @@ export class ReviewComponent implements OnInit {
       ],
       body: [
         //Table header
-        [
-          {
-            text: `TM5-(1 July 2023)`,
-            //   text: `TM5-${this.typeForm}(1 July 2023)`,
-            style: ['txt_center'],
-            colSpan: 13,
-            alignment: 'right' as Alignment,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
+        this.lsFormTm5.length >= 1
+          ? [
+              {
+                text: `TM5-${this.lsFormTm5[0].code}(1 July 2023)`,
+                style: ['txt_center'],
+                colSpan: 12,
+                alignment: 'right' as Alignment,
+                border: [false, false, false, false],
+              },
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+            ]
+          : [],
         [
           {
             text: '',
-            colSpan: 13,
+            colSpan: 12,
             border: [false, false, false, false],
           },
-          {},
           {},
           {},
           {},
@@ -2036,7 +3370,7 @@ export class ReviewComponent implements OnInit {
           {
             text: 'Report on THICKNESS MEASUREMENT OF W.T./O.T. TRANSVERSE BULKHEADS within the cargo tank or cargo hold spaces',
             style: ['txt_center', 'fontS11'],
-            colSpan: 13,
+            colSpan: 12,
             decoration: 'underline' as Decoration,
             bold: true,
             border: [false, false, false, false],
@@ -2052,15 +3386,13 @@ export class ReviewComponent implements OnInit {
           {},
           {},
           {},
-          {},
         ],
         [
           {
-            colSpan: 13,
+            colSpan: 12,
             text: '',
             border: [false, false, false, false],
           },
-          {},
           {},
           {},
           {},
@@ -2079,13 +3411,12 @@ export class ReviewComponent implements OnInit {
 
             alignment: 'center' as Alignment,
 
-            colSpan: 2,
+            colSpan: 1,
             border: [false, false, false, false],
           },
-          {},
           {
             decoration: 'underline' as Decoration,
-            text: 'M/T "TM THAI HA"',
+            text: `${this.inShipName}`,
             colSpan: 2,
             bold: true,
             border: [false, false, false, false],
@@ -2099,7 +3430,7 @@ export class ReviewComponent implements OnInit {
           {},
           {
             decoration: 'underline' as Decoration,
-            text: '2312321',
+            text: `${this.inABS}`,
             colSpan: 2,
             bold: true,
             border: [false, false, false, false],
@@ -2114,8 +3445,7 @@ export class ReviewComponent implements OnInit {
           {},
           {
             decoration: 'underline' as Decoration,
-
-            text: 'VMC.TUM 123',
+            text: `${this.generalParticular[0].reportNo}`,
             colSpan: 3,
             bold: true,
             border: [false, false, false, false],
@@ -2126,10 +3456,9 @@ export class ReviewComponent implements OnInit {
         [
           {
             text: '',
-            colSpan: 13,
+            colSpan: 12,
             border: [false, false, false, false],
           },
-          {},
           {},
           {},
           {},
@@ -2147,10 +3476,9 @@ export class ReviewComponent implements OnInit {
             alignment: 'left' as Alignment,
 
             text: 'TANK/HOLD DESCRIPTION:',
-            colSpan: 2,
+            colSpan: 1,
             style: 'txt_center',
           },
-          '',
           { text: 'a', colSpan: 11, rowSpan: 1, bold: true },
           {},
           {},
@@ -2168,10 +3496,9 @@ export class ReviewComponent implements OnInit {
             text: 'LOCATION OF STRUCTURE:',
             alignment: 'left' as Alignment,
 
-            colSpan: 2,
+            colSpan: 1,
             style: ['txt_center', 'txt_center'],
           },
-          {},
           {
             text: 'a',
             colSpan: 6,
@@ -2199,7 +3526,6 @@ export class ReviewComponent implements OnInit {
           {},
         ],
         [
-          { text: 'No.', rowSpan: 2, style: 'txt_center' },
           {
             text: 'STRUCTURAL COMPONENT (PLATING/STIFFENER)',
             rowSpan: 2,
@@ -2227,7 +3553,6 @@ export class ReviewComponent implements OnInit {
           {},
           {},
           {},
-          {},
           { text: 'P', style: 'txt_center' },
           { text: 'S', style: 'txt_center' },
           { text: 'mm', style: 'txt_center' },
@@ -2251,7 +3576,6 @@ export class ReviewComponent implements OnInit {
               x.measurementDetail.gaugedP,
               x.measurementDetail.gaugedP,
               x.measurementDetail.gaugedP,
-              x.measurementDetail.gaugedP,
             ])
           : []),
       ],
@@ -2260,8 +3584,8 @@ export class ReviewComponent implements OnInit {
     var tableTm6 = {
       headerRows: 10,
       widths: [
-        '5%',
-        '25%',
+        // '5%',
+        '30%',
         '10%',
         '10%',
         '10%',
@@ -2276,34 +3600,34 @@ export class ReviewComponent implements OnInit {
       ],
       body: [
         //Table header
-        [
-          {
-            text: 'TM6-DHT (1July 2006)',
-            style: ['txt_center'],
-            colSpan: 13,
-            alignment: 'right' as Alignment,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
+        this.lsFormTm6.length >= 1
+          ? [
+              {
+                text: `TM6-${this.lsFormTm6[0].code}(1 July 2023)`,
+                style: ['txt_center'],
+                colSpan: 12,
+                alignment: 'right' as Alignment,
+                border: [false, false, false, false],
+              },
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+            ]
+          : [],
         [
           {
             text: '',
-            colSpan: 13,
+            colSpan: 12,
             border: [false, false, false, false],
           },
-          {},
           {},
           {},
           {},
@@ -2322,7 +3646,7 @@ export class ReviewComponent implements OnInit {
           {
             text: 'Report on THICKNESS MEASUREMENT OF MISCELLANEOUS STRUCTURAL MEMBERS',
             style: ['txt_center', 'fontS11'],
-            colSpan: 13,
+            colSpan: 12,
             decoration: 'underline' as Decoration,
             bold: true,
             border: [false, false, false, false],
@@ -2338,15 +3662,13 @@ export class ReviewComponent implements OnInit {
           {},
           {},
           {},
-          {},
         ],
         [
           {
-            colSpan: 13,
+            colSpan: 12,
             text: '',
             border: [false, false, false, false],
           },
-          {},
           {},
           {},
           {},
@@ -2364,13 +3686,12 @@ export class ReviewComponent implements OnInit {
             text: "Ship's name:",
 
             alignment: 'center' as Alignment,
-            colSpan: 2,
+            colSpan: 1,
             border: [false, false, false, false],
           },
-          {},
           {
             decoration: 'underline' as Decoration,
-            text: 'M/T "TM THAI HA"',
+            text: `${this.inShipName}`,
             colSpan: 2,
             bold: true,
             border: [false, false, false, false],
@@ -2384,7 +3705,7 @@ export class ReviewComponent implements OnInit {
           {},
           {
             decoration: 'underline' as Decoration,
-            text: '2312321',
+            text: `${this.inABS}`,
             colSpan: 2,
             bold: true,
             border: [false, false, false, false],
@@ -2399,8 +3720,7 @@ export class ReviewComponent implements OnInit {
           {},
           {
             decoration: 'underline' as Decoration,
-
-            text: 'VMC.TUM 123',
+            text: `${this.generalParticular[0].reportNo}`,
             colSpan: 3,
             bold: true,
             border: [false, false, false, false],
@@ -2411,10 +3731,9 @@ export class ReviewComponent implements OnInit {
         [
           {
             text: '',
-            colSpan: 13,
+            colSpan: 12,
             border: [false, false, false, false],
           },
-          {},
           {},
           {},
           {},
@@ -2432,10 +3751,9 @@ export class ReviewComponent implements OnInit {
           {
             text: 'STRUCTURAL MEMBERS :',
             alignment: 'left' as Alignment,
-            colSpan: 2,
+            colSpan: 1,
             style: 'txt_center',
           },
-          '',
           { text: 'a', colSpan: 11, rowSpan: 1, bold: true },
           'Price',
           'Date',
@@ -2452,10 +3770,9 @@ export class ReviewComponent implements OnInit {
           {
             text: 'LOCATION OF STRUCTURE:',
             alignment: 'left' as Alignment,
-            colSpan: 2,
+            colSpan: 1,
             style: ['txt_center', 'txt_center'],
           },
-          '',
           {
             text: 'a',
             colSpan: 11,
@@ -2473,7 +3790,6 @@ export class ReviewComponent implements OnInit {
           {},
         ],
         [
-          { text: 'No.', rowSpan: 2, style: 'txt_center' },
           {
             text: 'Description',
             rowSpan: 2,
@@ -2497,7 +3813,6 @@ export class ReviewComponent implements OnInit {
           {},
         ],
         [
-          {},
           {},
           {},
           {},
@@ -2527,7 +3842,6 @@ export class ReviewComponent implements OnInit {
                 x.detailMeasurement.gaugedS,
                 x.detailMeasurement.gaugedS,
                 x.detailMeasurement.gaugedS,
-                x.detailMeasurement.gaugedS,
               ],
               this.no++
             )
@@ -2538,8 +3852,8 @@ export class ReviewComponent implements OnInit {
     var tableTm7 = {
       headerRows: 10,
       widths: [
-        '2.2%',
-        '23.4%',
+        // '2.2%',
+        '25.6%',
         //2
         '2.9%',
         '2.9%',
@@ -2576,56 +3890,55 @@ export class ReviewComponent implements OnInit {
       ],
       body: [
         //Table header
-        [
-          {
-            text: `TM7-(1 July 2023)`,
-            //   text: `TM7-${this.typeForm}(1 July 2023)`,
-            style: ['txt_center'],
-            colSpan: 32,
-            alignment: 'right' as Alignment,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
+        this.lsFormTm7.length >= 1
+          ? [
+              {
+                text: `TM7-${this.lsFormTm7[0].code}(1 July 2023)`,
+                style: ['txt_center'],
+                colSpan: 31,
+                alignment: 'right' as Alignment,
+                border: [false, false, false, false],
+              },
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
 
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
 
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+            ]
+          : [],
         [
           {
             text: '',
-            colSpan: 32,
+            colSpan: 31,
             border: [false, false, false, false],
           },
-          {},
           {},
           {},
           {},
@@ -2664,12 +3977,11 @@ export class ReviewComponent implements OnInit {
           {
             text: 'Report on THICKNESS MEASUREMENT OF SHELL AND DECK PLATING (one, two or three transverse sections)',
             style: ['txt_center', 'fontS11'],
-            colSpan: 32,
+            colSpan: 31,
             decoration: 'underline' as Decoration,
             bold: true,
             border: [false, false, false, false],
           },
-          {},
           {},
           {},
           {},
@@ -2705,11 +4017,10 @@ export class ReviewComponent implements OnInit {
         ],
         [
           {
-            colSpan: 32,
+            colSpan: 31,
             text: '',
             border: [false, false, false, false],
           },
-          {},
           {},
           {},
           {},
@@ -2749,15 +4060,14 @@ export class ReviewComponent implements OnInit {
 
             alignment: 'center' as Alignment,
 
-            colSpan: 4,
+            colSpan: 3,
             border: [false, false, false, false],
           },
           {},
           {},
-          {},
           {
             decoration: 'underline' as Decoration,
-            text: 'M/T "TM THAI HA"',
+            text: `${this.inShipName}`,
             colSpan: 8,
             bold: true,
             border: [false, false, false, false],
@@ -2779,7 +4089,7 @@ export class ReviewComponent implements OnInit {
           {},
           {
             decoration: 'underline' as Decoration,
-            text: '2312321',
+            text: `${this.inABS}`,
             colSpan: 8,
             bold: true,
             border: [false, false, false, false],
@@ -2801,8 +4111,7 @@ export class ReviewComponent implements OnInit {
           {},
           {
             decoration: 'underline' as Decoration,
-
-            text: 'VMC.TUM 123',
+            text: `${this.generalParticular[0].reportNo}`,
             colSpan: 5,
             bold: true,
             border: [false, false, false, false],
@@ -2814,11 +4123,10 @@ export class ReviewComponent implements OnInit {
         ],
         [
           {
-            colSpan: 32,
+            colSpan: 31,
             text: '',
             border: [false, false, false, false],
           },
-          {},
           {},
           {},
           {},
@@ -2856,9 +4164,8 @@ export class ReviewComponent implements OnInit {
           {
             style: 'txt_center',
             text: 'CARGO HOLD NO. 1',
-            colSpan: 32,
+            colSpan: 31,
           },
-          {},
           {},
           {},
           {},
@@ -2896,9 +4203,8 @@ export class ReviewComponent implements OnInit {
           {
             style: 'txt_center',
             text: '',
-            colSpan: 2,
+            colSpan: 1,
           },
-          {},
           {
             style: 'txt_center',
             text: 'UPPER PART',
@@ -2945,11 +4251,6 @@ export class ReviewComponent implements OnInit {
         [
           {
             style: 'txt_center',
-            text: 'No.',
-            rowSpan: 2,
-          },
-          {
-            style: 'txt_center',
             text: 'FRAME NUMBER',
             rowSpan: 2,
           },
@@ -2985,7 +4286,6 @@ export class ReviewComponent implements OnInit {
           {},
         ],
         [
-          {},
           {},
           { style: 'txt_center', text: 'mm' },
           { style: 'txt_center', text: 'mm' },
@@ -3055,7 +4355,6 @@ export class ReviewComponent implements OnInit {
                 x.upperPart.gaugedP,
                 x.upperPart.gaugedS,
 
-                x.upperPart.gaugedS,
                 x.upperPart.gaugedS,
                 x.upperPart.gaugedS,
                 x.upperPart.gaugedS,
@@ -3669,99 +4968,121 @@ export class ReviewComponent implements OnInit {
           { table: tableOfContent, style: ['mg_t_8', 'fontS11'] },
         ],
         // pageTitle
-
         ...(this.parts.length >= 1
           ? [
-              {
-                pageBreak: 'before' as PageBreak,
-                decoration: 'underline' as Decoration,
-                alignment: 'center' as Alignment,
-                style: ['fontS11', 'mg_50'],
-                text: `PART 1`,
-                bold: true,
-              },
-              {
-                decoration: 'underline' as Decoration,
-                text: `${this.parts[0].item}`,
-                alignment: 'center' as Alignment,
-                style: ['fontS45'],
-                bold: true,
-              },
-            ]
-          : []),
-        ...(this.parts[0].forms.some((x) => x.name === 'FORM TM1')
-          ? [
-              {
-                style: ['fontS8', 'tableStyle'],
-                pageBreak: 'before' as PageBreak,
-                pageOrientation: 'landscape' as PageOrientation,
-                table: tableTm1,
-              },
-            ]
-          : []),
-        ...(this.parts[0].forms.map((x) => x.name === 'FORM TM3')
-          ? [
-              {
-                style: ['fontS8', 'tableStyle'],
-                pageBreak: 'before' as PageBreak,
-                pageOrientation: 'landscape' as PageOrientation,
-                table: tableTm3,
-              },
-            ]
-          : []),
-        // ...(this.isTm1OfPart == true
-        //   ? [
-        //       {
-        //         style: ['fontS8', 'tableStyle'],
-        //         pageBreak: 'before' as PageBreak,
-        //         pageOrientation: 'landscape' as PageOrientation,
-        //         table: tableTm1,
-        //       },
-        //     ]
-        //   : []),
+              [
+                {
+                  pageBreak: 'before' as PageBreak,
+                  decoration: 'underline' as Decoration,
+                  alignment: 'center' as Alignment,
+                  style: ['fontS11', 'mg_50'],
+                  text: `PART 1`,
+                  bold: true,
+                },
+                {
+                  decoration: 'underline' as Decoration,
+                  text: `${this.parts[0].item}`,
+                  alignment: 'center' as Alignment,
+                  style: ['fontS45'],
+                  bold: true,
+                },
+              ],
+              ...(this.parts[0].forms.some((x) => x.name === 'FORM TM1')
+                ? [
+                    {
+                      style: ['fontS8', 'tableStyle'],
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      table: tableTm1,
+                    },
+                  ]
+                : []),
+              ...(this.parts[0].forms.some((x) => x.name === 'FORM TM2(I)')
+                ? [
+                    {
+                      style: ['fontS8', 'tableStyle'],
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      table: tableTm2i,
+                    },
+                  ]
+                : []),
+              ...(this.parts[0].forms.some((x) => x.name === 'FORM TM2(II)')
+                ? [
+                    {
+                      style: ['fontS8', 'tableStyle'],
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      table: tableTm2i,
+                    },
+                  ]
+                : []),
+              ...(this.parts[0].forms.map((x) => x.name === 'FORM TM3')
+                ? [
+                    {
+                      style: ['fontS8', 'tableStyle'],
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      table: tableTm3,
+                    },
+                  ]
+                : []),
+              // ...(this.isTm1OfPart == true
+              //   ? [
+              //       {
+              //         style: ['fontS8', 'tableStyle'],
+              //         pageBreak: 'before' as PageBreak,
+              //         pageOrientation: 'landscape' as PageOrientation,
+              //         table: tableTm1,
+              //       },
+              //     ]
+              //   : []),
 
-        // Form
-        // this.lsFormTm4.length >= 1
-        ...(this.parts[0].forms.some((x) => x.name === 'FORM TM4')
-          ? [
-              {
-                pageBreak: 'before' as PageBreak,
-                pageOrientation: 'landscape' as PageOrientation,
-                table: tableTm4,
-                style: ['tableStyle', 'fontS8'],
-              },
+              // Form
+              // this.lsFormTm4.length >= 1
+              ...(this.parts[0].forms.some((x) => x.name === 'FORM TM4')
+                ? [
+                    {
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      table: tableTm4,
+                      style: ['tableStyle', 'fontS8'],
+                    },
+                  ]
+                : []),
+              ...(this.parts[0].forms.some((x) => x.name === 'FORM TM5')
+                ? [
+                    {
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      table: tableTm5,
+                      style: ['tableStyle', 'fontS8'],
+                    },
+                  ]
+                : []),
+              ...(this.parts[0].forms.some((x) => x.name === 'FORM TM6')
+                ? [
+                    {
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      table: tableTm6,
+                      style: ['tableStyle', 'fontS8'],
+                    },
+                  ]
+                : []),
+              ...(this.parts[0].forms.some((x) => x.name === 'FORM TM7')
+                ? [
+                    {
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      table: tableTm7,
+                      style: ['tableStyle', 'fontS8'],
+                    },
+                  ]
+                : []),
             ]
           : []),
-        ...(this.parts[0].forms.some((x) => x.name === 'FORM TM5')
-          ? [
-              {
-                pageBreak: 'before' as PageBreak,
-                pageOrientation: 'landscape' as PageOrientation,
-                table: tableTm5,
-                style: ['tableStyle', 'fontS8'],
-              },
-            ]
-          : []),
-        ...(this.parts[0].forms.some((x) => x.name === 'FORM TM6')
-          ? [
-              {
-                pageBreak: 'before' as PageBreak,
-                pageOrientation: 'landscape' as PageOrientation,
-                table: tableTm6,
-                style: ['tableStyle', 'fontS8'],
-              },
-            ]
-          : []),
-        ...(this.parts[0].forms.some((x) => x.name === 'FORM TM7')
-          ? [
-              {
-                pageBreak: 'before' as PageBreak,
-                pageOrientation: 'landscape' as PageOrientation,
-                table: tableTm7,
-                style: ['tableStyle', 'fontS8'],
-              },
-            ]
-          : []),
+
         // {
         //   image: 'snow',
         //   pageBreak: 'before' as PageBreak,
@@ -3796,6 +5117,26 @@ export class ReviewComponent implements OnInit {
                       pageBreak: 'before' as PageBreak,
                       pageOrientation: 'landscape' as PageOrientation,
                       table: tableTm1,
+                    },
+                  ]
+                : []),
+              ...(this.parts[0].forms.some((x) => x.name === 'FORM TM2(I)')
+                ? [
+                    {
+                      style: ['fontS8', 'tableStyle'],
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      table: tableTm2i,
+                    },
+                  ]
+                : []),
+              ...(this.parts[0].forms.some((x) => x.name === 'FORM TM2(II)')
+                ? [
+                    {
+                      style: ['fontS8', 'tableStyle'],
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      table: tableTm2i,
                     },
                   ]
                 : []),
@@ -3877,93 +5218,333 @@ export class ReviewComponent implements OnInit {
         //   : [],
 
         // pageTitle
-        [
-          {
-            pageBreak: 'before' as PageBreak,
-            decoration: 'underline' as Decoration,
-            pageOrientation: 'portrait' as PageOrientation,
-            alignment: 'center' as Alignment,
-            style: ['fontS11', 'mg_50'],
-            text: 'PART 3',
-            bold: true,
-          },
-          {
-            decoration: 'underline' as Decoration,
-            text: 'MAIN DECK',
-            alignment: 'center' as Alignment,
-            style: ['fontS45'],
-            bold: true,
-          },
-        ],
+        ...(this.parts.length >= 3
+          ? [
+              [
+                {
+                  pageBreak: 'before' as PageBreak,
+                  pageOrientation: 'portrait' as PageOrientation,
+                  decoration: 'underline' as Decoration,
+                  alignment: 'center' as Alignment,
+                  style: ['fontS11', 'mg_50'],
+                  text: 'PART 3',
+                  bold: true,
+                },
+                {
+                  decoration: 'underline' as Decoration,
+                  text: `${this.parts[2].item}`,
+                  alignment: 'center' as Alignment,
+                  style: ['fontS45'],
+                  bold: true,
+                },
+              ],
+              ...(this.parts[2].forms.some((x) => x.name === 'FORM TM1')
+                ? [
+                    {
+                      style: ['fontS8', 'tableStyle'],
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      table: tableTm1,
+                    },
+                  ]
+                : []),
+              ...(this.parts[2].forms.some((x) => x.name === 'FORM TM2(I)')
+                ? [
+                    {
+                      style: ['fontS8', 'tableStyle'],
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      table: tableTm2i,
+                    },
+                  ]
+                : []),
+              ...(this.parts[0].forms.some((x) => x.name === 'FORM TM2(II)')
+                ? [
+                    {
+                      style: ['fontS8', 'tableStyle'],
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      table: tableTm2i,
+                    },
+                  ]
+                : []),
+              ...(this.parts[2].forms.some((x) => x.name === 'FORM TM3')
+                ? [
+                    {
+                      style: ['fontS8', 'tableStyle'],
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      table: tableTm3,
+                    },
+                  ]
+                : []),
+              // ...(this.isTm1OfPart == true
+              //   ? [
+              //       {
+              //         style: ['fontS8', 'tableStyle'],
+              //         pageBreak: 'before' as PageBreak,
+              //         pageOrientation: 'landscape' as PageOrientation,
+              //         table: tableTm1,
+              //       },
+              //     ]
+              //   : []),
+
+              // Form
+              // this.lsFormTm4.length >= 1
+              ...(this.parts[2].forms.some((x) => x.name === 'FORM TM4')
+                ? [
+                    {
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      table: tableTm4_c,
+                      style: ['tableStyle', 'fontS8'],
+                    },
+                  ]
+                : []),
+              ...(this.parts[2].forms.some((x) => x.name === 'FORM TM5')
+                ? [
+                    {
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      table: tableTm5,
+                      style: ['tableStyle', 'fontS8'],
+                    },
+                  ]
+                : []),
+              ...(this.parts[2].forms.some((x) => x.name === 'FORM TM6')
+                ? [
+                    {
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      table: tableTm6,
+                      style: ['tableStyle', 'fontS8'],
+                    },
+                  ]
+                : []),
+              ...(this.parts[2].forms.some((x) => x.name === 'FORM TM7')
+                ? [
+                    {
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      table: tableTm7,
+                      style: ['tableStyle', 'fontS8'],
+                    },
+                  ]
+                : []),
+            ]
+          : []),
         // form
-        [
-          {
-            pageBreak: 'before' as PageBreak,
-            pageOrientation: 'landscape' as PageOrientation,
-            style: ['fontS8', 'tableStyle'],
-            table: tableTm2i,
-          },
-        ],
+        // [
+        //   {
+        //     pageBreak: 'before' as PageBreak,
+        //     pageOrientation: 'landscape' as PageOrientation,
+        //     style: ['fontS8', 'tableStyle'],
+        //     table: tableTm2i,
+        //   },
+        // ],
 
         // // pageTitle Tm2ii
-        [
-          {
-            pageBreak: 'before' as PageBreak,
-            decoration: 'underline' as Decoration,
-            pageOrientation: 'portrait' as PageOrientation,
-            alignment: 'center' as Alignment,
-            style: ['fontS11', 'mg_50'],
-            text: 'PART 4',
-            bold: true,
-          },
-          {
-            decoration: 'underline' as Decoration,
-            text: 'MAIN DECK',
-            alignment: 'center' as Alignment,
-            style: ['fontS45'],
-            bold: true,
-          },
-        ],
+        ...(this.parts.length >= 4
+          ? [
+              [
+                {
+                  pageBreak: 'before' as PageBreak,
+                  pageOrientation: 'portrait' as PageOrientation,
+                  decoration: 'underline' as Decoration,
+                  alignment: 'center' as Alignment,
+                  style: ['fontS11', 'mg_50'],
+                  text: 'PART 4',
+                  bold: true,
+                },
+                {
+                  decoration: 'underline' as Decoration,
+                  text: `${this.parts[3].item}`,
+                  alignment: 'center' as Alignment,
+                  style: ['fontS45'],
+                  bold: true,
+                },
+              ],
+              ...(this.parts[3].forms.some((x) => x.name === 'FORM TM1')
+                ? [
+                    {
+                      style: ['fontS8', 'tableStyle'],
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      table: tableTm1,
+                    },
+                  ]
+                : []),
+              ...(this.parts[3].forms.some((x) => x.name === 'FORM TM3')
+                ? [
+                    {
+                      style: ['fontS8', 'tableStyle'],
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      table: tableTm3,
+                    },
+                  ]
+                : []),
+              // ...(this.isTm1OfPart == true
+              //   ? [
+              //       {
+              //         style: ['fontS8', 'tableStyle'],
+              //         pageBreak: 'before' as PageBreak,
+              //         pageOrientation: 'landscape' as PageOrientation,
+              //         table: tableTm1,
+              //       },
+              //     ]
+              //   : []),
+
+              // Form
+              // this.lsFormTm4.length >= 1
+              ...(this.parts[3].forms.some((x) => x.name === 'FORM TM4')
+                ? [
+                    {
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      table: tableTm4_c,
+                      style: ['tableStyle', 'fontS8'],
+                    },
+                  ]
+                : []),
+              ...(this.parts[3].forms.some((x) => x.name === 'FORM TM5')
+                ? [
+                    {
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      table: tableTm5,
+                      style: ['tableStyle', 'fontS8'],
+                    },
+                  ]
+                : []),
+              ...(this.parts[3].forms.some((x) => x.name === 'FORM TM6')
+                ? [
+                    {
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      table: tableTm6,
+                      style: ['tableStyle', 'fontS8'],
+                    },
+                  ]
+                : []),
+              ...(this.parts[3].forms.some((x) => x.name === 'FORM TM7')
+                ? [
+                    {
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      table: tableTm7,
+                      style: ['tableStyle', 'fontS8'],
+                    },
+                  ]
+                : []),
+            ]
+          : []),
         // form
-        [
-          {
-            style: ['fontS8', 'tableStyle'],
-            pageBreak: 'before' as PageBreak,
-            pageOrientation: 'landscape' as PageOrientation,
-            table: tableTm2ii,
-          },
-        ],
+        // [
+        //   {
+        //     style: ['fontS8', 'tableStyle'],
+        //     pageBreak: 'before' as PageBreak,
+        //     pageOrientation: 'landscape' as PageOrientation,
+        //     table: tableTm2ii,
+        //   },
+        // ],
 
         // // pageTitle Tm3
-        [
-          {
-            pageBreak: 'before' as PageBreak,
-            decoration: 'underline' as Decoration,
-            pageOrientation: 'portrait' as PageOrientation,
-            alignment: 'center' as Alignment,
-            style: ['fontS11', 'mg_50'],
-            text: 'PART 5',
-            bold: true,
-          },
-          {
-            decoration: 'underline' as Decoration,
-            text: 'MAIN DECK',
-            alignment: 'center' as Alignment,
-            style: ['fontS45'],
-            bold: true,
-          },
-        ],
-        // form
-        this.lsFormTm3.length >= 1
+        ...(this.parts.length >= 5
           ? [
-              {
-                style: ['fontS8', 'tableStyle'],
-                pageBreak: 'before' as PageBreak,
-                pageOrientation: 'landscape' as PageOrientation,
-                table: tableTm3,
-              },
+              [
+                {
+                  pageBreak: 'before' as PageBreak,
+                  pageOrientation: 'portrait' as PageOrientation,
+                  decoration: 'underline' as Decoration,
+                  alignment: 'center' as Alignment,
+                  style: ['fontS11', 'mg_50'],
+                  text: 'PART 5',
+                  bold: true,
+                },
+                {
+                  decoration: 'underline' as Decoration,
+                  text: `${this.parts[4].item}`,
+                  alignment: 'center' as Alignment,
+                  style: ['fontS45'],
+                  bold: true,
+                },
+              ],
+              ...(this.parts[4].forms.some((x) => x.name === 'FORM TM1')
+                ? [
+                    {
+                      style: ['fontS8', 'tableStyle'],
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      table: tableTm1,
+                    },
+                  ]
+                : []),
+              ...(this.parts[4].forms.some((x) => x.name === 'FORM TM4')
+                ? [
+                    {
+                      style: ['fontS8', 'tableStyle'],
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      table: tableTm4,
+                    },
+                  ]
+                : []),
+              // ...(this.isTm1OfPart == true
+              //   ? [
+              //       {
+              //         style: ['fontS8', 'tableStyle'],
+              //         pageBreak: 'before' as PageBreak,
+              //         pageOrientation: 'landscape' as PageOrientation,
+              //         table: tableTm1,
+              //       },
+              //     ]
+              //   : []),
+
+              // Form
+              // this.lsFormTm4.length >= 1
+              ...(this.parts[4].forms.some((x) => x.name === 'FORM TM4')
+                ? [
+                    {
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      table: tableTm4_c,
+                      style: ['tableStyle', 'fontS8'],
+                    },
+                  ]
+                : []),
+              ...(this.parts[4].forms.some((x) => x.name === 'FORM TM5')
+                ? [
+                    {
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      table: tableTm5,
+                      style: ['tableStyle', 'fontS8'],
+                    },
+                  ]
+                : []),
+              ...(this.parts[4].forms.some((x) => x.name === 'FORM TM6')
+                ? [
+                    {
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      table: tableTm6,
+                      style: ['tableStyle', 'fontS8'],
+                    },
+                  ]
+                : []),
+              ...(this.parts[4].forms.some((x) => x.name === 'FORM TM7')
+                ? [
+                    {
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      table: tableTm7,
+                      style: ['tableStyle', 'fontS8'],
+                    },
+                  ]
+                : []),
             ]
-          : [],
+          : []),
 
         // // pageTitle Tm6
         [
@@ -4177,6 +5758,7 @@ export class ReviewComponent implements OnInit {
     console.log('p_pageCount' + _pageCount);
 
     pdfMake.createPdf(pdfDocument).open({}, window);
+    // pdfMake.createPdf(pdfDocument).download();
   }
 
   exportTestPdf() {
@@ -4290,6 +5872,26 @@ export class ReviewComponent implements OnInit {
                   console.log(this.lsFormTm1);
                 });
             }
+            if (this.form_id_name[i].nameForm === 'FORM TM2(I)') {
+              this.dataTm1S
+                .getDataTm1FromApi('tm2s', this.form_id_name[i].idForm)
+                .subscribe((data) => {
+                  this.lsFormTm2i.push(data);
+                  console.log('tm2i');
+
+                  console.log(this.lsFormTm2i);
+                });
+            }
+            if (this.form_id_name[i].nameForm === 'FORM TM2(II)') {
+              this.dataTm1S
+                .getDataTm1FromApi('tm2s', this.form_id_name[i].idForm)
+                .subscribe((data) => {
+                  this.lsFormTm2ii.push(data);
+                  console.log('tm2ii');
+
+                  console.log(this.lsFormTm2ii);
+                });
+            }
             if (this.form_id_name[i].nameForm === 'FORM TM3') {
               this.dataTm1S
                 .getDataTm1FromApi('tm3s', this.form_id_name[i].idForm)
@@ -4347,20 +5949,5 @@ export class ReviewComponent implements OnInit {
           console.log('error');
         }
       );
-
-    if (2 > 1) {
-      this.isTm1_c = true;
-      console.log('222');
-    }
-
-    // for (let i = 0; i < this.forms.length; i++) {
-    //   if (this.forms[i] == 'tm1') {
-    //     this.isTm1 = true;
-    //   }
-    //   if (this.forms[i] == 'tm1_c') {
-    //     this.isTm1_c = true;
-    //   }
-    // }
-    // console.log(this.isTm1);
   }
 }
