@@ -70,7 +70,7 @@ export class HistoryComponent implements OnInit {
       },
       (err) => {
         console.log(err);
-        alert('Failure to load data from server');
+        this.message.create('error', 'connection to data failed');
       }
     );
   }
@@ -82,7 +82,7 @@ export class HistoryComponent implements OnInit {
       },
       (err) => {
         console.log(err);
-        alert('Failure to load data from server');
+        this.message.create('error', 'connection to data failed');
       }
     );
     this.mainData = this.localService.getMainData();
@@ -104,8 +104,8 @@ export class HistoryComponent implements OnInit {
       .subscribe(
         (data) => {
           this.parts.splice(0, this.parts.length);
+          let newForm: Form[] = [];
           for (let i: number = 0; i < data.parts.length; i++) {
-            let newForm: Form[] = [];
             for (let j: number = 0; j < data.parts[i].forms.length; j++) {
               newForm.push({
                 formID: data.parts[i].forms[j].formID,
@@ -117,10 +117,11 @@ export class HistoryComponent implements OnInit {
               id: data.parts[i].id,
               partIndex: data.parts[i].partIndex,
               partName: data.parts[i].item,
-              forms: newForm,
+              forms: newForm.sort((a, b) => a.index - b.index),
               visible: false,
               edit: false,
             });
+            this.parts = this.parts.sort((a, b) => a.partIndex - b.partIndex);
           }
         },
         (err) => {
@@ -209,7 +210,7 @@ export class HistoryComponent implements OnInit {
           },
           (err) => {
             console.log(err);
-            alert('Failure to load data from server');
+            this.message.create('error', 'connection to data failed');
           }
         );
       },
@@ -221,7 +222,7 @@ export class HistoryComponent implements OnInit {
           },
           (err) => {
             console.log(err);
-            alert('Failure to load data from server');
+            this.message.create('error', 'connection to data failed');
           }
         );
       }
