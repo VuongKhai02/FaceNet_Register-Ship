@@ -95,6 +95,8 @@ export class Tm2iComponent {
 
   generalParticular!: GeneralParticular;
 
+  selectedFile: any;
+
   ngOnInit(): void {
     this.router.events.subscribe((event) => {
       if (
@@ -327,7 +329,7 @@ export class Tm2iComponent {
     const formData = new FormData();
     formData.append('excelFile', event.target.files[0]);
     this.formService
-      .importExcel(`${API_END_POINT}/report-indexes/1/tm2s/sheet`, formData)
+      .importExcel(`${API_END_POINT}/sheet/tm2s`, formData)
       .subscribe((data) => {
         data.measurementTM2DTOList.forEach((data: any) => {
           this.listRow.push({
@@ -366,5 +368,6 @@ export class Tm2iComponent {
           });
         });
       });
+    this.selectedFile = null;
   }
 }

@@ -90,6 +90,8 @@ export class Tm3Component {
 
   generalParticular!: GeneralParticular;
 
+  selectedFile: any;
+
   ngOnInit(): void {
     this.router.events.subscribe((event) => {
       if (
@@ -360,38 +362,49 @@ export class Tm3Component {
     const formData = new FormData();
     formData.append('excelFile', event.target.files[0]);
     this.formService
-      .importExcel(`${API_END_POINT}/report-indexes/1/tm3s/sheet`, formData)
+      .importExcel(`${API_END_POINT}/sheet/tm3s`, formData)
       .subscribe((data) => {
+        this.firstTransverseSectionFrom = data.firstFrameNo.split('~')[0];
+        this.firstTransverseSectionTo = data.firstFrameNo.split('~')[1];
+        this.secondTransverseSectionFrom = data.secondFrameNo.split('~')[0];
+        this.secondTransverseSectionTo = data.secondFrameNo.split('~')[1];
+        this.thirdTransverseSectionFrom = data.thirdFrameNo.split('~')[0];
+        this.thirdTransverseSectionTo = data.thirdFrameNo.split('~')[1];
+
         data.measurementTM3DTOList.forEach((data: any) => {
           this.listRow.push({
             structuralMember: data.structuralMember,
             noOrLetter: data.noOrLetter,
             firstTransverseSectionMeasurementDetail: {
               originalThickness:
-                data.forwardReadingMeasurementDetail.originalThickness,
-              maxAlwbDim: data.forwardReadingMeasurementDetail.maxAlwbDim,
-              gaugedP: data.forwardReadingMeasurementDetail.gaugedP,
-              gaugedS: data.forwardReadingMeasurementDetail.gaugedS,
-              percent: data.forwardReadingMeasurementDetail.percent,
+                data.firstTransverseSectionMeasurementDetail.originalThickness,
+              maxAlwbDim:
+                data.firstTransverseSectionMeasurementDetail.maxAlwbDim,
+              gaugedP: data.firstTransverseSectionMeasurementDetail.gaugedP,
+              gaugedS: data.firstTransverseSectionMeasurementDetail.gaugedS,
+              percent: data.firstTransverseSectionMeasurementDetail.percent,
             },
             secondTransverseSectionMeasurementDetail: {
               originalThickness:
-                data.afterReadingMeasurementDetail.originalThickness,
-              maxAlwbDim: data.afterReadingMeasurementDetail.maxAlwbDim,
-              gaugedP: data.afterReadingMeasurementDetail.gaugedP,
-              gaugedS: data.afterReadingMeasurementDetail.gaugedS,
-              percent: data.afterReadingMeasurementDetail.percent,
+                data.secondTransverseSectionMeasurementDetail.originalThickness,
+              maxAlwbDim:
+                data.secondTransverseSectionMeasurementDetail.maxAlwbDim,
+              gaugedP: data.secondTransverseSectionMeasurementDetail.gaugedP,
+              gaugedS: data.secondTransverseSectionMeasurementDetail.gaugedS,
+              percent: data.secondTransverseSectionMeasurementDetail.percent,
             },
             thirdTransverseSectionMeasurementDetail: {
               originalThickness:
-                data.afterReadingMeasurementDetail.originalThickness,
-              maxAlwbDim: data.afterReadingMeasurementDetail.maxAlwbDim,
-              gaugedP: data.afterReadingMeasurementDetail.gaugedP,
-              gaugedS: data.afterReadingMeasurementDetail.gaugedS,
-              percent: data.afterReadingMeasurementDetail.percent,
+                data.thirdTransverseSectionMeasurementDetail.originalThickness,
+              maxAlwbDim:
+                data.thirdTransverseSectionMeasurementDetail.maxAlwbDim,
+              gaugedP: data.thirdTransverseSectionMeasurementDetail.gaugedP,
+              gaugedS: data.thirdTransverseSectionMeasurementDetail.gaugedS,
+              percent: data.thirdTransverseSectionMeasurementDetail.percent,
             },
           });
         });
       });
+    this.selectedFile = null;
   }
 }

@@ -45,7 +45,7 @@ export class Tm2iiComponent {
 
   partId: string = this.router.url.split('/')[2];
   tmId: string = this.router.url.split('/')[4];
-  API_URL: string = `http://222.252.25.37:9080/api/v1/report-indexes/${this.partId}/tm2s`;
+  API_URL: string = `${API_END_POINT}/report-indexes/${this.partId}/tm2s`;
 
   listPercentOption = [
     { label: '20%', value: 1 },
@@ -94,6 +94,8 @@ export class Tm2iiComponent {
   listFormCode: ParamValue[] = [];
 
   generalParticular!: GeneralParticular;
+
+  selectedFile: any;
 
   ngOnInit(): void {
     this.router.events.subscribe((event) => {
@@ -357,5 +359,6 @@ export class Tm2iiComponent {
           });
         });
       });
+    this.selectedFile = null;
   }
 }

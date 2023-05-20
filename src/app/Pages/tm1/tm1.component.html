@@ -96,6 +96,7 @@
         accept=".xls"
         style="display: none"
         id="import-excel"
+        [(ngModel)]="selectedFile"
         (change)="onImportExcel($event)"
       />
     </button>

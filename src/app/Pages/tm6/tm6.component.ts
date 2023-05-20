@@ -11,6 +11,7 @@ import { CdkDragEnd, CdkDragDrop } from '@angular/cdk/drag-drop';
 import { NavigationEnd, Router } from '@angular/router';
 import { GeneralParticular } from 'src/app/share/models/generalParticulars.model';
 import { API_END_POINT } from 'src/environments/environment';
+import { newParamValue } from 'src/app/share/models/newParamValue.model';
 
 @Component({
   selector: 'app-tm6',
@@ -70,6 +71,10 @@ export class Tm6Component implements OnInit {
 
   generalParticular!: GeneralParticular;
 
+  listNewStructuralMember: newParamValue[] = [];
+
+  selectedFile: any;
+
   ngOnInit(): void {
     this.router.events.subscribe((event) => {
       if (
@@ -97,12 +102,13 @@ export class Tm6Component implements OnInit {
           }
 
           this.listStructuralMember.map((member) => {
-            data.measurementTM6DTOList.forEach((e: any) => {
-              if (member.param == e.structuralMember) {
-                member.value =
-                  e.firstTransverseSectionMeasurementDetail.percent;
-                return;
-              }
+            data.structuralDescriptionTM6List.forEach((structural: any) => {
+              structural.measurementTM6DTOList.forEach((measurement: any) => {
+                if (member.param == measurement.structuralMember) {
+                  member.value = measurement.detailMeasurement.percent;
+                  return;
+                }
+              });
             });
           });
         });
@@ -312,7 +318,7 @@ export class Tm6Component implements OnInit {
         });
     } else {
       this.formService
-        .updateForm('tm4s', this.tmId, this.formTM6)
+        .updateForm('tm6s', this.tmId, this.formTM6)
         .pipe(
           retry(3),
           catchError(() => {
@@ -332,6 +338,12 @@ export class Tm6Component implements OnInit {
             );
           },
         });
+    }
+
+    if (this.listNewStructuralMember.length > 0) {
+      this.listNewStructuralMember.forEach((newStructuralMember) => {
+        this.paramValueService.addParamValue(newStructuralMember).subscribe();
+      });
     }
   }
 
@@ -424,9 +436,45 @@ export class Tm6Component implements OnInit {
     const formData = new FormData();
     formData.append('excelFile', event.target.files[0]);
     this.formService
-      .importExcel(`${API_END_POINT}/report-indexes/1/tm3s/sheet`, formData)
+      .importExcel(`${API_END_POINT}/sheet/tm6s`, formData)
       .subscribe((data) => {
-        data.measurementTM6DTOList.forEach((data: any) => {});
+        this.formTM6.structuralMembers = data.structuralMembers;
+        this.formTM6.locationOfStructure = data.locationOfStructure;
+        this.formTM6.structuralDescriptionTM6List =
+          data.structuralDescriptionTM6List;
+
+        for (
+          let i = 0;
+          i < this.formTM6.structuralDescriptionTM6List.length;
+          i++
+        ) {
+          this.formTM6.structuralDescriptionTM6List[i].measurementTM6List =
+            data.structuralDescriptionTM6List[i].measurementTM6DTOList;
+
+          data.structuralDescriptionTM6List[i].measurementTM6DTOList.forEach(
+            (measurementTM6DTO: any) => {
+              if (
+                this.listStructuralMember.find(
+                  (item) => item.param === measurementTM6DTO.description
+                ) === undefined
+              ) {
+                this.listStructuralMember.push({
+                  id: 0,
+                  param: measurementTM6DTO.description,
+                  value: measurementTM6DTO.description,
+                  type: 'TM5_VALUE',
+                  edit: false,
+                });
+                this.listNewStructuralMember.push({
+                  param: measurementTM6DTO.description,
+                  value: measurementTM6DTO.description,
+                  type: 8,
+                });
+              }
+            }
+          );
+        }
       });
+    this.selectedFile = null;
   }
 }

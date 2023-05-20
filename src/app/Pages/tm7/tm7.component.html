@@ -222,7 +222,7 @@
           {{ i === 0 ? i + 1 : countRowBefore(i) + 1 }}
         </td>
         <td colSpan="3">
-          <input nz-input type="text" (ngModel)="(frameNumber.name)" />
+          <input nz-input type="text" [(ngModel)]="frameNumber.name" />
         </td>
         <td colSpan="30"></td>
         <td

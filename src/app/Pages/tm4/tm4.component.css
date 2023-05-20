@@ -40,11 +40,11 @@ input {
 
 .toolBar {
   margin: 5px 25px 6px;
-  float: right;
   border-radius: 4px;
   display: flex;
   justify-content: space-between;
   width: fit-content;
+  margin-left: auto;
 }
 
 .toolBar button {

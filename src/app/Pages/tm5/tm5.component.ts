@@ -10,6 +10,7 @@ import { CdkDragEnd, CdkDragDrop } from '@angular/cdk/drag-drop';
 import { NavigationEnd, Router } from '@angular/router';
 import { GeneralParticular } from 'src/app/share/models/generalParticulars.model';
 import { API_END_POINT } from 'src/environments/environment';
+import { newParamValue } from 'src/app/share/models/newParamValue.model';
 
 @Component({
   selector: 'app-tm5',
@@ -25,33 +26,31 @@ export class Tm5Component implements OnInit {
   ) {}
 
   addRowValue: number = 0;
-
   listRow: measurementTM5[] = [];
+
+  listStructuralMember: ParamValue[] = [];
 
   formTM5: formTM5 = {
     code: '',
-    description: '',
-    name: '',
     locationOfStructure: '',
     tankHolDescription: '',
     frameNo: '',
-    measurementTM5List: this.listRow,
+    structuralTM5List: [],
   };
 
   isPercentVisible: boolean = false;
   isAddRowVisible: boolean = false;
 
   percentSelected: number = 0;
-
-  listStructuralMember: ParamValue[] = [];
+  structuralMemberSelected: number = -2;
 
   partId: string = this.router.url.split('/')[2];
   tmId: string = this.router.url.split('/')[4];
   API_URL: string = `http://222.252.25.37:9080/api/v1/report-indexes/${this.partId}/tm5s`;
 
   emptyRow: measurementTM5 = {
-    structuralComponentType: '',
     structuralComponent: '',
+    item: '',
     measurementDetail: {
       originalThickness: '',
       maxAlwbDim: '',
@@ -65,11 +64,16 @@ export class Tm5Component implements OnInit {
   isLoadingSaveButton: boolean = false;
 
   selectedRow: number[] = [];
+  selectedListRow: number = -1;
   listFormCode: ParamValue[] = [];
 
-  isLoadingImportExcel: boolean = false;
+  isLoadingDataForm: boolean = false;
 
   generalParticular!: GeneralParticular;
+
+  listNewStructuralMember: newParamValue[] = [];
+
+  selectedFile: any;
 
   ngOnInit(): void {
     this.router.events.subscribe((event) => {
@@ -85,15 +89,21 @@ export class Tm5Component implements OnInit {
           this.formTM5.code = data.code;
           this.formTM5.tankHolDescription = data.tankHolDescription;
           this.formTM5.locationOfStructure = data.locationOfStructure;
-          this.formTM5.frameNo = data.frameNo;
-          this.listRow = data.measurementTM5List;
+          this.formTM5.structuralTM5List = data.structuralTM5List;
+
+          for (let i = 0; i < this.formTM5.structuralTM5List.length; i++) {
+            this.formTM5.structuralTM5List[i].measurementTM5List =
+              data.structuralTM5List[i].measurementTM5DTOList;
+          }
 
           this.listStructuralMember.map((member) => {
-            data.measurementTM5List.forEach((e: any) => {
-              if (member.param == e.structuralComponent) {
-                member.value = e.measurementDetail.percent;
-                return;
-              }
+            data.structuralTM5List.forEach((structural: any) => {
+              structural.measurementTM5DTOList.forEach((measurement: any) => {
+                if (member.param == measurement.item) {
+                  member.value = measurement.measurementDetail.percent;
+                  return;
+                }
+              });
             });
           });
         });
@@ -101,28 +111,51 @@ export class Tm5Component implements OnInit {
         event instanceof NavigationEnd &&
         this.router.url.split('/')[4] === '-1'
       ) {
-        for (let i = 1; i <= 20; i++)
-          this.listRow.push(JSON.parse(JSON.stringify(this.emptyRow)));
+        this.formTM5.structuralTM5List = [];
+        this.formTM5.structuralTM5List.push({
+          name: 'New list',
+          measurementTM5List: [],
+        });
+
+        for (let i = 1; i <= 20; i++) {
+          this.formTM5.structuralTM5List[0].measurementTM5List.push(
+            JSON.parse(JSON.stringify(this.emptyRow))
+          );
+        }
       }
     });
 
     if (Number(this.tmId) === -1) {
-      for (let i = 1; i <= 20; i++)
-        this.listRow.push(JSON.parse(JSON.stringify(this.emptyRow)));
+      this.formTM5.structuralTM5List = [];
+      this.formTM5.structuralTM5List.push({
+        name: 'New list',
+        measurementTM5List: [],
+      });
+      for (let i = 1; i <= 20; i++) {
+        this.formTM5.structuralTM5List[0].measurementTM5List.push(
+          JSON.parse(JSON.stringify(this.emptyRow))
+        );
+      }
     } else {
       this.formService.getDataForm('tm5s', this.tmId).subscribe((data) => {
         this.formTM5.code = data.code;
         this.formTM5.tankHolDescription = data.tankHolDescription;
         this.formTM5.locationOfStructure = data.locationOfStructure;
-        this.formTM5.frameNo = data.frameNo;
-        this.listRow = data.measurementTM5List;
+        this.formTM5.structuralTM5List = data.structuralTM5List;
+
+        for (let i = 0; i < this.formTM5.structuralTM5List.length; i++) {
+          this.formTM5.structuralTM5List[i].measurementTM5List =
+            data.structuralTM5List[i].measurementTM5DTOList;
+        }
 
         this.listStructuralMember.map((member) => {
-          data.measurementTM5List.forEach((e: any) => {
-            if (member.param == e.structuralComponent) {
-              member.value = e.measurementDetail.percent;
-              return;
-            }
+          data.structuralTM5List.forEach((structural: any) => {
+            structural.measurementTM5DTOList.forEach((measurement: any) => {
+              if (member.param == measurement.item) {
+                member.value = measurement.measurementDetail.percent;
+                return;
+              }
+            });
           });
         });
       });
@@ -141,9 +174,24 @@ export class Tm5Component implements OnInit {
   }
 
   addRow() {
-    if (this.addRowValue > 0 && this.addRowValue <= 100)
-      for (let i = 1; i <= this.addRowValue; i++)
-        this.listRow.push(JSON.parse(JSON.stringify(this.emptyRow)));
+    if (this.addRowValue > 0 && this.addRowValue <= 100) {
+      if (this.structuralMemberSelected >= 0) {
+        for (let i = 1; i <= this.addRowValue; i++)
+          this.formTM5.structuralTM5List[
+            this.structuralMemberSelected
+          ].measurementTM5List.push(JSON.parse(JSON.stringify(this.emptyRow)));
+      } else if (this.structuralMemberSelected == -1) {
+        this.formTM5.structuralTM5List.push({
+          name: 'New list',
+          measurementTM5List: [],
+        });
+
+        for (let i = 1; i <= this.addRowValue; i++)
+          this.formTM5.structuralTM5List[
+            this.formTM5.structuralTM5List.length - 1
+          ].measurementTM5List.push(JSON.parse(JSON.stringify(this.emptyRow)));
+      }
+    }
   }
 
   showModalPercentManage() {
@@ -185,34 +233,45 @@ export class Tm5Component implements OnInit {
   }
 
   setPercent(percent: string, param: string): void {
-    this.listRow
-      .filter((row) => row.structuralComponent === param)
-      .map((row) => {
-        row.measurementDetail.percent = percent;
-      });
+    this.formTM5.structuralTM5List.map((form) => {
+      form.measurementTM5List
+        .filter((row) => row.item === param)
+        .map((row) => {
+          row.measurementDetail.percent = percent;
+        });
+    });
   }
 
-  onSelected(value: string, index: number): void {
+  onSelected(
+    value: string,
+    structuralMemberTitleIndex: number,
+    structuralMemberIndex: number
+  ): void {
     this.listStructuralMember.map((param) => {
       if (param.param === value) {
-        this.listRow[index].measurementDetail.percent = param.value;
+        this.formTM5.structuralTM5List[
+          structuralMemberTitleIndex
+        ].measurementTM5List[structuralMemberIndex].measurementDetail.percent =
+          param.value;
       }
     });
   }
 
   onSaveForm() {
     this.isLoadingSaveButton = true;
-    this.formTM5.measurementTM5List = this.listRow;
-    this.formTM5.measurementTM5List = this.formTM5.measurementTM5List.filter(
-      (form) =>
-        form.structuralComponentType !== '' ||
-        form.structuralComponent !== '' ||
-        form.measurementDetail.originalThickness !== '' ||
-        form.measurementDetail.gaugedP !== '' ||
-        form.measurementDetail.gaugedS !== ''
-    );
 
-    this.listRow = this.formTM5.measurementTM5List;
+    this.formTM5.structuralTM5List.forEach((structuralMember) => {
+      structuralMember.measurementTM5List =
+        structuralMember.measurementTM5List.filter((measurementTM5) => {
+          return (
+            measurementTM5.structuralComponent !== '' ||
+            measurementTM5.item !== '' ||
+            measurementTM5.measurementDetail.originalThickness !== '' ||
+            measurementTM5.measurementDetail.gaugedP !== '' ||
+            measurementTM5.measurementDetail.gaugedS !== ''
+          );
+        });
+    });
 
     if (Number(this.tmId) === -1) {
       this.formService
@@ -244,7 +303,7 @@ export class Tm5Component implements OnInit {
         });
     } else {
       this.formService
-        .updateForm('tm5s', this.tmId, this.formTM5)
+        .updateForm('tm5', this.tmId, this.formTM5)
         .pipe(
           retry(3),
           catchError(() => {
@@ -265,47 +324,90 @@ export class Tm5Component implements OnInit {
           },
         });
     }
+
+    if (this.listNewStructuralMember.length > 0) {
+      this.listNewStructuralMember.forEach((newStructuralMember) => {
+        this.paramValueService.addParamValue(newStructuralMember).subscribe();
+      });
+    }
   }
 
   onDragEnded(event: CdkDragEnd) {
     event.source.reset();
   }
 
-  selectRow(index: number): void {
-    if (
-      index === this.selectedRow.sort()[0] - 1 ||
-      index === this.selectedRow.sort()[this.selectedRow.length - 1] + 1 ||
-      index === this.selectedRow.sort()[0] ||
-      index === this.selectedRow.sort()[this.selectedRow.length - 1]
-    ) {
-      if (this.selectedRow.includes(index) === false)
-        this.selectedRow.push(index);
-      else this.selectedRow = this.selectedRow.filter((e) => e !== index);
-    } else if (this.selectedRow.length === 0) this.selectedRow.push(index);
+  selectRow(rowIndex: number, listRowIndex: number): void {
+    if (this.selectedListRow === -1 || this.selectedRow.length === 0) {
+      this.selectedListRow = listRowIndex;
+      if (
+        rowIndex === this.selectedRow.sort()[0] - 1 ||
+        rowIndex === this.selectedRow.sort()[this.selectedRow.length - 1] + 1 ||
+        rowIndex === this.selectedRow.sort()[0] ||
+        rowIndex === this.selectedRow.sort()[this.selectedRow.length - 1]
+      ) {
+        if (this.selectedRow.includes(rowIndex) === false)
+          this.selectedRow.push(rowIndex);
+        else this.selectedRow = this.selectedRow.filter((e) => e !== rowIndex);
+      } else if (this.selectedRow.length === 0) this.selectedRow.push(rowIndex);
+    } else {
+      if (this.selectedListRow === listRowIndex) {
+        if (
+          rowIndex === this.selectedRow.sort()[0] - 1 ||
+          rowIndex ===
+            this.selectedRow.sort()[this.selectedRow.length - 1] + 1 ||
+          rowIndex === this.selectedRow.sort()[0] ||
+          rowIndex === this.selectedRow.sort()[this.selectedRow.length - 1]
+        ) {
+          if (this.selectedRow.includes(rowIndex) === false)
+            this.selectedRow.push(rowIndex);
+          else
+            this.selectedRow = this.selectedRow.filter((e) => e !== rowIndex);
+        } else if (this.selectedRow.length === 0)
+          this.selectedRow.push(rowIndex);
+      }
+    }
   }
 
-  onDrop(event: CdkDragDrop<measurementTM5[]>) {
+  onDrop(event: CdkDragDrop<measurementTM5[]>, index: number) {
     this.selectedRow.forEach((row) => {
       for (
         let i = row + this.selectedRow.length;
         i <= event.currentIndex;
         i += this.selectedRow.length
       ) {
-        this.listRow[i] = JSON.parse(JSON.stringify(this.listRow[row]));
+        this.formTM5.structuralTM5List[index].measurementTM5List[i] =
+          JSON.parse(
+            JSON.stringify(
+              this.formTM5.structuralTM5List[index].measurementTM5List[row]
+            )
+          );
       }
     });
   }
 
-  clearRow(index: number) {
-    this.listRow[index] = JSON.parse(JSON.stringify(this.emptyRow));
+  countRowBefore(index: number): number {
+    var sum: number = 0;
+    for (let i = 0; i < index; i++)
+      sum += this.formTM5.structuralTM5List[i].measurementTM5List.length + 1;
+    return sum;
   }
 
-  deleteRow(index: number) {
-    this.listRow.splice(index, 1);
-    if (this.listRow.length === 0) {
-      this.listRow = [];
+  clearRow(i: number, j: number) {
+    this.formTM5.structuralTM5List[i].measurementTM5List[j] = JSON.parse(
+      JSON.stringify(this.emptyRow)
+    );
+  }
+
+  deleteRow(i: number, j: number) {
+    this.formTM5.structuralTM5List[i].measurementTM5List.splice(j, 1);
+  }
+
+  deleteListRow(index: number) {
+    this.formTM5.structuralTM5List.splice(index, 1);
+    if (this.formTM5.structuralTM5List.length === 0) {
+      this.formTM5.structuralTM5List = [];
     } else {
-      this.listRow = this.listRow;
+      this.formTM5.structuralTM5List = this.formTM5.structuralTM5List;
     }
   }
 
@@ -313,9 +415,40 @@ export class Tm5Component implements OnInit {
     const formData = new FormData();
     formData.append('excelFile', event.target.files[0]);
     this.formService
-      .importExcel(`${API_END_POINT}/report-indexes/1/tm5s/sheet`, formData)
+      .importExcel(`${API_END_POINT}/sheet/tm5s`, formData)
       .subscribe((data) => {
-        data.measurementTM5List.forEach((data: any) => {});
+        this.formTM5.tankHolDescription = data.tankHolDescription;
+        this.formTM5.locationOfStructure = data.locationOfStructure;
+        this.formTM5.structuralTM5List = data.structuralTM5List;
+
+        for (let i = 0; i < this.formTM5.structuralTM5List.length; i++) {
+          this.formTM5.structuralTM5List[i].measurementTM5List =
+            data.structuralTM5List[i].measurementTM5List;
+
+          data.structuralTM5List[i].measurementTM5List.forEach(
+            (measurementTM5List: any) => {
+              if (
+                this.listStructuralMember.find(
+                  (item) => item.param === measurementTM5List.item
+                ) === undefined
+              ) {
+                this.listStructuralMember.push({
+                  id: 0,
+                  param: measurementTM5List.item,
+                  value: measurementTM5List.item,
+                  type: 'TM5_VALUE',
+                  edit: false,
+                });
+                this.listNewStructuralMember.push({
+                  param: measurementTM5List.item,
+                  value: measurementTM5List.item,
+                  type: 8,
+                });
+              }
+            }
+          );
+        }
       });
+    this.selectedFile = null;
   }
 }

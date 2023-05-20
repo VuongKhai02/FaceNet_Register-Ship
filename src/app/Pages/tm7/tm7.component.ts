@@ -11,6 +11,7 @@ import { CdkDragEnd, CdkDragDrop } from '@angular/cdk/drag-drop';
 import { NavigationEnd, Router } from '@angular/router';
 import { GeneralParticular } from 'src/app/share/models/generalParticulars.model';
 import { API_END_POINT } from 'src/environments/environment';
+import { newParamValue } from 'src/app/share/models/newParamValue.model';
 
 @Component({
   selector: 'app-tm7',
@@ -83,32 +84,37 @@ export class Tm7Component implements OnInit {
 
   generalParticular!: GeneralParticular;
 
+  listNewStructuralMember: newParamValue[] = [];
+
+  selectedFile: any;
+
   ngOnInit(): void {
     this.router.events.subscribe((event) => {
       if (
         event instanceof NavigationEnd &&
         this.router.url.split('/')[1] === 'part' &&
-        this.router.url.split('/')[3].slice(0, 3) === 'tm6' &&
+        this.router.url.split('/')[3].slice(0, 3) === 'tm7' &&
         this.router.url.split('/')[4] !== '-1'
       ) {
         this.partId = this.router.url.split('/')[2];
         this.tmId = this.router.url.split('/')[4];
-        this.formService.getDataForm('tm6s', this.tmId).subscribe((data) => {
+        this.formService.getDataForm('tm7s', this.tmId).subscribe((data) => {
           this.formTM7.code = data.code;
           this.formTM7.frameNumberList = data.frameNumberList;
 
           for (let i = 0; i < this.formTM7.frameNumberList.length; i++) {
             this.formTM7.frameNumberList[i].measurementTM7List =
-              data.frameNumberList[i].measurementTM6DTOList;
+              data.frameNumberList[i].measurementTM7DTOList;
           }
 
           this.listStructuralMember.map((member) => {
-            data.measurementTM6DTOList.forEach((e: any) => {
-              if (member.param == e.structuralMember) {
-                member.value =
-                  e.firstTransverseSectionMeasurementDetail.percent;
-                return;
-              }
+            data.frameNumberList.forEach((structural: any) => {
+              structural.measurementTM7DTOList.forEach((measurement: any) => {
+                if (member.param == measurement.structuralMember) {
+                  member.value = measurement.detailMeasurement.percent;
+                  return;
+                }
+              });
             });
           });
         });
@@ -142,18 +148,18 @@ export class Tm7Component implements OnInit {
         );
       }
     } else {
-      this.formService.getDataForm('tm6s', this.tmId).subscribe((data) => {
+      this.formService.getDataForm('tm7s', this.tmId).subscribe((data) => {
         this.formTM7.code = data.code;
         this.formTM7.frameNumberList = data.frameNumberList;
 
         for (let i = 0; i < this.formTM7.frameNumberList.length; i++) {
           this.formTM7.frameNumberList[i].measurementTM7List =
-            data.frameNumberList[i].measurementTM6DTOList;
+            data.frameNumberList[i].measurementTM7DTOList;
         }
 
         this.listStructuralMember.map((member) => {
           data.frameNumberList.forEach((structural: any) => {
-            structural.measurementTM6DTOList.forEach((measurement: any) => {
+            structural.measurementTM7DTOList.forEach((measurement: any) => {
               if (member.param == measurement.structuralMember) {
                 member.value = measurement.detailMeasurement.percent;
                 return;
@@ -272,12 +278,12 @@ export class Tm7Component implements OnInit {
 
     this.formTM7.frameNumberList.forEach((structuralMember) => {
       structuralMember.measurementTM7List =
-        structuralMember.measurementTM7List.filter((measurementTM6) => {
+        structuralMember.measurementTM7List.filter((measurementTM7) => {
           return (
-            measurementTM6.item !== '' ||
-            measurementTM6.upperPart.originalThickness !== '' ||
-            measurementTM6.upperPart.gaugedP !== '' ||
-            measurementTM6.upperPart.gaugedS !== ''
+            measurementTM7.item !== '' ||
+            measurementTM7.upperPart.originalThickness !== '' ||
+            measurementTM7.upperPart.gaugedP !== '' ||
+            measurementTM7.upperPart.gaugedS !== ''
           );
         });
     });
@@ -312,7 +318,7 @@ export class Tm7Component implements OnInit {
         });
     } else {
       this.formService
-        .updateForm('tm4s', this.tmId, this.formTM7)
+        .updateForm('tm7s', this.tmId, this.formTM7)
         .pipe(
           retry(3),
           catchError(() => {
@@ -417,9 +423,38 @@ export class Tm7Component implements OnInit {
     const formData = new FormData();
     formData.append('excelFile', event.target.files[0]);
     this.formService
-      .importExcel(`${API_END_POINT}/report-indexes/1/tm3s/sheet`, formData)
+      .importExcel(`${API_END_POINT}/sheet/tm7s`, formData)
       .subscribe((data) => {
-        data.measurementTM6DTOList.forEach((data: any) => {});
+        this.formTM7.frameNumberList = data.frameNumberList;
+
+        for (let i = 0; i < this.formTM7.frameNumberList.length; i++) {
+          this.formTM7.frameNumberList[i].measurementTM7List =
+            data.frameNumberList[i].measurementTM7DTOList;
+
+          data.frameNumberList[i].measurementTM7DTOList.forEach(
+            (measurementTM7DTO: any) => {
+              if (
+                this.listStructuralMember.find(
+                  (item) => item.param === measurementTM7DTO.item
+                ) === undefined
+              ) {
+                this.listStructuralMember.push({
+                  id: 0,
+                  param: measurementTM7DTO.item,
+                  value: measurementTM7DTO.item,
+                  type: 'TM5_VALUE',
+                  edit: false,
+                });
+                this.listNewStructuralMember.push({
+                  param: measurementTM7DTO.item,
+                  value: measurementTM7DTO.item,
+                  type: 8,
+                });
+              }
+            }
+          );
+        }
       });
+    this.selectedFile = null;
   }
 }

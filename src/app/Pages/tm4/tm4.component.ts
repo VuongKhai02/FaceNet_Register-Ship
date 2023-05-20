@@ -1,4 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  AfterContentInit,
+  AfterViewInit,
+  Component,
+  OnInit,
+} from '@angular/core';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { catchError, retry, throwError } from 'rxjs';
 import { formTM4 } from 'src/app/share/models/form/formTM4.model';
@@ -10,6 +15,7 @@ import { CdkDragEnd, CdkDragDrop } from '@angular/cdk/drag-drop';
 import { NavigationEnd, Router } from '@angular/router';
 import { GeneralParticular } from 'src/app/share/models/generalParticulars.model';
 import { API_END_POINT } from 'src/environments/environment';
+import { newParamValue } from 'src/app/share/models/newParamValue.model';
 
 @Component({
   selector: 'app-tm4',
@@ -42,7 +48,7 @@ export class Tm4Component implements OnInit {
 
   partId: string = this.router.url.split('/')[2];
   tmId: string = this.router.url.split('/')[4];
-  API_URL: string = `http://222.252.25.37:9080/api/v1/report-indexes/${this.partId}/tm4s`;
+  API_URL: string = `${API_END_POINT}/report-indexes/${this.partId}/tm4s`;
 
   emptyRow: measurementTM4 = {
     structuralMember: '',
@@ -64,9 +70,13 @@ export class Tm4Component implements OnInit {
   selectedListRow: number = -1;
   listFormCode: ParamValue[] = [];
 
-  isLoadingImportExcel: boolean = false;
+  isLoadingDataForm: boolean = false;
 
   generalParticular!: GeneralParticular;
+
+  listNewStructuralMember: newParamValue[] = [];
+
+  selectedFile: any;
 
   ngOnInit(): void {
     this.router.events.subscribe((event) => {
@@ -94,12 +104,13 @@ export class Tm4Component implements OnInit {
           }
 
           this.listStructuralMember.map((member) => {
-            data.measurementTM4DTOList.forEach((e: any) => {
-              if (member.param == e.structuralMember) {
-                member.value =
-                  e.firstTransverseSectionMeasurementDetail.percent;
-                return;
-              }
+            data.structuralMemberTM4List.forEach((structural: any) => {
+              structural.measurementTM4DTOList.forEach((measurement: any) => {
+                if (member.param == measurement.structuralMember) {
+                  member.value = measurement.detailMeasurement.percent;
+                  return;
+                }
+              });
             });
           });
         });
@@ -325,6 +336,12 @@ export class Tm4Component implements OnInit {
           },
         });
     }
+
+    if (this.listNewStructuralMember.length > 0) {
+      this.listNewStructuralMember.forEach((newStructuralMember) => {
+        this.paramValueService.addParamValue(newStructuralMember).subscribe();
+      });
+    }
   }
 
   onDragEnded(event: CdkDragEnd) {
@@ -414,9 +431,41 @@ export class Tm4Component implements OnInit {
     const formData = new FormData();
     formData.append('excelFile', event.target.files[0]);
     this.formService
-      .importExcel(`${API_END_POINT}/report-indexes/1/tm3s/sheet`, formData)
+      .importExcel(`${API_END_POINT}/sheet/tm4s`, formData)
       .subscribe((data) => {
-        data.measurementTM4DTOList.forEach((data: any) => {});
+        this.formTM4.tankDescription = data.tankDescription;
+        this.formTM4.locationOfStructure = data.locationOfStructure;
+        this.formTM4.structuralMemberTM4List = data.structuralMemberTM4List;
+
+        for (let i = 0; i < this.formTM4.structuralMemberTM4List.length; i++) {
+          this.formTM4.structuralMemberTM4List[i].measurementTM4List =
+            data.structuralMemberTM4List[i].measurementTM4DTOList;
+
+          data.structuralMemberTM4List[i].measurementTM4DTOList.forEach(
+            (measurementTM4DTO: any) => {
+              if (
+                this.listStructuralMember.find(
+                  (item) => item.param === measurementTM4DTO.structuralMember
+                ) === undefined
+              ) {
+                this.listStructuralMember.push({
+                  id: 0,
+                  param: measurementTM4DTO.structuralMember,
+                  value: measurementTM4DTO.structuralMember,
+                  type: 'TM4_VALUE',
+                  edit: false,
+                });
+                this.listNewStructuralMember.push({
+                  param: measurementTM4DTO.structuralMember,
+                  value: measurementTM4DTO.structuralMember,
+                  type: 7,
+                });
+              }
+            }
+          );
+        }
       });
+
+    this.selectedFile = null;
   }
 }

@@ -78,6 +78,8 @@ export class Tm1Component implements OnInit {
 
   generalParticular!: GeneralParticular;
 
+  selectedFile: any;
+
   ngOnInit(): void {
     this.router.events.subscribe((event) => {
       if (
@@ -297,8 +299,9 @@ export class Tm1Component implements OnInit {
     const formData = new FormData();
     formData.append('excelFile', event.target.files[0]);
     this.formService
-      .importExcel(`${API_END_POINT}/report-indexes/1/tm1s/sheet`, formData)
+      .importExcel(`${API_END_POINT}/sheet/tm1s`, formData)
       .subscribe((data) => {
+        this.listRow = [];
         data.measurementTM1DTOList.forEach((data: any) => {
           this.listRow.push({
             platePosition: data.platePosition,
@@ -322,5 +325,6 @@ export class Tm1Component implements OnInit {
           });
         });
       });
+    this.selectedFile = null;
   }
 }
