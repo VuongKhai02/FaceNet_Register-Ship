@@ -55,6 +55,8 @@ import { initializeKeycloak } from './utility/app.init';
 import { ExportPdfComponent } from './Pages/export-pdf/export-pdf.component';
 import { NzUploadModule } from 'ng-zorro-antd/upload';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
+import { AuthInterceptorProvider } from './share/services/auth.service';
+
 registerLocaleData(en);
 
 @NgModule({
@@ -113,7 +115,11 @@ registerLocaleData(en);
     NzUploadModule,
     NzSpinModule,
   ],
-  providers: [{ provide: NZ_I18N, useValue: en_US }, LocalService],
+  providers: [
+    { provide: NZ_I18N, useValue: en_US },
+    LocalService,
+    AuthInterceptorProvider,
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

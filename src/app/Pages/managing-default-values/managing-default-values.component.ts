@@ -57,7 +57,7 @@ export class ManagingDefaultValuesComponent implements OnInit {
       },
       (err) => {
         console.log(err);
-        alert('Failure to load data from server');
+        this.message.create('error', 'connection to data failed');
       }
     );
   }
@@ -385,7 +385,7 @@ export class ManagingDefaultValuesComponent implements OnInit {
               },
               (err) => {
                 console.log(err);
-                alert('Failure to load data from server');
+                this.message.create('error', 'connection to data failed');
               }
             );
           },

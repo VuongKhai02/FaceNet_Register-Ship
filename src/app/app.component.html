@@ -213,17 +213,19 @@
             {{ inLogIn.nameUser }}
           </a>
           <ng-template #contentAccount>
-            <a
-              nz-popover
-              [(nzPopoverVisible)]="changePassVisible"
-              (nzPopoverVisibleChange)="changelogOut($event)"
-              nzPopoverTrigger="click"
-              [nzPopoverContent]="changePass"
-              >Change password</a
-            >
-            <br />
-            <hr />
-            <a (click)="logOut()">Log out</a>
+            <div style="min-width: 130px">
+              <a
+                nz-popover
+                [(nzPopoverVisible)]="changePassVisible"
+                (nzPopoverVisibleChange)="changelogOut($event)"
+                nzPopoverTrigger="click"
+                [nzPopoverContent]="changePass"
+                >Change password</a
+              >
+              <br />
+              <hr />
+              <a (click)="logOut()">Log out</a>
+            </div>
             <!-- <a (click)="accLose()">Close</a> -->
           </ng-template>
           <ng-template #changePass>

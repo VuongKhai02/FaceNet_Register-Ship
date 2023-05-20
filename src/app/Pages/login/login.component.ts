@@ -8,6 +8,7 @@ import { FormControl, FormArray, FormGroup } from '@angular/forms';
 import { Account } from 'src/app/share/models/account.model';
 import { AccountService } from 'src/app/share/services/account.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -17,7 +18,8 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 export class LoginComponent {
   constructor(
     private accountSevice: AccountService,
-    private message: NzMessageService
+    private message: NzMessageService,
+    private router: Router
   ) {}
   @Output() out: EventEmitter<{ Islogin: boolean; nameUser: string }> =
     new EventEmitter();
@@ -38,19 +40,24 @@ export class LoginComponent {
   });
 
   submitForm(): void {
-    for (let i: number = 0; i < this.accounts.length; i++) {
-      if (
-        this.validateForm.value.userName === this.accounts[i].accountName &&
-        this.validateForm.value.password === this.accounts[i].password
-      ) {
-        this.inLogIn.Islogin = false;
-        this.inLogIn.nameUser = this.accounts[i].name;
-        this.out.emit(this.inLogIn);
-        return;
-      }
-    }
-    if ((this.inLogIn.Islogin = true)) {
-      this.message.create('error', 'Account or password is incorrect');
-    }
+    this.accountSevice
+      .postAccount({
+        username: this.validateForm.value.userName,
+        password: this.validateForm.value.password,
+      })
+      .subscribe(
+        (data) => {
+          this.inLogIn.Islogin = false;
+          this.inLogIn.nameUser = data.name;
+          this.out.emit(this.inLogIn);
+          localStorage.setItem('token', data.accessToken);
+          localStorage.setItem('refreshtoken', data.refreshToken);
+          this.router.navigateByUrl('generalParticulars');
+        },
+        (err) => {
+          console.log(err);
+          this.message.create('error', err.error);
+        }
+      );
   }
 }
