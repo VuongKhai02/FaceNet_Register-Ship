@@ -11,10 +11,17 @@ import { accounts } from '../datas/local.data';
 export class AccountService {
   accounts: Account[] = accounts;
   constructor(private http: HttpClient) {}
-  API_URL: string = `${API_END_POINT}/auth/login`;
+  API_URL: string = `${API_END_POINT}/auth`;
 
   postAccount(data: { username: string; password: string }): Observable<any> {
-    return this.http.post(`${this.API_URL}`, data);
+    return this.http.post(`${this.API_URL}/login`, data);
+  }
+
+  changePassword(data: {
+    oldPassword: string;
+    newPassword: string;
+  }): Observable<any> {
+    return this.http.put(`${this.API_URL}/password`, data);
   }
 
   getGeneralParticularsFromAPI(): Observable<any> {

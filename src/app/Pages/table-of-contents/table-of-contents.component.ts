@@ -1,3 +1,4 @@
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { GeneralParticular } from './../../share/models/generalParticulars.model';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { part } from 'src/app/share/models/part.model';
@@ -10,6 +11,7 @@ import { LocalService } from 'src/app/share/services/local.service';
 import { Form } from 'src/app/share/models/form.model';
 import { GetDataService } from 'src/app/share/services/get-data.service';
 import { partLocal } from 'src/app/share/models/local.model';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-table-of-contents',
@@ -49,15 +51,20 @@ export class TableOfContentsComponent implements OnInit {
         .subscribe(
           (data) => {
             this.reportIndex = data;
-            // for (let i: number = 0; i < this.reportIndex.parts.length; i++) {
-            //   this.parts.push({
-            //     id: this.reportIndex.parts[i].id,
-            //     index: this.reportIndex.parts[i].partIndex,
-            //     partName: this.reportIndex.parts[i].item,
-            //     forms: this.reportIndex.parts[i].forms,
-            //     visible: false,
-            //   });
-            // }
+            this.parts.splice(0, this.parts.length);
+            for (let i: number = 0; i < this.reportIndex.parts.length; i++) {
+              this.parts.push({
+                id: this.reportIndex.parts[i].id,
+                partIndex: this.reportIndex.parts[i].partIndex,
+                partName: this.reportIndex.parts[i].item,
+                forms: this.reportIndex.parts[i].forms.sort(
+                  (a, b) => a.index - b.index
+                ),
+                visible: false,
+                edit: false,
+              });
+            }
+            this.parts = this.parts.sort((a, b) => a.partIndex - b.partIndex);
           },
           (err) => {
             console.log(err);
@@ -84,14 +91,44 @@ export class TableOfContentsComponent implements OnInit {
   }
 
   moveUpPart(num: any) {
-    // if (num === 0) {
-    //   this.message.create('error', 'This is the first part');
-    // } else {
-    //   let temporaryPart: part = this.parts[num - 1];
-    //   this.parts.splice(num - 1, 1, this.parts[num]);
-    //   this.parts.splice(num, 1, temporaryPart);
-    //   this.message.create('success', 'Move up success');
-    // }
+    if (num === 0) {
+      this.message.create('error', 'This is the first part');
+    } else {
+      // let temporaryPart: partLocal = this.parts[num - 1];
+      // this.parts.splice(num - 1, 1, this.parts[num]);
+      // this.parts.splice(num, 1, temporaryPart);
+      // this.message.create('success', 'Move up success');
+      let rIUpId: { id: number; name: string; index: number } = {
+        id: this.parts[num - 1].id,
+        name: this.parts[num - 1].partName,
+        index: this.parts[num - 1].partIndex,
+      };
+      let rIDownId: { id: number; name: string; index: number } = {
+        id: this.parts[num].id,
+        name: this.parts[num].partName,
+        index: this.parts[num].partIndex,
+      };
+      this.reportIndexService
+        .updateReportIndexToAPI(rIUpId.id, {
+          item: rIUpId.name,
+          partIndex: rIDownId.index,
+        })
+        .subscribe(
+          (data) => {
+            this.reportIndexService
+              .updateReportIndexToAPI(rIDownId.id, {
+                item: rIDownId.name,
+                partIndex: rIUpId.index,
+              })
+              .subscribe((data) => {
+                this.ngOnInit();
+              });
+          },
+          (err) => {
+            console.log(err);
+          }
+        );
+    }
   }
 
   moveUpForm(num1: any, num2: any) {
@@ -139,6 +176,103 @@ export class TableOfContentsComponent implements OnInit {
         partIndex: this.parts[i].partIndex,
       })
       .subscribe((data) => {});
+  }
+
+  drop(event: CdkDragDrop<string[]>) {
+    // moveItemInArray(this.parts, event.previousIndex, event.currentIndex);
+    // let rIUpId: { id: number; name: string; index: number } = {
+    //   id: this.parts[event.previousIndex].id,
+    //   name: this.parts[event.previousIndex].partName,
+    //   index: this.parts[event.previousIndex].partIndex,
+    // };
+    // let rIDownId: { id: number; name: string; index: number } = {
+    //   id: this.parts[event.currentIndex].id,
+    //   name: this.parts[event.currentIndex].partName,
+    //   index: this.parts[event.currentIndex].partIndex,
+    // };
+    // this.reportIndexService
+    //   .updateReportIndexToAPI(rIUpId.id, {
+    //     item: rIUpId.name,
+    //     partIndex: rIDownId.index,
+    //   })
+    //   .subscribe(
+    //     (data) => {
+    //       this.reportIndexService
+    //         .updateReportIndexToAPI(rIDownId.id, {
+    //           item: rIDownId.name,
+    //           partIndex: rIUpId.index,
+    //         })
+    //         .subscribe((data) => {
+    //           console.log(event.previousIndex);
+    //           console.log(event.currentIndex);
+    //           console.log('---------');
+    //           console.log(this.parts[event.previousIndex]);
+    //           console.log(this.parts[event.currentIndex]);
+    //           console.log('---------');
+    //           console.log(rIUpId.index);
+    //           console.log(rIDownId.index);
+    //           this.ngOnInit();
+    //         });
+    //     },
+    //     (err) => {
+    //       console.log(err);
+    //     }
+    //   );
+    if (event.previousIndex < event.currentIndex) {
+      let temporaryParts: { id: number; name: string; index: number }[] = [];
+      for (let i: number = event.previousIndex; i <= event.currentIndex; i++) {
+        if (i === event.previousIndex) {
+          temporaryParts.push({
+            id: this.parts[i].id,
+            name: this.parts[i].partName,
+            index: this.parts[event.currentIndex].partIndex,
+          });
+        } else {
+          temporaryParts.push({
+            id: this.parts[i].id,
+            name: this.parts[i].partName,
+            index: this.parts[i].partIndex - 1,
+          });
+        }
+      }
+      for (let i: number = 0; i < temporaryParts.length; i++) {
+        this.reportIndexService
+          .updateReportIndexToAPI(temporaryParts[i].id, {
+            item: temporaryParts[i].name,
+            partIndex: temporaryParts[i].index,
+          })
+          .subscribe((data) => {
+            this.ngOnInit();
+          });
+      }
+    } else {
+      let temporaryParts: { id: number; name: string; index: number }[] = [];
+      for (let i: number = event.previousIndex; i >= event.currentIndex; i--) {
+        if (i === event.previousIndex) {
+          temporaryParts.push({
+            id: this.parts[i].id,
+            name: this.parts[i].partName,
+            index: this.parts[event.currentIndex].partIndex,
+          });
+        } else {
+          temporaryParts.push({
+            id: this.parts[i].id,
+            name: this.parts[i].partName,
+            index: this.parts[i].partIndex + 1,
+          });
+        }
+      }
+      for (let i: number = 0; i < temporaryParts.length; i++) {
+        this.reportIndexService
+          .updateReportIndexToAPI(temporaryParts[i].id, {
+            item: temporaryParts[i].name,
+            partIndex: temporaryParts[i].index,
+          })
+          .subscribe((data) => {
+            this.ngOnInit();
+          });
+      }
+    }
   }
 
   cancel() {}

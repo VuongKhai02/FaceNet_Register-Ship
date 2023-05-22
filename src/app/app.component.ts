@@ -77,10 +77,13 @@ export class AppComponent implements OnInit {
                 id: this.reportIndex.parts[i].id,
                 partIndex: this.reportIndex.parts[i].partIndex,
                 partName: this.reportIndex.parts[i].item,
-                forms: this.reportIndex.parts[i].forms,
+                forms: this.reportIndex.parts[i].forms.sort(
+                  (a, b) => a.index - b.index
+                ),
                 visible: false,
                 edit: false,
               });
+              this.parts = this.parts.sort((a, b) => a.partIndex - b.partIndex);
             }
           },
           (err) => {
@@ -104,7 +107,7 @@ export class AppComponent implements OnInit {
   }
   isCollapsed = false;
   inLogIn: { Islogin: boolean; nameUser: string } = {
-    Islogin: false,
+    Islogin: true,
     nameUser: 'Unknown',
   };
 
@@ -115,6 +118,10 @@ export class AppComponent implements OnInit {
   logOut(): void {
     this.inLogIn.Islogin = true;
     this.logOutVisible = false;
+    this.mainData.editMode = false;
+    this.mainData.mainId = 0;
+    this.mainData.reportNumber = '';
+    this.parts.splice(0, this.parts.length);
   }
 
   deleteTm(i: number, j: number) {
@@ -166,23 +173,49 @@ export class AppComponent implements OnInit {
   }
 
   changePassword() {
-    for (let i: number = 0; i < this.accounts.length; i++) {
-      if (this.accounts[i].name === this.inLogIn.nameUser) {
-        if (this.accounts[i].password !== this.oldPassword) {
-          this.message.create('error', 'Old password is incorrect');
-        } else if (this.oldPassword === this.newPassword) {
-          this.message.create(
-            'error',
-            'The new password must be different from the old password'
-          );
-        } else {
-          this.accounts[i].password = this.newPassword;
-          this.changePassVisible = false;
-          this.oldPassword = '';
-          this.newPassword = '';
-          this.message.create('success', 'Change successful');
-        }
-      }
+    // for (let i: number = 0; i < this.accounts.length; i++) {
+    //   if (this.accounts[i].name === this.inLogIn.nameUser) {
+    //     if (this.accounts[i].password !== this.oldPassword) {
+    //       this.message.create('error', 'Old password is incorrect');
+    //     } else if (this.oldPassword === this.newPassword) {
+    //       this.message.create(
+    //         'error',
+    //         'The new password must be different from the old password'
+    //       );
+    //     } else {
+    //       this.accounts[i].password = this.newPassword;
+    //       this.changePassVisible = false;
+    //       this.oldPassword = '';
+    //       this.newPassword = '';
+    //       this.message.create('success', 'Change successful');
+    //     }
+    //   }
+    // }
+    if (this.oldPassword === '' || this.newPassword === '') {
+      this.message.create('error', 'Information not entered yet');
+    } else {
+      this.accountSevice
+        .changePassword({
+          oldPassword: this.oldPassword,
+          newPassword: this.newPassword,
+        })
+        .subscribe(
+          (data) => {
+            this.message.create('success', 'Change successful');
+            console.log(data);
+          },
+          (err) => {
+            console.log(err);
+            if (err.error.text === 'Thay đổi mật khẩu thành công') {
+              this.message.create('success', err.error.text);
+              this.changePassVisible = false;
+              this.oldPassword = '';
+              this.newPassword = '';
+            } else {
+              this.message.create('error', err.error.text);
+            }
+          }
+        );
     }
   }
 

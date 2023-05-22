@@ -30,12 +30,6 @@ export class GetDataService {
    * @returns
    */
   addGeneralParticularsToAPI(data: GeneralParticularPush): Observable<any> {
-    // const header = new HttpHeaders();
-    // header.set('Authentication', `${sessionStorage.getItem('Token')}`);
-    // return this.http.post(this.API_URL, data, { headers: header });
-    // sessionStorage.setItem('Token', data.accessToken)
-    // sessionStorage.setItem('RefreshToken', data.refreshToken)
-    // sessionStorage.getItem('Token')
     return this.http.post(`${this.API_URL}`, data);
   }
 
