@@ -47,7 +47,6 @@ export class Tm4Component implements OnInit {
   structuralMemberSelected: number = -2;
 
   partId: string = this.router.url.split('/')[2];
-  tmId: string = this.router.url.split('/')[4];
   API_URL: string = `${API_END_POINT}/report-indexes/${this.partId}/tm4s`;
 
   emptyRow: measurementTM4 = {
@@ -86,9 +85,71 @@ export class Tm4Component implements OnInit {
         this.router.url.split('/')[3].slice(0, 3) === 'tm4' &&
         this.router.url.split('/')[4] !== '-1'
       ) {
+        this.isLoadingDataForm = true;
         this.partId = this.router.url.split('/')[2];
-        this.tmId = this.router.url.split('/')[4];
-        this.formService.getDataForm('tm4s', this.tmId).subscribe((data) => {
+        this.formService
+          .getDataForm('tm4s', this.router.url.split('/')[4])
+          .subscribe((data) => {
+            this.formTM4.code = data.code;
+            this.formTM4.tankDescription = data.tankDescription;
+            this.formTM4.locationOfStructure = data.locationOfStructure;
+            this.formTM4.structuralMemberTM4List = data.structuralMemberTM4List;
+
+            for (
+              let i = 0;
+              i < this.formTM4.structuralMemberTM4List.length;
+              i++
+            ) {
+              this.formTM4.structuralMemberTM4List[i].measurementTM4List =
+                data.structuralMemberTM4List[i].measurementTM4DTOList;
+            }
+
+            this.listStructuralMember.map((member) => {
+              data.structuralMemberTM4List.forEach((structural: any) => {
+                structural.measurementTM4DTOList.forEach((measurement: any) => {
+                  if (member.param == measurement.structuralMember) {
+                    member.value = measurement.detailMeasurement.percent;
+                    return;
+                  }
+                });
+              });
+            });
+            this.isLoadingDataForm = false;
+          });
+      } else if (
+        event instanceof NavigationEnd &&
+        this.router.url.split('/')[4] === '-1'
+      ) {
+        this.formTM4.structuralMemberTM4List = [];
+        this.formTM4.structuralMemberTM4List.push({
+          structuralMemberTitle: 'New list',
+          measurementTM4List: [],
+        });
+
+        for (let i = 1; i <= 20; i++) {
+          this.formTM4.structuralMemberTM4List[0].measurementTM4List.push(
+            JSON.parse(JSON.stringify(this.emptyRow))
+          );
+        }
+      }
+    });
+
+    if (Number(this.router.url.split('/')[4]) === -1) {
+      this.formTM4.structuralMemberTM4List = [];
+      this.formTM4.structuralMemberTM4List.push({
+        structuralMemberTitle: 'New list',
+        measurementTM4List: [],
+      });
+      for (let i = 1; i <= 20; i++) {
+        this.formTM4.structuralMemberTM4List[0].measurementTM4List.push(
+          JSON.parse(JSON.stringify(this.emptyRow))
+        );
+      }
+    } else {
+      this.isLoadingDataForm = true;
+      this.formService
+        .getDataForm('tm4s', this.router.url.split('/')[4])
+        .subscribe((data) => {
           this.formTM4.code = data.code;
           this.formTM4.tankDescription = data.tankDescription;
           this.formTM4.locationOfStructure = data.locationOfStructure;
@@ -113,59 +174,8 @@ export class Tm4Component implements OnInit {
               });
             });
           });
+          this.isLoadingDataForm = false;
         });
-      } else if (
-        event instanceof NavigationEnd &&
-        this.router.url.split('/')[4] === '-1'
-      ) {
-        this.formTM4.structuralMemberTM4List = [];
-        this.formTM4.structuralMemberTM4List.push({
-          structuralMemberTitle: 'New list',
-          measurementTM4List: [],
-        });
-
-        for (let i = 1; i <= 20; i++) {
-          this.formTM4.structuralMemberTM4List[0].measurementTM4List.push(
-            JSON.parse(JSON.stringify(this.emptyRow))
-          );
-        }
-      }
-    });
-
-    if (Number(this.tmId) === -1) {
-      this.formTM4.structuralMemberTM4List = [];
-      this.formTM4.structuralMemberTM4List.push({
-        structuralMemberTitle: 'New list',
-        measurementTM4List: [],
-      });
-      for (let i = 1; i <= 20; i++) {
-        this.formTM4.structuralMemberTM4List[0].measurementTM4List.push(
-          JSON.parse(JSON.stringify(this.emptyRow))
-        );
-      }
-    } else {
-      this.formService.getDataForm('tm4s', this.tmId).subscribe((data) => {
-        this.formTM4.code = data.code;
-        this.formTM4.tankDescription = data.tankDescription;
-        this.formTM4.locationOfStructure = data.locationOfStructure;
-        this.formTM4.structuralMemberTM4List = data.structuralMemberTM4List;
-
-        for (let i = 0; i < this.formTM4.structuralMemberTM4List.length; i++) {
-          this.formTM4.structuralMemberTM4List[i].measurementTM4List =
-            data.structuralMemberTM4List[i].measurementTM4DTOList;
-        }
-
-        this.listStructuralMember.map((member) => {
-          data.structuralMemberTM4List.forEach((structural: any) => {
-            structural.measurementTM4DTOList.forEach((measurement: any) => {
-              if (member.param == measurement.structuralMember) {
-                member.value = measurement.detailMeasurement.percent;
-                return;
-              }
-            });
-          });
-        });
-      });
     }
 
     this.paramValueService.getParamValueByType(7).subscribe((data) => {
@@ -285,7 +295,7 @@ export class Tm4Component implements OnInit {
         });
     });
 
-    if (Number(this.tmId) === -1) {
+    if (Number(this.router.url.split('/')[4]) === -1) {
       this.formService
         .addFormToAPI(this.API_URL, this.formTM4)
         .pipe(
@@ -298,6 +308,7 @@ export class Tm4Component implements OnInit {
           next: (result) => {
             this.isLoadingSaveButton = false;
             this.message.create('success', 'Save form success');
+            this.listNewStructuralMember = [];
             this.router.navigate([
               'part',
               this.partId,
@@ -315,7 +326,7 @@ export class Tm4Component implements OnInit {
         });
     } else {
       this.formService
-        .updateForm('tm4s', this.tmId, this.formTM4)
+        .updateForm('tm4s', this.router.url.split('/')[4], this.formTM4)
         .pipe(
           retry(3),
           catchError(() => {
@@ -428,6 +439,7 @@ export class Tm4Component implements OnInit {
   }
 
   onImportExcel(event: any) {
+    this.isLoadingDataForm = true;
     const formData = new FormData();
     formData.append('excelFile', event.target.files[0]);
     this.formService
@@ -464,6 +476,7 @@ export class Tm4Component implements OnInit {
             }
           );
         }
+        this.isLoadingDataForm = false;
       });
 
     this.selectedFile = null;

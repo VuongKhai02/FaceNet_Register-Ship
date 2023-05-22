@@ -46,7 +46,6 @@ export class Tm1Component implements OnInit {
   visible: boolean = false;
 
   partId: string = this.router.url.split('/')[2];
-  tmId: string = this.router.url.split('/')[4];
   API_URL: string = `${API_END_POINT}/report-indexes/${this.partId}/tm1s`;
 
   emptyRow: measurementTM1 = {
@@ -89,49 +88,57 @@ export class Tm1Component implements OnInit {
         this.router.url.split('/')[4] !== '-1'
       ) {
         this.partId = this.router.url.split('/')[2];
-        this.tmId = this.router.url.split('/')[4];
-        this.formService.getDataForm('tm1s', this.tmId).subscribe((data) => {
+        this.formService
+          .getDataForm('tm1s', this.router.url.split('/')[4])
+          .subscribe((data) => {
+            this.formTM1.code = data.code;
+            this.formTM1.strakePosition = data.strakePosition;
+            this.listRow = data.measurementTM1DTOList;
+
+            this.percentValue =
+              data.measurementTM1DTOList[0].forwardReadingMeasurementDetail.percent;
+            this.percentSelected = this.listPercentOption.filter(
+              (percent) => percent.label === this.percentValue
+            )[0].value;
+          });
+      } else if (
+        event instanceof NavigationEnd &&
+        this.router.url.split('/')[4] === '-1'
+      ) {
+        this.listRow = [];
+        this.percentValue = '';
+        for (let i = 1; i <= 20; i++)
+          this.listRow.push(JSON.parse(JSON.stringify(this.emptyRow)));
+      }
+    });
+
+    if (Number(this.router.url.split('/')[4]) === -1) {
+      this.percentValue = '';
+      for (let i = 1; i <= 20; i++)
+        this.listRow.push(JSON.parse(JSON.stringify(this.emptyRow)));
+    } else {
+      this.formService
+        .getDataForm('tm1s', this.router.url.split('/')[4])
+        .subscribe((data) => {
           this.formTM1.code = data.code;
           this.formTM1.strakePosition = data.strakePosition;
           this.listRow = data.measurementTM1DTOList;
+
           this.percentValue =
             data.measurementTM1DTOList[0].forwardReadingMeasurementDetail.percent;
           this.percentSelected = this.listPercentOption.filter(
             (percent) => percent.label === this.percentValue
           )[0].value;
         });
-      } else if (
-        event instanceof NavigationEnd &&
-        this.router.url.split('/')[4] === '-1'
-      ) {
-        this.listRow = [];
-        for (let i = 1; i <= 20; i++)
-          this.listRow.push(JSON.parse(JSON.stringify(this.emptyRow)));
-      }
-    });
-
-    if (Number(this.tmId) === -1) {
-      for (let i = 1; i <= 20; i++)
-        this.listRow.push(JSON.parse(JSON.stringify(this.emptyRow)));
-    } else {
-      this.formService.getDataForm('tm1s', this.tmId).subscribe((data) => {
-        this.formTM1.code = data.code;
-        this.formTM1.strakePosition = data.strakePosition;
-        this.listRow = data.measurementTM1DTOList;
-        this.percentValue =
-          data.measurementTM1DTOList[0].forwardReadingMeasurementDetail.percent;
-        this.percentSelected = this.listPercentOption.filter(
-          (percent) => percent.label === this.percentValue
-        )[0].value;
-      });
     }
 
     this.paramValueService.getParamValueByType(11).subscribe((data) => {
       this.listFormCode = data;
     });
 
-    if (this.formService.getParticularData() != null)
+    if (this.formService.getParticularData() != null) {
       this.generalParticular = this.formService.getParticularData();
+    }
   }
 
   addRow() {
@@ -170,7 +177,7 @@ export class Tm1Component implements OnInit {
 
     this.listRow = this.formTM1.measurementTM1List;
 
-    if (Number(this.tmId) === -1) {
+    if (Number(this.router.url.split('/')[4]) === -1) {
       this.formService
         .addFormToAPI(this.API_URL, this.formTM1)
         .pipe(
@@ -200,7 +207,7 @@ export class Tm1Component implements OnInit {
         });
     } else {
       this.formService
-        .updateForm('tm1s', this.tmId, this.formTM1)
+        .updateForm('tm1s', this.router.url.split('/')[4], this.formTM1)
         .pipe(
           retry(3),
           catchError(() => {

@@ -36,7 +36,7 @@ export class Tm2iiComponent {
   listRow: measurementTM2[] = [];
   formTM2: formTM2 = {
     code: '',
-    name: 'FORM TM2(I)',
+    name: 'TM2(II)',
     firstFrameNoTM2: '',
     secondFrameNoTM2: '',
     thirdFrameNoTM2: '',
@@ -44,8 +44,7 @@ export class Tm2iiComponent {
   };
 
   partId: string = this.router.url.split('/')[2];
-  tmId: string = this.router.url.split('/')[4];
-  API_URL: string = `${API_END_POINT}/report-indexes/${this.partId}/tm2s`;
+  API_URL: string = `http://222.252.25.37:9080/api/v1/report-indexes/${this.partId}/tm2s`;
 
   listPercentOption = [
     { label: '20%', value: 1 },
@@ -103,21 +102,22 @@ export class Tm2iiComponent {
         event instanceof NavigationEnd &&
         this.router.url.split('/')[1] === 'part' &&
         this.router.url.split('/')[3].slice(0, 3) === 'tm2' &&
-        this.router.url.split('/')[4] === '-1'
+        this.router.url.split('/')[4] !== '-1'
       ) {
         this.partId = this.router.url.split('/')[2];
-        this.tmId = this.router.url.split('/')[4];
-        this.formService.getDataForm('tm2s', this.tmId).subscribe((data) => {
-          this.formTM2.code = data.code;
-          this.listRow = data.measurementTM2DTOList;
-          if (data.measurementTM2DTOList.length > 0) {
-            this.percentValue =
-              data.measurementTM2DTOList[0].firstTransverseSectionMeasurementDetailTM2.percent;
-            this.percentSelected = this.listPercentOption.filter(
-              (percent) => percent.label === this.percentValue
-            )[0].value;
-          }
-        });
+        this.formService
+          .getDataForm('tm2s', this.router.url.split('/')[4])
+          .subscribe((data) => {
+            this.formTM2.code = data.code;
+            this.listRow = data.measurementTM2DTOList;
+            if (data.measurementTM2DTOList.length > 0) {
+              this.percentValue =
+                data.measurementTM2DTOList[0].firstTransverseSectionMeasurementDetailTM2.percent;
+              this.percentSelected = this.listPercentOption.filter(
+                (percent) => percent.label === this.percentValue
+              )[0].value;
+            }
+          });
       } else if (
         event instanceof NavigationEnd &&
         this.router.url.split('/')[4] === '-1'
@@ -128,19 +128,21 @@ export class Tm2iiComponent {
       }
     });
 
-    if (Number(this.tmId) === -1) {
+    if (Number(this.router.url.split('/')[4]) === -1) {
       for (let i = 1; i <= 20; i++)
         this.listRow.push(JSON.parse(JSON.stringify(this.emptyRow)));
     } else {
-      this.formService.getDataForm('tm2s', this.tmId).subscribe((data) => {
-        this.formTM2.code = data.code;
-        this.listRow = data.measurementTM2DTOList;
-        this.percentValue =
-          data.measurementTM2DTOList[0].firstTransverseSectionMeasurementDetailTM2.percent;
-        this.percentSelected = this.listPercentOption.filter(
-          (percent) => percent.label === this.percentValue
-        )[0].value;
-      });
+      this.formService
+        .getDataForm('tm2s', this.router.url.split('/')[4])
+        .subscribe((data) => {
+          this.formTM2.code = data.code;
+          this.listRow = data.measurementTM2DTOList;
+          this.percentValue =
+            data.measurementTM2DTOList[0].firstTransverseSectionMeasurementDetailTM2.percent;
+          this.percentSelected = this.listPercentOption.filter(
+            (percent) => percent.label === this.percentValue
+          )[0].value;
+        });
     }
 
     this.paramValueService.getParamValueByType(11).subscribe((data) => {
@@ -190,11 +192,14 @@ export class Tm2iiComponent {
         form.thirdTransverseSectionMeasurementDetailTM2.gaugedP !== '' ||
         form.thirdTransverseSectionMeasurementDetailTM2.gaugedS !== ''
     );
+
+    this.listRow = this.formTM2.measurementTM2List;
+
     this.formTM2.firstFrameNoTM2 = `${this.firstTransverseSectionFrom} ~ ${this.firstTransverseSectionTo}`;
     this.formTM2.secondFrameNoTM2 = `${this.secondTransverseSectionFrom} ~ ${this.secondTransverseSectionTo}`;
     this.formTM2.thirdFrameNoTM2 = `${this.thirdTransverseSectionFrom} ~ ${this.thirdTransverseSectionTo}`;
 
-    if (Number(this.tmId) === -1) {
+    if (Number(this.router.url.split('/')[4]) === -1) {
       this.formService
         .addFormToAPI(this.API_URL, this.formTM2)
         .pipe(
@@ -207,6 +212,12 @@ export class Tm2iiComponent {
           next: (result) => {
             this.isLoadingSaveButton = false;
             this.message.create('success', 'Save form success');
+            this.router.navigate([
+              'part',
+              this.partId,
+              this.router.url.split('/')[3],
+              result.id,
+            ]);
           },
           error: (error) => {
             this.isLoadingSaveButton = false;
@@ -218,7 +229,7 @@ export class Tm2iiComponent {
         });
     } else {
       this.formService
-        .updateForm('tm2s', this.tmId, this.formTM2)
+        .updateForm('tm2s', this.router.url.split('/')[4], this.formTM2)
         .pipe(
           retry(3),
           catchError(() => {
@@ -320,8 +331,17 @@ export class Tm2iiComponent {
     const formData = new FormData();
     formData.append('excelFile', event.target.files[0]);
     this.formService
-      .importExcel(`${API_END_POINT}/report-indexes/1/tm2s/sheet`, formData)
+      .importExcel(`${API_END_POINT}/sheet/tm2s`, formData)
       .subscribe((data) => {
+        this.listRow = [];
+
+        this.firstTransverseSectionFrom = data.firstFrameNoTM2.split('~')[0];
+        this.firstTransverseSectionTo = data.firstFrameNoTM2.split('~')[1];
+        this.secondTransverseSectionFrom = data.secondFrameNoTM2.split('~')[0];
+        this.secondTransverseSectionTo = data.secondFrameNoTM2.split('~')[1];
+        this.thirdTransverseSectionFrom = data.thirdFrameNoTM2.split('~')[0];
+        this.thirdTransverseSectionTo = data.thirdFrameNoTM2.split('~')[1];
+
         data.measurementTM2DTOList.forEach((data: any) => {
           this.listRow.push({
             strakePosition: data.strakePosition,
