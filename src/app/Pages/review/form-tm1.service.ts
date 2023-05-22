@@ -12,4 +12,8 @@ export class FormTm1Service {
   getDataTm1FromApi(name: string, id: number): Observable<any> {
     return this.http.get(`${this.API_URL}/${name}/${id}`);
   }
+
+  getReport_index(id: number): Observable<any> {
+    return this.http.get(`${API_END_POINT}/report-indexes/${id}`);
+  }
 }

@@ -44,6 +44,7 @@ import { structuralMemberTM4 } from 'src/app/share/models/form/structuralMemberT
 import { measurementTM6 } from 'src/app/share/models/form/measurementTM6.model';
 import { measurementTM7 } from 'src/app/share/models/form/measurementTM7.model';
 import { measurementTM2 } from 'src/app/share/models/form/measurementTM2.model';
+import { FormService } from 'src/app/share/services/form/form.service';
 (<any>pdfMake).vfs = pdfFonts.pdfMake.vfs;
 
 interface TM4 {
@@ -149,20 +150,12 @@ export class ReviewComponent implements OnInit {
     private certificateService: CertificateService,
     private localService: LocalService,
     private paramService: ParamValueService,
-    private reportIndexService: ReportIndexesService
+    private reportIndexService: ReportIndexesService,
+    private formService: FormService
   ) {}
-  // tableTm1_template = new TableTm1_Template(
-  //   this.dataTm1S,
-  //   this.localService,
-  //   this.generalParticularervice,
-  //   this.reportIndexService
-  // ).tableTm1_template;
-  // tableTm1_template_cc = new TableTm1_Template(
-  //   this.dataTm1S,
-  //   this.localService,
-  //   this.generalParticularervice,
-  //   this.reportIndexService
-  // ).tableTm1_template_cc;
+  report_index: any;
+  id_part: any;
+  data_part: any[] = [];
 
   inShipName: string = '';
   inIMO: string = '';
@@ -232,6 +225,8 @@ export class ReviewComponent implements OnInit {
 
   ckeckSurveyorSignature() {
     this.isSurveyorCheck = !this.isSurveyorCheck;
+
+    console.log(this.report_index);
   }
 
   pageNumber: number = 0;
@@ -277,6 +272,7 @@ export class ReviewComponent implements OnInit {
       ],
     };
     // Define tables
+    /*
     var tableTm1 = {
       headerRows: 10,
       //23 rows
@@ -680,413 +676,7 @@ export class ReviewComponent implements OnInit {
           : []),
       ],
     };
-    /*
-    var tableTm1_c = {
-      headerRows: 10,
-      //23 rows
-      widths: [
-        // '4%',
-        '38.5%',
-        '6%',
-        '4.5%',
-        '3%',
-        '3%',
-        '3%',
-        '3%',
-        '1.5%', //9
-        '3%',
-        '3%',
-        '1.5%', //12
-        '3%',
-        '3%',
-        '3%',
-        '3%',
-        '1.5%', //17
-        '3%',
-        '3%',
-        '1.5%', //20
-        '3%',
-        '3%',
-        '3%',
-      ],
-      body: [
-        //Table header
-        [
-          {
-            text: `TM1`,
-            //   text: `TM1-${this.typeForm}(1 July 2023)`,
-            style: ['txt_center'],
-            colSpan: 22,
-            alignment: 'right' as Alignment,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        [
-          {
-            text: '',
-            colSpan: 22,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        // table info
-        [
-          {
-            text: 'Report on THICKNESS MEASUREMENT of ALL DECK PLATING, ALL BOTTOM SHELL PLATING or SIDE SHELL PLATING',
-            style: ['txt_center', 'fontS11'],
-            colSpan: 22,
-            decoration: 'underline' as Decoration,
-            bold: true,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        [
-          {
-            colSpan: 22,
-            text: '',
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        [
-          {
-            text: "Ship's name:",
-            alignment: 'center' as Alignment,
-            // colSpan: 2,
-            border: [false, false, false, false],
-          },
-          {
-            decoration: 'underline' as Decoration,
-            text: `${this.inShipName}`,
-            colSpan: 5,
-            bold: true,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {
-            text: 'Class Identity No. ',
-            colSpan: 3,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {
-            decoration: 'underline' as Decoration,
-            text: `${this.inABS}`,
-            colSpan: 5,
-            bold: true,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-
-          {
-            text: 'Report No. ',
-            colSpan: 3,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {
-            decoration: 'underline' as Decoration,
-            text: `${this.generalParticular[0].reportNo}`,
-            colSpan: 5,
-            bold: true,
-            border: [false, false, false, false],
-          },
-
-          {},
-          {},
-          {},
-          {},
-        ],
-        [
-          {
-            colSpan: 22,
-            text: '',
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        // table content
-        [
-          {
-            text: 'STRAKE POSITION',
-            alignment: 'left' as Alignment,
-            style: 'txt_center',
-          },
-          {
-            ...(this.lsFormTm1.length >= 1
-              ? {
-                  text: `${this.lsFormTm1[0].strakePosition}`,
-                  colSpan: 21,
-                  rowSpan: 1,
-                  bold: true,
-                }
-              : {}),
-          },
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        [
-          {
-            style: 'txt_center',
-            text: 'PLATE POSITION',
-            rowSpan: 3,
-          },
-          { style: 'txt_center', text: 'No. or Letter', rowSpan: 3 },
-          { style: 'txt_center', text: 'Org.Thk.', rowSpan: 3 },
-          { style: 'txt_center', text: 'Forward Reading', colSpan: 8 },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          { style: 'txt_center', text: 'Aft Reading', colSpan: 8 },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {
-            style: 'txt_center',
-            text: 'Mean Dimunution (%)',
-            colSpan: 2,
-            rowSpan: 2,
-          },
-          {},
-
-          { style: 'txt_center', text: 'Max Alwb Dim', rowSpan: 2 },
-        ],
-        [
-          {},
-          {},
-          {},
-          { text: 'Gauged mm', colSpan: 2, style: 'txt_center' },
-          {},
-          { text: 'Diminution P', colSpan: 3, style: 'txt_center' },
-          {},
-          {},
-          { text: 'Diminution S', colSpan: 3, style: 'txt_center' },
-          {},
-          {},
-
-          { text: 'Gauged (mm)', colSpan: 2, style: 'txt_center' },
-          {},
-          { text: 'Diminution P', colSpan: 3, style: 'txt_center' },
-          {},
-          {},
-          { text: 'Diminution S', colSpan: 3, style: 'txt_center' },
-          {},
-          {},
-
-          { text: '', colSpan: 2, style: 'txt_center' },
-
-          {},
-          { text: 'Max Alwb Dim' },
-        ],
-        [
-          {},
-          {},
-          {},
-          { text: 'P', style: 'txt_center' },
-          { text: 'S', style: 'txt_center' },
-          { text: 'mm', style: 'txt_center' },
-          { text: '%', style: 'txt_center', colSpan: 2 },
-          {},
-          { text: 'mm', style: 'txt_center' },
-          { text: '%', style: 'txt_center', colSpan: 2 },
-          {},
-
-          { text: 'P', style: 'txt_center' },
-          { text: 'S', style: 'txt_center' },
-          { text: 'mm', style: 'txt_center' },
-          { text: '%', style: 'txt_center', colSpan: 2 },
-          {},
-          { text: 'mm', style: 'txt_center' },
-          { text: '%', style: 'txt_center', colSpan: 2 },
-          {},
-
-          { text: 'P', style: 'txt_center' },
-          { text: 'S', style: 'txt_center' },
-          { text: 'mm', style: 'txt_center' },
-        ],
-        ...(this.lsFormTm1.length >= 2
-        ...this.lsFormTm1[1]?.measurementTM1DTOList!.map((x) => [
-              // x.noOrLetter,
-              x.platePosition,
-              x.afterReadingMeasurementDetail.originalThickness,
-              x.noOrLetter,
-              x.noOrLetter,
-
-              x.noOrLetter,
-              x.noOrLetter,
-              x.noOrLetter,
-              x.noOrLetter,
-              x.noOrLetter,
-              x.noOrLetter,
-              x.noOrLetter,
-              x.noOrLetter,
-              x.noOrLetter,
-              x.noOrLetter,
-              x.noOrLetter,
-              x.noOrLetter,
-              x.noOrLetter,
-              x.noOrLetter,
-              x.noOrLetter,
-              x.noOrLetter,
-              x.noOrLetter,
-              x.noOrLetter,
-            ])
-          : []),
-      ],
-    };
-    */
-    // var tableTm1_c = this.tableTm1_template_cc;
-    // var tableTm2i = tableTm2i_template;
+   
     var tableTm2i = {
       headerRows: 10,
       widths: [
@@ -4375,6 +3965,7 @@ export class ReviewComponent implements OnInit {
       ],
     };
 
+    */
     // Define pdfDocument
     var pdfDocument = {
       footer: function (currentPage: any, pageCount: any) {
@@ -4977,702 +4568,2979 @@ export class ReviewComponent implements OnInit {
           { table: tableOfContent, style: ['mg_t_8', 'fontS11'] },
         ],
         // pageTitle
-        ...(this.parts.length >= 1
-          ? [
-              [
-                {
-                  pageBreak: 'before' as PageBreak,
-                  decoration: 'underline' as Decoration,
-                  alignment: 'center' as Alignment,
-                  style: ['fontS11', 'mg_50'],
-                  text: `PART 1`,
-                  bold: true,
-                },
-                {
-                  decoration: 'underline' as Decoration,
-                  text: `${this.parts[0].item}`,
-                  alignment: 'center' as Alignment,
-                  style: ['fontS45'],
-                  bold: true,
-                },
-              ],
-              ...(this.parts[0].forms.some((x) => x.name === 'FORM TM1')
-                ? [
-                    {
-                      style: ['fontS8', 'tableStyle'],
-                      pageBreak: 'before' as PageBreak,
-                      pageOrientation: 'landscape' as PageOrientation,
-                      table: tableTm1,
-                    },
-                  ]
-                : []),
-              ...(this.parts[0].forms.some((x) => x.name === 'FORM TM2(I)')
-                ? [
-                    {
-                      style: ['fontS8', 'tableStyle'],
-                      pageBreak: 'before' as PageBreak,
-                      pageOrientation: 'landscape' as PageOrientation,
-                      table: tableTm2i,
-                    },
-                  ]
-                : []),
-              ...(this.parts[0].forms.some((x) => x.name === 'FORM TM2(II)')
-                ? [
-                    {
-                      style: ['fontS8', 'tableStyle'],
-                      pageBreak: 'before' as PageBreak,
-                      pageOrientation: 'landscape' as PageOrientation,
-                      table: tableTm2i,
-                    },
-                  ]
-                : []),
-              ...(this.parts[0].forms.map((x) => x.name === 'FORM TM3')
-                ? [
-                    {
-                      style: ['fontS8', 'tableStyle'],
-                      pageBreak: 'before' as PageBreak,
-                      pageOrientation: 'landscape' as PageOrientation,
-                      table: tableTm3,
-                    },
-                  ]
-                : []),
-              // ...(this.isTm1OfPart == true
-              //   ? [
-              //       {
-              //         style: ['fontS8', 'tableStyle'],
-              //         pageBreak: 'before' as PageBreak,
-              //         pageOrientation: 'landscape' as PageOrientation,
-              //         table: tableTm1,
-              //       },
-              //     ]
-              //   : []),
-
-              // Form
-              // this.lsFormTm4.length >= 1
-              ...(this.parts[0].forms.some((x) => x.name === 'FORM TM4')
-                ? [
-                    {
-                      pageBreak: 'before' as PageBreak,
-                      pageOrientation: 'landscape' as PageOrientation,
-                      table: tableTm4,
-                      style: ['tableStyle', 'fontS8'],
-                    },
-                  ]
-                : []),
-              ...(this.parts[0].forms.some((x) => x.name === 'FORM TM5')
-                ? [
-                    {
-                      pageBreak: 'before' as PageBreak,
-                      pageOrientation: 'landscape' as PageOrientation,
-                      table: tableTm5,
-                      style: ['tableStyle', 'fontS8'],
-                    },
-                  ]
-                : []),
-              ...(this.parts[0].forms.some((x) => x.name === 'FORM TM6')
-                ? [
-                    {
-                      pageBreak: 'before' as PageBreak,
-                      pageOrientation: 'landscape' as PageOrientation,
-                      table: tableTm6,
-                      style: ['tableStyle', 'fontS8'],
-                    },
-                  ]
-                : []),
-              ...(this.parts[0].forms.some((x) => x.name === 'FORM TM7')
-                ? [
-                    {
-                      pageBreak: 'before' as PageBreak,
-                      pageOrientation: 'landscape' as PageOrientation,
-                      table: tableTm7,
-                      style: ['tableStyle', 'fontS8'],
-                    },
-                  ]
-                : []),
-            ]
-          : []),
-
-        // {
-        //   image: 'snow',
-        //   pageBreak: 'before' as PageBreak,
-        //   margin: [-50, -50, 0, 0] as Margins,
-        //   hasImage: true,
-        // },
-        // pageTitle
-        ...(this.parts.length >= 2
-          ? [
-              [
-                {
-                  pageBreak: 'before' as PageBreak,
-                  pageOrientation: 'portrait' as PageOrientation,
-                  decoration: 'underline' as Decoration,
-                  alignment: 'center' as Alignment,
-                  style: ['fontS11', 'mg_50'],
-                  text: 'PART 2',
-                  bold: true,
-                },
-                {
-                  decoration: 'underline' as Decoration,
-                  text: `${this.parts[1].item}`,
-                  alignment: 'center' as Alignment,
-                  style: ['fontS45'],
-                  bold: true,
-                },
-              ],
-              ...(this.parts[1].forms.some((x) => x.name === 'FORM TM1')
-                ? [
-                    {
-                      style: ['fontS8', 'tableStyle'],
-                      pageBreak: 'before' as PageBreak,
-                      pageOrientation: 'landscape' as PageOrientation,
-                      table: tableTm1,
-                    },
-                  ]
-                : []),
-              ...(this.parts[0].forms.some((x) => x.name === 'FORM TM2(I)')
-                ? [
-                    {
-                      style: ['fontS8', 'tableStyle'],
-                      pageBreak: 'before' as PageBreak,
-                      pageOrientation: 'landscape' as PageOrientation,
-                      table: tableTm2i,
-                    },
-                  ]
-                : []),
-              ...(this.parts[0].forms.some((x) => x.name === 'FORM TM2(II)')
-                ? [
-                    {
-                      style: ['fontS8', 'tableStyle'],
-                      pageBreak: 'before' as PageBreak,
-                      pageOrientation: 'landscape' as PageOrientation,
-                      table: tableTm2i,
-                    },
-                  ]
-                : []),
-              ...(this.parts[1].forms.some((x) => x.name === 'FORM TM3')
-                ? [
-                    {
-                      style: ['fontS8', 'tableStyle'],
-                      pageBreak: 'before' as PageBreak,
-                      pageOrientation: 'landscape' as PageOrientation,
-                      table: tableTm3,
-                    },
-                  ]
-                : []),
-              // ...(this.isTm1OfPart == true
-              //   ? [
-              //       {
-              //         style: ['fontS8', 'tableStyle'],
-              //         pageBreak: 'before' as PageBreak,
-              //         pageOrientation: 'landscape' as PageOrientation,
-              //         table: tableTm1,
-              //       },
-              //     ]
-              //   : []),
-
-              // Form
-              // this.lsFormTm4.length >= 1
-              ...(this.parts[1].forms.some((x) => x.name === 'FORM TM4')
-                ? [
-                    {
-                      pageBreak: 'before' as PageBreak,
-                      pageOrientation: 'landscape' as PageOrientation,
-                      table: tableTm4,
-                      style: ['tableStyle', 'fontS8'],
-                    },
-                  ]
-                : []),
-              ...(this.parts[1].forms.some((x) => x.name === 'FORM TM5')
-                ? [
-                    {
-                      pageBreak: 'before' as PageBreak,
-                      pageOrientation: 'landscape' as PageOrientation,
-                      table: tableTm5,
-                      style: ['tableStyle', 'fontS8'],
-                    },
-                  ]
-                : []),
-              ...(this.parts[1].forms.some((x) => x.name === 'FORM TM6')
-                ? [
-                    {
-                      pageBreak: 'before' as PageBreak,
-                      pageOrientation: 'landscape' as PageOrientation,
-                      table: tableTm6,
-                      style: ['tableStyle', 'fontS8'],
-                    },
-                  ]
-                : []),
-              ...(this.parts[1].forms.some((x) => x.name === 'FORM TM7')
-                ? [
-                    {
-                      pageBreak: 'before' as PageBreak,
-                      pageOrientation: 'landscape' as PageOrientation,
-                      table: tableTm7,
-                      style: ['tableStyle', 'fontS8'],
-                    },
-                  ]
-                : []),
-            ]
-          : []),
-        // form
-        // this.lsFormTm5.length >= 1
-        //   ? [
-        //       {
-        //         pageBreak: 'before' as PageBreak,
-        //         pageOrientation: 'landscape' as PageOrientation,
-        //         table: tableTm5,
-        //         style: ['tableStyle', 'fontS8'],
-        //       },
-        //     ]
-        //   : [],
-
-        // pageTitle
-        ...(this.parts.length >= 3
-          ? [
-              [
-                {
-                  pageBreak: 'before' as PageBreak,
-                  pageOrientation: 'portrait' as PageOrientation,
-                  decoration: 'underline' as Decoration,
-                  alignment: 'center' as Alignment,
-                  style: ['fontS11', 'mg_50'],
-                  text: 'PART 3',
-                  bold: true,
-                },
-                {
-                  decoration: 'underline' as Decoration,
-                  text: `${this.parts[2].item}`,
-                  alignment: 'center' as Alignment,
-                  style: ['fontS45'],
-                  bold: true,
-                },
-              ],
-              ...(this.parts[2].forms.some((x) => x.name === 'FORM TM1')
-                ? [
-                    {
-                      style: ['fontS8', 'tableStyle'],
-                      pageBreak: 'before' as PageBreak,
-                      pageOrientation: 'landscape' as PageOrientation,
-                      table: tableTm1,
-                    },
-                  ]
-                : []),
-              ...(this.parts[2].forms.some((x) => x.name === 'FORM TM2(I)')
-                ? [
-                    {
-                      style: ['fontS8', 'tableStyle'],
-                      pageBreak: 'before' as PageBreak,
-                      pageOrientation: 'landscape' as PageOrientation,
-                      table: tableTm2i,
-                    },
-                  ]
-                : []),
-              ...(this.parts[0].forms.some((x) => x.name === 'FORM TM2(II)')
-                ? [
-                    {
-                      style: ['fontS8', 'tableStyle'],
-                      pageBreak: 'before' as PageBreak,
-                      pageOrientation: 'landscape' as PageOrientation,
-                      table: tableTm2i,
-                    },
-                  ]
-                : []),
-              ...(this.parts[2].forms.some((x) => x.name === 'FORM TM3')
-                ? [
-                    {
-                      style: ['fontS8', 'tableStyle'],
-                      pageBreak: 'before' as PageBreak,
-                      pageOrientation: 'landscape' as PageOrientation,
-                      table: tableTm3,
-                    },
-                  ]
-                : []),
-              // ...(this.isTm1OfPart == true
-              //   ? [
-              //       {
-              //         style: ['fontS8', 'tableStyle'],
-              //         pageBreak: 'before' as PageBreak,
-              //         pageOrientation: 'landscape' as PageOrientation,
-              //         table: tableTm1,
-              //       },
-              //     ]
-              //   : []),
-
-              // Form
-              // this.lsFormTm4.length >= 1
-              ...(this.parts[2].forms.some((x) => x.name === 'FORM TM4')
-                ? [
-                    {
-                      pageBreak: 'before' as PageBreak,
-                      pageOrientation: 'landscape' as PageOrientation,
-                      table: tableTm4_c,
-                      style: ['tableStyle', 'fontS8'],
-                    },
-                  ]
-                : []),
-              ...(this.parts[2].forms.some((x) => x.name === 'FORM TM5')
-                ? [
-                    {
-                      pageBreak: 'before' as PageBreak,
-                      pageOrientation: 'landscape' as PageOrientation,
-                      table: tableTm5,
-                      style: ['tableStyle', 'fontS8'],
-                    },
-                  ]
-                : []),
-              ...(this.parts[2].forms.some((x) => x.name === 'FORM TM6')
-                ? [
-                    {
-                      pageBreak: 'before' as PageBreak,
-                      pageOrientation: 'landscape' as PageOrientation,
-                      table: tableTm6,
-                      style: ['tableStyle', 'fontS8'],
-                    },
-                  ]
-                : []),
-              ...(this.parts[2].forms.some((x) => x.name === 'FORM TM7')
-                ? [
-                    {
-                      pageBreak: 'before' as PageBreak,
-                      pageOrientation: 'landscape' as PageOrientation,
-                      table: tableTm7,
-                      style: ['tableStyle', 'fontS8'],
-                    },
-                  ]
-                : []),
-            ]
-          : []),
-        // form
-        // [
-        //   {
-        //     pageBreak: 'before' as PageBreak,
-        //     pageOrientation: 'landscape' as PageOrientation,
-        //     style: ['fontS8', 'tableStyle'],
-        //     table: tableTm2i,
-        //   },
-        // ],
-
-        // // pageTitle Tm2ii
-        ...(this.parts.length >= 4
-          ? [
-              [
-                {
-                  pageBreak: 'before' as PageBreak,
-                  pageOrientation: 'portrait' as PageOrientation,
-                  decoration: 'underline' as Decoration,
-                  alignment: 'center' as Alignment,
-                  style: ['fontS11', 'mg_50'],
-                  text: 'PART 4',
-                  bold: true,
-                },
-                {
-                  decoration: 'underline' as Decoration,
-                  text: `${this.parts[3].item}`,
-                  alignment: 'center' as Alignment,
-                  style: ['fontS45'],
-                  bold: true,
-                },
-              ],
-              ...(this.parts[3].forms.some((x) => x.name === 'FORM TM1')
-                ? [
-                    {
-                      style: ['fontS8', 'tableStyle'],
-                      pageBreak: 'before' as PageBreak,
-                      pageOrientation: 'landscape' as PageOrientation,
-                      table: tableTm1,
-                    },
-                  ]
-                : []),
-              ...(this.parts[3].forms.some((x) => x.name === 'FORM TM3')
-                ? [
-                    {
-                      style: ['fontS8', 'tableStyle'],
-                      pageBreak: 'before' as PageBreak,
-                      pageOrientation: 'landscape' as PageOrientation,
-                      table: tableTm3,
-                    },
-                  ]
-                : []),
-              // ...(this.isTm1OfPart == true
-              //   ? [
-              //       {
-              //         style: ['fontS8', 'tableStyle'],
-              //         pageBreak: 'before' as PageBreak,
-              //         pageOrientation: 'landscape' as PageOrientation,
-              //         table: tableTm1,
-              //       },
-              //     ]
-              //   : []),
-
-              // Form
-              // this.lsFormTm4.length >= 1
-              ...(this.parts[3].forms.some((x) => x.name === 'FORM TM4')
-                ? [
-                    {
-                      pageBreak: 'before' as PageBreak,
-                      pageOrientation: 'landscape' as PageOrientation,
-                      table: tableTm4_c,
-                      style: ['tableStyle', 'fontS8'],
-                    },
-                  ]
-                : []),
-              ...(this.parts[3].forms.some((x) => x.name === 'FORM TM5')
-                ? [
-                    {
-                      pageBreak: 'before' as PageBreak,
-                      pageOrientation: 'landscape' as PageOrientation,
-                      table: tableTm5,
-                      style: ['tableStyle', 'fontS8'],
-                    },
-                  ]
-                : []),
-              ...(this.parts[3].forms.some((x) => x.name === 'FORM TM6')
-                ? [
-                    {
-                      pageBreak: 'before' as PageBreak,
-                      pageOrientation: 'landscape' as PageOrientation,
-                      table: tableTm6,
-                      style: ['tableStyle', 'fontS8'],
-                    },
-                  ]
-                : []),
-              ...(this.parts[3].forms.some((x) => x.name === 'FORM TM7')
-                ? [
-                    {
-                      pageBreak: 'before' as PageBreak,
-                      pageOrientation: 'landscape' as PageOrientation,
-                      table: tableTm7,
-                      style: ['tableStyle', 'fontS8'],
-                    },
-                  ]
-                : []),
-            ]
-          : []),
-        // form
-        // [
-        //   {
-        //     style: ['fontS8', 'tableStyle'],
-        //     pageBreak: 'before' as PageBreak,
-        //     pageOrientation: 'landscape' as PageOrientation,
-        //     table: tableTm2ii,
-        //   },
-        // ],
-
-        // // pageTitle Tm3
-        ...(this.parts.length >= 5
-          ? [
-              [
-                {
-                  pageBreak: 'before' as PageBreak,
-                  pageOrientation: 'portrait' as PageOrientation,
-                  decoration: 'underline' as Decoration,
-                  alignment: 'center' as Alignment,
-                  style: ['fontS11', 'mg_50'],
-                  text: 'PART 5',
-                  bold: true,
-                },
-                {
-                  decoration: 'underline' as Decoration,
-                  text: `${this.parts[4].item}`,
-                  alignment: 'center' as Alignment,
-                  style: ['fontS45'],
-                  bold: true,
-                },
-              ],
-              ...(this.parts[4].forms.some((x) => x.name === 'FORM TM1')
-                ? [
-                    {
-                      style: ['fontS8', 'tableStyle'],
-                      pageBreak: 'before' as PageBreak,
-                      pageOrientation: 'landscape' as PageOrientation,
-                      table: tableTm1,
-                    },
-                  ]
-                : []),
-              ...(this.parts[4].forms.some((x) => x.name === 'FORM TM4')
-                ? [
-                    {
-                      style: ['fontS8', 'tableStyle'],
-                      pageBreak: 'before' as PageBreak,
-                      pageOrientation: 'landscape' as PageOrientation,
-                      table: tableTm4,
-                    },
-                  ]
-                : []),
-              // ...(this.isTm1OfPart == true
-              //   ? [
-              //       {
-              //         style: ['fontS8', 'tableStyle'],
-              //         pageBreak: 'before' as PageBreak,
-              //         pageOrientation: 'landscape' as PageOrientation,
-              //         table: tableTm1,
-              //       },
-              //     ]
-              //   : []),
-
-              // Form
-              // this.lsFormTm4.length >= 1
-              ...(this.parts[4].forms.some((x) => x.name === 'FORM TM4')
-                ? [
-                    {
-                      pageBreak: 'before' as PageBreak,
-                      pageOrientation: 'landscape' as PageOrientation,
-                      table: tableTm4_c,
-                      style: ['tableStyle', 'fontS8'],
-                    },
-                  ]
-                : []),
-              ...(this.parts[4].forms.some((x) => x.name === 'FORM TM5')
-                ? [
-                    {
-                      pageBreak: 'before' as PageBreak,
-                      pageOrientation: 'landscape' as PageOrientation,
-                      table: tableTm5,
-                      style: ['tableStyle', 'fontS8'],
-                    },
-                  ]
-                : []),
-              ...(this.parts[4].forms.some((x) => x.name === 'FORM TM6')
-                ? [
-                    {
-                      pageBreak: 'before' as PageBreak,
-                      pageOrientation: 'landscape' as PageOrientation,
-                      table: tableTm6,
-                      style: ['tableStyle', 'fontS8'],
-                    },
-                  ]
-                : []),
-              ...(this.parts[4].forms.some((x) => x.name === 'FORM TM7')
-                ? [
-                    {
-                      pageBreak: 'before' as PageBreak,
-                      pageOrientation: 'landscape' as PageOrientation,
-                      table: tableTm7,
-                      style: ['tableStyle', 'fontS8'],
-                    },
-                  ]
-                : []),
-            ]
-          : []),
-
-        // // pageTitle Tm6
         [
-          {
-            pageBreak: 'before' as PageBreak,
-            decoration: 'underline' as Decoration,
-            pageOrientation: 'portrait' as PageOrientation,
-            alignment: 'center' as Alignment,
-            style: ['fontS11', 'mg_50'],
-            text: 'PART 6',
-            bold: true,
-          },
-          {
-            decoration: 'underline' as Decoration,
-            text: 'MAIN DECK',
-            alignment: 'center' as Alignment,
-            style: ['fontS45'],
-            bold: true,
-          },
-        ],
-        // form
-        this.lsFormTm6.length >= 1
-          ? [
+          this.data_part.map((x: any) => [
+            [
               {
-                style: ['fontS8', 'tableStyle'],
                 pageBreak: 'before' as PageBreak,
-                pageOrientation: 'landscape' as PageOrientation,
-                table: tableTm6,
+                decoration: 'underline' as Decoration,
+                pageOrientation: 'portrait' as PageOrientation,
+                alignment: 'center' as Alignment,
+                style: ['fontS11', 'mg_50'],
+                text: `${x.partIndex}`,
+                bold: true,
               },
-            ]
-          : [],
-
-        //  pageTitle Tm7
-        [
-          {
-            pageBreak: 'before' as PageBreak,
-            decoration: 'underline' as Decoration,
-            pageOrientation: 'portrait' as PageOrientation,
-            alignment: 'center' as Alignment,
-            style: ['fontS11', 'mg_50'],
-            text: 'PART 7',
-            bold: true,
-          },
-          {
-            decoration: 'underline' as Decoration,
-            text: 'MAIN DECK',
-            alignment: 'center' as Alignment,
-            style: ['fontS45'],
-            bold: true,
-          },
-        ],
-
-        this.lsFormTm7.length >= 1
-          ? [
               {
-                style: ['fontS8', 'tableStyle'],
-                pageBreak: 'before' as PageBreak,
-                pageOrientation: 'landscape' as PageOrientation,
-                table: tableTm7,
+                decoration: 'underline' as Decoration,
+                text: `${x.item}`,
+                alignment: 'center' as Alignment,
+                style: ['fontS45'],
+                bold: true,
               },
-            ]
-          : [],
-        //  pageTitle Tm1
-        [
-          {
-            pageBreak: 'before' as PageBreak,
-            decoration: 'underline' as Decoration,
-            pageOrientation: 'portrait' as PageOrientation,
-            alignment: 'center' as Alignment,
-            style: ['fontS11', 'mg_50'],
-            text: 'PART 8',
-            bold: true,
-          },
-          {
-            decoration: 'underline' as Decoration,
-            text: 'MAIN DECK',
-            alignment: 'center' as Alignment,
-            style: ['fontS45'],
-            bold: true,
-          },
-        ],
-        this.lsFormTm1.length >= 1
-          ? [
-              {
-                style: ['fontS8', 'tableStyle'],
-                pageBreak: 'before' as PageBreak,
-                pageOrientation: 'landscape' as PageOrientation,
-                table: tableTm1,
-              },
-            ]
-          : [],
-        // this.isTm1_c == true
-        //   ? [
-        //       {
-        //         style: ['fontS8', 'tableStyle'],
-        //         pageBreak: 'before' as PageBreak,
-        //         pageOrientation: 'landscape' as PageOrientation,
-        //         table: tableTm1_c,
-        //       },
-        //     ]
-        //   : [],
+            ],
+            //tm1
+            x.formList.map((y: any) =>
+              y.type == 'TM1'
+                ? [
+                    {
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      style: ['tableStyle', 'fontS8'],
+                      table: {
+                        headerRows: 10,
+                        //23 rows
+                        widths: [
+                          // '4%',
+                          '38.5%',
+                          '6%',
+                          '4.5%',
+                          '3%',
+                          '3%',
+                          '3%',
+                          '3%',
+                          '1.5%', //9
+                          '3%',
+                          '3%',
+                          '1.5%', //12
+                          '3%',
+                          '3%',
+                          '3%',
+                          '3%',
+                          '1.5%', //17
+                          '3%',
+                          '3%',
+                          '1.5%', //20
+                          '3%',
+                          '3%',
+                          '3%',
+                        ],
+                        body: [
+                          //Table header
+                          [
+                            {
+                              text: `TM1`,
+                              //   text: `TM1-${this.typeForm}(1 July 2023)`,
+                              style: ['txt_center'],
+                              colSpan: 22,
+                              alignment: 'right' as Alignment,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
 
-        //  pageTitle new
-        [
-          {
-            pageBreak: 'before' as PageBreak,
-            decoration: 'underline' as Decoration,
-            alignment: 'center' as Alignment,
-            style: ['fontS30'],
-            text: 'PART new',
-            bold: true,
-          },
-          {
-            decoration: 'underline' as Decoration,
-            text: 'MAIN DECK',
-            alignment: 'center' as Alignment,
-            style: ['fontS30'],
-            bold: true,
-          },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: '',
+                              colSpan: 22,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          // table info
+                          [
+                            {
+                              text: 'Report on THICKNESS MEASUREMENT of ALL DECK PLATING, ALL BOTTOM SHELL PLATING or SIDE SHELL PLATING',
+                              style: ['txt_center', 'fontS11'],
+                              colSpan: 22,
+                              decoration: 'underline' as Decoration,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              colSpan: 22,
+                              text: '',
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: "Ship's name:",
+                              alignment: 'center' as Alignment,
+                              // colSpan: 2,
+                              border: [false, false, false, false],
+                            },
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: `${this.inShipName}`,
+                              colSpan: 5,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {
+                              text: 'Class Identity No. ',
+                              colSpan: 3,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: `${this.inABS}`,
+                              colSpan: 5,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {
+                              text: 'Report No. ',
+                              colSpan: 3,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: `${this.generalParticular[0].reportNo}`,
+                              colSpan: 5,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              colSpan: 22,
+                              text: '',
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          // table content
+                          [
+                            {
+                              text: 'STRAKE POSITION',
+                              alignment: 'left' as Alignment,
+                              style: 'txt_center',
+                            },
+                            {
+                              text: `${y.strakePosition}`,
+                              colSpan: 21,
+                              rowSpan: 1,
+                              bold: true,
+                            },
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              style: 'txt_center',
+                              text: 'PLATE POSITION',
+                              rowSpan: 3,
+                            },
+                            {
+                              style: 'txt_center',
+                              text: 'No. or Letter',
+                              rowSpan: 3,
+                            },
+                            {
+                              style: 'txt_center',
+                              text: 'Org.Thk.',
+                              rowSpan: 3,
+                            },
+                            {
+                              style: 'txt_center',
+                              text: 'Forward Reading',
+                              colSpan: 8,
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {
+                              style: 'txt_center',
+                              text: 'Aft Reading',
+                              colSpan: 8,
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {
+                              style: 'txt_center',
+                              text: 'Mean Dimunution (%)',
+                              colSpan: 2,
+                              rowSpan: 2,
+                            },
+                            {},
+
+                            {
+                              style: 'txt_center',
+                              text: 'Max Alwb Dim',
+                              rowSpan: 2,
+                            },
+                          ],
+                          [
+                            {},
+                            {},
+                            {},
+                            {
+                              text: 'Gauged mm',
+                              colSpan: 2,
+                              style: 'txt_center',
+                            },
+                            {},
+                            {
+                              text: 'Diminution P',
+                              colSpan: 3,
+                              style: 'txt_center',
+                            },
+                            {},
+                            {},
+                            {
+                              text: 'Diminution S',
+                              colSpan: 3,
+                              style: 'txt_center',
+                            },
+                            {},
+                            {},
+
+                            {
+                              text: 'Gauged (mm)',
+                              colSpan: 2,
+                              style: 'txt_center',
+                            },
+                            {},
+                            {
+                              text: 'Diminution P',
+                              colSpan: 3,
+                              style: 'txt_center',
+                            },
+                            {},
+                            {},
+                            {
+                              text: 'Diminution S',
+                              colSpan: 3,
+                              style: 'txt_center',
+                            },
+                            {},
+                            {},
+
+                            { text: '', colSpan: 2, style: 'txt_center' },
+
+                            {},
+                            { text: 'Max Alwb Dim' },
+                          ],
+                          [
+                            {},
+                            {},
+                            {},
+                            { text: 'P', style: 'txt_center' },
+                            { text: 'S', style: 'txt_center' },
+                            { text: 'mm', style: 'txt_center' },
+                            { text: '%', style: 'txt_center', colSpan: 2 },
+                            {},
+                            { text: 'mm', style: 'txt_center' },
+                            { text: '%', style: 'txt_center', colSpan: 2 },
+                            {},
+
+                            { text: 'P', style: 'txt_center' },
+                            { text: 'S', style: 'txt_center' },
+                            { text: 'mm', style: 'txt_center' },
+                            { text: '%', style: 'txt_center', colSpan: 2 },
+                            {},
+                            { text: 'mm', style: 'txt_center' },
+                            { text: '%', style: 'txt_center', colSpan: 2 },
+                            {},
+
+                            { text: 'P', style: 'txt_center' },
+                            { text: 'S', style: 'txt_center' },
+                            { text: 'mm', style: 'txt_center' },
+                          ],
+
+                          ...y.measurementTM1DTOList?.map((z: any) => [
+                            z.platePosition,
+                            z.noOrLetter,
+                            z.noOrLetter,
+
+                            z.forwardReadingMeasurementDetail.gaugedP,
+                            z.forwardReadingMeasurementDetail.gaugedP,
+                            z.forwardReadingMeasurementDetail.gaugedP,
+                            z.forwardReadingMeasurementDetail.gaugedP,
+                            z.forwardReadingMeasurementDetail.gaugedP,
+                            z.forwardReadingMeasurementDetail.gaugedP,
+                            z.forwardReadingMeasurementDetail.gaugedP,
+                            z.forwardReadingMeasurementDetail.gaugedP,
+
+                            z.afterReadingMeasurementDetail.gaugedP,
+                            z.afterReadingMeasurementDetail.gaugedS,
+                            z.afterReadingMeasurementDetail.gaugedS,
+                            z.afterReadingMeasurementDetail.gaugedS,
+                            z.afterReadingMeasurementDetail.gaugedS,
+                            z.afterReadingMeasurementDetail.gaugedS,
+                            z.afterReadingMeasurementDetail.gaugedS,
+                            z.afterReadingMeasurementDetail.gaugedS,
+                            z.noOrLetter,
+                            z.noOrLetter,
+                            z.noOrLetter,
+                          ]),
+                        ],
+                      },
+                    },
+                  ]
+                : []
+            ),
+            //tm2i
+            x.formList.map((y: any) =>
+              y.type == 'TM2(I)'
+                ? [
+                    {
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      style: ['tableStyle', 'fontS8'],
+                      table: {
+                        headerRows: 10,
+                        widths: [
+                          // '2.2%',
+                          '22.4%',
+                          //2
+                          '2.6%',
+                          '2.9%',
+                          '2.9%',
+                          '2.2%',
+                          '2.2%',
+                          '2.9%',
+                          '2.2%',
+                          '1.5%', //10
+                          '2.9%',
+                          '1.5%', //13
+                          '2.2%',
+
+                          '2.6%',
+                          '2.9%',
+                          '2.9%',
+                          '2.2%',
+                          '2.2%',
+                          '2.9%',
+                          '1.5%', //20
+                          '2.2%',
+                          '2.9%',
+                          '2.2%',
+                          '1.5%', //23
+
+                          '2.6%',
+                          '2.9%',
+                          '2.9%',
+                          '2.2%',
+                          '2.2%',
+                          '2.9%',
+                          '2.2%',
+                          '1.5%', //
+                          '2.9%',
+                          '2.2%',
+                          '1.5%', //
+                        ],
+                        body: [
+                          //Table header
+                          [
+                            {
+                              text: `TM2i-${y.code}(1 July 2023)`,
+                              style: ['txt_center'],
+                              colSpan: 34,
+                              alignment: 'right' as Alignment,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: '',
+                              colSpan: 34,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          // Table content
+                          [
+                            {
+                              text: 'Report on THICKNESS MEASUREMENT OF SHELL AND DECK PLATING (one, two or three transverse sections)',
+                              style: ['txt_center', 'fontS11'],
+                              colSpan: 34,
+                              decoration: 'underline' as Decoration,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              colSpan: 34,
+                              text: '',
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: "Ship's name:",
+
+                              alignment: 'center' as Alignment,
+
+                              colSpan: 3,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: `${this.inShipName}`,
+                              colSpan: 8,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {
+                              text: 'Class Identity No. ',
+                              colSpan: 4,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: `${this.inABS}`,
+                              colSpan: 8,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {
+                              text: 'Report No. ',
+                              colSpan: 3,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: `${this.generalParticular[0].reportNo}`,
+                              colSpan: 8,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              colSpan: 34,
+                              text: '',
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              style: 'txt_center',
+                              text: 'STRENGTH DECK AND SHEER STRAKE PLATING',
+                              colSpan: 34,
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: '1st TRANSVERSE SECTION at Fr.No: ',
+                              colSpan: 8,
+                              border: [true, true, false, true],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {
+                              text: `${y.firstFrameNoTM2}`,
+                              border: [false, true, true, true],
+                              colSpan: 3,
+                              bold: true,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: '2nd TRANSVERSE SECTION at Fr.No: ',
+                              colSpan: 8,
+                              border: [true, true, false, true],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {
+                              text: `${y.secondFrameNoTM2}`,
+                              border: [false, true, true, true],
+                              colSpan: 3,
+                              bold: true,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: '3rd TRANSVERSE SECTION at Fr.No: ',
+                              colSpan: 8,
+                              border: [true, true, false, true],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {
+                              text: `${y.thirdFrameNoTM2}`,
+                              border: [false, true, true, true],
+                              colSpan: 3,
+                              bold: true,
+                            },
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              style: 'txt_center',
+                              text: 'STRAKE POSITION',
+                              rowSpan: 2,
+                            },
+                            {
+                              style: 'txt_center',
+                              text: 'No. or Letter',
+                              rowSpan: 2,
+                            },
+                            { style: 'txt_center', text: 'Org.Thk.' },
+                            { style: 'txt_center', text: 'Max.Alwb.Dim' },
+                            {
+                              style: 'txt_center',
+                              text: 'Gauged mm  ',
+                              colSpan: 2,
+                            },
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'Diminution P  ',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: '    Diminution S  ',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'No. or Letter',
+                              rowSpan: 2,
+                            },
+                            { style: 'txt_center', text: 'Org.Thk.' },
+                            { style: 'txt_center', text: 'Max.Alwb.Dim' },
+                            {
+                              style: 'txt_center',
+                              text: 'Gauged mm',
+                              colSpan: 2,
+                            },
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'Diminution P',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'Diminution S',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'No. or Letter',
+                              rowSpan: 2,
+                            },
+                            { style: 'txt_center', text: 'Org.Thk.' },
+                            { style: 'txt_center', text: 'Max.Alwb.Dim' },
+                            {
+                              style: 'txt_center',
+                              text: 'Gauged mm',
+                              colSpan: 2,
+                            },
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'Diminution P',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'Diminution S',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                          ],
+                          [
+                            {},
+                            {},
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'P' },
+                            { style: 'txt_center', text: 'S' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+                            {},
+
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'P' },
+                            { style: 'txt_center', text: 'S' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+                            {},
+
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'P' },
+                            { style: 'txt_center', text: 'S' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+                          ],
+                          ...y.measurementTM2DTOList?.map((z: any) => [
+                            z.strakePosition,
+                            z.noOrLetter,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .originalThickness,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .maxAlwbDim,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedP,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedS,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedS,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedS,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedS,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedS,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedS,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedS,
+
+                            z.noOrLetter,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .originalThickness,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .maxAlwbDim,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedP,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedS,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedS,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedS,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedS,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedS,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedS,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedS,
+
+                            z.noOrLetter,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .originalThickness,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .maxAlwbDim,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedP,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedS,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedS,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedS,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedS,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedS,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedS,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedS,
+                          ]),
+                        ],
+                      },
+                    },
+                  ]
+                : []
+            ),
+            //tm2ii
+            x.formList.map((y: any) =>
+              y.type == 'TM2(II)'
+                ? [
+                    {
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      style: ['tableStyle', 'fontS8'],
+                      table: {
+                        headerRows: 10,
+                        widths: [
+                          // '2.2%',
+                          '22.4%',
+                          //2
+                          '2.6%',
+                          '2.9%',
+                          '2.9%',
+                          '2.2%',
+                          '2.2%',
+                          '2.9%',
+                          '2.2%',
+                          '1.5%', //10
+                          '2.9%',
+                          '1.5%', //13
+                          '2.2%',
+
+                          '2.6%',
+                          '2.9%',
+                          '2.9%',
+                          '2.2%',
+                          '2.2%',
+                          '2.9%',
+                          '1.5%', //20
+                          '2.2%',
+                          '2.9%',
+                          '2.2%',
+                          '1.5%', //23
+
+                          '2.6%',
+                          '2.9%',
+                          '2.9%',
+                          '2.2%',
+                          '2.2%',
+                          '2.9%',
+                          '2.2%',
+                          '1.5%', //
+                          '2.9%',
+                          '2.2%',
+                          '1.5%', //
+                        ],
+                        body: [
+                          //Table header
+                          [
+                            {
+                              text: `TM2ii-${y.code}(1 July 2023)`,
+                              style: ['txt_center'],
+                              colSpan: 34,
+                              alignment: 'right' as Alignment,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: '',
+                              colSpan: 34,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          // Table content
+                          [
+                            {
+                              text: 'Report on THICKNESS MEASUREMENT OF SHELL AND DECK PLATING (one, two or three transverse sections)',
+                              style: ['txt_center', 'fontS11'],
+                              colSpan: 34,
+                              decoration: 'underline' as Decoration,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              colSpan: 34,
+                              text: '',
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: "Ship's name:",
+
+                              alignment: 'center' as Alignment,
+
+                              colSpan: 3,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: `${this.inShipName}`,
+                              colSpan: 8,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {
+                              text: 'Class Identity No. ',
+                              colSpan: 4,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: `${this.inABS}`,
+                              colSpan: 8,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {
+                              text: 'Report No. ',
+                              colSpan: 3,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: `${this.generalParticular[0].reportNo}`,
+                              colSpan: 8,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              colSpan: 34,
+                              text: '',
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              style: 'txt_center',
+                              text: 'SHELL PLATING',
+                              colSpan: 34,
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: '1st TRANSVERSE SECTION at Fr.No: ',
+                              colSpan: 8,
+                              border: [true, true, false, true],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {
+                              text: `${y.firstFrameNoTM2}`,
+                              border: [false, true, true, true],
+                              colSpan: 3,
+                              bold: true,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: '2nd TRANSVERSE SECTION at Fr.No: ',
+                              colSpan: 8,
+                              border: [true, true, false, true],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {
+                              text: `${y.secondFrameNoTM2}`,
+                              border: [false, true, true, true],
+                              colSpan: 3,
+                              bold: true,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: '3rd TRANSVERSE SECTION at Fr.No: ',
+                              colSpan: 8,
+                              border: [true, true, false, true],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {
+                              text: `${y.thirdFrameNoTM2}`,
+                              border: [false, true, true, true],
+                              colSpan: 3,
+                              bold: true,
+                            },
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              style: 'txt_center',
+                              text: 'STRAKE POSITION',
+                              rowSpan: 2,
+                            },
+                            {
+                              style: 'txt_center',
+                              text: 'No. or Letter',
+                              rowSpan: 2,
+                            },
+                            { style: 'txt_center', text: 'Org.Thk.' },
+                            { style: 'txt_center', text: 'Max.Alwb.Dim' },
+                            {
+                              style: 'txt_center',
+                              text: 'Gauged mm  ',
+                              colSpan: 2,
+                            },
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'Diminution P  ',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: '    Diminution S  ',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'No. or Letter',
+                              rowSpan: 2,
+                            },
+                            { style: 'txt_center', text: 'Org.Thk.' },
+                            { style: 'txt_center', text: 'Max.Alwb.Dim' },
+                            {
+                              style: 'txt_center',
+                              text: 'Gauged mm',
+                              colSpan: 2,
+                            },
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'Diminution P',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'Diminution S',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'No. or Letter',
+                              rowSpan: 2,
+                            },
+                            { style: 'txt_center', text: 'Org.Thk.' },
+                            { style: 'txt_center', text: 'Max.Alwb.Dim' },
+                            {
+                              style: 'txt_center',
+                              text: 'Gauged mm',
+                              colSpan: 2,
+                            },
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'Diminution P',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'Diminution S',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                          ],
+                          [
+                            {},
+                            {},
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'P' },
+                            { style: 'txt_center', text: 'S' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+                            {},
+
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'P' },
+                            { style: 'txt_center', text: 'S' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+                            {},
+
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'P' },
+                            { style: 'txt_center', text: 'S' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+                          ],
+                          ...y.measurementTM2DTOList?.map((z: any) => [
+                            z.strakePosition,
+                            z.noOrLetter,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .originalThickness,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .maxAlwbDim,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedP,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedS,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedS,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedS,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedS,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedS,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedS,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedS,
+
+                            z.noOrLetter,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .originalThickness,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .maxAlwbDim,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedP,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedS,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedS,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedS,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedS,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedS,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedS,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedS,
+
+                            z.noOrLetter,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .originalThickness,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .maxAlwbDim,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedP,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedS,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedS,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedS,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedS,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedS,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedS,
+                            z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedS,
+                          ]),
+                        ],
+                      },
+                    },
+                  ]
+                : []
+            ),
+            x.formList.map((y: any) =>
+              y.type == 'TM3'
+                ? [
+                    {
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      style: ['tableStyle', 'fontS8'],
+                      table: {
+                        widths: [
+                          // '2.2%',
+                          '22.4%',
+                          //2
+                          '2.6%',
+                          '2.9%',
+                          '2.9%',
+                          '2.2%',
+                          '2.2%',
+                          '2.9%',
+                          '2.2%',
+                          '1.5%', //10
+                          '2.9%',
+                          '1.5%', //13
+                          '2.2%',
+
+                          '2.6%',
+                          '2.9%',
+                          '2.9%',
+                          '2.2%',
+                          '2.2%',
+                          '2.9%',
+                          '1.5%', //20
+                          '2.2%',
+                          '2.9%',
+                          '2.2%',
+                          '1.5%', //23
+
+                          '2.6%',
+                          '2.9%',
+                          '2.9%',
+                          '2.2%',
+                          '2.2%',
+                          '2.9%',
+                          '2.2%',
+                          '1.5%', //
+                          '2.9%',
+                          '2.2%',
+                          '1.5%', //
+                        ],
+                        body: [
+                          //Table header
+                          [
+                            {
+                              text: `TM3-${y.code}(1 July 2023)`,
+                              //   text: `TM2ii-${this.typeForm}(1 July 2023)`,
+                              style: ['txt_center'],
+                              colSpan: 34,
+                              alignment: 'right' as Alignment,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: '',
+                              colSpan: 34,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          // Table content
+                          [
+                            {
+                              text: 'Report on THICKNESS MEASUREMENT OF SHELL AND DECK PLATING (one, two or three transverse sections)',
+                              style: ['txt_center', 'fontS11'],
+                              colSpan: 34,
+                              decoration: 'underline' as Decoration,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              colSpan: 34,
+                              text: '',
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: "Ship's name:",
+
+                              alignment: 'center' as Alignment,
+
+                              colSpan: 3,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: `${this.inShipName}`,
+                              colSpan: 8,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {
+                              text: 'Class Identity No. ',
+                              colSpan: 4,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: `${this.inABS}`,
+                              colSpan: 8,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {
+                              text: 'Report No. ',
+                              colSpan: 3,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: `${this.generalParticular[0].reportNo}`,
+
+                              colSpan: 8,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              colSpan: 34,
+                              text: '',
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              style: 'txt_center',
+                              text: '',
+                            },
+                            {
+                              style: 'txt_center',
+                              text: `1st TRANSVERSE SECTION at Fr.No:`,
+                              colSpan: 8,
+                              border: [true, true, false, true],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {
+                              text: ` ${y.firstFrameNo}`,
+                              border: [false, true, true, true],
+                              colSpan: 3,
+                              bold: true,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: `2nd TRANSVERSE SECTION at Fr.No: `,
+                              colSpan: 8,
+                              border: [true, true, false, true],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {
+                              text: `${y.secondFrameNo}`,
+                              border: [false, true, true, true],
+                              colSpan: 3,
+                              bold: true,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: `1st TRANSVERSE SECTION at Fr.No: `,
+                              colSpan: 8,
+                              border: [true, true, false, true],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {
+                              text: `${y.thirdFrameNo}`,
+                              border: [false, true, true, true],
+                              colSpan: 3,
+                              bold: true,
+                            },
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              style: 'txt_center',
+                              text: 'STRAKE POSITION',
+                              rowSpan: 2,
+                            },
+                            {
+                              style: 'txt_center',
+                              text: 'No. or Letter',
+                              rowSpan: 2,
+                            },
+                            { style: 'txt_center', text: 'Org.Thk.' },
+                            { style: 'txt_center', text: 'Max.Alwb.Dim' },
+                            {
+                              style: 'txt_center',
+                              text: 'Gauged mm  ',
+                              colSpan: 2,
+                            },
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'Diminution P  ',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: '    Diminution S  ',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'No. or Letter',
+                              rowSpan: 2,
+                            },
+                            { style: 'txt_center', text: 'Org.Thk.' },
+                            { style: 'txt_center', text: 'Max.Alwb.Dim' },
+                            {
+                              style: 'txt_center',
+                              text: 'Gauged mm',
+                              colSpan: 2,
+                            },
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'Diminution P',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'Diminution S',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'No. or Letter',
+                              rowSpan: 2,
+                            },
+                            { style: 'txt_center', text: 'Org.Thk.' },
+                            { style: 'txt_center', text: 'Max.Alwb.Dim' },
+                            {
+                              style: 'txt_center',
+                              text: 'Gauged mm',
+                              colSpan: 2,
+                            },
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'Diminution P',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'Diminution S',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                          ],
+                          [
+                            {},
+                            {},
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'P' },
+                            { style: 'txt_center', text: 'S' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+                            {},
+
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'P' },
+                            { style: 'txt_center', text: 'S' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+                            {},
+
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'P' },
+                            { style: 'txt_center', text: 'S' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+                          ],
+                          ...y.measurementTM3DTOList?.map((z: any) => [
+                            z.structuralMember,
+                            z.noOrLetter,
+                            z.firstTransverseSectionMeasurementDetail
+                              .originalThickness,
+                            z.firstTransverseSectionMeasurementDetail
+                              .maxAlwbDim,
+                            z.firstTransverseSectionMeasurementDetail.gaugedP,
+                            z.firstTransverseSectionMeasurementDetail.gaugedS,
+                            z.firstTransverseSectionMeasurementDetail.gaugedS,
+                            z.firstTransverseSectionMeasurementDetail.gaugedS,
+                            z.firstTransverseSectionMeasurementDetail.gaugedS,
+                            z.firstTransverseSectionMeasurementDetail.gaugedS,
+                            z.firstTransverseSectionMeasurementDetail.gaugedS,
+                            z.firstTransverseSectionMeasurementDetail.gaugedS,
+
+                            z.noOrLetter,
+                            z.firstTransverseSectionMeasurementDetail
+                              .originalThickness,
+                            z.firstTransverseSectionMeasurementDetail
+                              .maxAlwbDim,
+                            z.firstTransverseSectionMeasurementDetail.gaugedP,
+                            z.firstTransverseSectionMeasurementDetail.gaugedS,
+                            z.firstTransverseSectionMeasurementDetail.gaugedS,
+                            z.firstTransverseSectionMeasurementDetail.gaugedS,
+                            z.firstTransverseSectionMeasurementDetail.gaugedS,
+                            z.firstTransverseSectionMeasurementDetail.gaugedS,
+                            z.firstTransverseSectionMeasurementDetail.gaugedS,
+                            z.firstTransverseSectionMeasurementDetail.gaugedS,
+
+                            z.noOrLetter,
+                            z.firstTransverseSectionMeasurementDetail
+                              .originalThickness,
+                            z.firstTransverseSectionMeasurementDetail
+                              .maxAlwbDim,
+                            z.firstTransverseSectionMeasurementDetail.gaugedP,
+                            z.firstTransverseSectionMeasurementDetail.gaugedS,
+                            z.firstTransverseSectionMeasurementDetail.gaugedS,
+                            z.firstTransverseSectionMeasurementDetail.gaugedS,
+                            z.firstTransverseSectionMeasurementDetail.gaugedS,
+                            z.firstTransverseSectionMeasurementDetail.gaugedS,
+                            z.firstTransverseSectionMeasurementDetail.gaugedS,
+                            z.firstTransverseSectionMeasurementDetail.gaugedS,
+                          ]),
+                        ],
+                      },
+                    },
+                  ]
+                : []
+            ),
+            //TM4
+            x.formList.map((y: any) =>
+              y.type == 'TM4'
+                ? [
+                    {
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      style: ['tableStyle', 'fontS8'],
+                      table: {
+                        headerRows: 10,
+                        widths: [
+                          // '5%',
+                          '30%',
+                          '7%',
+                          '10%',
+                          '13%',
+                          '5%',
+                          '5%',
+                          '5%',
+                          '5%',
+                          '5%',
+                          '5%',
+                          '5%',
+                          '5%',
+                        ],
+                        body: [
+                          //Table header
+                          [
+                            {
+                              text: `TM4-${y.code}(1 July 2023)`,
+                              //   text: `TM4-${this.typeForm}(1 July 2023)`,
+                              style: ['txt_center'],
+                              colSpan: 12,
+                              alignment: 'right' as Alignment,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: '',
+                              colSpan: 12,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          // Table content
+                          [
+                            {
+                              text: 'Report on THICKNESS MEASUREMENT OF TRANSVERSE STRUCTURAL MEMBERS in the cargo oil and water ballast tanks within the cargo tank length',
+                              style: ['txt_center', 'fontS11'],
+                              colSpan: 12,
+                              decoration: 'underline' as Decoration,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              colSpan: 12,
+                              text: '',
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: "Ship's name:",
+                              alignment: 'center' as Alignment,
+                              colSpan: 1,
+                              border: [false, false, false, false],
+                            },
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: `${this.inShipName}`,
+                              colSpan: 2,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {
+                              text: 'Class Identity No. ',
+                              colSpan: 2,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: `${this.inABS}`,
+                              colSpan: 2,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+
+                            {
+                              text: 'Report No. ',
+                              colSpan: 2,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: `${this.generalParticular[0].reportNo}`,
+                              colSpan: 3,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: '',
+                              colSpan: 12,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          //Table content
+                          [
+                            {
+                              text: 'TANK DESCRIPTION:',
+                              alignment: 'left' as Alignment,
+                              colSpan: 1,
+                              style: 'txt_center',
+                            },
+                            {
+                              text: `${y.tankHolDescription}`,
+                              colSpan: 11,
+                              rowSpan: 1,
+                              bold: true,
+                            },
+                            'Price',
+                            'Date',
+                            'Image',
+                            'isEdited',
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: 'LOCATION OF STRUCTURE:',
+                              alignment: 'left' as Alignment,
+                              colSpan: 1,
+                              style: ['txt_center', 'txt_center'],
+                            },
+                            {
+                              text: `${y.locationOfStructure}`,
+                              colSpan: 11,
+                              bold: true,
+                            },
+                            'Price',
+                            'Date',
+                            'Image',
+                            'isEdited',
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: 'STRUCTURAL MEMBER',
+                              rowSpan: 2,
+                              style: 'txt_center',
+                            },
+                            { text: 'Item', rowSpan: 2, style: 'txt_center' },
+
+                            {
+                              text: 'Original Thickness(mm)',
+                              rowSpan: 2,
+                              style: 'txt_center',
+                            },
+                            {
+                              text: 'Maximum Allowable Dim(mm)',
+                              rowSpan: 2,
+                              style: ['txt_center'],
+                            },
+                            { text: 'Gauged', colSpan: 2, style: 'txt_center' },
+                            {},
+                            {
+                              text: 'Diminution P',
+                              colSpan: 3,
+                              style: 'txt_center',
+                            },
+                            {},
+                            {},
+                            {
+                              text: 'Diminution S',
+                              colSpan: 3,
+                              style: 'txt_center',
+                            },
+                            {},
+                            {},
+                          ],
+                          [
+                            {},
+                            {},
+                            {},
+                            {},
+                            { text: 'P', style: 'txt_center' },
+                            { text: 'S', style: 'txt_center' },
+                            { text: 'mm', style: 'txt_center' },
+                            { text: '%', style: 'txt_center', colSpan: 2 },
+                            {},
+                            { text: 'mm', style: 'txt_center' },
+                            { text: '%', style: 'txt_center', colSpan: 2 },
+                            {},
+                          ],
+                          [
+                            y.structuralMemberTM4List[0].structuralMemberTitle,
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          ...y.structuralMemberTM4List[0].measurementTM4DTOList.map(
+                            (z: any) => [
+                              z.structuralMember,
+                              {},
+                              {},
+                              {},
+                              {},
+                              {},
+                              {},
+                              {},
+                              {},
+                              {},
+                              {},
+                              {},
+                            ]
+                          ),
+                          [
+                            y.structuralMemberTM4List[1].structuralMemberTitle,
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          ...y.structuralMemberTM4List[1].measurementTM4DTOList.map(
+                            (z: any) => [
+                              z.structuralMember,
+                              z.structuralMember,
+                              {},
+                              {},
+                              {},
+                              {},
+                              {},
+                              {},
+                              {},
+                              {},
+                              {},
+                              {},
+                            ]
+                          ),
+                          // ...y.structuralMemberTM4List?.map((z: any) => [
+                          //   z[0].structuralMemberTitle,
+                          //   {},
+                          //   {},
+                          //   {},
+                          //   {},
+                          //   {},
+                          //   {},
+                          //   {},
+                          //   {},
+                          //   {},
+                          //   {},
+                          //   {},
+                          // ]),
+                        ],
+                      },
+                    },
+                  ]
+                : []
+            ),
+
+            x.formList.map((y: any) =>
+              y.type == 'TM5'
+                ? [
+                    {
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      style: ['tableStyle', 'fontS8'],
+                      table: {
+                        headerRows: 10,
+                        widths: [
+                          '30%',
+                          '25%',
+                          '7%',
+                          '10%',
+                          '13%',
+                          '5%',
+                          '5%',
+                          '5%',
+                          '5%',
+                          '5%',
+                          '5%',
+                          '5%',
+                          '5%',
+                        ],
+                        body: [
+                          //Table header
+                          [
+                            {
+                              text: `TM5-${this.lsFormTm5[0].code}(1 July 2023)`,
+                              style: ['txt_center'],
+                              colSpan: 12,
+                              alignment: 'right' as Alignment,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: '',
+                              colSpan: 12,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          // Table content
+                          [
+                            {
+                              text: 'Report on THICKNESS MEASUREMENT OF W.T./O.T. TRANSVERSE BULKHEADS within the cargo tank or cargo hold spaces',
+                              style: ['txt_center', 'fontS11'],
+                              colSpan: 12,
+                              decoration: 'underline' as Decoration,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              colSpan: 12,
+                              text: '',
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: "Ship's name:",
+
+                              alignment: 'center' as Alignment,
+
+                              colSpan: 1,
+                              border: [false, false, false, false],
+                            },
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: `${this.inShipName}`,
+                              colSpan: 2,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {
+                              text: 'Class Identity No. ',
+                              colSpan: 2,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: `${this.inABS}`,
+                              colSpan: 2,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+
+                            {
+                              text: 'Report No. ',
+                              colSpan: 2,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: `${this.generalParticular[0].reportNo}`,
+                              colSpan: 3,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: '',
+                              colSpan: 12,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              alignment: 'left' as Alignment,
+
+                              text: 'TANK/HOLD DESCRIPTION:',
+                              colSpan: 1,
+                              style: 'txt_center',
+                            },
+                            { text: 'a', colSpan: 11, rowSpan: 1, bold: true },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: 'LOCATION OF STRUCTURE:',
+                              alignment: 'left' as Alignment,
+
+                              colSpan: 1,
+                              style: ['txt_center', 'txt_center'],
+                            },
+                            {
+                              text: 'a',
+                              colSpan: 6,
+                              bold: true,
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {
+                              text: 'Frame No. :',
+                              alignment: 'center' as Alignment,
+                              border: [false, false, false, false],
+                              colSpan: 2,
+                            },
+                            {},
+                            {
+                              text: '42',
+                              border: [false, false, true, false],
+                              colSpan: 3,
+                              bold: true,
+                            },
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: 'STRUCTURAL COMPONENT (PLATING/STIFFENER)',
+                              rowSpan: 2,
+                              style: 'txt_center',
+                            },
+                            { text: 'Item', rowSpan: 2, style: 'txt_center' },
+
+                            {
+                              text: 'Original Thickness(mm)',
+                              rowSpan: 2,
+                              style: 'txt_center',
+                            },
+                            {
+                              text: 'Maximum Allowable Dim(mm)',
+                              rowSpan: 2,
+                              style: 'txt_center',
+                            },
+                            { text: 'Gauged', colSpan: 2, style: 'txt_center' },
+                            {},
+                            {
+                              text: 'Diminution P',
+                              colSpan: 3,
+                              style: 'txt_center',
+                            },
+                            {},
+                            {},
+                            {
+                              text: 'Diminution S',
+                              colSpan: 3,
+                              style: 'txt_center',
+                            },
+                            {},
+                            {},
+                          ],
+                          [
+                            {},
+                            {},
+                            {},
+                            {},
+                            { text: 'P', style: 'txt_center' },
+                            { text: 'S', style: 'txt_center' },
+                            { text: 'mm', style: 'txt_center' },
+                            { text: '%', style: 'txt_center', colSpan: 2 },
+                            {},
+                            { text: 'mm', style: 'txt_center' },
+                            { text: '%', style: 'txt_center', colSpan: 2 },
+                            {},
+                          ],
+                        ],
+                      },
+                    },
+                  ]
+                : []
+            ),
+          ]),
         ],
       ],
 
@@ -5772,7 +7640,971 @@ export class ReviewComponent implements OnInit {
 
   exportTestPdf() {
     var pdfTest = {
+      pageOrientation: 'landscape' as PageOrientation,
       content: [
+        {
+          style: ['tableStyle', 'fontS8'],
+          table: {
+            headerRows: 10,
+            widths: [
+              // '2.2%',
+              '9.8%',
+              //2
+              '3.3%', //2
+              '3.2%', //1
+              '3.2%', //2
+              '3.2%',
+              '3.2%',
+              '3.2%',
+              '3.2%',
+              '0.5%', //10
+              '3.2%',
+              '3.2%',
+              '0.5%', //13
+
+              '3.3%', //2
+              '3.2%', //1
+              '3.2%', //2
+              '3.2%',
+              '3.2%',
+              '3.2%',
+              '3.2%',
+              '0.5%', //10
+              '3.2%',
+              '3.2%',
+              '0.5%', //13
+
+              '3.3%', //2
+              '3.2%', //1
+              '3.2%', //2
+              '3.2%',
+              '3.2%',
+              '3.2%',
+              '3.2%',
+              '0.5%', //10
+              '3.2%',
+              '3.2%',
+              '0.5%', //13
+            ],
+            body: [
+              //Table header
+              [
+                {
+                  text: `TM2i-(1 July 2023)`,
+                  style: ['txt_center'],
+                  colSpan: 34,
+                  alignment: 'right' as Alignment,
+                  border: [false, false, false, false],
+                },
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+              ],
+              [
+                {
+                  text: '',
+                  colSpan: 34,
+                  border: [false, false, false, false],
+                },
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+              ],
+              // Table content
+              [
+                {
+                  text: 'Report on THICKNESS MEASUREMENT OF SHELL AND DECK PLATING (one, two or three transverse sections)',
+                  style: ['txt_center', 'fontS11'],
+                  colSpan: 34,
+                  decoration: 'underline' as Decoration,
+                  bold: true,
+                  border: [false, false, false, false],
+                },
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+              ],
+              [
+                {
+                  colSpan: 34,
+                  text: '',
+                  border: [false, false, false, false],
+                },
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+              ],
+              [
+                {
+                  text: "Ship's name:",
+
+                  alignment: 'center' as Alignment,
+
+                  colSpan: 3,
+                  border: [false, false, false, false],
+                },
+                {},
+                {},
+                {
+                  decoration: 'underline' as Decoration,
+                  text: ``,
+                  colSpan: 8,
+                  bold: true,
+                  border: [false, false, false, false],
+                },
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {
+                  text: 'Class Identity No. ',
+                  colSpan: 4,
+                  border: [false, false, false, false],
+                },
+                {},
+                {},
+                {},
+                {
+                  decoration: 'underline' as Decoration,
+                  text: ``,
+                  colSpan: 8,
+                  bold: true,
+                  border: [false, false, false, false],
+                },
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+
+                {
+                  text: 'Report No. ',
+                  colSpan: 3,
+                  border: [false, false, false, false],
+                },
+                {},
+                {},
+                {
+                  decoration: 'underline' as Decoration,
+                  text: ``,
+                  colSpan: 8,
+                  bold: true,
+                  border: [false, false, false, false],
+                },
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+              ],
+              [
+                {
+                  colSpan: 34,
+                  text: '',
+                  border: [false, false, false, false],
+                },
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+              ],
+              [
+                {
+                  style: 'txt_center',
+                  text: 'STRENGTH DECK AND SHEER STRAKE PLATING',
+                  colSpan: 34,
+                },
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+              ],
+              [
+                {},
+                {
+                  style: 'txt_center',
+                  text: '1st TRANSVERSE SECTION at Fr.No: ',
+                  colSpan: 8,
+                  border: [true, true, false, true],
+                },
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {
+                  text: ``,
+                  border: [false, true, true, true],
+                  colSpan: 3,
+                  bold: true,
+                },
+                {},
+                {},
+                {
+                  style: 'txt_center',
+                  text: '2nd TRANSVERSE SECTION at Fr.No: ',
+                  colSpan: 8,
+                  border: [true, true, false, true],
+                },
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {
+                  text: ``,
+                  border: [false, true, true, true],
+                  colSpan: 3,
+                  bold: true,
+                },
+                {},
+                {},
+                {
+                  style: 'txt_center',
+                  text: '3rd TRANSVERSE SECTION at Fr.No: ',
+                  colSpan: 8,
+                  border: [true, true, false, true],
+                },
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {
+                  text: ``,
+                  border: [false, true, true, true],
+                  colSpan: 3,
+                  bold: true,
+                },
+                {},
+                {},
+              ],
+              [
+                {
+                  style: 'txt_center',
+                  text: 'STRAKE POSITION',
+                  rowSpan: 2,
+                },
+                { style: 'txt_center', text: 'No. or Letter', rowSpan: 2 },
+                { style: 'txt_center', text: 'Org.Thk.' },
+                { style: 'txt_center', text: 'Max.Alwb.Dim' },
+                { style: 'txt_center', text: 'Gauged mm  ', colSpan: 2 },
+                {},
+                { style: 'txt_center', text: 'Diminution P  ', colSpan: 3 },
+                {},
+                {},
+                { style: 'txt_center', text: '    Diminution S  ', colSpan: 3 },
+                {},
+                {},
+                { style: 'txt_center', text: 'No. or Letter', rowSpan: 2 },
+                { style: 'txt_center', text: 'Org.Thk.' },
+                { style: 'txt_center', text: 'Max.Alwb.Dim' },
+                { style: 'txt_center', text: 'Gauged mm', colSpan: 2 },
+                {},
+                { style: 'txt_center', text: 'Diminution P', colSpan: 3 },
+                {},
+                {},
+                { style: 'txt_center', text: 'Diminution S', colSpan: 3 },
+                {},
+                {},
+                { style: 'txt_center', text: 'No. or Letter', rowSpan: 2 },
+                { style: 'txt_center', text: 'Org.Thk.' },
+                { style: 'txt_center', text: 'Max.Alwb.Dim' },
+                { style: 'txt_center', text: 'Gauged mm', colSpan: 2 },
+                {},
+                { style: 'txt_center', text: 'Diminution P', colSpan: 3 },
+                {},
+                {},
+                { style: 'txt_center', text: 'Diminution S', colSpan: 3 },
+                {},
+                {},
+              ],
+              [
+                {},
+                {},
+                { style: 'txt_center', text: 'mm' },
+                { style: 'txt_center', text: 'mm' },
+                { style: 'txt_center', text: 'P' },
+                { style: 'txt_center', text: 'S' },
+                { style: 'txt_center', text: 'mm' },
+                { style: 'txt_center', text: '%', colSpan: 2 },
+                {},
+                { style: 'txt_center', text: 'mm' },
+                { style: 'txt_center', text: '%', colSpan: 2 },
+                {},
+                {},
+
+                { style: 'txt_center', text: 'mm' },
+                { style: 'txt_center', text: 'mm' },
+                { style: 'txt_center', text: 'P' },
+                { style: 'txt_center', text: 'S' },
+                { style: 'txt_center', text: 'mm' },
+                { style: 'txt_center', text: '%', colSpan: 2 },
+                {},
+                { style: 'txt_center', text: 'mm' },
+                { style: 'txt_center', text: '%', colSpan: 2 },
+                {},
+                {},
+
+                { style: 'txt_center', text: 'mm' },
+                { style: 'txt_center', text: 'mm' },
+                { style: 'txt_center', text: 'P' },
+                { style: 'txt_center', text: 'S' },
+                { style: 'txt_center', text: 'mm' },
+                { style: 'txt_center', text: '%', colSpan: 2 },
+                {},
+                { style: 'txt_center', text: 'mm' },
+                { style: 'txt_center', text: '%', colSpan: 2 },
+                {},
+              ],
+              [
+                { text: '2nd strake inboard' },
+
+                { text: 'M14' },
+                { text: '14.5' },
+                { text: '14.5' },
+                { text: '14.5' },
+                { text: '14.5' },
+                { text: '14.5' },
+                { text: '14.5' },
+                { text: 'R' },
+                { text: '14.5' },
+                { text: '14.5' },
+                { text: 'R' },
+
+                { text: 'M14' },
+                { text: '14.5' },
+                { text: '14.5' },
+                { text: '14.5' },
+                { text: '14.5' },
+                { text: '14.5' },
+                { text: '14.5' },
+                { text: 'R' },
+                { text: '14.5' },
+                { text: '14.5' },
+                { text: 'R' },
+
+                { text: 'M14' },
+                { text: '14.5' },
+                { text: '14.5' },
+                { text: '14.5' },
+                { text: '14.5' },
+                { text: '14.5' },
+                { text: '14.5' },
+                { text: 'R' },
+                { text: '14.5' },
+                { text: '14.5' },
+                { text: 'R' },
+              ],
+            ],
+          },
+        },
+        {
+          style: ['tableStyle', 'fontS8'],
+          table: {
+            headerRows: 10,
+            //23 rows
+            widths: [
+              // '4%',
+              '38.5%',
+              '6%',
+              '4.5%',
+              '3%',
+              '3%',
+              '3%',
+              '3%',
+              '1.5%', //9
+              '3%',
+              '3%',
+              '1.5%', //12
+              '3%',
+              '3%',
+              '3%',
+              '3%',
+              '1.5%', //17
+              '3%',
+              '3%',
+              '1.5%', //20
+              '3%',
+              '3%',
+              '3%',
+            ],
+            body: [
+              //Table header
+              [
+                {
+                  text: `TM1`,
+                  //   text: `TM1-${this.typeForm}(1 July 2023)`,
+                  style: ['txt_center'],
+                  colSpan: 22,
+                  alignment: 'right' as Alignment,
+                  border: [false, false, false, false],
+                },
+                {},
+                {},
+
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+              ],
+              [
+                {
+                  text: '',
+                  colSpan: 22,
+                  border: [false, false, false, false],
+                },
+                {},
+                {},
+
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+              ],
+              // table info
+              [
+                {
+                  text: 'Report on THICKNESS MEASUREMENT of ALL DECK PLATING, ALL BOTTOM SHELL PLATING or SIDE SHELL PLATING',
+                  style: ['txt_center', 'fontS11'],
+                  colSpan: 22,
+                  decoration: 'underline' as Decoration,
+                  bold: true,
+                  border: [false, false, false, false],
+                },
+                {},
+                {},
+
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+              ],
+              [
+                {
+                  colSpan: 22,
+                  text: '',
+                  border: [false, false, false, false],
+                },
+                {},
+                {},
+
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+              ],
+              [
+                {
+                  text: "Ship's name:",
+                  alignment: 'center' as Alignment,
+                  // colSpan: 2,
+                  border: [false, false, false, false],
+                },
+                {
+                  decoration: 'underline' as Decoration,
+                  text: ``,
+                  colSpan: 5,
+                  bold: true,
+                  border: [false, false, false, false],
+                },
+                {},
+                {},
+                {},
+                {},
+                {
+                  text: 'Class Identity No. ',
+                  colSpan: 3,
+                  border: [false, false, false, false],
+                },
+                {},
+                {},
+                {
+                  decoration: 'underline' as Decoration,
+                  text: ``,
+                  colSpan: 5,
+                  bold: true,
+                  border: [false, false, false, false],
+                },
+                {},
+                {},
+                {},
+                {},
+
+                {
+                  text: 'Report No. ',
+                  colSpan: 3,
+                  border: [false, false, false, false],
+                },
+                {},
+                {},
+                {
+                  decoration: 'underline' as Decoration,
+                  text: ``,
+                  colSpan: 5,
+                  bold: true,
+                  border: [false, false, false, false],
+                },
+
+                {},
+                {},
+                {},
+                {},
+              ],
+              [
+                {
+                  colSpan: 22,
+                  text: '',
+                  border: [false, false, false, false],
+                },
+                {},
+                {},
+
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+              ],
+              // table content
+              [
+                {
+                  text: 'STRAKE POSITION',
+                  alignment: 'left' as Alignment,
+                  style: 'txt_center',
+                },
+                {
+                  text: `2`,
+                  colSpan: 21,
+                  rowSpan: 1,
+                  bold: true,
+                },
+
+                {},
+
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+              ],
+              [
+                {
+                  style: 'txt_center',
+                  text: 'PLATE POSITION',
+                  rowSpan: 3,
+                },
+                { style: 'txt_center', text: 'No. or Letter', rowSpan: 3 },
+                { style: 'txt_center', text: 'Org.Thk.', rowSpan: 3 },
+                { style: 'txt_center', text: 'Forward Reading', colSpan: 8 },
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+
+                { style: 'txt_center', text: 'Aft Reading', colSpan: 8 },
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+
+                {
+                  style: 'txt_center',
+                  text: 'Mean Dimunution (%)',
+                  colSpan: 2,
+                  rowSpan: 2,
+                },
+                {},
+
+                { style: 'txt_center', text: 'Max Alwb Dim', rowSpan: 2 },
+              ],
+              [
+                {},
+                {},
+                {},
+                { text: 'Gauged mm', colSpan: 2, style: 'txt_center' },
+                {},
+                { text: 'Diminution P', colSpan: 3, style: 'txt_center' },
+                {},
+                {},
+                { text: 'Diminution S', colSpan: 3, style: 'txt_center' },
+                {},
+                {},
+
+                { text: 'Gauged (mm)', colSpan: 2, style: 'txt_center' },
+                {},
+                { text: 'Diminution P', colSpan: 3, style: 'txt_center' },
+                {},
+                {},
+                { text: 'Diminution S', colSpan: 3, style: 'txt_center' },
+                {},
+                {},
+
+                { text: '', colSpan: 2, style: 'txt_center' },
+
+                {},
+                { text: 'Max Alwb Dim' },
+              ],
+              [
+                {},
+                {},
+                {},
+                { text: 'P', style: 'txt_center' },
+                { text: 'S', style: 'txt_center' },
+                { text: 'mm', style: 'txt_center' },
+                { text: '%', style: 'txt_center', colSpan: 2 },
+                {},
+                { text: 'mm', style: 'txt_center' },
+                { text: '%', style: 'txt_center', colSpan: 2 },
+                {},
+
+                { text: 'P', style: 'txt_center' },
+                { text: 'S', style: 'txt_center' },
+                { text: 'mm', style: 'txt_center' },
+                { text: '%', style: 'txt_center', colSpan: 2 },
+                {},
+                { text: 'mm', style: 'txt_center' },
+                { text: '%', style: 'txt_center', colSpan: 2 },
+                {},
+
+                { text: 'P', style: 'txt_center' },
+                { text: 'S', style: 'txt_center' },
+                { text: 'mm', style: 'txt_center' },
+              ],
+              [
+                { text: '9th forward' },
+                { text: 'E10' },
+                { text: '14.5' },
+
+                { text: '14.5' },
+                { text: '14.5' },
+                { text: '14.5' },
+                { text: '14.5' },
+                { text: 'R' },
+                { text: '14.5' },
+                { text: '14.5' },
+                { text: 'R' },
+
+                { text: '14.5' },
+                { text: '14.5' },
+                { text: '14.5' },
+                { text: '14.5' },
+                { text: 'R' },
+                { text: '14.5' },
+                { text: '14.5' },
+                { text: 'R' },
+
+                { text: '14.5' },
+                { text: '14.5' },
+                { text: '14.5' },
+              ],
+            ],
+          },
+        },
+        {
+          text: `${this.formService.calculateForMaxAlwbDim('10', 1)}`,
+        },
         {
           image:
             'data:image/png;base64,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',
@@ -5783,6 +8615,87 @@ export class ReviewComponent implements OnInit {
         // snow: 'https://scontent.fhan17-1.fna.fbcdn.net/v/t1.6435-9/67246509_111387816859260_2386012619652726784_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=e3f864&_nc_ohc=mq_yiuP1cvEAX8MvYsU&_nc_ht=scontent.fhan17-1.fna&oh=00_AfDw51jhjfX5tfjXBaYXDj8k51y19mb9SGycIt5cqMpoVw&oe=6482AE6A',
         // snow: 'http://vimisco.com/img/logo/logo%20trong.gif',
         snow: `data:image/gif;base64,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`,
+      },
+
+      styles: {
+        header: {
+          fontSize: 14,
+          bold: true,
+          margin: [0, 0, 0, 10] as Margins,
+        },
+        mg_50: {
+          margin: [0, 300, 0, 10] as Margins,
+        },
+        mg_25: {
+          margin: [0, 150, 0, 0] as Margins,
+        },
+        txt_center: {
+          alignment: 'center' as Alignment,
+        },
+        tableStyle: {
+          margin: [-20, 0, -20, 0] as Margins,
+        },
+        shipNameGeneral: {
+          margin: [100, 10, 100, 0] as Margins,
+        },
+        table_name: {
+          margin: [20, 0, 20, 0] as Margins,
+        },
+        info_ship: {
+          margin: [80, 10, 15, 10] as Margins,
+        },
+        footerAndHeader: {
+          margin: [0, 0, 0, 0] as Margins,
+        },
+        footer: {
+          margin: [20, 10, 20, 30] as Margins,
+        },
+        mg_t: {
+          margin: [0, 15, 0, 0] as Margins,
+          fontSize: 11,
+        },
+        mg_b: {
+          margin: [0, 0, 0, 30] as Margins,
+        },
+        mg_t_8: {
+          margin: [0, 8, 0, 0] as Margins,
+        },
+        mg_l_20: {
+          margin: [20, 0, 0, 0] as Margins,
+        },
+
+        mg_l_90: {
+          margin: [90, 0, 0, 0] as Margins,
+        },
+        fontS8: {
+          fontSize: 8,
+        },
+        fontS11: {
+          fontSize: 11,
+        },
+        fontS15: {
+          fontSize: 15,
+        },
+        fontS13: {
+          fontSize: 13,
+        },
+        fontS18: {
+          fontSize: 18,
+        },
+
+        fontS25: {
+          fontSize: 25,
+        },
+        fontS30: {
+          fontSize: 30,
+        },
+        fontS45: {
+          fontSize: 45,
+        },
+      },
+      defaultStyle: {
+        fontSize: 9,
+        columnGap: 20,
       },
     };
     pdfMake.createPdf(pdfTest).open({}, window);
@@ -5845,6 +8758,21 @@ export class ReviewComponent implements OnInit {
           this.parts = this.reportIndex.parts;
           console.log('part:');
           console.log(this.parts);
+          this.id_part = this.parts.map((x) => x.id);
+
+          console.log(this.id_part);
+
+          for (let i = 0; i < this.id_part.length; i++) {
+            this.dataTm1S
+              .getReport_index(this.id_part[i])
+              .subscribe((data: {}) => {
+                // this.data_part.push(data);
+                console.log('data');
+                this.data_part.push(data);
+                console.log(data);
+                console.log(this.data_part);
+              });
+          }
 
           for (let i = 0; i < this.parts.length; i++) {
             for (let j = 0; j < this.parts[i].forms.length; j++) {
@@ -5961,5 +8889,6 @@ export class ReviewComponent implements OnInit {
           console.log('error');
         }
       );
+    // this.exportTestPdf();
   }
 }
