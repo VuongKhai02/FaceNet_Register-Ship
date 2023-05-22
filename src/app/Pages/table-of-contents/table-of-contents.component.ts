@@ -131,15 +131,39 @@ export class TableOfContentsComponent implements OnInit {
     }
   }
 
-  moveUpForm(num1: any, num2: any) {
-    // if (num2 === 0) {
-    //   this.message.create('error', 'This is the first form of part');
-    // } else {
-    //   let temporaryForm: string = this.parts[num1].forms[num2 - 1];
-    //   this.parts[num1].forms.splice(num2 - 1, 1, this.parts[num1].forms[num2]);
-    //   this.parts[num1].forms.splice(num2, 1, temporaryForm);
-    //   this.message.create('success', 'Move up success');
-    // }
+  tmName: string = '';
+
+  moveUpForm(i: number, j: number) {
+    let changeForm: { type: string; id: number; index: number }[] = [];
+    changeForm.push({
+      type: this.parts[i].forms[i].name,
+      id: this.parts[i].forms[j].formID,
+      index: this.parts[i].forms[j].index,
+    });
+    changeForm.push({
+      type: this.parts[i].forms[j - 1].name,
+      id: this.parts[i].forms[j - 1].formID,
+      index: this.parts[i].forms[j - 1].index,
+    });
+    if (this.parts[i].forms[i].name === 'FORM TM1') {
+      this.tmName = 'tm1';
+    } else if (
+      this.parts[i].forms[i].name === 'FORM TM2' ||
+      this.parts[i].forms[i].name === 'FORM TM2(I)' ||
+      this.parts[i].forms[i].name === 'FORM TM2(II)'
+    ) {
+      this.tmName = 'tm2';
+    } else if (this.parts[i].forms[i].name === 'FORM TM3') {
+      this.tmName = 'tm3';
+    } else if (this.parts[i].forms[i].name === 'FORM TM4') {
+      this.tmName = 'tm4';
+    } else if (this.parts[i].forms[i].name === 'FORM TM5') {
+      this.tmName = 'tm5';
+    } else if (this.parts[i].forms[i].name === 'FORM TM6') {
+      this.tmName = 'tm6';
+    } else if (this.parts[i].forms[i].name === 'FORM TM7') {
+      this.tmName = 'tm7';
+    }
   }
 
   moveDownPart(num: any) {
@@ -179,45 +203,6 @@ export class TableOfContentsComponent implements OnInit {
   }
 
   drop(event: CdkDragDrop<string[]>) {
-    // moveItemInArray(this.parts, event.previousIndex, event.currentIndex);
-    // let rIUpId: { id: number; name: string; index: number } = {
-    //   id: this.parts[event.previousIndex].id,
-    //   name: this.parts[event.previousIndex].partName,
-    //   index: this.parts[event.previousIndex].partIndex,
-    // };
-    // let rIDownId: { id: number; name: string; index: number } = {
-    //   id: this.parts[event.currentIndex].id,
-    //   name: this.parts[event.currentIndex].partName,
-    //   index: this.parts[event.currentIndex].partIndex,
-    // };
-    // this.reportIndexService
-    //   .updateReportIndexToAPI(rIUpId.id, {
-    //     item: rIUpId.name,
-    //     partIndex: rIDownId.index,
-    //   })
-    //   .subscribe(
-    //     (data) => {
-    //       this.reportIndexService
-    //         .updateReportIndexToAPI(rIDownId.id, {
-    //           item: rIDownId.name,
-    //           partIndex: rIUpId.index,
-    //         })
-    //         .subscribe((data) => {
-    //           console.log(event.previousIndex);
-    //           console.log(event.currentIndex);
-    //           console.log('---------');
-    //           console.log(this.parts[event.previousIndex]);
-    //           console.log(this.parts[event.currentIndex]);
-    //           console.log('---------');
-    //           console.log(rIUpId.index);
-    //           console.log(rIDownId.index);
-    //           this.ngOnInit();
-    //         });
-    //     },
-    //     (err) => {
-    //       console.log(err);
-    //     }
-    //   );
     if (event.previousIndex < event.currentIndex) {
       let temporaryParts: { id: number; name: string; index: number }[] = [];
       for (let i: number = event.previousIndex; i <= event.currentIndex; i++) {
@@ -274,6 +259,8 @@ export class TableOfContentsComponent implements OnInit {
       }
     }
   }
+
+  dropForm(event: CdkDragDrop<string[]>) {}
 
   cancel() {}
 }

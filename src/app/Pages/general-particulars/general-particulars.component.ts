@@ -380,8 +380,6 @@ export class GeneralParticularsComponent implements OnInit {
         .addGeneralParticularsToAPI(newGeneralParticulars)
         .subscribe(
           (data) => {
-            console.log('data post: ', data);
-
             this.getDataService.getGeneralParticularsFromAPI().subscribe(
               (data) => {
                 this.generalParticulars = data;
@@ -393,18 +391,17 @@ export class GeneralParticularsComponent implements OnInit {
                 this.mainData.mainId = newGeneral[0].id;
                 this.mainData.reportNumber = newGeneral[0].reportNo;
                 this.mainData.editMode = true;
-                console.log(this.mainData);
-                this.message.create('success', 'Save success');
                 this.router.navigateByUrl('selectForm');
               },
               (err) => {
                 console.log(err);
               }
             );
+            this.message.create('success', 'Save success');
           },
           (err) => {
             console.log(err);
-            console.log(this.mainData);
+            this.message.create('error', 'save failure');
           }
         );
     } else {
@@ -465,9 +462,6 @@ export class GeneralParticularsComponent implements OnInit {
         nameOfOperator: this.generalParticularsForm.value.nameOfOperator,
         surveyorInfo: this.generalParticularsForm.value.nameOfSurveyor,
       };
-      console.log('Id:', this.mainData.mainId);
-
-      console.log('New general:', generalParticularsput);
 
       this.getDataService
         .updateGeneralParticularsToAPI(
@@ -476,7 +470,6 @@ export class GeneralParticularsComponent implements OnInit {
         )
         .subscribe(
           (data) => {
-            console.log('data:', data);
             this.message.create('success', 'Save success');
             this.ngOnInit();
           },

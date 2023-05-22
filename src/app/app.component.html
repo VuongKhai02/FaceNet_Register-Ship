@@ -59,7 +59,7 @@
             >
               <span nz-icon nzType="file-text" nzTheme="outline"></span>
               <span>
-                <a (click)="link(part.id, form.name, form.formID)">{{
+                <a (click)="link(part.id, form.type, form.formID)">{{
                   form.name
                 }}</a>
               </span>
@@ -72,7 +72,7 @@
                 "
                 nz-popconfirm
                 nzPopconfirmTitle="Sure to delete?"
-                (nzOnConfirm)="deleteTm(part.id, form.index)"
+                (nzOnConfirm)="deleteTm(part.id, form.index, i, j)"
                 (nzOnCancel)="cancel()"
                 nzPopconfirmPlacement="top"
                 nz-button
@@ -104,35 +104,26 @@
               <ng-template #contentTemplate>
                 <div>
                   <div style="width: 100%">
-                    <a (click)="addForm(i, 'FORM TM1')" nz-popconfirm
-                      >FORM TM1</a
+                    <a (click)="addForm(i, 'TM1')" nz-popconfirm>FORM TM1</a
                     ><nz-divider nzType="vertical"></nz-divider>
-                    <a (click)="addForm(i, 'FORM TM2(I)')" nz-popconfirm
+                    <a (click)="addForm(i, 'TM2(I)')" nz-popconfirm
                       >FORM TM2(I)</a
                     >
                     <br />
-                    <a (click)="addForm(i, 'FORM TM2(II)')" nz-popconfirm
+                    <a (click)="addForm(i, 'TM2(II)')" nz-popconfirm
                       >FORM TM2(II)</a
                     ><nz-divider nzType="vertical"></nz-divider>
-                    <a (click)="addForm(i, 'FORM TM3')" nz-popconfirm
-                      >FORM TM3</a
-                    >
+                    <a (click)="addForm(i, 'TM3')" nz-popconfirm>FORM TM3</a>
                     <br />
 
-                    <a (click)="addForm(i, 'FORM TM4')" nz-popconfirm
-                      >FORM TM4</a
+                    <a (click)="addForm(i, 'TM4')" nz-popconfirm>FORM TM4</a
                     ><nz-divider nzType="vertical"></nz-divider>
-                    <a (click)="addForm(i, 'FORM TM5')" nz-popconfirm
-                      >FORM TM5</a
-                    >
+                    <a (click)="addForm(i, 'TM5')" nz-popconfirm>FORM TM5</a>
                     <br />
 
-                    <a (click)="addForm(i, 'FORM TM6')" nz-popconfirm
-                      >FORM TM6</a
+                    <a (click)="addForm(i, 'TM6')" nz-popconfirm>FORM TM6</a
                     ><nz-divider nzType="vertical"></nz-divider>
-                    <a (click)="addForm(i, 'FORM TM7')" nz-popconfirm
-                      >FORM TM7</a
-                    >
+                    <a (click)="addForm(i, 'TM7')" nz-popconfirm>FORM TM7</a>
                   </div>
                   <hr />
                   <a (click)="clickMe(i)">Close</a>

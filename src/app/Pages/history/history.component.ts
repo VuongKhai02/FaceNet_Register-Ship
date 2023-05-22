@@ -111,6 +111,7 @@ export class HistoryComponent implements OnInit {
                 formID: data.parts[i].forms[j].formID,
                 index: data.parts[i].forms[j].index,
                 name: data.parts[i].forms[j].name,
+                type: data.parts[i].forms[j].type,
               });
             }
             this.parts.push({
@@ -121,6 +122,7 @@ export class HistoryComponent implements OnInit {
               visible: false,
               edit: false,
             });
+            newForm = [];
             this.parts = this.parts.sort((a, b) => a.partIndex - b.partIndex);
           }
         },
