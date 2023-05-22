@@ -50,7 +50,12 @@ export class AppComponent implements OnInit {
   }
 
   addForm(i: number, formName: string) {
-    this.parts[i].forms.push({ formID: -1, index: -1, name: formName });
+    this.parts[i].forms.push({
+      formID: -1,
+      index: -1,
+      name: formName,
+      type: formName,
+    });
     this.parts[i].visible = false;
   }
 
@@ -94,7 +99,6 @@ export class AppComponent implements OnInit {
   }
 
   reset() {
-    // window.location.reload();
     this.mainData.editMode = false;
     this.mainData.mainId = 0;
     this.mainData.reportNumber = '';
@@ -124,20 +128,22 @@ export class AppComponent implements OnInit {
     this.parts.splice(0, this.parts.length);
   }
 
-  deleteTm(i: number, j: number) {
-    this.reportIndexService.deleteForm(i, j).subscribe(
-      (data) => {
-        this.parts.splice(0, this.parts.length);
-        this.ngOnInit();
-      },
-      (err) => {
-        console.log(err);
-      }
-    );
+  deleteTm(i: number, j: number, i2: number, j2: number) {
+    if (j === -1) {
+      this.parts[i2].forms.splice(j2, 1);
+    } else
+      this.reportIndexService.deleteForm(i, j).subscribe(
+        (data) => {
+          this.parts.splice(0, this.parts.length);
+          this.ngOnInit();
+        },
+        (err) => {
+          console.log(err);
+        }
+      );
   }
 
   deletePart(i: number) {
-    // this.parts.splice(i, 1);
     this.reportIndexService.deleteReportIndexFormAPI(i).subscribe(
       (data) => {
         this.parts.splice(0, this.parts.length);
@@ -150,47 +156,15 @@ export class AppComponent implements OnInit {
   }
 
   link(id: number, formName: string, formIndex: number) {
-    if (formName === 'FORM TM1') {
-      this.tmName = 'tm1';
-    } else if (formName === 'FORM TM2') {
-      this.tmName = 'tm2';
-    } else if (formName === 'FORM TM2(I)') {
-      this.tmName = 'tm2i';
-    } else if (formName === 'FORM TM2(II)') {
-      this.tmName = 'tm2ii';
-    } else if (formName === 'FORM TM3') {
-      this.tmName = 'tm3';
-    } else if (formName === 'FORM TM4') {
-      this.tmName = 'tm4';
-    } else if (formName === 'FORM TM5') {
-      this.tmName = 'tm5';
-    } else if (formName === 'FORM TM6') {
-      this.tmName = 'tm6';
-    } else if (formName === 'FORM TM7') {
-      this.tmName = 'tm7';
-    }
-    this.router.navigate(['part', id, this.tmName, formIndex]);
+    this.router.navigate([
+      'part',
+      id,
+      formName.toLowerCase().replace(/[^\w\s]/gi, ''),
+      formIndex,
+    ]);
   }
 
   changePassword() {
-    // for (let i: number = 0; i < this.accounts.length; i++) {
-    //   if (this.accounts[i].name === this.inLogIn.nameUser) {
-    //     if (this.accounts[i].password !== this.oldPassword) {
-    //       this.message.create('error', 'Old password is incorrect');
-    //     } else if (this.oldPassword === this.newPassword) {
-    //       this.message.create(
-    //         'error',
-    //         'The new password must be different from the old password'
-    //       );
-    //     } else {
-    //       this.accounts[i].password = this.newPassword;
-    //       this.changePassVisible = false;
-    //       this.oldPassword = '';
-    //       this.newPassword = '';
-    //       this.message.create('success', 'Change successful');
-    //     }
-    //   }
-    // }
     if (this.oldPassword === '' || this.newPassword === '') {
       this.message.create('error', 'Information not entered yet');
     } else {
@@ -202,7 +176,6 @@ export class AppComponent implements OnInit {
         .subscribe(
           (data) => {
             this.message.create('success', 'Change successful');
-            console.log(data);
           },
           (err) => {
             console.log(err);
