@@ -100,13 +100,42 @@
             {{ part.partIndex }}.{{ form.index }}
           </td>
           <td>{{ form.name }}</td>
-          <td style="text-align: center">
-            <div>
-              <a *ngIf="j !== 0" (click)="moveUpForm(i, j)"></a>
-              <span nz-icon nzType="up" nzTheme="outline"></span>
-              <nz-divider nzType="vertical"></nz-divider>
-              <a *ngIf="j !== part.forms.length - 1"></a>
-              <span nz-icon nzType="down" nzTheme="outline"></span>
+          <td
+            style="
+              text-align: center;
+              display: flex;
+              flex-direction: row;
+              align-items: center;
+              justify-content: center;
+            "
+          >
+            <div
+              style="
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+              "
+            >
+              <a
+                nz-popconfirm
+                nzPopconfirmTitle="Sure to delete?"
+                (nzOnConfirm)="deleteTm(part.id, form.index, i, j)"
+                (nzOnCancel)="cancel()"
+                nzPopconfirmPlacement="top"
+                >Delete</a
+              ><nz-divider nzType="vertical"></nz-divider>
+              <div style="display: flex; flex-direction: column">
+                <a *ngIf="j !== 0" (click)="moveUpForm(i, j)">
+                  <span nz-icon nzType="up" nzTheme="outline"></span
+                ></a>
+                <a
+                  *ngIf="j !== part.forms.length - 1"
+                  (click)="moveDownForm(i, j)"
+                >
+                  <span nz-icon nzType="down" nzTheme="outline"></span
+                ></a>
+              </div>
             </div>
           </td>
         </tr>

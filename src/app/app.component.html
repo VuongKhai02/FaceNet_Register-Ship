@@ -4,6 +4,9 @@
 
 <ng-template #mainLayout>
   <nz-layout class="app-layout">
+    <div class="overlay" *ngIf="mainData.loading">
+      <nz-spin nzSimple [nzSize]="'large'"></nz-spin>
+    </div>
     <nz-sider
       class="menu-sidebar"
       nzCollapsible
@@ -16,7 +19,7 @@
         <a routerLink="generalParticulars">
           <img
             style="width: 50px; height: 50px"
-            src="http://vimisco.com/img/logo/logo%20trong.gif"
+            src="../assets/logo.png"
             alt="logo"
           />
           <!-- <div class="imgLogo"></div> -->
@@ -63,28 +66,6 @@
                   form.name
                 }}</a>
               </span>
-
-              <button
-                style="
-                  margin-left: 50px;
-                  background-color: transparent;
-                  border: none;
-                "
-                nz-popconfirm
-                nzPopconfirmTitle="Sure to delete?"
-                (nzOnConfirm)="deleteTm(part.id, form.index, i, j)"
-                (nzOnCancel)="cancel()"
-                nzPopconfirmPlacement="top"
-                nz-button
-              >
-                <span
-                  style="color: white"
-                  nz-icon
-                  nzType="delete"
-                  nzTheme="outline"
-                >
-                </span>
-              </button>
             </li>
             <li nz-menu-item nzMatchRouter>
               <span nz-icon nzType="file-add" nzTheme="outline"></span>
@@ -115,12 +96,10 @@
                     ><nz-divider nzType="vertical"></nz-divider>
                     <a (click)="addForm(i, 'TM3')" nz-popconfirm>FORM TM3</a>
                     <br />
-
                     <a (click)="addForm(i, 'TM4')" nz-popconfirm>FORM TM4</a
                     ><nz-divider nzType="vertical"></nz-divider>
                     <a (click)="addForm(i, 'TM5')" nz-popconfirm>FORM TM5</a>
                     <br />
-
                     <a (click)="addForm(i, 'TM6')" nz-popconfirm>FORM TM6</a
                     ><nz-divider nzType="vertical"></nz-divider>
                     <a (click)="addForm(i, 'TM7')" nz-popconfirm>FORM TM7</a>

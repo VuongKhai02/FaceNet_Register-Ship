@@ -22,6 +22,7 @@
     "keycloak-angular": "^14.0.0",
     "keycloak-js": "^21.1.1",
     "ng-zorro-antd": "^15.1.0",
+    "ngx-spinner": "^15.0.1",
     "pdfmake": "^0.2.7",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",

@@ -27,6 +27,7 @@ import jwtDecode from 'jwt-decode';
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnInit {
+  loading: boolean = false;
   accounts: Account[] = [];
   oldPassword: string = '';
   newPassword: string = '';
@@ -77,7 +78,6 @@ export class AppComponent implements OnInit {
     this.parts = [];
     this.parts = this.partsService.setParts();
     this.mainData = this.localService.getMainData();
-
     if (this.mainData.editMode === true) {
       this.reportIndexService
         .getReportIndexFromAPI(this.mainData.mainId)
@@ -145,29 +145,44 @@ export class AppComponent implements OnInit {
     localStorage.removeItem('username');
   }
 
-  deleteTm(i: number, j: number, i2: number, j2: number) {
-    if (j === -1) {
-      this.parts[i2].forms.splice(j2, 1);
-    } else
-      this.reportIndexService.deleteForm(i, j).subscribe(
-        (data) => {
-          this.parts.splice(0, this.parts.length);
-          this.ngOnInit();
-        },
-        (err) => {
-          console.log(err);
-        }
-      );
-  }
-
   deletePart(i: number) {
+    this.mainData.loading = true;
     this.reportIndexService.deleteReportIndexFormAPI(i).subscribe(
       (data) => {
         this.parts.splice(0, this.parts.length);
-        this.ngOnInit();
+        this.reportIndexService
+          .getReportIndexFromAPI(this.mainData.mainId)
+          .subscribe(
+            (data) => {
+              this.reportIndex = data;
+              for (let i: number = 0; i < this.reportIndex.parts.length; i++) {
+                this.parts.push({
+                  id: this.reportIndex.parts[i].id,
+                  partIndex: this.reportIndex.parts[i].partIndex,
+                  partName: this.reportIndex.parts[i].item,
+                  forms: this.reportIndex.parts[i].forms.sort(
+                    (a, b) => a.index - b.index
+                  ),
+                  visible: false,
+                  edit: false,
+                });
+                this.parts = this.parts.sort(
+                  (a, b) => a.partIndex - b.partIndex
+                );
+                this.mainData.loading = false;
+              }
+            },
+            (err) => {
+              this.mainData.loading = false;
+              console.log(err);
+              this.message.create('error', 'error');
+            }
+          );
       },
       (err) => {
         this.ngOnInit();
+        this.mainData.loading = false;
+        this.message.create('error', 'error');
       }
     );
   }
@@ -184,7 +199,12 @@ export class AppComponent implements OnInit {
   changePassword() {
     if (this.oldPassword === '' || this.newPassword === '') {
       this.message.create('error', 'Information not entered yet');
-    } else {
+    } else if (this.newPassword.length < 8) {
+      this.message.create('error', 'Password must be at least 8 characters');
+    } else if (
+      this.newPassword.match(/\d/g) &&
+      this.newPassword.match(/[a-zA-Z]/g)
+    ) {
       this.accountSevice
         .changePassword({
           oldPassword: this.oldPassword,
@@ -206,6 +226,11 @@ export class AppComponent implements OnInit {
             }
           }
         );
+    } else {
+      this.message.create(
+        'error',
+        'Password must contain at least one letter, and at least one number'
+      );
     }
   }
 

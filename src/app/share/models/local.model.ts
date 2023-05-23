@@ -4,6 +4,7 @@ export interface main {
   editMode: boolean;
   reportNumber: string;
   mainId: number;
+  loading: boolean;
 }
 
 export interface partLocal {

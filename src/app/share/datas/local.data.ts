@@ -6,6 +6,7 @@ export var mainData: main = {
   editMode: false,
   reportNumber: '',
   mainId: 0,
+  loading: false,
 };
 
 export var partsData: partLocal[] = [];
