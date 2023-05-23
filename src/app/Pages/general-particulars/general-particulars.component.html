@@ -231,11 +231,6 @@
           [nzXs]="24"
           nzErrorTip="Please input website!"
         >
-          <!-- <input
-            formControlName="thicknessMeasurementCompanCertifiedBy"
-            nz-input
-            id=""
-          /> -->
           <nz-select
             [(ngModel)]="inCertificateName"
             (ngModelChange)="seclectChange()"
@@ -248,18 +243,6 @@
               [nzValue]="certificate.certificateOrganization"
             ></nz-option>
           </nz-select>
-          <!-- <nz-select
-            nzMode="tags"
-            [nzTokenSeparators]="[',']"
-            nzPlaceHolder="Select form"
-            formControlName="formSelect"
-          >
-            <nz-option
-              *ngFor="let certificate of certificates"
-              [nzLabel]="certificate.certificateOrganization"
-              [nzValue]="certificate.certificateOrganization"
-            ></nz-option>
-          </nz-select> -->
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>

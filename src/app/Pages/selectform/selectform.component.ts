@@ -52,11 +52,11 @@ export class SelectformComponent implements OnInit {
       this.selectForm.value.formName !== '' &&
       this.selectForm.value.formSelect.length > 0
     ) {
+      this.mainData.loading = true;
       this.reportIndexService
         .addReportIndexToAPI(this.mainData.mainId, newReportIndexPush)
         .subscribe(
           (data) => {
-            this.message.create('success', 'Create success');
             this.reportIndexService
               .getReportIndexFromAPI(this.mainData.mainId)
               .subscribe((data) => {
@@ -84,7 +84,8 @@ export class SelectformComponent implements OnInit {
                   edit: false,
                 };
                 this.parts.push(newPart);
-
+                this.mainData.loading = false;
+                this.message.create('success', 'Create success');
                 this.router.navigate([
                   'part',
                   data.parts[data.parts.length - 1].id,
@@ -95,6 +96,7 @@ export class SelectformComponent implements OnInit {
           },
           (err) => {
             console.log(err);
+            this.mainData.loading = false;
             this.message.create('error', 'error');
           }
         );
