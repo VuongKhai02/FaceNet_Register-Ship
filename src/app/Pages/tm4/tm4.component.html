@@ -1,157 +1,159 @@
 <section>
-  <div class="form-code">
-    <div style="float: right">
-      <nz-input-group nzAddOnBefore="TM4">
-        <nz-select
-          nzShowSearch
-          nzAllowClear
-          nzPlaceHolder="Select a code"
-          [(ngModel)]="formTM4.code"
-          style="min-width: 150px"
-        >
-          <nz-option
-            *ngFor="let option of listFormCode"
-            nzLabel="{{ option.param }}"
-            nzValue="{{ option.param }}"
-          ></nz-option>
-        </nz-select>
-      </nz-input-group>
-    </div>
-  </div>
-
-  <div class="header">
-    <h1 class="title">
-      Report on THICKNESS MEASUREMENT OF TRANSVERSE STRUCTURAL MEMBERS
-      <br />
-      in the cargo oil and water ballast tanks within the cargo tank length
-    </h1>
-    <div class="infor">
-      <p>
-        Ship's name<span>{{
-          generalParticular ? generalParticular.shipInfo.name : ""
-        }}</span>
-      </p>
-      <p>
-        Class Identity No.<span>{{
-          generalParticular ? generalParticular.shipInfo.absIdentification : ""
-        }}</span>
-      </p>
-      <p>
-        Report No.<span>{{
-          generalParticular ? generalParticular.reportNo : ""
-        }}</span>
-      </p>
-    </div>
-  </div>
-  <!-- Start tool bar -->
-  <div class="toolBar">
-    <button nz-button nzType="primary" (click)="showModalPercentManage()">
-      <span nz-icon nzType="reconciliation" nzTheme="outline"></span>Percentage
-      management
-    </button>
-    <nz-modal
-      [nzStyle]="{ top: '20%' }"
-      [(nzVisible)]="isPercentVisible"
-      nzTitle="PERCENTAGE MANAGEMENT"
-      (nzOnCancel)="onCancelModal()"
-      (nzOnOk)="onOkModal()"
-    >
-      <ng-container *nzModalContent>
-        <nz-input-group
-          *ngFor="let param of listStructuralMember; index as index"
-          nzAddOnBefore=" {{ index + 1 }} "
-          nzAddOnAfter="%"
-        >
-          <input
-            nz-input
-            type="text"
-            [disabled]="true"
-            [defaultValue]="param.param"
-            style="width: 70%; cursor: default"
-          />
+  <nz-spin [nzSpinning]="isLoadingDataForm">
+    <div class="form-code">
+      <div style="float: right">
+        <nz-input-group nzAddOnBefore="TM4">
           <nz-select
-            style="width: 30%"
-            nzPlaceHolder="Select percent"
-            [(ngModel)]="param.value"
-            (ngModelChange)="setPercent($event, param.param)"
+            nzShowSearch
+            nzAllowClear
+            nzPlaceHolder="Select a code"
+            [(ngModel)]="formTM4.code"
+            style="min-width: 150px"
           >
-            <nz-option nzLabel="20%" nzValue="1"></nz-option>
-            <nz-option nzLabel="20% + 1" nzValue="2"></nz-option>
-            <nz-option nzLabel="25%" nzValue="3"></nz-option>
-            <nz-option nzLabel="30%" nzValue="4"></nz-option>
+            <nz-option
+              *ngFor="let option of listFormCode"
+              nzLabel="{{ option.param }}"
+              nzValue="{{ option.param }}"
+            ></nz-option>
           </nz-select>
         </nz-input-group>
-      </ng-container>
-    </nz-modal>
+      </div>
+    </div>
 
-    <button class="btn-add-row" nz-button (click)="showModal()">
-      <span nz-icon nzType="file-add" nzTheme="outline"></span> Add row
-    </button>
-    <nz-modal
-      [nzStyle]="{ top: '20%' }"
-      [(nzVisible)]="isAddRowVisible"
-      nzTitle="Enter number of rows"
-      (nzOnCancel)="handleCancel()"
-      (nzOnOk)="handleOk()"
-      nzWidth="400px"
-    >
-      <nz-input-group nzCompact *nzModalContent>
-        <nz-select
-          nzShowSearch
-          nzAllowClear
-          nzPlaceHolder="Select a structural member title"
-          [(ngModel)]="structuralMemberSelected"
-          style="width: 70%"
-        >
-          <nz-option nzLabel="Add a new list" nzValue="-1"></nz-option>
-          <nz-option
-            *ngFor="
-              let structuralMember of formTM4.structuralMemberTM4List;
-              index as index
-            "
-            nzLabel="{{ structuralMember.structuralMemberTitle }}"
-            nzValue="{{ index }}"
-          ></nz-option>
-        </nz-select>
+    <div class="header">
+      <h1 class="title">
+        Report on THICKNESS MEASUREMENT OF TRANSVERSE STRUCTURAL MEMBERS
+        <br />
+        in the cargo oil and water ballast tanks within the cargo tank length
+      </h1>
+      <div class="infor">
+        <p>
+          Ship's name<span>{{
+            generalParticular ? generalParticular.shipInfo.name : ""
+          }}</span>
+        </p>
+        <p>
+          Class Identity No.<span>{{
+            generalParticular
+              ? generalParticular.shipInfo.absIdentification
+              : ""
+          }}</span>
+        </p>
+        <p>
+          Report No.<span>{{
+            generalParticular ? generalParticular.reportNo : ""
+          }}</span>
+        </p>
+      </div>
+    </div>
+    <!-- Start tool bar -->
+    <div class="toolBar">
+      <button nz-button nzType="primary" (click)="showModalPercentManage()">
+        <span nz-icon nzType="reconciliation" nzTheme="outline"></span
+        >Percentage management
+      </button>
+      <nz-modal
+        [nzStyle]="{ top: '20%' }"
+        [(nzVisible)]="isPercentVisible"
+        nzTitle="PERCENTAGE MANAGEMENT"
+        (nzOnCancel)="onCancelModal()"
+        (nzOnOk)="onOkModal()"
+      >
+        <ng-container *nzModalContent>
+          <nz-input-group
+            *ngFor="let param of listStructuralMember; index as index"
+            nzAddOnBefore=" {{ index + 1 }} "
+            nzAddOnAfter="%"
+          >
+            <input
+              nz-input
+              type="text"
+              [disabled]="true"
+              [defaultValue]="param.param"
+              style="width: 70%; cursor: default"
+            />
+            <nz-select
+              style="width: 30%"
+              nzPlaceHolder="Select percent"
+              [(ngModel)]="param.value"
+              (ngModelChange)="setPercent($event, param.param)"
+            >
+              <nz-option nzLabel="20%" nzValue="1"></nz-option>
+              <nz-option nzLabel="20% + 1" nzValue="2"></nz-option>
+              <nz-option nzLabel="25%" nzValue="3"></nz-option>
+              <nz-option nzLabel="30%" nzValue="4"></nz-option>
+            </nz-select>
+          </nz-input-group>
+        </ng-container>
+      </nz-modal>
+
+      <button class="btn-add-row" nz-button (click)="showModal()">
+        <span nz-icon nzType="file-add" nzTheme="outline"></span> Add row
+      </button>
+      <nz-modal
+        [nzStyle]="{ top: '20%' }"
+        [(nzVisible)]="isAddRowVisible"
+        nzTitle="Enter number of rows"
+        (nzOnCancel)="handleCancel()"
+        (nzOnOk)="handleOk()"
+        nzWidth="400px"
+      >
+        <nz-input-group nzCompact *nzModalContent>
+          <nz-select
+            nzShowSearch
+            nzAllowClear
+            nzPlaceHolder="Select a structural member title"
+            [(ngModel)]="structuralMemberSelected"
+            style="width: 70%"
+          >
+            <nz-option nzLabel="Add a new list" nzValue="-1"></nz-option>
+            <nz-option
+              *ngFor="
+                let structuralMember of formTM4.structuralMemberTM4List;
+                index as index
+              "
+              nzLabel="{{ structuralMember.structuralMemberTitle }}"
+              nzValue="{{ index }}"
+            ></nz-option>
+          </nz-select>
+          <input
+            class="input-row-value"
+            nz-input
+            type="number"
+            min="0"
+            max="100"
+            [(ngModel)]="addRowValue"
+            pattern="^(?:[1-9]|[1-9][0-9]|100)$"
+          />
+        </nz-input-group>
+      </nz-modal>
+
+      <button style="width: fit-content; padding: 0">
+        <label for="import-excel">
+          <div class="import-excel">
+            <span nz-icon nzType="upload" nzTheme="outline"></span
+            ><span style="margin-left: 8px">Import excel</span>
+          </div>
+        </label>
         <input
-          class="input-row-value"
-          nz-input
-          type="number"
-          min="0"
-          max="100"
-          [(ngModel)]="addRowValue"
-          pattern="^(?:[1-9]|[1-9][0-9]|100)$"
+          type="file"
+          accept=".xls"
+          style="display: none"
+          id="import-excel"
+          (change)="onImportExcel($event)"
         />
-      </nz-input-group>
-    </nz-modal>
+      </button>
 
-    <button style="width: fit-content; padding: 0">
-      <label for="import-excel">
-        <div class="import-excel">
-          <span nz-icon nzType="upload" nzTheme="outline"></span
-          ><span style="margin-left: 8px">Import excel</span>
-        </div>
-      </label>
-      <input
-        type="file"
-        accept=".xls"
-        style="display: none"
-        id="import-excel"
-        (change)="onImportExcel($event)"
-      />
-    </button>
-
-    <button
-      nz-button
-      nzType="primary"
-      (click)="onSaveForm()"
-      [nzLoading]="isLoadingSaveButton"
-    >
-      <span nz-icon nzType="save" nzTheme="outline"></span>Save
-    </button>
-  </div>
-  <!-- End tool bar -->
-  <nz-spin [nzSpinning]="isLoadingDataForm">
+      <button
+        nz-button
+        nzType="primary"
+        (click)="onSaveForm()"
+        [nzLoading]="isLoadingSaveButton"
+      >
+        <span nz-icon nzType="save" nzTheme="outline"></span>Save
+      </button>
+    </div>
+    <!-- End tool bar -->
     <nz-table
       [nzData]="formTM4.structuralMemberTM4List"
       [nzFrontPagination]="false"

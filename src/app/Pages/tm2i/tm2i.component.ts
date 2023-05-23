@@ -96,6 +96,8 @@ export class Tm2iComponent {
 
   selectedFile: any;
 
+  isLoadingDataForm: boolean = false;
+
   ngOnInit(): void {
     this.router.events.subscribe((event) => {
       if (
@@ -104,6 +106,8 @@ export class Tm2iComponent {
         this.router.url.split('/')[3].slice(0, 3) === 'tm2' &&
         this.router.url.split('/')[4] !== '-1'
       ) {
+        this.isLoadingDataForm = false;
+
         this.partId = this.router.url.split('/')[2];
         this.formService
           .getDataForm('tm2s', this.router.url.split('/')[4])
@@ -113,11 +117,18 @@ export class Tm2iComponent {
             if (data.measurementTM2DTOList.length > 0) {
               this.percentValue =
                 data.measurementTM2DTOList[0].firstTransverseSectionMeasurementDetailTM2.percent;
-              this.percentSelected = this.listPercentOption.filter(
-                (percent) => percent.label === this.percentValue
-              )[0].value;
+              if (
+                this.listPercentOption.filter(
+                  (percent) => percent.label === this.percentValue
+                ).length > 0
+              )
+                this.percentSelected = this.listPercentOption.filter(
+                  (percent) => percent.label === this.percentValue
+                )[0].value;
             }
           });
+
+        this.isLoadingDataForm = false;
       } else if (
         event instanceof NavigationEnd &&
         this.router.url.split('/')[4] === '-1'
@@ -132,17 +143,28 @@ export class Tm2iComponent {
       for (let i = 1; i <= 20; i++)
         this.listRow.push(JSON.parse(JSON.stringify(this.emptyRow)));
     } else {
+      this.isLoadingDataForm = true;
+
       this.formService
         .getDataForm('tm2s', this.router.url.split('/')[4])
         .subscribe((data) => {
           this.formTM2.code = data.code;
           this.listRow = data.measurementTM2DTOList;
-          this.percentValue =
-            data.measurementTM2DTOList[0].firstTransverseSectionMeasurementDetailTM2.percent;
-          this.percentSelected = this.listPercentOption.filter(
-            (percent) => percent.label === this.percentValue
-          )[0].value;
+          if (data.measurementTM2DTOList.length > 0) {
+            this.percentValue =
+              data.measurementTM2DTOList[0].firstTransverseSectionMeasurementDetailTM2.percent;
+            if (
+              this.listPercentOption.filter(
+                (percent) => percent.label === this.percentValue
+              ).length > 0
+            )
+              this.percentSelected = this.listPercentOption.filter(
+                (percent) => percent.label === this.percentValue
+              )[0].value;
+          }
         });
+
+      this.isLoadingDataForm = false;
     }
 
     this.paramValueService.getParamValueByType(11).subscribe((data) => {
@@ -312,6 +334,10 @@ export class Tm2iComponent {
       this.listRow[i].thirdTransverseSectionMeasurementDetailTM2.percent =
         this.percentValue;
     }
+
+    this.percentSelected = this.listPercentOption.filter(
+      (percent) => percent.label === this.percentValue
+    )[0].value;
   }
 
   clearRow(index: number) {
@@ -328,6 +354,8 @@ export class Tm2iComponent {
   }
 
   onImportExcel(event: any) {
+    this.isLoadingDataForm = true;
+
     const formData = new FormData();
     formData.append('excelFile', event.target.files[0]);
     this.formService
@@ -380,5 +408,7 @@ export class Tm2iComponent {
         });
       });
     this.selectedFile = null;
+
+    this.isLoadingDataForm = false;
   }
 }

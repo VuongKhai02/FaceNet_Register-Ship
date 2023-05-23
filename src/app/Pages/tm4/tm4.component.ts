@@ -86,6 +86,7 @@ export class Tm4Component implements OnInit {
         this.router.url.split('/')[4] !== '-1'
       ) {
         this.isLoadingDataForm = true;
+
         this.partId = this.router.url.split('/')[2];
         this.formService
           .getDataForm('tm4s', this.router.url.split('/')[4])

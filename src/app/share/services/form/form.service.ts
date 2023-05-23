@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { GeneralParticular } from '../../models/generalParticulars.model';
 import { LocalService } from '../local.service';
+import { API_END_POINT } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -84,14 +85,12 @@ export class FormService {
   }
 
   getDataForm(formName: string, tmId: string): Observable<any> {
-    return this.httpClient.get(
-      `http://222.252.25.37:9080/api/v1/forms/${formName}/${tmId}`
-    );
+    return this.httpClient.get(`${API_END_POINT}/forms/${formName}/${tmId}`);
   }
 
   updateForm(formName: string, tmId: string, newData: any): Observable<any> {
     return this.httpClient.put(
-      `http://222.252.25.37:9080/api/v1/forms/${formName}/${tmId}`,
+      `${API_END_POINT}/forms/${formName}/${tmId}`,
       newData
     );
   }
@@ -102,9 +101,7 @@ export class FormService {
 
   getParticularData() {
     this.httpClient
-      .get<GeneralParticular[]>(
-        `http://222.252.25.37:9080/api/v1/generals_particulars`
-      )
+      .get<GeneralParticular[]>(`${API_END_POINT}/generals_particulars`)
       .subscribe((data) => {
         this.generalParticular = data;
       });

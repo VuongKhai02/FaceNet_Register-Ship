@@ -19,6 +19,7 @@ import { Form } from './share/models/form.model';
 import { Account } from './share/models/account.model';
 import { AccountService } from './share/services/account.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import jwtDecode from 'jwt-decode';
 
 @Component({
   selector: 'app-root',
@@ -36,6 +37,12 @@ export class AppComponent implements OnInit {
   formSelect: string[] = [];
   mainData!: main;
   tmName: string = '';
+  decode: any;
+  isCollapsed = false;
+  inLogIn: { Islogin: boolean; nameUser: string | null } = {
+    Islogin: !this.tokenIsValid(),
+    nameUser: localStorage.getItem('username'),
+  };
   constructor(
     private accountSevice: AccountService,
     private message: NzMessageService,
@@ -109,11 +116,17 @@ export class AppComponent implements OnInit {
   title(title: any) {
     throw new Error('Method not implemented.');
   }
-  isCollapsed = false;
-  inLogIn: { Islogin: boolean; nameUser: string } = {
-    Islogin: true,
-    nameUser: 'Unknown',
-  };
+
+  tokenIsValid(): boolean {
+    const accessToken = localStorage.getItem('token');
+    if (accessToken) {
+      this.decode = jwtDecode(accessToken);
+      const currentDate = Date.now() / 1000;
+      localStorage.setItem('username', this.decode.sub);
+      return currentDate < this.decode.exp;
+    }
+    return false;
+  }
 
   logIn(title: { Islogin: boolean; nameUser: string }): void {
     this.inLogIn = title;
@@ -126,6 +139,10 @@ export class AppComponent implements OnInit {
     this.mainData.mainId = 0;
     this.mainData.reportNumber = '';
     this.parts.splice(0, this.parts.length);
+
+    localStorage.removeItem('token');
+    localStorage.removeItem('refreshtoken');
+    localStorage.removeItem('username');
   }
 
   deleteTm(i: number, j: number, i2: number, j2: number) {

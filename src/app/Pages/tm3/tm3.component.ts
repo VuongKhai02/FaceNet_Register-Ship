@@ -10,6 +10,7 @@ import { CdkDragEnd, CdkDragDrop } from '@angular/cdk/drag-drop';
 import { NavigationEnd, Router } from '@angular/router';
 import { GeneralParticular } from 'src/app/share/models/generalParticulars.model';
 import { API_END_POINT } from 'src/environments/environment';
+import { newParamValue } from 'src/app/share/models/newParamValue.model';
 
 @Component({
   selector: 'app-tm3',
@@ -50,9 +51,9 @@ export class Tm3Component {
 
   listStructuralMember: ParamValue[] = [];
 
-  partId: string = this.router.url.split('/')[2];
-  tmId: string = this.router.url.split('/')[4];
-  API_URL: string = `http://222.252.25.37:9080/api/v1/report-indexes/${this.partId}/tm3s`;
+  API_URL: string = `${API_END_POINT}/report-indexes/${
+    this.router.url.split('/')[2]
+  }/tm3s`;
 
   emptyRow: measurementTM3 = {
     structuralMember: '',
@@ -92,6 +93,8 @@ export class Tm3Component {
 
   selectedFile: any;
 
+  listNewStructuralMember: newParamValue[] = [];
+
   ngOnInit(): void {
     this.router.events.subscribe((event) => {
       if (
@@ -100,9 +103,46 @@ export class Tm3Component {
         this.router.url.split('/')[3].slice(0, 3) === 'tm3' &&
         this.router.url.split('/')[4] !== '-1'
       ) {
-        this.partId = this.router.url.split('/')[2];
-        this.tmId = this.router.url.split('/')[4];
-        this.formService.getDataForm('tm3s', this.tmId).subscribe((data) => {
+        this.formService
+          .getDataForm('tm3s', this.router.url.split('/')[4])
+          .subscribe((data) => {
+            this.formTM3.code = data.code;
+            this.listRow = data.measurementTM3DTOList;
+
+            this.firstTransverseSectionFrom = data.firstFrameNo.split('~')[0];
+            this.firstTransverseSectionTo = data.firstFrameNo.split('~')[1];
+            this.secondTransverseSectionFrom = data.secondFrameNo.split('~')[0];
+            this.secondTransverseSectionTo = data.secondFrameNo.split('~')[1];
+            this.thirdTransverseSectionFrom = data.thirdFrameNo.split('~')[0];
+            this.thirdTransverseSectionTo = data.thirdFrameNo.split('~')[1];
+
+            this.listStructuralMember.map((member) => {
+              data.measurementTM3DTOList.forEach((e: any) => {
+                if (member.param == e.structuralMember) {
+                  member.value =
+                    e.firstTransverseSectionMeasurementDetail.percent;
+                  return;
+                }
+              });
+            });
+          });
+      } else if (
+        event instanceof NavigationEnd &&
+        this.router.url.split('/')[4] === '-1'
+      ) {
+        this.listRow = [];
+        for (let i = 1; i <= 20; i++)
+          this.listRow.push(JSON.parse(JSON.stringify(this.emptyRow)));
+      }
+    });
+
+    if (Number(this.router.url.split('/')[4]) === -1) {
+      for (let i = 1; i <= 20; i++)
+        this.listRow.push(JSON.parse(JSON.stringify(this.emptyRow)));
+    } else {
+      this.formService
+        .getDataForm('tm3s', this.router.url.split('/')[4])
+        .subscribe((data) => {
           this.formTM3.code = data.code;
           this.listRow = data.measurementTM3DTOList;
 
@@ -123,40 +163,6 @@ export class Tm3Component {
             });
           });
         });
-      } else if (
-        event instanceof NavigationEnd &&
-        this.router.url.split('/')[4] === '-1'
-      ) {
-        this.listRow = [];
-        for (let i = 1; i <= 20; i++)
-          this.listRow.push(JSON.parse(JSON.stringify(this.emptyRow)));
-      }
-    });
-
-    if (Number(this.tmId) === -1) {
-      for (let i = 1; i <= 20; i++)
-        this.listRow.push(JSON.parse(JSON.stringify(this.emptyRow)));
-    } else {
-      this.formService.getDataForm('tm3s', this.tmId).subscribe((data) => {
-        this.formTM3.code = data.code;
-        this.listRow = data.measurementTM3DTOList;
-
-        this.firstTransverseSectionFrom = data.firstFrameNo.split('~')[0];
-        this.firstTransverseSectionTo = data.firstFrameNo.split('~')[1];
-        this.secondTransverseSectionFrom = data.secondFrameNo.split('~')[0];
-        this.secondTransverseSectionTo = data.secondFrameNo.split('~')[1];
-        this.thirdTransverseSectionFrom = data.thirdFrameNo.split('~')[0];
-        this.thirdTransverseSectionTo = data.thirdFrameNo.split('~')[1];
-
-        this.listStructuralMember.map((member) => {
-          data.measurementTM3DTOList.forEach((e: any) => {
-            if (member.param == e.structuralMember) {
-              member.value = e.firstTransverseSectionMeasurementDetail.percent;
-              return;
-            }
-          });
-        });
-      });
     }
 
     this.paramValueService.getParamValueByType(6).subscribe((data) => {
@@ -169,6 +175,7 @@ export class Tm3Component {
 
     if (this.formService.getParticularData() != null)
       this.generalParticular = this.formService.getParticularData();
+    console.log(this.formTM3);
   }
 
   addRow() {
@@ -263,7 +270,7 @@ export class Tm3Component {
     this.formTM3.secondFrameNo = `${this.secondTransverseSectionFrom}~${this.secondTransverseSectionTo}`;
     this.formTM3.thirdFrameNo = `${this.thirdTransverseSectionFrom}~${this.thirdTransverseSectionTo}`;
 
-    if (Number(this.tmId) === -1) {
+    if (Number(this.router.url.split('/')[4]) === -1) {
       this.formService
         .addFormToAPI(this.API_URL, this.formTM3)
         .pipe(
@@ -278,7 +285,7 @@ export class Tm3Component {
             this.message.create('success', 'Save form success');
             this.router.navigate([
               'part',
-              this.partId,
+              this.router.url.split('/')[2],
               this.router.url.split('/')[3],
               result.id,
             ]);
@@ -293,7 +300,7 @@ export class Tm3Component {
         });
     } else {
       this.formService
-        .updateForm('tm3s', this.tmId, this.formTM3)
+        .updateForm('tm3s', this.router.url.split('/')[4], this.formTM3)
         .pipe(
           retry(3),
           catchError(() => {
@@ -313,6 +320,12 @@ export class Tm3Component {
             );
           },
         });
+    }
+
+    if (this.listNewStructuralMember.length > 0) {
+      this.listNewStructuralMember.forEach((newStructuralMember) => {
+        this.paramValueService.addParamValue(newStructuralMember).subscribe();
+      });
     }
   }
 
@@ -364,6 +377,8 @@ export class Tm3Component {
     this.formService
       .importExcel(`${API_END_POINT}/sheet/tm3s`, formData)
       .subscribe((data) => {
+        this.listRow = [];
+
         this.firstTransverseSectionFrom = data.firstFrameNo.split('~')[0];
         this.firstTransverseSectionTo = data.firstFrameNo.split('~')[1];
         this.secondTransverseSectionFrom = data.secondFrameNo.split('~')[0];
@@ -404,6 +419,29 @@ export class Tm3Component {
             },
           });
         });
+
+        for (let i = 0; i < this.formTM3.measurementTM3List.length; i++) {
+          if (
+            this.listStructuralMember.find(
+              (item) =>
+                item.param === data.measurementTM3DTOList[i].structuralMember
+            ) === undefined
+          ) {
+            this.listStructuralMember.push({
+              id: 0,
+              param: data.measurementTM3DTOList[i].structuralMember,
+              value: data.measurementTM3DTOList[i].structuralMember,
+              type: 'TM3_VALUE',
+              edit: false,
+            });
+
+            this.listNewStructuralMember.push({
+              param: data.measurementTM3DTOList[i].structuralMember,
+              value: data.measurementTM3DTOList[i].structuralMember,
+              type: 6,
+            });
+          }
+        }
       });
     this.selectedFile = null;
   }

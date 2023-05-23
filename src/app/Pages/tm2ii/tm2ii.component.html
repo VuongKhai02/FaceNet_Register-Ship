@@ -45,11 +45,16 @@
   <!-- Start tool bar -->
   <div class="toolBar">
     <nz-input-group nzAddOnAfter="%">
-      <nz-select nzPlaceHolder="Choose percent" [(ngModel)]="percentSelected">
+      <nz-select
+        nzPlaceHolder="Choose percent"
+        [(ngModel)]="percentValue"
+        (ngModelChange)="onChangePercent()"
+        style="min-width: 100px"
+      >
         <nz-option
           *ngFor="let option of listPercentOption"
           nzLabel="{{ option.label }}"
-          nzValue="{{ option.value }}"
+          nzValue="{{ option.label }}"
         ></nz-option>
       </nz-select>
     </nz-input-group>

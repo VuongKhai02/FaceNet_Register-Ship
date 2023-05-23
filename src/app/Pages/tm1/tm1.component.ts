@@ -45,8 +45,9 @@ export class Tm1Component implements OnInit {
   percentValue: string = '';
   visible: boolean = false;
 
-  partId: string = this.router.url.split('/')[2];
-  API_URL: string = `${API_END_POINT}/report-indexes/${this.partId}/tm1s`;
+  API_URL: string = `${API_END_POINT}/report-indexes/${
+    this.router.url.split('/')[2]
+  }/tm1s`;
 
   emptyRow: measurementTM1 = {
     platePosition: '',
@@ -73,7 +74,7 @@ export class Tm1Component implements OnInit {
   selectedRow: number[] = [];
   listFormCode: ParamValue[] = [];
 
-  isLoadingImportExcel: boolean = false;
+  isLoadingDataForm: boolean = false;
 
   generalParticular!: GeneralParticular;
 
@@ -87,7 +88,8 @@ export class Tm1Component implements OnInit {
         this.router.url.split('/')[3].slice(0, 3) === 'tm1' &&
         this.router.url.split('/')[4] !== '-1'
       ) {
-        this.partId = this.router.url.split('/')[2];
+        this.isLoadingDataForm = true;
+
         this.formService
           .getDataForm('tm1s', this.router.url.split('/')[4])
           .subscribe((data) => {
@@ -97,15 +99,29 @@ export class Tm1Component implements OnInit {
 
             this.percentValue =
               data.measurementTM1DTOList[0].forwardReadingMeasurementDetail.percent;
-            this.percentSelected = this.listPercentOption.filter(
-              (percent) => percent.label === this.percentValue
-            )[0].value;
+
+            if (data.measurementTM1DTOList.length > 0) {
+              this.percentValue =
+                data.measurementTM1DTOList[0].forwardReadingMeasurementDetail.percent;
+              if (
+                this.listPercentOption.filter(
+                  (percent) => percent.label === this.percentValue
+                ).length > 0
+              )
+                this.percentSelected = this.listPercentOption.filter(
+                  (percent) => percent.label === this.percentValue
+                )[0].value;
+            }
           });
+
+        this.isLoadingDataForm = false;
       } else if (
         event instanceof NavigationEnd &&
         this.router.url.split('/')[4] === '-1'
       ) {
         this.listRow = [];
+        this.formTM1.code = '';
+        this.formTM1.strakePosition = '';
         this.percentValue = '';
         for (let i = 1; i <= 20; i++)
           this.listRow.push(JSON.parse(JSON.stringify(this.emptyRow)));
@@ -117,6 +133,8 @@ export class Tm1Component implements OnInit {
       for (let i = 1; i <= 20; i++)
         this.listRow.push(JSON.parse(JSON.stringify(this.emptyRow)));
     } else {
+      this.isLoadingDataForm = true;
+
       this.formService
         .getDataForm('tm1s', this.router.url.split('/')[4])
         .subscribe((data) => {
@@ -126,10 +144,22 @@ export class Tm1Component implements OnInit {
 
           this.percentValue =
             data.measurementTM1DTOList[0].forwardReadingMeasurementDetail.percent;
-          this.percentSelected = this.listPercentOption.filter(
-            (percent) => percent.label === this.percentValue
-          )[0].value;
+
+          if (data.measurementTM1DTOList.length > 0) {
+            this.percentValue =
+              data.measurementTM1DTOList[0].forwardReadingMeasurementDetail.percent;
+            if (
+              this.listPercentOption.filter(
+                (percent) => percent.label === this.percentValue
+              ).length > 0
+            )
+              this.percentSelected = this.listPercentOption.filter(
+                (percent) => percent.label === this.percentValue
+              )[0].value;
+          }
         });
+
+      this.isLoadingDataForm = false;
     }
 
     this.paramValueService.getParamValueByType(11).subscribe((data) => {
@@ -162,7 +192,6 @@ export class Tm1Component implements OnInit {
   onSaveForm() {
     this.isLoadingSaveButton = true;
     this.formTM1.measurementTM1List = this.listRow;
-    this.onChangePercent();
     this.formTM1.measurementTM1List = this.formTM1.measurementTM1List.filter(
       (form) =>
         form.platePosition !== '' ||
@@ -176,6 +205,17 @@ export class Tm1Component implements OnInit {
     );
 
     this.listRow = this.formTM1.measurementTM1List;
+
+    this.formTM1.measurementTM1List = this.formTM1.measurementTM1List.map(
+      (measurement) => {
+        measurement.forwardReadingMeasurementDetail.maxAlwbDim =
+          this.formService.calculateForMaxAlwbDim(
+            measurement.forwardReadingMeasurementDetail.originalThickness,
+            this.percentSelected
+          );
+        return measurement;
+      }
+    );
 
     if (Number(this.router.url.split('/')[4]) === -1) {
       this.formService
@@ -192,7 +232,7 @@ export class Tm1Component implements OnInit {
             this.message.create('success', 'Save form success');
             this.router.navigate([
               'part',
-              this.partId,
+              this.router.url.split('/')[2],
               this.router.url.split('/')[3],
               result.id,
             ]);
@@ -287,6 +327,10 @@ export class Tm1Component implements OnInit {
         this.percentValue;
       this.listRow[i].afterReadingMeasurementDetail.percent = this.percentValue;
     }
+
+    this.percentSelected = this.listPercentOption.filter(
+      (percent) => percent.label === this.percentValue
+    )[0].value;
   }
 
   clearRow(index: number) {
@@ -309,6 +353,7 @@ export class Tm1Component implements OnInit {
       .importExcel(`${API_END_POINT}/sheet/tm1s`, formData)
       .subscribe((data) => {
         this.listRow = [];
+        this.formTM1.strakePosition = data.strakePosition;
         data.measurementTM1DTOList.forEach((data: any) => {
           this.listRow.push({
             platePosition: data.platePosition,
