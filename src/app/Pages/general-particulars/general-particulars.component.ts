@@ -71,15 +71,17 @@ export class GeneralParticularsComponent implements OnInit {
    * Hàm này dùng để gộp giá trị startTime và endTime của certificate vào một mảng
    */
   seclectChange() {
-    let nowCertificate = this.certificates.filter(
-      (x) => x.certificateOrganization === this.inCertificateName
-    );
+    if (this.certificates.length !== 0) {
+      let nowCertificate = this.certificates.filter(
+        (x) => x.certificateOrganization === this.inCertificateName
+      );
 
-    this.inCertificateDate = [
-      nowCertificate[0].validStartDate,
-      nowCertificate[0].validEndDate,
-    ];
-    this.inCertificateNo = nowCertificate[0].certificateNo;
+      this.inCertificateDate = [
+        nowCertificate[0].validStartDate,
+        nowCertificate[0].validEndDate,
+      ];
+      this.inCertificateNo = nowCertificate[0].certificateNo;
+    }
   }
 
   /**
@@ -411,6 +413,9 @@ export class GeneralParticularsComponent implements OnInit {
 
   searchShip() {}
 
+  /**
+   * Hàm dùng để cập nhật lại dữ liệu của general paticular
+   */
   update(): void {
     if (
       this.inShipName !== '' &&
