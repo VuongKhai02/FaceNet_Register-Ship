@@ -1,23 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { TableTm1_Template } from './tableTemplate/tableTm1_template';
-import { tableTm2i_template } from './tableTemplate/tableTm2i_template';
-import { tableTm2ii_template } from './tableTemplate/tableTm2ii_template';
-import { tableTm3_template } from './tableTemplate/tableTm3_template';
-import { tableTm4_template } from './tableTemplate/tableTm4_template';
-import { tableTm5_template } from './tableTemplate/tableTm5_template';
-import { tableTm6_template } from './tableTemplate/tableTm6_template';
-import { tableTm7_template } from './tableTemplate/tableTm7_template';
-import { tableTm1_template_c } from './tableTemplate/tableTm1_template_c';
-
 import {
   Margins,
   PageOrientation,
   PageSize,
   Alignment,
   Decoration,
-  Column,
   PageBreak,
 } from 'pdfmake/interfaces';
+import { zip } from 'rxjs';
 import * as pdfMake from 'pdfmake/build/pdfmake';
 import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 import { ShipService } from 'src/app/share/services/ships.service';
@@ -45,98 +35,14 @@ import { measurementTM6 } from 'src/app/share/models/form/measurementTM6.model';
 import { measurementTM7 } from 'src/app/share/models/form/measurementTM7.model';
 import { measurementTM2 } from 'src/app/share/models/form/measurementTM2.model';
 import { FormService } from 'src/app/share/services/form/form.service';
+import { SketchService } from './service/sketch.service';
 (<any>pdfMake).vfs = pdfFonts.pdfMake.vfs;
 
-interface TM4 {
-  headerr: string;
-  typeForm: string;
-  id: number;
-  structuralMember: string;
-  item: string;
-  originalThickness: number;
-  maximumAllowableDim: number;
-  gaugedP: number;
-  gaugedS: number;
-  diminutionPmm: number;
-  diminutionPpercent: number;
-  diminutionSmm: number;
-  diminutionSpercent: number;
-  isStandardP: boolean;
-  isStandardS: boolean;
-}
-interface form_id_name {
-  idForm: number;
-  nameForm: string;
-}
-interface formTM1n {
-  code: string;
-  strakePosition: string;
-  measurementTM1DTOList: measurementTM1[];
-}
-interface formTM2 {
-  code: string;
-  name: string;
-  firstFrameNoTM2: string;
-  secondFrameNoTM2: string;
-  thirdFrameNoTM2: string;
-  measurementTM2DTOList: measurementTM2[];
+interface formInfo {
+  formType: string;
+  formId: number;
 }
 
-interface formTM3n {
-  code: string;
-  firstFrameNo: string;
-  secondFrameNo: string;
-  thirdFrameNo: string;
-  measurementTM3DTOList: measurementTM3[];
-}
-interface measurementTM4Listn {
-  structuralMemberTitle: string;
-  measurementTM4DTOList: measurementTM4[];
-}
-interface formTM4n {
-  code: string;
-  description: string;
-  name: string;
-  locationOfStructure: string;
-  tankHolDescription: string;
-  frameNo: string;
-  structuralMemberTM4List: measurementTM4Listn[];
-}
-interface formTM5n {
-  code: string;
-  description: string;
-  name: string;
-  locationOfStructure: string;
-  tankHolDescription: string;
-  frameNo: string;
-  measurementTM5List: measurementTM5[];
-}
-interface structuralDescriptionTM6n {
-  structuralDescriptionTitle: string;
-  measurementTM6DTOList: measurementTM6[];
-}
-interface formTM6n {
-  code: string;
-  description: string;
-  name: string;
-  locationOfStructure: string;
-  tankHolDescription: string;
-  frameNo: string;
-  structuralDescriptionTM6List: structuralDescriptionTM6n[];
-}
-interface frameNumberTM7n {
-  name: string;
-  measurementTM7DTOList: measurementTM7[];
-}
-interface formTM7n {
-  code: string;
-  description: string;
-  name: string;
-  locationOfStructure: string;
-  tankHolDescription: string;
-  frameNo: string;
-  frameNumberList: frameNumberTM7n[];
-}
 @Component({
   selector: 'app-review',
   templateUrl: './review.component.html',
@@ -151,8 +57,12 @@ export class ReviewComponent implements OnInit {
     private localService: LocalService,
     private paramService: ParamValueService,
     private reportIndexService: ReportIndexesService,
-    private formService: FormService
+    private formService: FormService,
+    private sketchService: SketchService
   ) {}
+  idForm: any;
+  formInfo: formInfo[] = [];
+  lsSketch: any[] = [];
   report_index: any;
   id_part: any;
   data_part: any[] = [];
@@ -184,40 +94,13 @@ export class ReviewComponent implements OnInit {
   mesur!: measurementTM1;
   ship: ship[] = [];
   generalParticular: GeneralParticular[] = [];
-  books: any = [];
   certificate: certificate[] = [];
 
   parts: part[] = [];
-  isTm1OfPart: boolean = false;
-  isTm3OfPart: boolean = false;
-  partId: number[] = [];
-  form_id_name: form_id_name[] = [];
-
-  formTm1!: [{ code: string; strakePosition: string }];
-
-  no: number = 1;
-  lsFormTm1: formTM1n[] = [];
-  lsFormTm2i: formTM2[] = [];
-  lsFormTm2ii: formTM2[] = [];
-  lsFormTm3: formTM3n[] = [];
-  lsFormTm4: formTM4n[] = [];
-  lsFormTm5: formTM5n[] = [];
-  lsFormTm6: formTM6n[] = [];
-  lsFormTm7: formTM7n[] = [];
+  partIndex_ToC: number = 1;
+  partIndex_formTm: number = 1;
 
   isLoadingSaveButton: boolean = false;
-
-  //Test mục lục
-  partsGet = [
-    {
-      partIndex: 1,
-      item: 'Main Deck',
-    },
-    {
-      partIndex: 2,
-      item: 'Transverse',
-    },
-  ];
 
   imgN: string =
     'https://scontent.fhan17-1.fna.fbcdn.net/v/t1.6435-9/67246509_111387816859260_2386012619652726784_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=e3f864&_nc_ohc=mq_yiuP1cvEAX8MvYsU&_nc_ht=scontent.fhan17-1.fna&oh=00_AfDw51jhjfX5tfjXBaYXDj8k51y19mb9SGycIt5cqMpoVw&oe=6482AE6A';
@@ -225,11 +108,13 @@ export class ReviewComponent implements OnInit {
 
   ckeckSurveyorSignature() {
     this.isSurveyorCheck = !this.isSurveyorCheck;
-
     console.log(this.report_index);
   }
 
   pageNumber: number = 0;
+  convertToNumber(str: string): number {
+    return Number(str);
+  }
   exportPdf() {
     var checkSignature = this.isSurveyorCheck;
     var _pageCount = 0;
@@ -259,3721 +144,33 @@ export class ReviewComponent implements OnInit {
         ],
         ...this.reportIndex.parts.map((x) => [
           {
-            text: `${x.partIndex}`,
+            text: `${this.partIndex_ToC++}`,
             style: ['txt_center'],
           },
           {
             text: `${x.item}`,
           },
           {
-            text: `${x.partIndex}`,
+            text: `....`,
           },
         ]),
       ],
     };
-    // Define tables
-    /*
-    var tableTm1 = {
-      headerRows: 10,
-      //23 rows
-      widths: [
-        // '4%',
-        '38.5%',
-        '6%',
-        '4.5%',
-        '3%',
-        '3%',
-        '3%',
-        '3%',
-        '1.5%', //9
-        '3%',
-        '3%',
-        '1.5%', //12
-        '3%',
-        '3%',
-        '3%',
-        '3%',
-        '1.5%', //17
-        '3%',
-        '3%',
-        '1.5%', //20
-        '3%',
-        '3%',
-        '3%',
-      ],
-      body: [
-        //Table header
-        [
-          {
-            text: `TM1`,
-            //   text: `TM1-${this.typeForm}(1 July 2023)`,
-            style: ['txt_center'],
-            colSpan: 22,
-            alignment: 'right' as Alignment,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        [
-          {
-            text: '',
-            colSpan: 22,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        // table info
-        [
-          {
-            text: 'Report on THICKNESS MEASUREMENT of ALL DECK PLATING, ALL BOTTOM SHELL PLATING or SIDE SHELL PLATING',
-            style: ['txt_center', 'fontS11'],
-            colSpan: 22,
-            decoration: 'underline' as Decoration,
-            bold: true,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        [
-          {
-            colSpan: 22,
-            text: '',
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        [
-          {
-            text: "Ship's name:",
-            alignment: 'center' as Alignment,
-            // colSpan: 2,
-            border: [false, false, false, false],
-          },
-          {
-            decoration: 'underline' as Decoration,
-            text: `${this.inShipName}`,
-            colSpan: 5,
-            bold: true,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {
-            text: 'Class Identity No. ',
-            colSpan: 3,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {
-            decoration: 'underline' as Decoration,
-            text: `${this.inABS}`,
-            colSpan: 5,
-            bold: true,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-
-          {
-            text: 'Report No. ',
-            colSpan: 3,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {
-            decoration: 'underline' as Decoration,
-            text: `${this.generalParticular[0].reportNo}`,
-            colSpan: 5,
-            bold: true,
-            border: [false, false, false, false],
-          },
-
-          {},
-          {},
-          {},
-          {},
-        ],
-        [
-          {
-            colSpan: 22,
-            text: '',
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        // table content
-        [
-          {
-            text: 'STRAKE POSITION',
-            alignment: 'left' as Alignment,
-            style: 'txt_center',
-          },
-          {
-            ...(this.lsFormTm1.length >= 1
-              ? {
-                  text: `${this.lsFormTm1[0].strakePosition}`,
-                  colSpan: 21,
-                  rowSpan: 1,
-                  bold: true,
-                }
-              : {}),
-          },
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        [
-          {
-            style: 'txt_center',
-            text: 'PLATE POSITION',
-            rowSpan: 3,
-          },
-          { style: 'txt_center', text: 'No. or Letter', rowSpan: 3 },
-          { style: 'txt_center', text: 'Org.Thk.', rowSpan: 3 },
-          { style: 'txt_center', text: 'Forward Reading', colSpan: 8 },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          { style: 'txt_center', text: 'Aft Reading', colSpan: 8 },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {
-            style: 'txt_center',
-            text: 'Mean Dimunution (%)',
-            colSpan: 2,
-            rowSpan: 2,
-          },
-          {},
-
-          { style: 'txt_center', text: 'Max Alwb Dim', rowSpan: 2 },
-        ],
-        [
-          {},
-          {},
-          {},
-          { text: 'Gauged mm', colSpan: 2, style: 'txt_center' },
-          {},
-          { text: 'Diminution P', colSpan: 3, style: 'txt_center' },
-          {},
-          {},
-          { text: 'Diminution S', colSpan: 3, style: 'txt_center' },
-          {},
-          {},
-
-          { text: 'Gauged (mm)', colSpan: 2, style: 'txt_center' },
-          {},
-          { text: 'Diminution P', colSpan: 3, style: 'txt_center' },
-          {},
-          {},
-          { text: 'Diminution S', colSpan: 3, style: 'txt_center' },
-          {},
-          {},
-
-          { text: '', colSpan: 2, style: 'txt_center' },
-
-          {},
-          { text: 'Max Alwb Dim' },
-        ],
-        [
-          {},
-          {},
-          {},
-          { text: 'P', style: 'txt_center' },
-          { text: 'S', style: 'txt_center' },
-          { text: 'mm', style: 'txt_center' },
-          { text: '%', style: 'txt_center', colSpan: 2 },
-          {},
-          { text: 'mm', style: 'txt_center' },
-          { text: '%', style: 'txt_center', colSpan: 2 },
-          {},
-
-          { text: 'P', style: 'txt_center' },
-          { text: 'S', style: 'txt_center' },
-          { text: 'mm', style: 'txt_center' },
-          { text: '%', style: 'txt_center', colSpan: 2 },
-          {},
-          { text: 'mm', style: 'txt_center' },
-          { text: '%', style: 'txt_center', colSpan: 2 },
-          {},
-
-          { text: 'P', style: 'txt_center' },
-          { text: 'S', style: 'txt_center' },
-          { text: 'mm', style: 'txt_center' },
-        ],
-        ...(this.lsFormTm1.length >= 1
-          ? this.lsFormTm1[0].measurementTM1DTOList!.map((x) => [
-              // x.noOrLetter,
-              x.platePosition,
-              x.afterReadingMeasurementDetail.originalThickness,
-              x.noOrLetter,
-              x.noOrLetter,
-
-              x.noOrLetter,
-              x.noOrLetter,
-              x.noOrLetter,
-              x.noOrLetter,
-              x.noOrLetter,
-              x.noOrLetter,
-              x.noOrLetter,
-              x.noOrLetter,
-              x.noOrLetter,
-              x.noOrLetter,
-              x.noOrLetter,
-              x.noOrLetter,
-              x.noOrLetter,
-              x.noOrLetter,
-              x.noOrLetter,
-              x.noOrLetter,
-              x.noOrLetter,
-              x.noOrLetter,
-            ])
-          : []),
-      ],
-    };
-   
-    var tableTm2i = {
-      headerRows: 10,
-      widths: [
-        // '2.2%',
-        '22.4%',
-        //2
-        '2.6%',
-        '2.9%',
-        '2.9%',
-        '2.2%',
-        '2.2%',
-        '2.9%',
-        '2.2%',
-        '1.5%', //10
-        '2.9%',
-        '1.5%', //13
-        '2.2%',
-
-        '2.6%',
-        '2.9%',
-        '2.9%',
-        '2.2%',
-        '2.2%',
-        '2.9%',
-        '1.5%', //20
-        '2.2%',
-        '2.9%',
-        '2.2%',
-        '1.5%', //23
-
-        '2.6%',
-        '2.9%',
-        '2.9%',
-        '2.2%',
-        '2.2%',
-        '2.9%',
-        '2.2%',
-        '1.5%', //
-        '2.9%',
-        '2.2%',
-        '1.5%', //
-      ],
-      body: [
-        //Table header
-        this.lsFormTm2i.length >= 1
-          ? [
-              {
-                text: `TM2i-${this.lsFormTm2i[0].code}(1 July 2023)`,
-                style: ['txt_center'],
-                colSpan: 34,
-                alignment: 'right' as Alignment,
-                border: [false, false, false, false],
-              },
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-            ]
-          : [],
-        [
-          {
-            text: '',
-            colSpan: 34,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        // Table content
-        [
-          {
-            text: 'Report on THICKNESS MEASUREMENT OF SHELL AND DECK PLATING (one, two or three transverse sections)',
-            style: ['txt_center', 'fontS11'],
-            colSpan: 34,
-            decoration: 'underline' as Decoration,
-            bold: true,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        [
-          {
-            colSpan: 34,
-            text: '',
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        [
-          {
-            text: "Ship's name:",
-
-            alignment: 'center' as Alignment,
-
-            colSpan: 3,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {
-            decoration: 'underline' as Decoration,
-            text: `${this.inShipName}`,
-            colSpan: 8,
-            bold: true,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {
-            text: 'Class Identity No. ',
-            colSpan: 4,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {
-            decoration: 'underline' as Decoration,
-            text: `${this.inABS}`,
-            colSpan: 8,
-            bold: true,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {
-            text: 'Report No. ',
-            colSpan: 3,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {
-            decoration: 'underline' as Decoration,
-            text: `${this.generalParticular[0].reportNo}`,
-            colSpan: 8,
-            bold: true,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        [
-          {
-            colSpan: 34,
-            text: '',
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        [
-          {
-            style: 'txt_center',
-            text: 'STRENGTH DECK AND SHEER STRAKE PLATING',
-            colSpan: 34,
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        this.lsFormTm2i.length >= 1
-          ? [
-              {},
-              {
-                style: 'txt_center',
-                text: '1st TRANSVERSE SECTION at Fr.No: ',
-                colSpan: 8,
-                border: [true, true, false, true],
-              },
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {
-                text: `${this.lsFormTm2i[0].firstFrameNoTM2}`,
-                border: [false, true, true, true],
-                colSpan: 3,
-                bold: true,
-              },
-              {},
-              {},
-              {
-                style: 'txt_center',
-                text: '2nd TRANSVERSE SECTION at Fr.No: ',
-                colSpan: 8,
-                border: [true, true, false, true],
-              },
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {
-                text: `${this.lsFormTm2i[0].secondFrameNoTM2}`,
-                border: [false, true, true, true],
-                colSpan: 3,
-                bold: true,
-              },
-              {},
-              {},
-              {
-                style: 'txt_center',
-                text: '3rd TRANSVERSE SECTION at Fr.No: ',
-                colSpan: 8,
-                border: [true, true, false, true],
-              },
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {
-                text: `${this.lsFormTm2i[0].thirdFrameNoTM2}`,
-                border: [false, true, true, true],
-                colSpan: 3,
-                bold: true,
-              },
-              {},
-              {},
-            ]
-          : [],
-        [
-          {
-            style: 'txt_center',
-            text: 'STRAKE POSITION',
-            rowSpan: 2,
-          },
-          { style: 'txt_center', text: 'No. or Letter', rowSpan: 2 },
-          { style: 'txt_center', text: 'Org.Thk.' },
-          { style: 'txt_center', text: 'Max.Alwb.Dim' },
-          { style: 'txt_center', text: 'Gauged mm  ', colSpan: 2 },
-          {},
-          { style: 'txt_center', text: 'Diminution P  ', colSpan: 3 },
-          {},
-          {},
-          { style: 'txt_center', text: '    Diminution S  ', colSpan: 3 },
-          {},
-          {},
-          { style: 'txt_center', text: 'No. or Letter', rowSpan: 2 },
-          { style: 'txt_center', text: 'Org.Thk.' },
-          { style: 'txt_center', text: 'Max.Alwb.Dim' },
-          { style: 'txt_center', text: 'Gauged mm', colSpan: 2 },
-          {},
-          { style: 'txt_center', text: 'Diminution P', colSpan: 3 },
-          {},
-          {},
-          { style: 'txt_center', text: 'Diminution S', colSpan: 3 },
-          {},
-          {},
-          { style: 'txt_center', text: 'No. or Letter', rowSpan: 2 },
-          { style: 'txt_center', text: 'Org.Thk.' },
-          { style: 'txt_center', text: 'Max.Alwb.Dim' },
-          { style: 'txt_center', text: 'Gauged mm', colSpan: 2 },
-          {},
-          { style: 'txt_center', text: 'Diminution P', colSpan: 3 },
-          {},
-          {},
-          { style: 'txt_center', text: 'Diminution S', colSpan: 3 },
-          {},
-          {},
-        ],
-        [
-          {},
-          {},
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: 'P' },
-          { style: 'txt_center', text: 'S' },
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: '%', colSpan: 2 },
-          {},
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: '%', colSpan: 2 },
-          {},
-          {},
-
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: 'P' },
-          { style: 'txt_center', text: 'S' },
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: '%', colSpan: 2 },
-          {},
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: '%', colSpan: 2 },
-          {},
-          {},
-
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: 'P' },
-          { style: 'txt_center', text: 'S' },
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: '%', colSpan: 2 },
-          {},
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: '%', colSpan: 2 },
-          {},
-        ],
-      ],
-    };
-    // var tableTm2ii = tableTm2ii_template;
-    var tableTm2ii = {
-      headerRows: 10,
-      widths: [
-        // '2.2%',
-        '22.4%',
-        //2
-        '2.6%',
-        '2.9%',
-        '2.9%',
-        '2.2%',
-        '2.2%',
-        '2.9%',
-        '2.2%',
-        '1.5%', //10
-        '2.9%',
-        '1.5%', //13
-        '2.2%',
-
-        '2.6%',
-        '2.9%',
-        '2.9%',
-        '2.2%',
-        '2.2%',
-        '2.9%',
-        '1.5%', //20
-        '2.2%',
-        '2.9%',
-        '2.2%',
-        '1.5%', //23
-
-        '2.6%',
-        '2.9%',
-        '2.9%',
-        '2.2%',
-        '2.2%',
-        '2.9%',
-        '2.2%',
-        '1.5%', //
-        '2.9%',
-        '2.2%',
-        '1.5%', //
-      ],
-      body: [
-        //Table header
-        this.lsFormTm2ii.length >= 1
-          ? [
-              {
-                text: `TM2ii-${this.lsFormTm2ii[0].code}(1 July 2023)`,
-                style: ['txt_center'],
-                colSpan: 34,
-                alignment: 'right' as Alignment,
-                border: [false, false, false, false],
-              },
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-            ]
-          : [
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-            ],
-        [
-          {
-            text: '',
-            colSpan: 34,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        // Table content
-        [
-          {
-            text: 'Report on THICKNESS MEASUREMENT OF SHELL AND DECK PLATING (one, two or three transverse sections)',
-            style: ['txt_center', 'fontS11'],
-            colSpan: 34,
-            decoration: 'underline' as Decoration,
-            bold: true,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        [
-          {
-            colSpan: 34,
-            text: '',
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        [
-          {
-            text: "Ship's name:",
-
-            alignment: 'center' as Alignment,
-
-            colSpan: 3,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {
-            decoration: 'underline' as Decoration,
-            text: `${this.inShipName}`,
-            colSpan: 8,
-            bold: true,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {
-            text: 'Class Identity No. ',
-            colSpan: 4,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {
-            decoration: 'underline' as Decoration,
-            text: `${this.inABS}`,
-            colSpan: 8,
-            bold: true,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {
-            text: 'Report No. ',
-            colSpan: 3,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {
-            decoration: 'underline' as Decoration,
-
-            text: `${this.generalParticular[0].reportNo}`,
-            colSpan: 8,
-            bold: true,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        [
-          {
-            colSpan: 34,
-            text: '',
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        [
-          {
-            style: 'txt_center',
-            text: 'SHELL PLATING',
-            colSpan: 34,
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        this.lsFormTm2ii.length >= 1
-          ? [
-              {},
-              {
-                style: 'txt_center',
-                text: '1st TRANSVERSE SECTION at Fr.No: ',
-                colSpan: 8,
-                border: [true, true, false, true],
-              },
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {
-                text: `${this.lsFormTm2ii[0].firstFrameNoTM2}`,
-                border: [false, true, true, true],
-                colSpan: 3,
-                bold: true,
-              },
-              {},
-              {},
-              {
-                style: 'txt_center',
-                text: '2nd TRANSVERSE SECTION at Fr.No: ',
-                colSpan: 8,
-                border: [true, true, false, true],
-              },
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {
-                text: `${this.lsFormTm2i[0].secondFrameNoTM2}`,
-                border: [false, true, true, true],
-                colSpan: 3,
-                bold: true,
-              },
-              {},
-              {},
-              {
-                style: 'txt_center',
-                text: '3rd TRANSVERSE SECTION at Fr.No: ',
-                colSpan: 8,
-                border: [true, true, false, true],
-              },
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {
-                text: `${this.lsFormTm2i[0].thirdFrameNoTM2}`,
-                border: [false, true, true, true],
-                colSpan: 3,
-                bold: true,
-              },
-              {},
-              {},
-            ]
-          : [],
-        [
-          {
-            style: 'txt_center',
-            text: 'STRAKE POSITION',
-            rowSpan: 2,
-          },
-          { style: 'txt_center', text: 'No. or Letter', rowSpan: 2 },
-          { style: 'txt_center', text: 'Org.Thk.' },
-          { style: ['txt_center', 'fontS8'], text: 'Max.Alwb.Dim' },
-          { style: 'txt_center', text: 'Gauged mm  ', colSpan: 2 },
-          {},
-          { style: 'txt_center', text: 'Diminution P  ', colSpan: 3 },
-          {},
-          {},
-          { style: 'txt_center', text: '    Diminution S  ', colSpan: 3 },
-          {},
-          {},
-          { style: 'txt_center', text: 'No. or Letter', rowSpan: 2 },
-          { style: 'txt_center', text: 'Org.Thk.' },
-          { style: ['txt_center', 'fontS8'], text: 'Max.Alwb.Dim' },
-          { style: 'txt_center', text: 'Gauged mm', colSpan: 2 },
-          {},
-          { style: 'txt_center', text: 'Diminution P', colSpan: 3 },
-          {},
-          {},
-          { style: 'txt_center', text: 'Diminution S', colSpan: 3 },
-          {},
-          {},
-          { style: 'txt_center', text: 'No. or Letter', rowSpan: 2 },
-          { style: 'txt_center', text: 'Org.Thk.' },
-          { style: 'txt_center', text: 'Max.Alwb.Dim' },
-          { style: 'txt_center', text: 'Gauged mm', colSpan: 2 },
-          {},
-          { style: 'txt_center', text: 'Diminution P', colSpan: 3 },
-          {},
-          {},
-          { style: 'txt_center', text: 'Diminution S', colSpan: 3 },
-          {},
-          {},
-        ],
-        [
-          {},
-          {},
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: 'P' },
-          { style: 'txt_center', text: 'S' },
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: '%', colSpan: 2 },
-          {},
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: '%', colSpan: 2 },
-          {},
-          {},
-
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: 'P' },
-          { style: 'txt_center', text: 'S' },
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: '%', colSpan: 2 },
-          {},
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: '%', colSpan: 2 },
-          {},
-          {},
-
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: 'P' },
-          { style: 'txt_center', text: 'S' },
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: '%', colSpan: 2 },
-          {},
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: '%', colSpan: 2 },
-          {},
-        ],
-      ],
+    const pageSizee = {
+      width: 805,
+      height: 920,
     };
 
-    // var tableTm3 = tableTm3_template;
-    var tableTm3 = {
-      headerRows: 9,
-      widths: [
-        // '2.2%',
-        '22.4%',
-        //2
-        '2.6%',
-        '2.9%',
-        '2.9%',
-        '2.2%',
-        '2.2%',
-        '2.9%',
-        '2.2%',
-        '1.5%', //10
-        '2.9%',
-        '1.5%', //13
-        '2.2%',
-
-        '2.6%',
-        '2.9%',
-        '2.9%',
-        '2.2%',
-        '2.2%',
-        '2.9%',
-        '1.5%', //20
-        '2.2%',
-        '2.9%',
-        '2.2%',
-        '1.5%', //23
-
-        '2.6%',
-        '2.9%',
-        '2.9%',
-        '2.2%',
-        '2.2%',
-        '2.9%',
-        '2.2%',
-        '1.5%', //
-        '2.9%',
-        '2.2%',
-        '1.5%', //
-      ],
-      body: [
-        //Table header
-        this.lsFormTm3.length >= 1
-          ? [
-              {
-                text: `TM3-${this.lsFormTm3[0].code}(1 July 2023)`,
-                //   text: `TM2ii-${this.typeForm}(1 July 2023)`,
-                style: ['txt_center'],
-                colSpan: 34,
-                alignment: 'right' as Alignment,
-                border: [false, false, false, false],
-              },
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-            ]
-          : [],
-        [
-          {
-            text: '',
-            colSpan: 34,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        // Table content
-        [
-          {
-            text: 'Report on THICKNESS MEASUREMENT OF SHELL AND DECK PLATING (one, two or three transverse sections)',
-            style: ['txt_center', 'fontS11'],
-            colSpan: 34,
-            decoration: 'underline' as Decoration,
-            bold: true,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        [
-          {
-            colSpan: 34,
-            text: '',
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        this.lsFormTm3.length >= 1
-          ? [
-              {
-                text: "Ship's name:",
-
-                alignment: 'center' as Alignment,
-
-                colSpan: 3,
-                border: [false, false, false, false],
-              },
-              {},
-              {},
-              {
-                decoration: 'underline' as Decoration,
-                text: `${this.inShipName}`,
-                colSpan: 8,
-                bold: true,
-                border: [false, false, false, false],
-              },
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {
-                text: 'Class Identity No. ',
-                colSpan: 4,
-                border: [false, false, false, false],
-              },
-              {},
-              {},
-              {},
-              {
-                decoration: 'underline' as Decoration,
-                text: `${this.inABS}`,
-                colSpan: 8,
-                bold: true,
-                border: [false, false, false, false],
-              },
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-
-              {
-                text: 'Report No. ',
-                colSpan: 3,
-                border: [false, false, false, false],
-              },
-              {},
-              {},
-              {
-                decoration: 'underline' as Decoration,
-                text: `${this.generalParticular[0].reportNo}`,
-
-                colSpan: 8,
-                bold: true,
-                border: [false, false, false, false],
-              },
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-            ]
-          : [],
-        [
-          {
-            colSpan: 34,
-            text: '',
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-
-        this.lsFormTm3.length >= 1
-          ? [
-              {
-                style: 'txt_center',
-                text: '',
-              },
-              {
-                style: 'txt_center',
-                text: `1st TRANSVERSE SECTION at Fr.No:`,
-                colSpan: 8,
-                border: [true, true, false, true],
-              },
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {
-                text: ` ${this.lsFormTm3[0].firstFrameNo}`,
-                border: [false, true, true, true],
-                colSpan: 3,
-                bold: true,
-              },
-              {},
-              {},
-              {
-                style: 'txt_center',
-                text: `2nd TRANSVERSE SECTION at Fr.No: `,
-                colSpan: 8,
-                border: [true, true, false, true],
-              },
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {
-                text: `${this.lsFormTm3[0].secondFrameNo}`,
-                border: [false, true, true, true],
-                colSpan: 3,
-                bold: true,
-              },
-              {},
-              {},
-              {
-                style: 'txt_center',
-                text: `1st TRANSVERSE SECTION at Fr.No: `,
-                colSpan: 8,
-                border: [true, true, false, true],
-              },
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {
-                text: `${this.lsFormTm3[0].thirdFrameNo}`,
-                border: [false, true, true, true],
-                colSpan: 3,
-                bold: true,
-              },
-              {},
-              {},
-            ]
-          : [],
-        [
-          {
-            style: 'txt_center',
-            text: 'STRAKE POSITION',
-            rowSpan: 2,
-          },
-          { style: 'txt_center', text: 'No. or Letter', rowSpan: 2 },
-          { style: 'txt_center', text: 'Org.Thk.' },
-          { style: 'txt_center', text: 'Max.Alwb.Dim' },
-          { style: 'txt_center', text: 'Gauged mm  ', colSpan: 2 },
-          {},
-          { style: 'txt_center', text: 'Diminution P  ', colSpan: 3 },
-          {},
-          {},
-          { style: 'txt_center', text: '    Diminution S  ', colSpan: 3 },
-          {},
-          {},
-          { style: 'txt_center', text: 'No. or Letter', rowSpan: 2 },
-          { style: 'txt_center', text: 'Org.Thk.' },
-          { style: 'txt_center', text: 'Max.Alwb.Dim' },
-          { style: 'txt_center', text: 'Gauged mm', colSpan: 2 },
-          {},
-          { style: 'txt_center', text: 'Diminution P', colSpan: 3 },
-          {},
-          {},
-          { style: 'txt_center', text: 'Diminution S', colSpan: 3 },
-          {},
-          {},
-          { style: 'txt_center', text: 'No. or Letter', rowSpan: 2 },
-          { style: 'txt_center', text: 'Org.Thk.' },
-          { style: 'txt_center', text: 'Max.Alwb.Dim' },
-          { style: 'txt_center', text: 'Gauged mm', colSpan: 2 },
-          {},
-          { style: 'txt_center', text: 'Diminution P', colSpan: 3 },
-          {},
-          {},
-          { style: 'txt_center', text: 'Diminution S', colSpan: 3 },
-          {},
-          {},
-        ],
-        [
-          {},
-          {},
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: 'P' },
-          { style: 'txt_center', text: 'S' },
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: '%', colSpan: 2 },
-          {},
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: '%', colSpan: 2 },
-          {},
-          {},
-
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: 'P' },
-          { style: 'txt_center', text: 'S' },
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: '%', colSpan: 2 },
-          {},
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: '%', colSpan: 2 },
-          {},
-          {},
-
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: 'P' },
-          { style: 'txt_center', text: 'S' },
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: '%', colSpan: 2 },
-          {},
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: '%', colSpan: 2 },
-          {},
-        ],
-        ...(this.lsFormTm3.length >= 1
-          ? this.lsFormTm3[0].measurementTM3DTOList!.map((x) => [
-              x.noOrLetter,
-              x.noOrLetter,
-              x.noOrLetter,
-              x.structuralMember,
-              x.noOrLetter,
-              x.firstTransverseSectionMeasurementDetail.originalThickness,
-              x.firstTransverseSectionMeasurementDetail.originalThickness,
-              x.firstTransverseSectionMeasurementDetail.maxAlwbDim,
-              x.firstTransverseSectionMeasurementDetail.gaugedP,
-              x.firstTransverseSectionMeasurementDetail.gaugedS,
-              x.noOrLetter,
-              x.noOrLetter,
-              x.noOrLetter,
-              x.noOrLetter,
-              x.noOrLetter,
-              x.noOrLetter,
-              x.noOrLetter,
-              x.firstTransverseSectionMeasurementDetail.originalThickness,
-              x.firstTransverseSectionMeasurementDetail.originalThickness,
-              x.firstTransverseSectionMeasurementDetail.maxAlwbDim,
-              x.firstTransverseSectionMeasurementDetail.gaugedP,
-              x.firstTransverseSectionMeasurementDetail.gaugedS,
-              x.noOrLetter,
-              x.noOrLetter,
-              x.noOrLetter,
-              x.noOrLetter,
-              x.noOrLetter,
-              x.noOrLetter,
-              x.noOrLetter,
-              x.firstTransverseSectionMeasurementDetail.originalThickness,
-              x.firstTransverseSectionMeasurementDetail.originalThickness,
-              x.firstTransverseSectionMeasurementDetail.maxAlwbDim,
-              x.firstTransverseSectionMeasurementDetail.gaugedP,
-              x.firstTransverseSectionMeasurementDetail.gaugedS,
-            ])
-          : []),
-      ],
-    };
-
-    // var tableTm4 = tableTm4_template;
-    var tableTm4 = {
-      headerRows: 10,
-      widths: [
-        // '5%',
-        '30%',
-        '7%',
-        '10%',
-        '13%',
-        '5%',
-        '5%',
-        '5%',
-        '5%',
-        '5%',
-        '5%',
-        '5%',
-        '5%',
-      ],
-      body: [
-        //Table header
-        this.lsFormTm4.length >= 1
-          ? [
-              {
-                text: `TM4-${this.lsFormTm4[0].code}(1 July 2023)`,
-                //   text: `TM4-${this.typeForm}(1 July 2023)`,
-                style: ['txt_center'],
-                colSpan: 12,
-                alignment: 'right' as Alignment,
-                border: [false, false, false, false],
-              },
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-            ]
-          : [],
-        [
-          {
-            text: '',
-            colSpan: 12,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        // Table content
-        [
-          {
-            text: 'Report on THICKNESS MEASUREMENT OF TRANSVERSE STRUCTURAL MEMBERS in the cargo oil and water ballast tanks within the cargo tank length',
-            style: ['txt_center', 'fontS11'],
-            colSpan: 12,
-            decoration: 'underline' as Decoration,
-            bold: true,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        [
-          {
-            colSpan: 12,
-            text: '',
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        [
-          {
-            text: "Ship's name:",
-            alignment: 'center' as Alignment,
-            colSpan: 1,
-            border: [false, false, false, false],
-          },
-          {
-            decoration: 'underline' as Decoration,
-            text: `${this.inShipName}`,
-            colSpan: 2,
-            bold: true,
-            border: [false, false, false, false],
-          },
-          {},
-          {
-            text: 'Class Identity No. ',
-            colSpan: 2,
-            border: [false, false, false, false],
-          },
-          {},
-          {
-            decoration: 'underline' as Decoration,
-            text: `${this.inABS}`,
-            colSpan: 2,
-            bold: true,
-            border: [false, false, false, false],
-          },
-          {},
-
-          {
-            text: 'Report No. ',
-            colSpan: 2,
-            border: [false, false, false, false],
-          },
-          {},
-          {
-            decoration: 'underline' as Decoration,
-            text: `${this.generalParticular[0].reportNo}`,
-            colSpan: 3,
-            bold: true,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-        ],
-        [
-          {
-            text: '',
-            colSpan: 12,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        //Table content
-        [
-          {
-            text: 'TANK DESCRIPTION:',
-            alignment: 'left' as Alignment,
-            colSpan: 1,
-            style: 'txt_center',
-          },
-          {
-            text: `${this.lsFormTm4[0].tankHolDescription}`,
-            colSpan: 11,
-            rowSpan: 1,
-            bold: true,
-          },
-          'Price',
-          'Date',
-          'Image',
-          'isEdited',
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        this.lsFormTm4.length >= 1
-          ? [
-              {
-                text: 'LOCATION OF STRUCTURE:',
-                alignment: 'left' as Alignment,
-                colSpan: 1,
-                style: ['txt_center', 'txt_center'],
-              },
-              {
-                text: `${this.lsFormTm4[0].locationOfStructure}`,
-                colSpan: 11,
-                bold: true,
-              },
-              'Price',
-              'Date',
-              'Image',
-              'isEdited',
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-            ]
-          : [],
-        [
-          {
-            text: 'STRUCTURAL MEMBER',
-            rowSpan: 2,
-            style: 'txt_center',
-          },
-          { text: 'Item', rowSpan: 2, style: 'txt_center' },
-
-          { text: 'Original Thickness(mm)', rowSpan: 2, style: 'txt_center' },
-          {
-            text: 'Maximum Allowable Dim(mm)',
-            rowSpan: 2,
-            style: ['txt_center'],
-          },
-          { text: 'Gauged', colSpan: 2, style: 'txt_center' },
-          {},
-          { text: 'Diminution P', colSpan: 3, style: 'txt_center' },
-          {},
-          {},
-          { text: 'Diminution S', colSpan: 3, style: 'txt_center' },
-          {},
-          {},
-        ],
-        [
-          {},
-          {},
-          {},
-          {},
-          { text: 'P', style: 'txt_center' },
-          { text: 'S', style: 'txt_center' },
-          { text: 'mm', style: 'txt_center' },
-          { text: '%', style: 'txt_center', colSpan: 2 },
-          {},
-          { text: 'mm', style: 'txt_center' },
-          { text: '%', style: 'txt_center', colSpan: 2 },
-          {},
-        ],
-        ...(this.lsFormTm4.length >= 1 &&
-        this.lsFormTm4[0].structuralMemberTM4List[0].structuralMemberTitle != ''
-          ? [
-              [
-                {
-                  text: `${this.lsFormTm4[0].structuralMemberTM4List[0].structuralMemberTitle}`,
-                },
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-              ],
-              ...this.lsFormTm4[0].structuralMemberTM4List[0].measurementTM4DTOList!.map(
-                (x) => [
-                  this.no++,
-                  // x.structuralMemberTitle,
-                  x.structuralMember,
-                  x.item,
-                  x.detailMeasurement.originalThickness,
-                  x.detailMeasurement.maxAlwbDim,
-                  x.detailMeasurement.gaugedP,
-                  x.detailMeasurement.gaugedS,
-                  x.structuralMember,
-                  x.structuralMember,
-                  x.structuralMember,
-                  x.structuralMember,
-                  x.structuralMember,
-                ]
-              ),
-            ]
-          : []),
-
-        ...(this.lsFormTm4.length >= 1 &&
-        this.lsFormTm4[0].structuralMemberTM4List.length >= 2 &&
-        this.lsFormTm4[0].structuralMemberTM4List[1].structuralMemberTitle != ''
-          ? [
-              [
-                {
-                  text: `${this.lsFormTm4[0].structuralMemberTM4List[1].structuralMemberTitle}`,
-                },
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-              ],
-              ...this.lsFormTm4[0].structuralMemberTM4List[1].measurementTM4DTOList!.map(
-                (x) => [
-                  this.no++,
-                  // x.structuralMemberTitle,
-                  x.structuralMember,
-                  x.item,
-                  x.detailMeasurement.originalThickness,
-                  x.detailMeasurement.maxAlwbDim,
-                  x.detailMeasurement.gaugedP,
-                  x.detailMeasurement.gaugedS,
-                  x.structuralMember,
-                  x.structuralMember,
-                  x.structuralMember,
-                  x.structuralMember,
-                  x.structuralMember,
-                ]
-              ),
-            ]
-          : []),
-
-        // ...(this.lsFormTm4.length >= 1
-        //   ? this.lsFormTm4[0].structuralMemberTM4List[0].measurementTM4DTOList!.map(
-        //       (x) => [
-        //         { text: this.no++ },
-        //         // x.structuralMemberTitle,
-        //         x.structuralMember,
-        //         x.item,
-        //         x.detailMeasurement.originalThickness,
-        //         x.detailMeasurement.maxAlwbDim,
-        //         x.detailMeasurement.gaugedP,
-        //         x.detailMeasurement.gaugedS,
-        //         x.structuralMember,
-        //         x.structuralMember,
-        //         x.structuralMember,
-        //         x.structuralMember,
-        //         x.structuralMember,
-        //         x.structuralMember,
-        //       ]
-        //     )
-        //   : []),
-      ],
-    };
-    var tableTm4_c = {
-      headerRows: 10,
-      widths: [
-        // '5%',
-        '30%',
-        '7%',
-        '10%',
-        '13%',
-        '5%',
-        '5%',
-        '5%',
-        '5%',
-        '5%',
-        '5%',
-        '5%',
-        '5%',
-      ],
-      body: [
-        //Table header
-        this.lsFormTm4.length >= 2
-          ? [
-              {
-                text: `TM4-${this.lsFormTm4[0].code}(1 July 2023)`,
-                //   text: `TM4-${this.typeForm}(1 July 2023)`,
-                style: ['txt_center'],
-                colSpan: 12,
-                alignment: 'right' as Alignment,
-                border: [false, false, false, false],
-              },
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-            ]
-          : [],
-        [
-          {
-            text: '',
-            colSpan: 12,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        // Table content
-        [
-          {
-            text: 'Report on THICKNESS MEASUREMENT OF TRANSVERSE STRUCTURAL MEMBERS in the cargo oil and water ballast tanks within the cargo tank length',
-            style: ['txt_center', 'fontS11'],
-            colSpan: 12,
-            decoration: 'underline' as Decoration,
-            bold: true,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        [
-          {
-            colSpan: 12,
-            text: '',
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        [
-          {
-            text: "Ship's name:",
-            alignment: 'center' as Alignment,
-            colSpan: 1,
-            border: [false, false, false, false],
-          },
-          {
-            decoration: 'underline' as Decoration,
-            text: `${this.inShipName}`,
-            colSpan: 2,
-            bold: true,
-            border: [false, false, false, false],
-          },
-          {},
-          {
-            text: 'Class Identity No. ',
-            colSpan: 2,
-            border: [false, false, false, false],
-          },
-          {},
-          {
-            decoration: 'underline' as Decoration,
-            text: `${this.inABS}`,
-            colSpan: 2,
-            bold: true,
-            border: [false, false, false, false],
-          },
-          {},
-
-          {
-            text: 'Report No. ',
-            colSpan: 2,
-            border: [false, false, false, false],
-          },
-          {},
-          {
-            decoration: 'underline' as Decoration,
-            text: `${this.generalParticular[0].reportNo}`,
-            colSpan: 3,
-            bold: true,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-        ],
-        [
-          {
-            text: '',
-            colSpan: 12,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        //Table content
-        [
-          {
-            text: 'TANK DESCRIPTION:',
-            alignment: 'left' as Alignment,
-            colSpan: 1,
-            style: 'txt_center',
-          },
-          { text: 'a', colSpan: 11, rowSpan: 1, bold: true },
-          'Price',
-          'Date',
-          'Image',
-          'isEdited',
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        [
-          {
-            text: 'LOCATION OF STRUCTURE:',
-            alignment: 'left' as Alignment,
-            colSpan: 1,
-            style: ['txt_center', 'txt_center'],
-          },
-          {
-            text: 'a',
-            colSpan: 11,
-            bold: true,
-          },
-          'Price',
-          'Date',
-          'Image',
-          'isEdited',
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        [
-          {
-            text: 'STRUCTURAL MEMBER',
-            rowSpan: 2,
-            style: 'txt_center',
-          },
-          { text: 'Item', rowSpan: 2, style: 'txt_center' },
-
-          { text: 'Original Thickness(mm)', rowSpan: 2, style: 'txt_center' },
-          {
-            text: 'Maximum Allowable Dim(mm)',
-            rowSpan: 2,
-            style: ['txt_center'],
-          },
-          { text: 'Gauged', colSpan: 2, style: 'txt_center' },
-          {},
-          { text: 'Diminution P', colSpan: 3, style: 'txt_center' },
-          {},
-          {},
-          { text: 'Diminution S', colSpan: 3, style: 'txt_center' },
-          {},
-          {},
-        ],
-        [
-          {},
-          {},
-          {},
-          {},
-          { text: 'P', style: 'txt_center' },
-          { text: 'S', style: 'txt_center' },
-          { text: 'mm', style: 'txt_center' },
-          { text: '%', style: 'txt_center', colSpan: 2 },
-          {},
-          { text: 'mm', style: 'txt_center' },
-          { text: '%', style: 'txt_center', colSpan: 2 },
-          {},
-        ],
-        ...(this.lsFormTm4.length >= 2
-          ? this.lsFormTm4[1].structuralMemberTM4List[0].measurementTM4DTOList!.map(
-              (x) => [
-                this.no++,
-                // x.structuralMemberTitle,
-                x.structuralMember,
-                x.item,
-                x.detailMeasurement.originalThickness,
-                x.detailMeasurement.maxAlwbDim,
-                x.detailMeasurement.gaugedP,
-                x.detailMeasurement.gaugedS,
-                x.structuralMember,
-                x.structuralMember,
-                x.structuralMember,
-                x.structuralMember,
-                x.structuralMember,
-              ]
-            )
-          : []),
-      ],
-    };
-
-    // var tableTm5 = tableTm5_template;
-    var tableTm5 = {
-      headerRows: 10,
-      widths: [
-        '30%',
-        '25%',
-        '7%',
-        '10%',
-        '13%',
-        '5%',
-        '5%',
-        '5%',
-        '5%',
-        '5%',
-        '5%',
-        '5%',
-        '5%',
-      ],
-      body: [
-        //Table header
-        this.lsFormTm5.length >= 1
-          ? [
-              {
-                text: `TM5-${this.lsFormTm5[0].code}(1 July 2023)`,
-                style: ['txt_center'],
-                colSpan: 12,
-                alignment: 'right' as Alignment,
-                border: [false, false, false, false],
-              },
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-            ]
-          : [],
-        [
-          {
-            text: '',
-            colSpan: 12,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        // Table content
-        [
-          {
-            text: 'Report on THICKNESS MEASUREMENT OF W.T./O.T. TRANSVERSE BULKHEADS within the cargo tank or cargo hold spaces',
-            style: ['txt_center', 'fontS11'],
-            colSpan: 12,
-            decoration: 'underline' as Decoration,
-            bold: true,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        [
-          {
-            colSpan: 12,
-            text: '',
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        [
-          {
-            text: "Ship's name:",
-
-            alignment: 'center' as Alignment,
-
-            colSpan: 1,
-            border: [false, false, false, false],
-          },
-          {
-            decoration: 'underline' as Decoration,
-            text: `${this.inShipName}`,
-            colSpan: 2,
-            bold: true,
-            border: [false, false, false, false],
-          },
-          {},
-          {
-            text: 'Class Identity No. ',
-            colSpan: 2,
-            border: [false, false, false, false],
-          },
-          {},
-          {
-            decoration: 'underline' as Decoration,
-            text: `${this.inABS}`,
-            colSpan: 2,
-            bold: true,
-            border: [false, false, false, false],
-          },
-          {},
-
-          {
-            text: 'Report No. ',
-            colSpan: 2,
-            border: [false, false, false, false],
-          },
-          {},
-          {
-            decoration: 'underline' as Decoration,
-            text: `${this.generalParticular[0].reportNo}`,
-            colSpan: 3,
-            bold: true,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-        ],
-        [
-          {
-            text: '',
-            colSpan: 12,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        [
-          {
-            alignment: 'left' as Alignment,
-
-            text: 'TANK/HOLD DESCRIPTION:',
-            colSpan: 1,
-            style: 'txt_center',
-          },
-          { text: 'a', colSpan: 11, rowSpan: 1, bold: true },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        [
-          {
-            text: 'LOCATION OF STRUCTURE:',
-            alignment: 'left' as Alignment,
-
-            colSpan: 1,
-            style: ['txt_center', 'txt_center'],
-          },
-          {
-            text: 'a',
-            colSpan: 6,
-            bold: true,
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {
-            text: 'Frame No. :',
-            alignment: 'center' as Alignment,
-            border: [false, false, false, false],
-            colSpan: 2,
-          },
-          {},
-          {
-            text: '42',
-            border: [false, false, true, false],
-            colSpan: 3,
-            bold: true,
-          },
-          {},
-          {},
-        ],
-        [
-          {
-            text: 'STRUCTURAL COMPONENT (PLATING/STIFFENER)',
-            rowSpan: 2,
-            style: 'txt_center',
-          },
-          { text: 'Item', rowSpan: 2, style: 'txt_center' },
-
-          { text: 'Original Thickness(mm)', rowSpan: 2, style: 'txt_center' },
-          {
-            text: 'Maximum Allowable Dim(mm)',
-            rowSpan: 2,
-            style: 'txt_center',
-          },
-          { text: 'Gauged', colSpan: 2, style: 'txt_center' },
-          {},
-          { text: 'Diminution P', colSpan: 3, style: 'txt_center' },
-          {},
-          {},
-          { text: 'Diminution S', colSpan: 3, style: 'txt_center' },
-          {},
-          {},
-        ],
-        [
-          {},
-          {},
-          {},
-          {},
-          { text: 'P', style: 'txt_center' },
-          { text: 'S', style: 'txt_center' },
-          { text: 'mm', style: 'txt_center' },
-          { text: '%', style: 'txt_center', colSpan: 2 },
-          {},
-          { text: 'mm', style: 'txt_center' },
-          { text: '%', style: 'txt_center', colSpan: 2 },
-          {},
-        ],
-        ...(this.lsFormTm5.length >= 1
-          ? this.lsFormTm5[0].measurementTM5List!.map((x) => [
-              x.measurementDetail.gaugedP,
-              x.structuralComponent,
-              x.measurementDetail.gaugedP,
-              x.measurementDetail.originalThickness,
-              x.measurementDetail.maxAlwbDim,
-              x.measurementDetail.gaugedP,
-              x.measurementDetail.gaugedP,
-              x.measurementDetail.gaugedP,
-              x.measurementDetail.gaugedP,
-              x.measurementDetail.gaugedP,
-              x.measurementDetail.gaugedP,
-              x.measurementDetail.gaugedP,
-            ])
-          : []),
-      ],
-    };
-    // var tableTm6 = tableTm6_template;
-    var tableTm6 = {
-      headerRows: 10,
-      widths: [
-        // '5%',
-        '30%',
-        '10%',
-        '10%',
-        '10%',
-        '5%',
-        '5%',
-        '5%',
-        '5%',
-        '5%',
-        '5%',
-        '5%',
-        '5%',
-      ],
-      body: [
-        //Table header
-        this.lsFormTm6.length >= 1
-          ? [
-              {
-                text: `TM6-${this.lsFormTm6[0].code}(1 July 2023)`,
-                style: ['txt_center'],
-                colSpan: 12,
-                alignment: 'right' as Alignment,
-                border: [false, false, false, false],
-              },
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-            ]
-          : [],
-        [
-          {
-            text: '',
-            colSpan: 12,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        //Table name
-
-        [
-          {
-            text: 'Report on THICKNESS MEASUREMENT OF MISCELLANEOUS STRUCTURAL MEMBERS',
-            style: ['txt_center', 'fontS11'],
-            colSpan: 12,
-            decoration: 'underline' as Decoration,
-            bold: true,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        [
-          {
-            colSpan: 12,
-            text: '',
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        [
-          {
-            text: "Ship's name:",
-
-            alignment: 'center' as Alignment,
-            colSpan: 1,
-            border: [false, false, false, false],
-          },
-          {
-            decoration: 'underline' as Decoration,
-            text: `${this.inShipName}`,
-            colSpan: 2,
-            bold: true,
-            border: [false, false, false, false],
-          },
-          {},
-          {
-            text: 'Class Identity No. ',
-            colSpan: 2,
-            border: [false, false, false, false],
-          },
-          {},
-          {
-            decoration: 'underline' as Decoration,
-            text: `${this.inABS}`,
-            colSpan: 2,
-            bold: true,
-            border: [false, false, false, false],
-          },
-          {},
-
-          {
-            text: 'Report No. ',
-            colSpan: 2,
-            border: [false, false, false, false],
-          },
-          {},
-          {
-            decoration: 'underline' as Decoration,
-            text: `${this.generalParticular[0].reportNo}`,
-            colSpan: 3,
-            bold: true,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-        ],
-        [
-          {
-            text: '',
-            colSpan: 12,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        //Table content
-        [
-          {
-            text: 'STRUCTURAL MEMBERS :',
-            alignment: 'left' as Alignment,
-            colSpan: 1,
-            style: 'txt_center',
-          },
-          { text: 'a', colSpan: 11, rowSpan: 1, bold: true },
-          'Price',
-          'Date',
-          'Image',
-          'isEdited',
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        [
-          {
-            text: 'LOCATION OF STRUCTURE:',
-            alignment: 'left' as Alignment,
-            colSpan: 1,
-            style: ['txt_center', 'txt_center'],
-          },
-          {
-            text: 'a',
-            colSpan: 11,
-            bold: true,
-          },
-          'Price',
-          'Date',
-          'Image',
-          'isEdited',
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        [
-          {
-            text: 'Description',
-            rowSpan: 2,
-            style: 'txt_center',
-          },
-          { text: 'Item', rowSpan: 2, style: 'txt_center' },
-
-          { text: 'Original Thickness(mm)', rowSpan: 2, style: 'txt_center' },
-          {
-            text: 'Maximum Allowable Dim(mm)',
-            rowSpan: 2,
-            style: 'txt_center',
-          },
-          { text: 'Gauged', colSpan: 2, style: 'txt_center' },
-          {},
-          { text: 'Diminution P', colSpan: 3, style: 'txt_center' },
-          {},
-          {},
-          { text: 'Diminution S', colSpan: 3, style: 'txt_center' },
-          {},
-          {},
-        ],
-        [
-          {},
-          {},
-          {},
-          {},
-          { text: 'P', style: 'txt_center' },
-          { text: 'S', style: 'txt_center' },
-          { text: 'mm', style: 'txt_center' },
-          { text: '%', style: 'txt_center', colSpan: 2 },
-          {},
-          { text: 'mm', style: 'txt_center' },
-          { text: '%', style: 'txt_center', colSpan: 2 },
-          {},
-        ],
-        ...(this.lsFormTm6.length >= 1
-          ? this.lsFormTm6[0].structuralDescriptionTM6List[0].measurementTM6DTOList!.map(
-              (x) => [
-                (this.no = 1),
-                // x.structuralDescriptionTitle,
-                x.description,
-                x.item,
-                x.detailMeasurement.originalThickness,
-                x.detailMeasurement.maxAlwbDim,
-                x.detailMeasurement.gaugedP,
-                x.detailMeasurement.gaugedS,
-                x.detailMeasurement.gaugedS,
-                x.detailMeasurement.gaugedS,
-                x.detailMeasurement.gaugedS,
-                x.detailMeasurement.gaugedS,
-                x.detailMeasurement.gaugedS,
-              ],
-              this.no++
-            )
-          : []),
-      ],
-    };
-    // var tableTm7 = tableTm7_template;
-    var tableTm7 = {
-      headerRows: 10,
-      widths: [
-        // '2.2%',
-        '25.6%',
-        //2
-        '2.9%',
-        '2.9%',
-        '2.2%',
-        '2.2%',
-        '2.9%',
-        '2.2%',
-        '2.2%',
-        '2.9%',
-        '2.2%',
-        '2.2%',
-
-        '2.9%',
-        '2.9%',
-        '2.2%',
-        '2.2%',
-        '2.9%',
-        '2.2%',
-        '2.2%',
-        '2.9%',
-        '2.2%',
-        '2.2%',
-
-        '2.9%',
-        '2.9%',
-        '2.2%',
-        '2.2%',
-        '2.9%',
-        '2.2%',
-        '2.2%',
-        '2.9%',
-        '2.2%',
-        '2.2%',
-      ],
-      body: [
-        //Table header
-        this.lsFormTm7.length >= 1
-          ? [
-              {
-                text: `TM7-${this.lsFormTm7[0].code}(1 July 2023)`,
-                style: ['txt_center'],
-                colSpan: 31,
-                alignment: 'right' as Alignment,
-                border: [false, false, false, false],
-              },
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-              {},
-            ]
-          : [],
-        [
-          {
-            text: '',
-            colSpan: 31,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        // Table content
-        [
-          {
-            text: 'Report on THICKNESS MEASUREMENT OF SHELL AND DECK PLATING (one, two or three transverse sections)',
-            style: ['txt_center', 'fontS11'],
-            colSpan: 31,
-            decoration: 'underline' as Decoration,
-            bold: true,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        [
-          {
-            colSpan: 31,
-            text: '',
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        [
-          {
-            text: "Ship's name:",
-
-            alignment: 'center' as Alignment,
-
-            colSpan: 3,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {
-            decoration: 'underline' as Decoration,
-            text: `${this.inShipName}`,
-            colSpan: 8,
-            bold: true,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {
-            text: 'Class Identity No. ',
-            colSpan: 4,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {
-            decoration: 'underline' as Decoration,
-            text: `${this.inABS}`,
-            colSpan: 8,
-            bold: true,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {
-            text: 'Report No. ',
-            colSpan: 3,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {
-            decoration: 'underline' as Decoration,
-            text: `${this.generalParticular[0].reportNo}`,
-            colSpan: 5,
-            bold: true,
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-        ],
-        [
-          {
-            colSpan: 31,
-            text: '',
-            border: [false, false, false, false],
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        [
-          {
-            style: 'txt_center',
-            text: 'CARGO HOLD NO. 1',
-            colSpan: 31,
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        [
-          {
-            style: 'txt_center',
-            text: '',
-            colSpan: 1,
-          },
-          {
-            style: 'txt_center',
-            text: 'UPPER PART',
-            colSpan: 10,
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {
-            style: 'txt_center',
-            text: 'MID PART',
-            colSpan: 10,
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {
-            style: 'txt_center',
-            text: 'LOWER PART',
-            colSpan: 10,
-          },
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-        ],
-        [
-          {
-            style: 'txt_center',
-            text: 'FRAME NUMBER',
-            rowSpan: 2,
-          },
-          { style: 'txt_center', text: 'Org.Thk.' },
-          { style: 'txt_center', text: 'Max.Alwb.Dim' },
-          { style: 'txt_center', text: 'Gauged mm  ', colSpan: 2 },
-          {},
-          { style: 'txt_center', text: 'Diminution P  ', colSpan: 3 },
-          {},
-          {},
-          { style: 'txt_center', text: '    Diminution S  ', colSpan: 3 },
-          {},
-          {},
-          { style: 'txt_center', text: 'Org.Thk.' },
-          { style: 'txt_center', text: 'Max.Alwb.Dim' },
-          { style: 'txt_center', text: 'Gauged mm', colSpan: 2 },
-          {},
-          { style: 'txt_center', text: 'Diminution P', colSpan: 3 },
-          {},
-          {},
-          { style: 'txt_center', text: 'Diminution S', colSpan: 3 },
-          {},
-          {},
-          { style: 'txt_center', text: 'Org.Thk.' },
-          { style: 'txt_center', text: 'Max.Alwb.Dim' },
-          { style: 'txt_center', text: 'Gauged mm', colSpan: 2 },
-          {},
-          { style: 'txt_center', text: 'Diminution P', colSpan: 3 },
-          {},
-          {},
-          { style: 'txt_center', text: 'Diminution S', colSpan: 3 },
-          {},
-          {},
-        ],
-        [
-          {},
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: 'P' },
-          { style: 'txt_center', text: 'S' },
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: '%', colSpan: 2 },
-          {},
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: '%', colSpan: 2 },
-          {},
-
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: 'P' },
-          { style: 'txt_center', text: 'S' },
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: '%', colSpan: 2 },
-          {},
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: '%', colSpan: 2 },
-          {},
-
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: 'P' },
-          { style: 'txt_center', text: 'S' },
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: '%', colSpan: 2 },
-          {},
-          { style: 'txt_center', text: 'mm' },
-          { style: 'txt_center', text: '%', colSpan: 2 },
-          {},
-        ],
-        ...(this.lsFormTm7.length >= 1
-          ? this.lsFormTm7[0].frameNumberList[0].measurementTM7DTOList!.map(
-              (x) => [
-                this.no++,
-                // x.structuralMemberTitle,
-                x.upperPart.originalThickness,
-                x.upperPart.originalThickness,
-                x.upperPart.maxAlwbDim,
-                x.upperPart.gaugedP,
-                x.upperPart.gaugedS,
-
-                x.upperPart.gaugedS,
-                x.upperPart.gaugedS,
-                x.upperPart.gaugedS,
-                x.upperPart.gaugedS,
-                x.upperPart.gaugedS,
-                x.upperPart.gaugedS,
-
-                x.upperPart.originalThickness,
-                x.upperPart.maxAlwbDim,
-                x.upperPart.gaugedP,
-                x.upperPart.gaugedS,
-
-                x.upperPart.gaugedS,
-                x.upperPart.gaugedS,
-                x.upperPart.gaugedS,
-                x.upperPart.gaugedS,
-                x.upperPart.gaugedS,
-                x.upperPart.gaugedS,
-
-                x.upperPart.originalThickness,
-                x.upperPart.maxAlwbDim,
-                x.upperPart.gaugedP,
-                x.upperPart.gaugedS,
-
-                x.upperPart.gaugedS,
-                x.upperPart.gaugedS,
-                x.upperPart.gaugedS,
-                x.upperPart.gaugedS,
-                x.upperPart.gaugedS,
-              ]
-            )
-          : []),
-      ],
-    };
-
-    */
     // Define pdfDocument
+    let isImagePage = false;
     var pdfDocument = {
       footer: function (currentPage: any, pageCount: any) {
         (_pageCount = pageCount.toString()),
           // this.pageNumber = pageCount.toString(),
           console.log('This is pg:' + _pageCount);
 
-        if (currentPage == 4)
+        if (isImagePage) {
+          // Nếu trang hiện tại có chứa hình ảnh, không hiển thị footer
           return {
             columns: [
               {
@@ -3981,18 +178,17 @@ export class ReviewComponent implements OnInit {
               },
             ],
           };
+        }
+
         return {
           columns: [
-            ...((this as any)?.hasImage == true
-              ? [{ text: 'dsad', alignment: 'left' as Alignment }]
-              : [
-                  {
-                    alignment: 'left' as Alignment,
-                    text: "Operator's signature:.................",
-                  },
-                ]),
+            [
+              {
+                alignment: 'left' as Alignment,
+                text: "Operator's signature:.................",
+              },
+            ],
 
-            // this.a==true ? [{ table:  table  }] : [{table:  table1 }],
             checkSignature == true
               ? [
                   {
@@ -4022,136 +218,6 @@ export class ReviewComponent implements OnInit {
       content: [
         [
           {
-            table: {
-              body: [
-                [
-                  {
-                    image: 'logo',
-                    border: [false, false, false, false],
-                    width: 50,
-                  },
-                  {
-                    text: 'VIET NAM MARINE INDUSTRY AND SERVICE JOINT STOCK COMPANY',
-                    border: [false, false, false, false],
-                    style: ['txt_center', 'fontS13', { color: 'blue' }],
-                    margin: [0, 20, 0, 0],
-                  },
-                ],
-              ],
-            },
-          },
-          // {
-          //   style: ['txt_center', 'fontS15', { color: 'blue' }],
-          //   text: 'VIET NAM MARINE INDUSTRY AND SERVICE JOINT STOCK COMPANY',
-          // },
-          {
-            image:
-              'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAxoAAAAOCAIAAAAnjf0VAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAENSURBVHhe7dvNbcJAEAZQisjRNVCGO6CaVOAiIq6UQEVIGIFQbJD4sxmxTnAkpFj4+t7JszO73uN3sCftMJfL5fvhcDh0Sz+apkmt4/GYVuIhTUYryvP5nAau12uUt9utqqooT6fTY7xNZV3XqUxib5yw3W5Xq9Vut4tubOx6f6UD1+v1ZrOJsfTSl+ICMVmWZZy53+9/LwAA8LahcQoAgJfEKQCAUZ5xarFYfAEAMMByuewiVD9OZVk2AQBggDzPuwjVj1Ppe3AAAP7V/znvGaeKovgEAGCA+XzeRah+nJpOpx8AAAwwm826CNWPUwAAvEGcAgAYRZwCABhFnAIAGEWcAgAYRZwCABihbe+0IVULvJUf+gAAAABJRU5ErkJggg==',
-            width: 500,
-          },
-          // {
-          //   table: {
-          //     widths: ['*'],
-          //     body: [
-          //       [
-          //         {
-          //           border: [false, false, false, true],
-          //           text: '',
-          //           margin: [0, 0, 0, 5], // Khoảng cách giữa đường kẻ và văn bản
-          //         },
-          //       ],
-          //     ],
-          //   },
-          // },
-          {
-            text: 'ULTRASONIC THICKNESS MEASUREMENT REPORT',
-            bold: true,
-            style: ['txt_center', 'mg_t', 'fontS15'],
-          },
-          {
-            text: `${this.generalParticular[0].surveyType}`,
-            bold: true,
-            style: ['txt_center', 'fontS15', { color: 'blue' }],
-          },
-          {
-            text: `SHIP'S NAME: `,
-            style: ['txt_center', 'mg_25', 'fontS18'],
-          },
-          {
-            table: {
-              body: [
-                [
-                  {
-                    text: `${this.inShipName}`,
-                    style: ['fontS30'],
-                  },
-                ],
-              ],
-            },
-            style: ['shipNameGeneral'],
-            // text: `${this.inShipName}`,
-            // style: ['txt_center', 'fontS30'],
-          },
-          {
-            columns: [
-              {
-                text: 'IMO No.:',
-                style: ['mg_25'],
-              },
-              {
-                text: `${this.inIMO}`,
-                decoration: 'underline' as Decoration,
-                style: ['mg_25'],
-                bold: true,
-              },
-            ],
-            style: ['fontS18', 'mg_l_90'],
-          },
-          {
-            style: ['fontS18', 'mg_l_90'],
-            columns: [
-              {
-                text: 'CLASS ID.: ',
-              },
-              {
-                text: `${this.inABS}`,
-                decoration: 'underline' as Decoration,
-                bold: true,
-              },
-            ],
-          },
-          {
-            columns: [
-              {
-                text: 'REPORT No.: ',
-              },
-              {
-                text: `VMC.UTM/12/12/32 `,
-                decoration: 'underline' as Decoration,
-                bold: true,
-              },
-            ],
-            style: ['fontS18', 'mg_l_90'],
-          },
-          {
-            table: {
-              widths: ['*'],
-              body: [
-                [
-                  {
-                    border: [false, false, false, true],
-                    text: '',
-                    margin: [0, 200, 0, 0], // Khoảng cách giữa đường kẻ và văn bản
-                    style: ['mg_25'],
-                  },
-                ],
-              ],
-            },
-          },
-        ],
-        [
-          {
-            pageBreak: 'before' as PageBreak,
             text: 'GENERAL PARTICULAR',
             style: ['header', 'fontS18', 'txt_center'],
             bold: true,
@@ -4577,11 +643,10 @@ export class ReviewComponent implements OnInit {
                 pageOrientation: 'portrait' as PageOrientation,
                 alignment: 'center' as Alignment,
                 style: ['fontS11', 'mg_50'],
-                text: `${x.partIndex}`,
+                text: `PART ${this.partIndex_formTm++}`,
                 bold: true,
               },
               {
-                decoration: 'underline' as Decoration,
                 text: `${x.item}`,
                 alignment: 'center' as Alignment,
                 style: ['fontS45'],
@@ -4592,6 +657,24 @@ export class ReviewComponent implements OnInit {
             x.formList.map((y: any) =>
               y.type == 'TM1'
                 ? [
+                    this.lsSketch.map((a) =>
+                      a.map((b: any) =>
+                        b.formId === y.id && b.formType == 'form_tm1'
+                          ? [
+                              // Thiết lập biến isImagePage thành true nếu có hình ảnh
+                              {
+                                margin: [-20, -30, -20, -30] as Margins,
+                                pageBreak: 'before' as PageBreak,
+                                pageOrientation: 'landscape' as PageOrientation,
+                                fit: [pageSizee.width, pageSizee.height],
+                                // fit: [100, 100],
+                                image: `data:image/png;base64,${b.value}`,
+                                isImagePage: true,
+                              },
+                            ]
+                          : []
+                      )
+                    ),
                     {
                       pageBreak: 'before' as PageBreak,
                       pageOrientation: 'landscape' as PageOrientation,
@@ -4600,7 +683,6 @@ export class ReviewComponent implements OnInit {
                         headerRows: 10,
                         //23 rows
                         widths: [
-                          // '4%',
                           '38.5%',
                           '6%',
                           '4.5%',
@@ -4608,18 +690,18 @@ export class ReviewComponent implements OnInit {
                           '3%',
                           '3%',
                           '3%',
-                          '1.5%', //9
+                          '1.5%',
                           '3%',
                           '3%',
-                          '1.5%', //12
+                          '1.5%',
                           '3%',
                           '3%',
                           '3%',
                           '3%',
-                          '1.5%', //17
+                          '1.5%',
                           '3%',
                           '3%',
-                          '1.5%', //20
+                          '1.5%',
                           '3%',
                           '3%',
                           '3%',
@@ -4628,8 +710,7 @@ export class ReviewComponent implements OnInit {
                           //Table header
                           [
                             {
-                              text: `TM1`,
-                              //   text: `TM1-${this.typeForm}(1 July 2023)`,
+                              text: `TM1-${y.code}(1 July 2023)`,
                               style: ['txt_center'],
                               colSpan: 22,
                               alignment: 'right' as Alignment,
@@ -4697,6 +778,8 @@ export class ReviewComponent implements OnInit {
                               colSpan: 22,
                               decoration: 'underline' as Decoration,
                               bold: true,
+                              margin: [0, 0, 0, 5] as Margins,
+
                               border: [false, false, false, false],
                             },
                             {},
@@ -4757,7 +840,6 @@ export class ReviewComponent implements OnInit {
                             {
                               text: "Ship's name:",
                               alignment: 'center' as Alignment,
-                              // colSpan: 2,
                               border: [false, false, false, false],
                             },
                             {
@@ -4804,7 +886,6 @@ export class ReviewComponent implements OnInit {
                               bold: true,
                               border: [false, false, false, false],
                             },
-
                             {},
                             {},
                             {},
@@ -5011,32 +1092,360 @@ export class ReviewComponent implements OnInit {
                           ],
 
                           ...y.measurementTM1DTOList?.map((z: any) => [
-                            z.platePosition,
-                            z.noOrLetter,
-                            z.noOrLetter,
+                            { text: `${z.platePosition}` },
+                            { style: ['txt_center'], text: `${z.noOrLetter}` },
+                            {
+                              style: ['txt_center'],
+                              text: `${z.forwardReadingMeasurementDetail.originalThickness}`,
+                            },
 
-                            z.forwardReadingMeasurementDetail.gaugedP,
-                            z.forwardReadingMeasurementDetail.gaugedP,
-                            z.forwardReadingMeasurementDetail.gaugedP,
-                            z.forwardReadingMeasurementDetail.gaugedP,
-                            z.forwardReadingMeasurementDetail.gaugedP,
-                            z.forwardReadingMeasurementDetail.gaugedP,
-                            z.forwardReadingMeasurementDetail.gaugedP,
-                            z.forwardReadingMeasurementDetail.gaugedP,
+                            {
+                              style: ['txt_center'],
+                              text: `${z.forwardReadingMeasurementDetail.gaugedP}`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              text: `${z.forwardReadingMeasurementDetail.gaugedS}`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              text: `${this.formService.calculateForMm(
+                                z.forwardReadingMeasurementDetail
+                                  .originalThickness,
+                                z.forwardReadingMeasurementDetail.gaugedP
+                              )}`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              border: [true, true, false, true],
+                              text: `${this.formService.calculateForPercent(
+                                z.forwardReadingMeasurementDetail
+                                  .originalThickness,
+                                z.forwardReadingMeasurementDetail.gaugedP
+                              )}`,
+                            },
+                            //R
+                            {
+                              style: ['txt_center'],
+                              border: [false, true, true, true],
+                              text:
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.forwardReadingMeasurementDetail
+                                      .originalThickness,
+                                    z.forwardReadingMeasurementDetail.gaugedP
+                                  )
+                                ) >=
+                                  this.convertToNumber(
+                                    this.formService.threePartsFourOfMaxAlwbDim(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z.afterReadingMeasurementDetail
+                                          .originalThickness,
+                                        z.afterReadingMeasurementDetail.percent
+                                      )
+                                    )
+                                  ) &&
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.forwardReadingMeasurementDetail
+                                      .originalThickness,
+                                    z.forwardReadingMeasurementDetail.gaugedP
+                                  )
+                                ) <=
+                                  this.convertToNumber(
+                                    this.formService.calculateForMaxAlwbDimForString(
+                                      z.afterReadingMeasurementDetail
+                                        .originalThickness,
+                                      z.afterReadingMeasurementDetail.percent
+                                    )
+                                  )
+                                  ? 'S'
+                                  : this.convertToNumber(
+                                      this.formService.calculateForMm(
+                                        z.forwardReadingMeasurementDetail
+                                          .originalThickness,
+                                        z.forwardReadingMeasurementDetail
+                                          .gaugedP
+                                      )
+                                    ) >
+                                    this.convertToNumber(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z.afterReadingMeasurementDetail
+                                          .originalThickness,
+                                        z.afterReadingMeasurementDetail.percent
+                                      )
+                                    )
+                                  ? 'R'
+                                  : '',
+                            },
+                            {
+                              style: ['txt_center'],
+                              text: `${this.formService.calculateForMm(
+                                z.forwardReadingMeasurementDetail
+                                  .originalThickness,
+                                z.forwardReadingMeasurementDetail.gaugedS
+                              )}`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              border: [true, true, false, true],
+                              text: `${this.formService.calculateForPercent(
+                                z.forwardReadingMeasurementDetail
+                                  .originalThickness,
+                                z.forwardReadingMeasurementDetail.gaugedS
+                              )}`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              border: [false, true, true, true],
+                              text:
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.forwardReadingMeasurementDetail
+                                      .originalThickness,
+                                    z.forwardReadingMeasurementDetail.gaugedS
+                                  )
+                                ) >=
+                                  this.convertToNumber(
+                                    this.formService.threePartsFourOfMaxAlwbDim(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z.afterReadingMeasurementDetail
+                                          .originalThickness,
+                                        z.afterReadingMeasurementDetail.percent
+                                      )
+                                    )
+                                  ) &&
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.forwardReadingMeasurementDetail
+                                      .originalThickness,
+                                    z.forwardReadingMeasurementDetail.gaugedS
+                                  )
+                                ) <=
+                                  this.convertToNumber(
+                                    this.formService.calculateForMaxAlwbDimForString(
+                                      z.afterReadingMeasurementDetail
+                                        .originalThickness,
+                                      z.afterReadingMeasurementDetail.percent
+                                    )
+                                  )
+                                  ? 'S'
+                                  : this.convertToNumber(
+                                      this.formService.calculateForMm(
+                                        z.forwardReadingMeasurementDetail
+                                          .originalThickness,
+                                        z.forwardReadingMeasurementDetail
+                                          .gaugedS
+                                      )
+                                    ) >
+                                    this.convertToNumber(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z.afterReadingMeasurementDetail
+                                          .originalThickness,
+                                        z.afterReadingMeasurementDetail.percent
+                                      )
+                                    )
+                                  ? 'R'
+                                  : '',
+                            },
 
-                            z.afterReadingMeasurementDetail.gaugedP,
-                            z.afterReadingMeasurementDetail.gaugedS,
-                            z.afterReadingMeasurementDetail.gaugedS,
-                            z.afterReadingMeasurementDetail.gaugedS,
-                            z.afterReadingMeasurementDetail.gaugedS,
-                            z.afterReadingMeasurementDetail.gaugedS,
-                            z.afterReadingMeasurementDetail.gaugedS,
-                            z.afterReadingMeasurementDetail.gaugedS,
-                            z.noOrLetter,
-                            z.noOrLetter,
-                            z.noOrLetter,
+                            //after
+                            {
+                              style: ['txt_center'],
+                              text: `${z.afterReadingMeasurementDetail.gaugedP}`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              text: `${z.afterReadingMeasurementDetail.gaugedS}`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              text: `${this.formService.calculateForMm(
+                                z.afterReadingMeasurementDetail
+                                  .originalThickness,
+                                z.afterReadingMeasurementDetail.gaugedP
+                              )}`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              border: [true, true, false, true],
+                              text: `${this.formService.calculateForPercent(
+                                z.afterReadingMeasurementDetail
+                                  .originalThickness,
+                                z.afterReadingMeasurementDetail.gaugedP
+                              )}`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              border: [false, true, true, true],
+                              text:
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.forwardReadingMeasurementDetail
+                                      .originalThickness,
+                                    z.afterReadingMeasurementDetail.gaugedP
+                                  )
+                                ) >=
+                                  this.convertToNumber(
+                                    this.formService.threePartsFourOfMaxAlwbDim(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z.afterReadingMeasurementDetail
+                                          .originalThickness,
+                                        z.afterReadingMeasurementDetail.percent
+                                      )
+                                    )
+                                  ) &&
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.forwardReadingMeasurementDetail
+                                      .originalThickness,
+                                    z.afterReadingMeasurementDetail.gaugedP
+                                  )
+                                ) <=
+                                  this.convertToNumber(
+                                    this.formService.calculateForMaxAlwbDimForString(
+                                      z.afterReadingMeasurementDetail
+                                        .originalThickness,
+                                      z.afterReadingMeasurementDetail.percent
+                                    )
+                                  )
+                                  ? 'S'
+                                  : this.convertToNumber(
+                                      this.formService.calculateForMm(
+                                        z.forwardReadingMeasurementDetail
+                                          .originalThickness,
+                                        z.afterReadingMeasurementDetail.gaugedP
+                                      )
+                                    ) >
+                                    this.convertToNumber(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z.afterReadingMeasurementDetail
+                                          .originalThickness,
+                                        z.afterReadingMeasurementDetail.percent
+                                      )
+                                    )
+                                  ? 'R'
+                                  : '',
+                            },
+                            {
+                              style: ['txt_center'],
+                              text: `${this.formService.calculateForMm(
+                                z.afterReadingMeasurementDetail
+                                  .originalThickness,
+                                z.afterReadingMeasurementDetail.gaugedS
+                              )}`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              border: [true, true, false, true],
+                              text: `${this.formService.calculateForPercent(
+                                z.afterReadingMeasurementDetail
+                                  .originalThickness,
+                                z.afterReadingMeasurementDetail.gaugedS
+                              )}`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              border: [false, true, true, true],
+                              text:
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.forwardReadingMeasurementDetail
+                                      .originalThickness,
+                                    z.afterReadingMeasurementDetail.gaugedP
+                                  )
+                                ) >=
+                                  this.convertToNumber(
+                                    this.formService.threePartsFourOfMaxAlwbDim(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z.afterReadingMeasurementDetail
+                                          .originalThickness,
+                                        z.afterReadingMeasurementDetail.percent
+                                      )
+                                    )
+                                  ) &&
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.forwardReadingMeasurementDetail
+                                      .originalThickness,
+                                    z.afterReadingMeasurementDetail.gaugedP
+                                  )
+                                ) <=
+                                  this.convertToNumber(
+                                    this.formService.calculateForMaxAlwbDimForString(
+                                      z.afterReadingMeasurementDetail
+                                        .originalThickness,
+                                      z.afterReadingMeasurementDetail.percent
+                                    )
+                                  )
+                                  ? 'S'
+                                  : this.convertToNumber(
+                                      this.formService.calculateForMm(
+                                        z.forwardReadingMeasurementDetail
+                                          .originalThickness,
+                                        z.afterReadingMeasurementDetail.gaugedP
+                                      )
+                                    ) >
+                                    this.convertToNumber(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z.afterReadingMeasurementDetail
+                                          .originalThickness,
+                                        z.afterReadingMeasurementDetail.percent
+                                      )
+                                    )
+                                  ? 'R'
+                                  : '',
+                            },
+
+                            //mean
+                            {
+                              style: ['txt_center'],
+                              text: `${this.formService.calculateAveragePercent(
+                                z.forwardReadingMeasurementDetail
+                                  .originalThickness,
+                                this.formService.calculateForPercent(
+                                  z.forwardReadingMeasurementDetail
+                                    .originalThickness,
+                                  z.forwardReadingMeasurementDetail.gaugedP
+                                ),
+                                this.formService.calculateForPercent(
+                                  z.afterReadingMeasurementDetail
+                                    .originalThickness,
+                                  z.afterReadingMeasurementDetail.gaugedP
+                                )
+                              )}`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              text: `${this.formService.calculateAveragePercent(
+                                z.forwardReadingMeasurementDetail
+                                  .originalThickness,
+                                this.formService.calculateForPercent(
+                                  z.forwardReadingMeasurementDetail
+                                    .originalThickness,
+                                  z.forwardReadingMeasurementDetail.gaugedS
+                                ),
+                                this.formService.calculateForPercent(
+                                  z.forwardReadingMeasurementDetail
+                                    .originalThickness,
+                                  z.afterReadingMeasurementDetail.gaugedS
+                                )
+                              )}`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              text: `${this.formService.calculateForMaxAlwbDimForString(
+                                z.afterReadingMeasurementDetail
+                                  .originalThickness,
+                                z.afterReadingMeasurementDetail.percent
+                              )}`,
+                            },
                           ]),
                         ],
+                      },
+                      layout: {
+                        paddingTop: () => 1,
+                        paddingBottom: () => 1,
                       },
                     },
                   ]
@@ -5046,6 +1455,21 @@ export class ReviewComponent implements OnInit {
             x.formList.map((y: any) =>
               y.type == 'TM2(I)'
                 ? [
+                    this.lsSketch.map((a) =>
+                      a.map((b: any) =>
+                        b.formId === y.id && b.formType == 'form_tm2'
+                          ? [
+                              {
+                                margin: [-30, -30, -30, -30] as Margins,
+                                pageBreak: 'before' as PageBreak,
+                                pageOrientation: 'landscape' as PageOrientation,
+                                fit: [pageSizee.width, pageSizee.height],
+                                image: `data:image/png;base64,${b.value}`,
+                              },
+                            ]
+                          : []
+                      )
+                    ),
                     {
                       pageBreak: 'before' as PageBreak,
                       pageOrientation: 'landscape' as PageOrientation,
@@ -5053,44 +1477,43 @@ export class ReviewComponent implements OnInit {
                       table: {
                         headerRows: 10,
                         widths: [
-                          // '2.2%',
-                          '22.4%',
-                          //2
-                          '2.6%',
-                          '2.9%',
-                          '2.9%',
-                          '2.2%',
-                          '2.2%',
-                          '2.9%',
-                          '2.2%',
-                          '1.5%', //10
-                          '2.9%',
-                          '1.5%', //13
-                          '2.2%',
+                          '13.6%',
 
-                          '2.6%',
-                          '2.9%',
-                          '2.9%',
-                          '2.2%',
-                          '2.2%',
-                          '2.9%',
-                          '1.5%', //20
-                          '2.2%',
-                          '2.9%',
-                          '2.2%',
-                          '1.5%', //23
+                          '3.3%', //2
+                          '2.9%', //1
+                          '3.0%', //2
+                          '3.0%',
+                          '3.0%',
+                          '3.0%',
+                          '3.0%',
+                          '0.8%', //10
+                          '3.0%',
+                          '3.0%',
+                          '0.8%', //13
 
-                          '2.6%',
-                          '2.9%',
-                          '2.9%',
-                          '2.2%',
-                          '2.2%',
-                          '2.9%',
-                          '2.2%',
-                          '1.5%', //
-                          '2.9%',
-                          '2.2%',
-                          '1.5%', //
+                          '3.3%', //2
+                          '2.9%', //1
+                          '3.0%', //2
+                          '3.0%',
+                          '3.0%',
+                          '3.0%',
+                          '3.0%',
+                          '0.8%', //10
+                          '3.0%',
+                          '3.0%',
+                          '0.8%', //13
+
+                          '3.3%', //2
+                          '2.9%', //1
+                          '3.0%', //2
+                          '3.0%',
+                          '3.0%',
+                          '3.0%',
+                          '3.0%',
+                          '0.8%', //10
+                          '3.0%',
+                          '3.0%',
+                          '0.8%', //13
                         ],
                         body: [
                           //Table header
@@ -5183,11 +1606,13 @@ export class ReviewComponent implements OnInit {
                           // Table content
                           [
                             {
+                              margin: [0, 0, 0, 5] as Margins,
                               text: 'Report on THICKNESS MEASUREMENT OF SHELL AND DECK PLATING (one, two or three transverse sections)',
                               style: ['txt_center', 'fontS11'],
                               colSpan: 34,
                               decoration: 'underline' as Decoration,
                               bold: true,
+
                               border: [false, false, false, false],
                             },
                             {},
@@ -5271,9 +1696,7 @@ export class ReviewComponent implements OnInit {
                           [
                             {
                               text: "Ship's name:",
-
                               alignment: 'center' as Alignment,
-
                               colSpan: 3,
                               border: [false, false, false, false],
                             },
@@ -5613,74 +2036,618 @@ export class ReviewComponent implements OnInit {
                             {},
                           ],
                           ...y.measurementTM2DTOList?.map((z: any) => [
-                            z.strakePosition,
-                            z.noOrLetter,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .originalThickness,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .maxAlwbDim,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedP,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedS,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedS,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedS,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedS,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedS,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedS,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedS,
+                            {
+                              text: `${z.strakePosition}`,
+                            },
 
-                            z.noOrLetter,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .originalThickness,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .maxAlwbDim,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedP,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedS,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedS,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedS,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedS,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedS,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedS,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedS,
+                            //fr 1
+                            { text: `${z.noOrLetter}`, style: ['txt_center'] },
+                            {
+                              text: `${z.firstTransverseSectionMeasurementDetailTM2.originalThickness}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${this.formService.calculateForMaxAlwbDimForString(
+                                z.firstTransverseSectionMeasurementDetailTM2
+                                  .originalThickness,
+                                z.firstTransverseSectionMeasurementDetailTM2
+                                  .percent
+                              )}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${z.firstTransverseSectionMeasurementDetailTM2.gaugedP}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${z.firstTransverseSectionMeasurementDetailTM2.gaugedS}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${this.formService.calculateForMm(
+                                z.firstTransverseSectionMeasurementDetailTM2
+                                  .originalThickness,
+                                z.firstTransverseSectionMeasurementDetailTM2
+                                  .gaugedP
+                              )}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${this.formService.calculateForPercent(
+                                z.firstTransverseSectionMeasurementDetailTM2
+                                  .originalThickness,
+                                z.firstTransverseSectionMeasurementDetailTM2
+                                  .gaugedP
+                              )}`,
 
-                            z.noOrLetter,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .originalThickness,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .maxAlwbDim,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedP,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedS,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedS,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedS,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedS,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedS,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedS,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedS,
+                              style: ['txt_center'],
+                              border: [true, true, false, true],
+                            },
+                            {
+                              text:
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.firstTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z.firstTransverseSectionMeasurementDetailTM2
+                                      .gaugedP
+                                  )
+                                ) >=
+                                  this.convertToNumber(
+                                    this.formService.threePartsFourOfMaxAlwbDim(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ) &&
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.firstTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z.firstTransverseSectionMeasurementDetailTM2
+                                      .gaugedP
+                                  )
+                                ) <=
+                                  this.convertToNumber(
+                                    this.formService.calculateForMaxAlwbDimForString(
+                                      z
+                                        .firstTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .firstTransverseSectionMeasurementDetailTM2
+                                        .percent
+                                    )
+                                  )
+                                  ? 'S'
+                                  : this.convertToNumber(
+                                      this.formService.calculateForMm(
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .gaugedP
+                                      )
+                                    ) >
+                                    this.convertToNumber(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ? 'R'
+                                  : '',
+
+                              style: ['txt_center'],
+                              border: [false, true, true, true],
+                            },
+                            {
+                              text: `${this.formService.calculateForMm(
+                                z.firstTransverseSectionMeasurementDetailTM2
+                                  .originalThickness,
+                                z.firstTransverseSectionMeasurementDetailTM2
+                                  .gaugedS
+                              )}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${this.formService.calculateForPercent(
+                                z.firstTransverseSectionMeasurementDetailTM2
+                                  .originalThickness,
+                                z.firstTransverseSectionMeasurementDetailTM2
+                                  .gaugedS
+                              )}`,
+                              style: ['txt_center'],
+                              border: [true, true, false, true],
+                            },
+                            {
+                              text:
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.firstTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z.firstTransverseSectionMeasurementDetailTM2
+                                      .gaugedS
+                                  )
+                                ) >=
+                                  this.convertToNumber(
+                                    this.formService.threePartsFourOfMaxAlwbDim(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ) &&
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.firstTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z.firstTransverseSectionMeasurementDetailTM2
+                                      .gaugedS
+                                  )
+                                ) <=
+                                  this.convertToNumber(
+                                    this.formService.calculateForMaxAlwbDimForString(
+                                      z
+                                        .firstTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .firstTransverseSectionMeasurementDetailTM2
+                                        .percent
+                                    )
+                                  )
+                                  ? 'S'
+                                  : this.convertToNumber(
+                                      this.formService.calculateForMm(
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .gaugedS
+                                      )
+                                    ) >
+                                    this.convertToNumber(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ? 'R'
+                                  : '',
+
+                              style: ['txt_center'],
+                              border: [false, true, true, true],
+                            },
+
+                            //fr 2
+
+                            { text: `${z.noOrLetter}`, style: ['txt_center'] },
+                            {
+                              text: `${z.secondTransverseSectionMeasurementDetailTM2.originalThickness}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${this.formService.calculateForMaxAlwbDimForString(
+                                z.secondTransverseSectionMeasurementDetailTM2
+                                  .originalThickness,
+                                z.secondTransverseSectionMeasurementDetailTM2
+                                  .percent
+                              )}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${z.secondTransverseSectionMeasurementDetailTM2.gaugedP}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${z.secondTransverseSectionMeasurementDetailTM2.gaugedS}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${this.formService.calculateForMm(
+                                z.secondTransverseSectionMeasurementDetailTM2
+                                  .originalThickness,
+                                z.secondTransverseSectionMeasurementDetailTM2
+                                  .gaugedP
+                              )}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${this.formService.calculateForPercent(
+                                z.secondTransverseSectionMeasurementDetailTM2
+                                  .originalThickness,
+                                z.secondTransverseSectionMeasurementDetailTM2
+                                  .gaugedP
+                              )}`,
+
+                              style: ['txt_center'],
+                              border: [true, true, false, true],
+                            },
+                            {
+                              text:
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z
+                                      .secondTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z
+                                      .secondTransverseSectionMeasurementDetailTM2
+                                      .gaugedP
+                                  )
+                                ) >=
+                                  this.convertToNumber(
+                                    this.formService.threePartsFourOfMaxAlwbDim(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ) &&
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z
+                                      .secondTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z
+                                      .secondTransverseSectionMeasurementDetailTM2
+                                      .gaugedP
+                                  )
+                                ) <=
+                                  this.convertToNumber(
+                                    this.formService.calculateForMaxAlwbDimForString(
+                                      z
+                                        .secondTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .secondTransverseSectionMeasurementDetailTM2
+                                        .percent
+                                    )
+                                  )
+                                  ? 'S'
+                                  : this.convertToNumber(
+                                      this.formService.calculateForMm(
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .gaugedP
+                                      )
+                                    ) >
+                                    this.convertToNumber(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ? 'R'
+                                  : '',
+
+                              style: ['txt_center'],
+                              border: [false, true, true, true],
+                            },
+                            {
+                              text: `${this.formService.calculateForMm(
+                                z.secondTransverseSectionMeasurementDetailTM2
+                                  .originalThickness,
+                                z.secondTransverseSectionMeasurementDetailTM2
+                                  .gaugedS
+                              )}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${this.formService.calculateForPercent(
+                                z.secondTransverseSectionMeasurementDetailTM2
+                                  .originalThickness,
+                                z.secondTransverseSectionMeasurementDetailTM2
+                                  .gaugedS
+                              )}`,
+                              style: ['txt_center'],
+                              border: [true, true, false, true],
+                            },
+                            {
+                              text:
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z
+                                      .secondTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z
+                                      .secondTransverseSectionMeasurementDetailTM2
+                                      .gaugedS
+                                  )
+                                ) >=
+                                  this.convertToNumber(
+                                    this.formService.threePartsFourOfMaxAlwbDim(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ) &&
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z
+                                      .secondTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z
+                                      .secondTransverseSectionMeasurementDetailTM2
+                                      .gaugedS
+                                  )
+                                ) <=
+                                  this.convertToNumber(
+                                    this.formService.calculateForMaxAlwbDimForString(
+                                      z
+                                        .secondTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .secondTransverseSectionMeasurementDetailTM2
+                                        .percent
+                                    )
+                                  )
+                                  ? 'S'
+                                  : this.convertToNumber(
+                                      this.formService.calculateForMm(
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .gaugedS
+                                      )
+                                    ) >
+                                    this.convertToNumber(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ? 'R'
+                                  : '',
+
+                              style: ['txt_center'],
+                              border: [false, true, true, true],
+                            },
+                            ///
+                            //fr3
+
+                            { text: `${z.noOrLetter}`, style: ['txt_center'] },
+                            {
+                              text: `${z.thirdTransverseSectionMeasurementDetailTM2.originalThickness}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${this.formService.calculateForMaxAlwbDimForString(
+                                z.thirdTransverseSectionMeasurementDetailTM2
+                                  .originalThickness,
+                                z.thirdTransverseSectionMeasurementDetailTM2
+                                  .percent
+                              )}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${z.thirdTransverseSectionMeasurementDetailTM2.gaugedP}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${z.thirdTransverseSectionMeasurementDetailTM2.gaugedS}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${this.formService.calculateForMm(
+                                z.thirdTransverseSectionMeasurementDetailTM2
+                                  .originalThickness,
+                                z.thirdTransverseSectionMeasurementDetailTM2
+                                  .gaugedP
+                              )}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${this.formService.calculateForPercent(
+                                z.thirdTransverseSectionMeasurementDetailTM2
+                                  .originalThickness,
+                                z.thirdTransverseSectionMeasurementDetailTM2
+                                  .gaugedP
+                              )}`,
+
+                              style: ['txt_center'],
+                              border: [true, true, false, true],
+                            },
+                            {
+                              text:
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.thirdTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z.thirdTransverseSectionMeasurementDetailTM2
+                                      .gaugedP
+                                  )
+                                ) >=
+                                  this.convertToNumber(
+                                    this.formService.threePartsFourOfMaxAlwbDim(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ) &&
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.thirdTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z.thirdTransverseSectionMeasurementDetailTM2
+                                      .gaugedP
+                                  )
+                                ) <=
+                                  this.convertToNumber(
+                                    this.formService.calculateForMaxAlwbDimForString(
+                                      z
+                                        .thirdTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .thirdTransverseSectionMeasurementDetailTM2
+                                        .percent
+                                    )
+                                  )
+                                  ? 'S'
+                                  : this.convertToNumber(
+                                      this.formService.calculateForMm(
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .gaugedP
+                                      )
+                                    ) >
+                                    this.convertToNumber(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ? 'R'
+                                  : '',
+
+                              style: ['txt_center'],
+                              border: [false, true, true, true],
+                            },
+                            {
+                              text: `${this.formService.calculateForMm(
+                                z.thirdTransverseSectionMeasurementDetailTM2
+                                  .originalThickness,
+                                z.thirdTransverseSectionMeasurementDetailTM2
+                                  .gaugedS
+                              )}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${this.formService.calculateForPercent(
+                                z.thirdTransverseSectionMeasurementDetailTM2
+                                  .originalThickness,
+                                z.thirdTransverseSectionMeasurementDetailTM2
+                                  .gaugedS
+                              )}`,
+                              style: ['txt_center'],
+                              border: [true, true, false, true],
+                            },
+                            {
+                              text:
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.thirdTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z.thirdTransverseSectionMeasurementDetailTM2
+                                      .gaugedS
+                                  )
+                                ) >=
+                                  this.convertToNumber(
+                                    this.formService.threePartsFourOfMaxAlwbDim(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ) &&
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.thirdTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z.thirdTransverseSectionMeasurementDetailTM2
+                                      .gaugedS
+                                  )
+                                ) <=
+                                  this.convertToNumber(
+                                    this.formService.calculateForMaxAlwbDimForString(
+                                      z
+                                        .thirdTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .thirdTransverseSectionMeasurementDetailTM2
+                                        .percent
+                                    )
+                                  )
+                                  ? 'S'
+                                  : this.convertToNumber(
+                                      this.formService.calculateForMm(
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .gaugedS
+                                      )
+                                    ) >
+                                    this.convertToNumber(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ? 'R'
+                                  : '',
+
+                              style: ['txt_center'],
+                              border: [false, true, true, true],
+                            },
                           ]),
                         ],
+                      },
+                      layout: {
+                        paddingLeft: () => 2,
+                        paddingRight: () => 2,
+                        paddingTop: () => 1,
+                        paddingBottom: () => 1,
                       },
                     },
                   ]
@@ -5690,6 +2657,22 @@ export class ReviewComponent implements OnInit {
             x.formList.map((y: any) =>
               y.type == 'TM2(II)'
                 ? [
+                    this.lsSketch.map((a) =>
+                      a.map((b: any) =>
+                        b.formId === y.id && b.formType == 'form_tm2'
+                          ? [
+                              {
+                                margin: [-30, -30, -30, -30] as Margins,
+                                pageBreak: 'before' as PageBreak,
+                                pageOrientation: 'landscape' as PageOrientation,
+                                fit: [pageSizee.width, pageSizee.height],
+                                image: `data:image/png;base64,${b.value}`,
+                              },
+                            ]
+                          : []
+                      )
+                    ),
+
                     {
                       pageBreak: 'before' as PageBreak,
                       pageOrientation: 'landscape' as PageOrientation,
@@ -5697,44 +2680,43 @@ export class ReviewComponent implements OnInit {
                       table: {
                         headerRows: 10,
                         widths: [
-                          // '2.2%',
-                          '22.4%',
-                          //2
-                          '2.6%',
-                          '2.9%',
-                          '2.9%',
-                          '2.2%',
-                          '2.2%',
-                          '2.9%',
-                          '2.2%',
-                          '1.5%', //10
-                          '2.9%',
-                          '1.5%', //13
-                          '2.2%',
+                          '13.6%',
 
-                          '2.6%',
-                          '2.9%',
-                          '2.9%',
-                          '2.2%',
-                          '2.2%',
-                          '2.9%',
-                          '1.5%', //20
-                          '2.2%',
-                          '2.9%',
-                          '2.2%',
-                          '1.5%', //23
+                          '3.3%', //2
+                          '2.9%', //1
+                          '3.0%', //2
+                          '3.0%',
+                          '3.0%',
+                          '3.0%',
+                          '3.0%',
+                          '0.8%', //10
+                          '3.0%',
+                          '3.0%',
+                          '0.8%', //13
 
-                          '2.6%',
-                          '2.9%',
-                          '2.9%',
-                          '2.2%',
-                          '2.2%',
-                          '2.9%',
-                          '2.2%',
-                          '1.5%', //
-                          '2.9%',
-                          '2.2%',
-                          '1.5%', //
+                          '3.3%', //2
+                          '2.9%', //1
+                          '3.0%', //2
+                          '3.0%',
+                          '3.0%',
+                          '3.0%',
+                          '3.0%',
+                          '0.8%', //10
+                          '3.0%',
+                          '3.0%',
+                          '0.8%', //13
+
+                          '3.3%', //2
+                          '2.9%', //1
+                          '3.0%', //2
+                          '3.0%',
+                          '3.0%',
+                          '3.0%',
+                          '3.0%',
+                          '0.8%', //10
+                          '3.0%',
+                          '3.0%',
+                          '0.8%', //13
                         ],
                         body: [
                           //Table header
@@ -5832,6 +2814,8 @@ export class ReviewComponent implements OnInit {
                               colSpan: 34,
                               decoration: 'underline' as Decoration,
                               bold: true,
+                              margin: [0, 0, 0, 5] as Margins,
+
                               border: [false, false, false, false],
                             },
                             {},
@@ -6257,74 +3241,618 @@ export class ReviewComponent implements OnInit {
                             {},
                           ],
                           ...y.measurementTM2DTOList?.map((z: any) => [
-                            z.strakePosition,
-                            z.noOrLetter,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .originalThickness,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .maxAlwbDim,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedP,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedS,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedS,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedS,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedS,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedS,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedS,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedS,
+                            {
+                              text: `${z.strakePosition}`,
+                            },
 
-                            z.noOrLetter,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .originalThickness,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .maxAlwbDim,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedP,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedS,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedS,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedS,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedS,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedS,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedS,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedS,
+                            //fr 1
+                            { text: `${z.noOrLetter}`, style: ['txt_center'] },
+                            {
+                              text: `${z.firstTransverseSectionMeasurementDetailTM2.originalThickness}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${this.formService.calculateForMaxAlwbDimForString(
+                                z.firstTransverseSectionMeasurementDetailTM2
+                                  .originalThickness,
+                                z.firstTransverseSectionMeasurementDetailTM2
+                                  .percent
+                              )}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${z.firstTransverseSectionMeasurementDetailTM2.gaugedP}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${z.firstTransverseSectionMeasurementDetailTM2.gaugedS}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${this.formService.calculateForMm(
+                                z.firstTransverseSectionMeasurementDetailTM2
+                                  .originalThickness,
+                                z.firstTransverseSectionMeasurementDetailTM2
+                                  .gaugedP
+                              )}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${this.formService.calculateForPercent(
+                                z.firstTransverseSectionMeasurementDetailTM2
+                                  .originalThickness,
+                                z.firstTransverseSectionMeasurementDetailTM2
+                                  .gaugedP
+                              )}`,
 
-                            z.noOrLetter,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .originalThickness,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .maxAlwbDim,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedP,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedS,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedS,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedS,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedS,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedS,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedS,
-                            z.firstTransverseSectionMeasurementDetailTM2
-                              .gaugedS,
+                              style: ['txt_center'],
+                              border: [true, true, false, true],
+                            },
+                            {
+                              text:
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.firstTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z.firstTransverseSectionMeasurementDetailTM2
+                                      .gaugedP
+                                  )
+                                ) >=
+                                  this.convertToNumber(
+                                    this.formService.threePartsFourOfMaxAlwbDim(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ) &&
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.firstTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z.firstTransverseSectionMeasurementDetailTM2
+                                      .gaugedP
+                                  )
+                                ) <=
+                                  this.convertToNumber(
+                                    this.formService.calculateForMaxAlwbDimForString(
+                                      z
+                                        .firstTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .firstTransverseSectionMeasurementDetailTM2
+                                        .percent
+                                    )
+                                  )
+                                  ? 'S'
+                                  : this.convertToNumber(
+                                      this.formService.calculateForMm(
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .gaugedP
+                                      )
+                                    ) >
+                                    this.convertToNumber(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ? 'R'
+                                  : '',
+
+                              style: ['txt_center'],
+                              border: [false, true, true, true],
+                            },
+                            {
+                              text: `${this.formService.calculateForMm(
+                                z.firstTransverseSectionMeasurementDetailTM2
+                                  .originalThickness,
+                                z.firstTransverseSectionMeasurementDetailTM2
+                                  .gaugedS
+                              )}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${this.formService.calculateForPercent(
+                                z.firstTransverseSectionMeasurementDetailTM2
+                                  .originalThickness,
+                                z.firstTransverseSectionMeasurementDetailTM2
+                                  .gaugedS
+                              )}`,
+                              style: ['txt_center'],
+                              border: [true, true, false, true],
+                            },
+                            {
+                              text:
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.firstTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z.firstTransverseSectionMeasurementDetailTM2
+                                      .gaugedS
+                                  )
+                                ) >=
+                                  this.convertToNumber(
+                                    this.formService.threePartsFourOfMaxAlwbDim(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ) &&
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.firstTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z.firstTransverseSectionMeasurementDetailTM2
+                                      .gaugedS
+                                  )
+                                ) <=
+                                  this.convertToNumber(
+                                    this.formService.calculateForMaxAlwbDimForString(
+                                      z
+                                        .firstTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .firstTransverseSectionMeasurementDetailTM2
+                                        .percent
+                                    )
+                                  )
+                                  ? 'S'
+                                  : this.convertToNumber(
+                                      this.formService.calculateForMm(
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .gaugedS
+                                      )
+                                    ) >
+                                    this.convertToNumber(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ? 'R'
+                                  : '',
+
+                              style: ['txt_center'],
+                              border: [false, true, true, true],
+                            },
+
+                            //fr 2
+
+                            { text: `${z.noOrLetter}`, style: ['txt_center'] },
+                            {
+                              text: `${z.secondTransverseSectionMeasurementDetailTM2.originalThickness}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${this.formService.calculateForMaxAlwbDimForString(
+                                z.secondTransverseSectionMeasurementDetailTM2
+                                  .originalThickness,
+                                z.secondTransverseSectionMeasurementDetailTM2
+                                  .percent
+                              )}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${z.secondTransverseSectionMeasurementDetailTM2.gaugedP}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${z.secondTransverseSectionMeasurementDetailTM2.gaugedS}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${this.formService.calculateForMm(
+                                z.secondTransverseSectionMeasurementDetailTM2
+                                  .originalThickness,
+                                z.secondTransverseSectionMeasurementDetailTM2
+                                  .gaugedP
+                              )}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${this.formService.calculateForPercent(
+                                z.secondTransverseSectionMeasurementDetailTM2
+                                  .originalThickness,
+                                z.secondTransverseSectionMeasurementDetailTM2
+                                  .gaugedP
+                              )}`,
+
+                              style: ['txt_center'],
+                              border: [true, true, false, true],
+                            },
+                            {
+                              text:
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z
+                                      .secondTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z
+                                      .secondTransverseSectionMeasurementDetailTM2
+                                      .gaugedP
+                                  )
+                                ) >=
+                                  this.convertToNumber(
+                                    this.formService.threePartsFourOfMaxAlwbDim(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ) &&
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z
+                                      .secondTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z
+                                      .secondTransverseSectionMeasurementDetailTM2
+                                      .gaugedP
+                                  )
+                                ) <=
+                                  this.convertToNumber(
+                                    this.formService.calculateForMaxAlwbDimForString(
+                                      z
+                                        .secondTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .secondTransverseSectionMeasurementDetailTM2
+                                        .percent
+                                    )
+                                  )
+                                  ? 'S'
+                                  : this.convertToNumber(
+                                      this.formService.calculateForMm(
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .gaugedP
+                                      )
+                                    ) >
+                                    this.convertToNumber(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ? 'R'
+                                  : '',
+
+                              style: ['txt_center'],
+                              border: [false, true, true, true],
+                            },
+                            {
+                              text: `${this.formService.calculateForMm(
+                                z.secondTransverseSectionMeasurementDetailTM2
+                                  .originalThickness,
+                                z.secondTransverseSectionMeasurementDetailTM2
+                                  .gaugedS
+                              )}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${this.formService.calculateForPercent(
+                                z.secondTransverseSectionMeasurementDetailTM2
+                                  .originalThickness,
+                                z.secondTransverseSectionMeasurementDetailTM2
+                                  .gaugedS
+                              )}`,
+                              style: ['txt_center'],
+                              border: [true, true, false, true],
+                            },
+                            {
+                              text:
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z
+                                      .secondTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z
+                                      .secondTransverseSectionMeasurementDetailTM2
+                                      .gaugedS
+                                  )
+                                ) >=
+                                  this.convertToNumber(
+                                    this.formService.threePartsFourOfMaxAlwbDim(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ) &&
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z
+                                      .secondTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z
+                                      .secondTransverseSectionMeasurementDetailTM2
+                                      .gaugedS
+                                  )
+                                ) <=
+                                  this.convertToNumber(
+                                    this.formService.calculateForMaxAlwbDimForString(
+                                      z
+                                        .secondTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .secondTransverseSectionMeasurementDetailTM2
+                                        .percent
+                                    )
+                                  )
+                                  ? 'S'
+                                  : this.convertToNumber(
+                                      this.formService.calculateForMm(
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .gaugedS
+                                      )
+                                    ) >
+                                    this.convertToNumber(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ? 'R'
+                                  : '',
+
+                              style: ['txt_center'],
+                              border: [false, true, true, true],
+                            },
+                            ///
+                            //fr3
+
+                            { text: `${z.noOrLetter}`, style: ['txt_center'] },
+                            {
+                              text: `${z.thirdTransverseSectionMeasurementDetailTM2.originalThickness}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${this.formService.calculateForMaxAlwbDimForString(
+                                z.thirdTransverseSectionMeasurementDetailTM2
+                                  .originalThickness,
+                                z.thirdTransverseSectionMeasurementDetailTM2
+                                  .percent
+                              )}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${z.thirdTransverseSectionMeasurementDetailTM2.gaugedP}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${z.thirdTransverseSectionMeasurementDetailTM2.gaugedS}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${this.formService.calculateForMm(
+                                z.thirdTransverseSectionMeasurementDetailTM2
+                                  .originalThickness,
+                                z.thirdTransverseSectionMeasurementDetailTM2
+                                  .gaugedP
+                              )}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${this.formService.calculateForPercent(
+                                z.thirdTransverseSectionMeasurementDetailTM2
+                                  .originalThickness,
+                                z.thirdTransverseSectionMeasurementDetailTM2
+                                  .gaugedP
+                              )}`,
+
+                              style: ['txt_center'],
+                              border: [true, true, false, true],
+                            },
+                            {
+                              text:
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.thirdTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z.thirdTransverseSectionMeasurementDetailTM2
+                                      .gaugedP
+                                  )
+                                ) >=
+                                  this.convertToNumber(
+                                    this.formService.threePartsFourOfMaxAlwbDim(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ) &&
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.thirdTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z.thirdTransverseSectionMeasurementDetailTM2
+                                      .gaugedP
+                                  )
+                                ) <=
+                                  this.convertToNumber(
+                                    this.formService.calculateForMaxAlwbDimForString(
+                                      z
+                                        .thirdTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .thirdTransverseSectionMeasurementDetailTM2
+                                        .percent
+                                    )
+                                  )
+                                  ? 'S'
+                                  : this.convertToNumber(
+                                      this.formService.calculateForMm(
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .gaugedP
+                                      )
+                                    ) >
+                                    this.convertToNumber(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ? 'R'
+                                  : '',
+
+                              style: ['txt_center'],
+                              border: [false, true, true, true],
+                            },
+                            {
+                              text: `${this.formService.calculateForMm(
+                                z.thirdTransverseSectionMeasurementDetailTM2
+                                  .originalThickness,
+                                z.thirdTransverseSectionMeasurementDetailTM2
+                                  .gaugedS
+                              )}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${this.formService.calculateForPercent(
+                                z.thirdTransverseSectionMeasurementDetailTM2
+                                  .originalThickness,
+                                z.thirdTransverseSectionMeasurementDetailTM2
+                                  .gaugedS
+                              )}`,
+                              style: ['txt_center'],
+                              border: [true, true, false, true],
+                            },
+                            {
+                              text:
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.thirdTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z.thirdTransverseSectionMeasurementDetailTM2
+                                      .gaugedS
+                                  )
+                                ) >=
+                                  this.convertToNumber(
+                                    this.formService.threePartsFourOfMaxAlwbDim(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ) &&
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.thirdTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z.thirdTransverseSectionMeasurementDetailTM2
+                                      .gaugedS
+                                  )
+                                ) <=
+                                  this.convertToNumber(
+                                    this.formService.calculateForMaxAlwbDimForString(
+                                      z
+                                        .thirdTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .thirdTransverseSectionMeasurementDetailTM2
+                                        .percent
+                                    )
+                                  )
+                                  ? 'S'
+                                  : this.convertToNumber(
+                                      this.formService.calculateForMm(
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .gaugedS
+                                      )
+                                    ) >
+                                    this.convertToNumber(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ? 'R'
+                                  : '',
+
+                              style: ['txt_center'],
+                              border: [false, true, true, true],
+                            },
                           ]),
                         ],
+                      },
+                      layout: {
+                        paddingLeft: () => 2,
+                        paddingRight: () => 2,
+                        paddingTop: () => 1,
+                        paddingBottom: () => 1,
                       },
                     },
                   ]
@@ -6333,57 +3861,71 @@ export class ReviewComponent implements OnInit {
             x.formList.map((y: any) =>
               y.type == 'TM3'
                 ? [
+                    this.lsSketch.map((a) =>
+                      a.map((b: any) =>
+                        b.formId === y.id && b.formType == 'form_tm3'
+                          ? [
+                              {
+                                margin: [-30, -30, -30, -30] as Margins,
+                                pageBreak: 'before' as PageBreak,
+                                pageOrientation: 'landscape' as PageOrientation,
+                                fit: [pageSizee.width, pageSizee.height],
+                                image: `data:image/png;base64,${b.value}`,
+                              },
+                            ]
+                          : []
+                      )
+                    ),
                     {
                       pageBreak: 'before' as PageBreak,
                       pageOrientation: 'landscape' as PageOrientation,
                       style: ['tableStyle', 'fontS8'],
                       table: {
+                        headerRows: 10,
                         widths: [
-                          // '2.2%',
-                          '22.4%',
-                          //2
-                          '2.6%',
-                          '2.9%',
-                          '2.9%',
-                          '2.2%',
-                          '2.2%',
-                          '2.9%',
-                          '2.2%',
-                          '1.5%', //10
-                          '2.9%',
-                          '1.5%', //13
-                          '2.2%',
+                          '13.6%',
 
-                          '2.6%',
-                          '2.9%',
-                          '2.9%',
-                          '2.2%',
-                          '2.2%',
-                          '2.9%',
-                          '1.5%', //20
-                          '2.2%',
-                          '2.9%',
-                          '2.2%',
-                          '1.5%', //23
+                          '3.65%', //2
+                          '2.9%', //1
+                          '2.95%', //2
+                          '2.95%',
+                          '2.95%',
+                          '2.95%',
+                          '2.95%',
+                          '0.8%', //10
+                          '2.95%',
+                          '2.95%',
+                          '0.8%', //13
 
-                          '2.6%',
-                          '2.9%',
-                          '2.9%',
-                          '2.2%',
-                          '2.2%',
-                          '2.9%',
-                          '2.2%',
-                          '1.5%', //
-                          '2.9%',
-                          '2.2%',
-                          '1.5%', //
+                          '3.65%', //2
+                          '2.9%', //1
+                          '2.95%', //2
+                          '2.95%',
+                          '2.95%',
+                          '2.95%',
+                          '2.95%',
+                          '0.8%', //10
+                          '2.95%',
+                          '2.95%',
+                          '0.8%', //13
+
+                          '3.65%', //2
+                          '2.9%', //1
+                          '2.95%', //2
+                          '2.95%',
+                          '2.95%',
+                          '2.95%',
+                          '2.95%',
+                          '0.8%', //10
+                          '2.95%',
+                          '2.95%',
+                          '0.8%', //13
                         ],
                         body: [
                           //Table header
                           [
                             {
                               text: `TM3-${y.code}(1 July 2023)`,
-                              //   text: `TM2ii-${this.typeForm}(1 July 2023)`,
                               style: ['txt_center'],
                               colSpan: 34,
                               alignment: 'right' as Alignment,
@@ -6475,6 +4017,8 @@ export class ReviewComponent implements OnInit {
                               colSpan: 34,
                               decoration: 'underline' as Decoration,
                               bold: true,
+                              margin: [0, 0, 0, 5] as Margins,
+
                               border: [false, false, false, false],
                             },
                             {},
@@ -6864,59 +4408,611 @@ export class ReviewComponent implements OnInit {
                             {},
                           ],
                           ...y.measurementTM3DTOList?.map((z: any) => [
-                            z.structuralMember,
-                            z.noOrLetter,
-                            z.firstTransverseSectionMeasurementDetail
-                              .originalThickness,
-                            z.firstTransverseSectionMeasurementDetail
-                              .maxAlwbDim,
-                            z.firstTransverseSectionMeasurementDetail.gaugedP,
-                            z.firstTransverseSectionMeasurementDetail.gaugedS,
-                            z.firstTransverseSectionMeasurementDetail.gaugedS,
-                            z.firstTransverseSectionMeasurementDetail.gaugedS,
-                            z.firstTransverseSectionMeasurementDetail.gaugedS,
-                            z.firstTransverseSectionMeasurementDetail.gaugedS,
-                            z.firstTransverseSectionMeasurementDetail.gaugedS,
-                            z.firstTransverseSectionMeasurementDetail.gaugedS,
+                            { text: `${z.structuralMember}` },
+                            { style: ['txt_center'], text: `${z.noOrLetter}` },
+                            {
+                              style: ['txt_center'],
+                              text: `${z.firstTransverseSectionMeasurementDetail.originalThickness}`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              text: `${this.formService.calculateForMaxAlwbDimForString(
+                                z.firstTransverseSectionMeasurementDetail
+                                  .originalThickness,
+                                z.firstTransverseSectionMeasurementDetail
+                                  .percent
+                              )}`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              text: `${z.firstTransverseSectionMeasurementDetail.gaugedP}`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              text: `${z.firstTransverseSectionMeasurementDetail.gaugedS}`,
+                            },
 
-                            z.noOrLetter,
-                            z.firstTransverseSectionMeasurementDetail
-                              .originalThickness,
-                            z.firstTransverseSectionMeasurementDetail
-                              .maxAlwbDim,
-                            z.firstTransverseSectionMeasurementDetail.gaugedP,
-                            z.firstTransverseSectionMeasurementDetail.gaugedS,
-                            z.firstTransverseSectionMeasurementDetail.gaugedS,
-                            z.firstTransverseSectionMeasurementDetail.gaugedS,
-                            z.firstTransverseSectionMeasurementDetail.gaugedS,
-                            z.firstTransverseSectionMeasurementDetail.gaugedS,
-                            z.firstTransverseSectionMeasurementDetail.gaugedS,
-                            z.firstTransverseSectionMeasurementDetail.gaugedS,
+                            {
+                              style: ['txt_center'],
+                              text: `${this.formService.calculateForMm(
+                                z.firstTransverseSectionMeasurementDetail
+                                  .originalThickness,
+                                z.firstTransverseSectionMeasurementDetail
+                                  .gaugedP
+                              )}`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              border: [true, true, false, true],
+                              text: `${this.formService.calculateForPercent(
+                                z.firstTransverseSectionMeasurementDetail
+                                  .originalThickness,
+                                z.firstTransverseSectionMeasurementDetail
+                                  .gaugedP
+                              )}`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              border: [false, true, true, true],
+                              text:
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.firstTransverseSectionMeasurementDetail
+                                      .originalThickness,
+                                    z.firstTransverseSectionMeasurementDetail
+                                      .gaugedP
+                                  )
+                                ) >=
+                                  this.convertToNumber(
+                                    this.formService.threePartsFourOfMaxAlwbDim(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .firstTransverseSectionMeasurementDetail
+                                          .originalThickness,
+                                        z
+                                          .firstTransverseSectionMeasurementDetail
+                                          .percent
+                                      )
+                                    )
+                                  ) &&
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.firstTransverseSectionMeasurementDetail
+                                      .originalThickness,
+                                    z.firstTransverseSectionMeasurementDetail
+                                      .gaugedP
+                                  )
+                                ) <=
+                                  this.convertToNumber(
+                                    this.formService.calculateForMaxAlwbDimForString(
+                                      z.firstTransverseSectionMeasurementDetail
+                                        .originalThickness,
+                                      z.firstTransverseSectionMeasurementDetail
+                                        .percent
+                                    )
+                                  )
+                                  ? 'S'
+                                  : this.convertToNumber(
+                                      this.formService.calculateForMm(
+                                        z
+                                          .firstTransverseSectionMeasurementDetail
+                                          .originalThickness,
+                                        z
+                                          .firstTransverseSectionMeasurementDetail
+                                          .gaugedP
+                                      )
+                                    ) >
+                                    this.convertToNumber(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .firstTransverseSectionMeasurementDetail
+                                          .originalThickness,
+                                        z
+                                          .firstTransverseSectionMeasurementDetail
+                                          .percent
+                                      )
+                                    )
+                                  ? 'R'
+                                  : '',
+                            },
+                            {
+                              style: ['txt_center'],
+                              text: `${this.formService.calculateForMm(
+                                z.firstTransverseSectionMeasurementDetail
+                                  .originalThickness,
+                                z.firstTransverseSectionMeasurementDetail
+                                  .gaugedS
+                              )}`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              border: [true, true, false, true],
+                              text: `${this.formService.calculateForPercent(
+                                z.firstTransverseSectionMeasurementDetail
+                                  .originalThickness,
+                                z.firstTransverseSectionMeasurementDetail
+                                  .gaugedS
+                              )}`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              border: [false, true, true, true],
+                              text:
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.firstTransverseSectionMeasurementDetail
+                                      .originalThickness,
+                                    z.firstTransverseSectionMeasurementDetail
+                                      .gaugedS
+                                  )
+                                ) >=
+                                  this.convertToNumber(
+                                    this.formService.threePartsFourOfMaxAlwbDim(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .firstTransverseSectionMeasurementDetail
+                                          .originalThickness,
+                                        z
+                                          .firstTransverseSectionMeasurementDetail
+                                          .percent
+                                      )
+                                    )
+                                  ) &&
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.firstTransverseSectionMeasurementDetail
+                                      .originalThickness,
+                                    z.firstTransverseSectionMeasurementDetail
+                                      .gaugedS
+                                  )
+                                ) <=
+                                  this.convertToNumber(
+                                    this.formService.calculateForMaxAlwbDimForString(
+                                      z.firstTransverseSectionMeasurementDetail
+                                        .originalThickness,
+                                      z.firstTransverseSectionMeasurementDetail
+                                        .percent
+                                    )
+                                  )
+                                  ? 'S'
+                                  : this.convertToNumber(
+                                      this.formService.calculateForMm(
+                                        z
+                                          .firstTransverseSectionMeasurementDetail
+                                          .originalThickness,
+                                        z
+                                          .firstTransverseSectionMeasurementDetail
+                                          .gaugedS
+                                      )
+                                    ) >
+                                    this.convertToNumber(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .firstTransverseSectionMeasurementDetail
+                                          .originalThickness,
+                                        z
+                                          .firstTransverseSectionMeasurementDetail
+                                          .percent
+                                      )
+                                    )
+                                  ? 'R'
+                                  : '',
+                            },
 
-                            z.noOrLetter,
-                            z.firstTransverseSectionMeasurementDetail
-                              .originalThickness,
-                            z.firstTransverseSectionMeasurementDetail
-                              .maxAlwbDim,
-                            z.firstTransverseSectionMeasurementDetail.gaugedP,
-                            z.firstTransverseSectionMeasurementDetail.gaugedS,
-                            z.firstTransverseSectionMeasurementDetail.gaugedS,
-                            z.firstTransverseSectionMeasurementDetail.gaugedS,
-                            z.firstTransverseSectionMeasurementDetail.gaugedS,
-                            z.firstTransverseSectionMeasurementDetail.gaugedS,
-                            z.firstTransverseSectionMeasurementDetail.gaugedS,
-                            z.firstTransverseSectionMeasurementDetail.gaugedS,
+                            //
+                            //fr2
+                            { style: ['txt_center'], text: `${z.noOrLetter}` },
+                            {
+                              style: ['txt_center'],
+                              text: `${z.secondTransverseSectionMeasurementDetail.originalThickness}`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              text: `${this.formService.calculateForMaxAlwbDimForString(
+                                z.secondTransverseSectionMeasurementDetail
+                                  .originalThickness,
+                                z.secondTransverseSectionMeasurementDetail
+                                  .percent
+                              )}`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              text: `${z.secondTransverseSectionMeasurementDetail.gaugedP}`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              text: `${z.secondTransverseSectionMeasurementDetail.gaugedS}`,
+                            },
+
+                            {
+                              style: ['txt_center'],
+                              text: `${this.formService.calculateForMm(
+                                z.secondTransverseSectionMeasurementDetail
+                                  .originalThickness,
+                                z.secondTransverseSectionMeasurementDetail
+                                  .gaugedP
+                              )}`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              border: [true, true, false, true],
+                              text: `${this.formService.calculateForPercent(
+                                z.secondTransverseSectionMeasurementDetail
+                                  .originalThickness,
+                                z.secondTransverseSectionMeasurementDetail
+                                  .gaugedP
+                              )}`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              border: [false, true, true, true],
+                              text:
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.secondTransverseSectionMeasurementDetail
+                                      .originalThickness,
+                                    z.secondTransverseSectionMeasurementDetail
+                                      .gaugedP
+                                  )
+                                ) >=
+                                  this.convertToNumber(
+                                    this.formService.threePartsFourOfMaxAlwbDim(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .secondTransverseSectionMeasurementDetail
+                                          .originalThickness,
+                                        z
+                                          .secondTransverseSectionMeasurementDetail
+                                          .percent
+                                      )
+                                    )
+                                  ) &&
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.secondTransverseSectionMeasurementDetail
+                                      .originalThickness,
+                                    z.secondTransverseSectionMeasurementDetail
+                                      .gaugedP
+                                  )
+                                ) <=
+                                  this.convertToNumber(
+                                    this.formService.calculateForMaxAlwbDimForString(
+                                      z.secondTransverseSectionMeasurementDetail
+                                        .originalThickness,
+                                      z.secondTransverseSectionMeasurementDetail
+                                        .percent
+                                    )
+                                  )
+                                  ? 'S'
+                                  : this.convertToNumber(
+                                      this.formService.calculateForMm(
+                                        z
+                                          .secondTransverseSectionMeasurementDetail
+                                          .originalThickness,
+                                        z
+                                          .secondTransverseSectionMeasurementDetail
+                                          .gaugedP
+                                      )
+                                    ) >
+                                    this.convertToNumber(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .secondTransverseSectionMeasurementDetail
+                                          .originalThickness,
+                                        z
+                                          .secondTransverseSectionMeasurementDetail
+                                          .percent
+                                      )
+                                    )
+                                  ? 'R'
+                                  : '',
+                            },
+                            {
+                              style: ['txt_center'],
+                              text: `${this.formService.calculateForMm(
+                                z.secondTransverseSectionMeasurementDetail
+                                  .originalThickness,
+                                z.secondTransverseSectionMeasurementDetail
+                                  .gaugedS
+                              )}`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              border: [true, true, false, true],
+                              text: `${this.formService.calculateForPercent(
+                                z.secondTransverseSectionMeasurementDetail
+                                  .originalThickness,
+                                z.secondTransverseSectionMeasurementDetail
+                                  .gaugedS
+                              )}`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              border: [false, true, true, true],
+                              text:
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.secondTransverseSectionMeasurementDetail
+                                      .originalThickness,
+                                    z.secondTransverseSectionMeasurementDetail
+                                      .gaugedS
+                                  )
+                                ) >=
+                                  this.convertToNumber(
+                                    this.formService.threePartsFourOfMaxAlwbDim(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .secondTransverseSectionMeasurementDetail
+                                          .originalThickness,
+                                        z
+                                          .secondTransverseSectionMeasurementDetail
+                                          .percent
+                                      )
+                                    )
+                                  ) &&
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.secondTransverseSectionMeasurementDetail
+                                      .originalThickness,
+                                    z.secondTransverseSectionMeasurementDetail
+                                      .gaugedS
+                                  )
+                                ) <=
+                                  this.convertToNumber(
+                                    this.formService.calculateForMaxAlwbDimForString(
+                                      z.secondTransverseSectionMeasurementDetail
+                                        .originalThickness,
+                                      z.secondTransverseSectionMeasurementDetail
+                                        .percent
+                                    )
+                                  )
+                                  ? 'S'
+                                  : this.convertToNumber(
+                                      this.formService.calculateForMm(
+                                        z
+                                          .secondTransverseSectionMeasurementDetail
+                                          .originalThickness,
+                                        z
+                                          .secondTransverseSectionMeasurementDetail
+                                          .gaugedS
+                                      )
+                                    ) >
+                                    this.convertToNumber(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .secondTransverseSectionMeasurementDetail
+                                          .originalThickness,
+                                        z
+                                          .secondTransverseSectionMeasurementDetail
+                                          .percent
+                                      )
+                                    )
+                                  ? 'R'
+                                  : '',
+                            },
+
+                            //fr3
+                            { style: ['txt_center'], text: `${z.noOrLetter}` },
+                            {
+                              style: ['txt_center'],
+                              text: `${z.thirdTransverseSectionMeasurementDetail.originalThickness}`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              text: `${this.formService.calculateForMaxAlwbDimForString(
+                                z.thirdTransverseSectionMeasurementDetail
+                                  .originalThickness,
+                                z.thirdTransverseSectionMeasurementDetail
+                                  .percent
+                              )}`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              text: `${z.thirdTransverseSectionMeasurementDetail.gaugedP}`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              text: `${z.thirdTransverseSectionMeasurementDetail.gaugedS}`,
+                            },
+
+                            {
+                              style: ['txt_center'],
+                              text: `${this.formService.calculateForMm(
+                                z.thirdTransverseSectionMeasurementDetail
+                                  .originalThickness,
+                                z.thirdTransverseSectionMeasurementDetail
+                                  .gaugedP
+                              )}`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              border: [true, true, false, true],
+                              text: `${this.formService.calculateForPercent(
+                                z.thirdTransverseSectionMeasurementDetail
+                                  .originalThickness,
+                                z.thirdTransverseSectionMeasurementDetail
+                                  .gaugedP
+                              )}`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              border: [false, true, true, true],
+                              text:
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.thirdTransverseSectionMeasurementDetail
+                                      .originalThickness,
+                                    z.thirdTransverseSectionMeasurementDetail
+                                      .gaugedP
+                                  )
+                                ) >=
+                                  this.convertToNumber(
+                                    this.formService.threePartsFourOfMaxAlwbDim(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .thirdTransverseSectionMeasurementDetail
+                                          .originalThickness,
+                                        z
+                                          .thirdTransverseSectionMeasurementDetail
+                                          .percent
+                                      )
+                                    )
+                                  ) &&
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.thirdTransverseSectionMeasurementDetail
+                                      .originalThickness,
+                                    z.thirdTransverseSectionMeasurementDetail
+                                      .gaugedP
+                                  )
+                                ) <=
+                                  this.convertToNumber(
+                                    this.formService.calculateForMaxAlwbDimForString(
+                                      z.thirdTransverseSectionMeasurementDetail
+                                        .originalThickness,
+                                      z.thirdTransverseSectionMeasurementDetail
+                                        .percent
+                                    )
+                                  )
+                                  ? 'S'
+                                  : this.convertToNumber(
+                                      this.formService.calculateForMm(
+                                        z
+                                          .thirdTransverseSectionMeasurementDetail
+                                          .originalThickness,
+                                        z
+                                          .thirdTransverseSectionMeasurementDetail
+                                          .gaugedP
+                                      )
+                                    ) >
+                                    this.convertToNumber(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .thirdTransverseSectionMeasurementDetail
+                                          .originalThickness,
+                                        z
+                                          .thirdTransverseSectionMeasurementDetail
+                                          .percent
+                                      )
+                                    )
+                                  ? 'R'
+                                  : '',
+                            },
+                            {
+                              style: ['txt_center'],
+                              text: `${this.formService.calculateForMm(
+                                z.thirdTransverseSectionMeasurementDetail
+                                  .originalThickness,
+                                z.thirdTransverseSectionMeasurementDetail
+                                  .gaugedS
+                              )}`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              border: [true, true, false, true],
+                              text: `${this.formService.calculateForPercent(
+                                z.thirdTransverseSectionMeasurementDetail
+                                  .originalThickness,
+                                z.thirdTransverseSectionMeasurementDetail
+                                  .gaugedS
+                              )}`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              border: [false, true, true, true],
+                              text:
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.thirdTransverseSectionMeasurementDetail
+                                      .originalThickness,
+                                    z.thirdTransverseSectionMeasurementDetail
+                                      .gaugedS
+                                  )
+                                ) >=
+                                  this.convertToNumber(
+                                    this.formService.threePartsFourOfMaxAlwbDim(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .thirdTransverseSectionMeasurementDetail
+                                          .originalThickness,
+                                        z
+                                          .thirdTransverseSectionMeasurementDetail
+                                          .percent
+                                      )
+                                    )
+                                  ) &&
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.thirdTransverseSectionMeasurementDetail
+                                      .originalThickness,
+                                    z.thirdTransverseSectionMeasurementDetail
+                                      .gaugedS
+                                  )
+                                ) <=
+                                  this.convertToNumber(
+                                    this.formService.calculateForMaxAlwbDimForString(
+                                      z.thirdTransverseSectionMeasurementDetail
+                                        .originalThickness,
+                                      z.thirdTransverseSectionMeasurementDetail
+                                        .percent
+                                    )
+                                  )
+                                  ? 'S'
+                                  : this.convertToNumber(
+                                      this.formService.calculateForMm(
+                                        z
+                                          .thirdTransverseSectionMeasurementDetail
+                                          .originalThickness,
+                                        z
+                                          .thirdTransverseSectionMeasurementDetail
+                                          .gaugedS
+                                      )
+                                    ) >
+                                    this.convertToNumber(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .thirdTransverseSectionMeasurementDetail
+                                          .originalThickness,
+                                        z
+                                          .thirdTransverseSectionMeasurementDetail
+                                          .percent
+                                      )
+                                    )
+                                  ? 'R'
+                                  : '',
+                            },
                           ]),
                         ],
+                      },
+                      layout: {
+                        paddingLeft: () => 2,
+                        paddingRight: () => 2,
+                        paddingTop: () => 1,
+                        paddingBottom: () => 1,
                       },
                     },
                   ]
                 : []
             ),
-            //TM4
+            //tm4
             x.formList.map((y: any) =>
               y.type == 'TM4'
                 ? [
+                    this.lsSketch.map((a) =>
+                      a.map((b: any) =>
+                        b.formId === y.id && b.formType == 'form_tm4'
+                          ? [
+                              {
+                                margin: [-30, -30, -30, -30] as Margins,
+                                pageBreak: 'before' as PageBreak,
+                                pageOrientation: 'landscape' as PageOrientation,
+                                fit: [pageSizee.width, pageSizee.height],
+                                image: `data:image/png;base64,${b.value}`,
+                              },
+                            ]
+                          : []
+                      )
+                    ),
                     {
                       pageBreak: 'before' as PageBreak,
                       pageOrientation: 'landscape' as PageOrientation,
@@ -6987,6 +5083,8 @@ export class ReviewComponent implements OnInit {
                               colSpan: 12,
                               decoration: 'underline' as Decoration,
                               bold: true,
+                              margin: [0, 0, 0, 5] as Margins,
+
                               border: [false, false, false, false],
                             },
                             {},
@@ -7180,81 +5278,197 @@ export class ReviewComponent implements OnInit {
                             { text: '%', style: 'txt_center', colSpan: 2 },
                             {},
                           ],
-                          [
-                            y.structuralMemberTM4List[0].structuralMemberTitle,
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                          ],
-                          ...y.structuralMemberTM4List[0].measurementTM4DTOList.map(
-                            (z: any) => [
-                              z.structuralMember,
-                              {},
-                              {},
-                              {},
-                              {},
-                              {},
-                              {},
-                              {},
-                              {},
-                              {},
-                              {},
-                              {},
-                            ]
-                          ),
-                          [
-                            y.structuralMemberTM4List[1].structuralMemberTitle,
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                          ],
-                          ...y.structuralMemberTM4List[1].measurementTM4DTOList.map(
-                            (z: any) => [
-                              z.structuralMember,
-                              z.structuralMember,
-                              {},
-                              {},
-                              {},
-                              {},
-                              {},
-                              {},
-                              {},
-                              {},
-                              {},
-                              {},
-                            ]
-                          ),
-                          // ...y.structuralMemberTM4List?.map((z: any) => [
-                          //   z[0].structuralMemberTitle,
-                          //   {},
-                          //   {},
-                          //   {},
-                          //   {},
-                          //   {},
-                          //   {},
-                          //   {},
-                          //   {},
-                          //   {},
-                          //   {},
-                          //   {},
-                          // ]),
+
+                          ...y.structuralMemberTM4List
+                            .map((z: any) => {
+                              let title = [
+                                {
+                                  text: `${z.structuralMemberTitle}`,
+                                  bold: true,
+                                },
+                                {},
+                                {},
+                                {},
+                                {},
+                                {},
+                                {},
+                                {
+                                  text: ``,
+                                  border: [true, true, false, true],
+                                },
+                                { text: ``, border: [false, true, true, true] },
+                                {},
+                                { text: ``, border: [true, true, false, true] },
+                                { text: ``, border: [false, true, true, true] },
+                              ];
+
+                              let member = z.measurementTM4DTOList.map(
+                                (k: any) => [
+                                  {
+                                    text: `${k.structuralMember}`,
+                                  },
+                                  { text: `${k.item}`, style: ['txt_center'] },
+
+                                  {
+                                    text: `${k.detailMeasurement.originalThickness}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${this.formService.calculateForMaxAlwbDimForString(
+                                      k.detailMeasurement.originalThickness,
+                                      k.detailMeasurement.percent
+                                    )}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${k.detailMeasurement.gaugedP}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${k.detailMeasurement.gaugedS}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${this.formService.calculateForMm(
+                                      k.detailMeasurement.originalThickness,
+                                      k.detailMeasurement.gaugedP
+                                    )}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${this.formService.calculateForPercent(
+                                      k.detailMeasurement.originalThickness,
+                                      k.detailMeasurement.gaugedP
+                                    )}`,
+                                    border: [true, true, false, true],
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text:
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.detailMeasurement.originalThickness,
+                                          k.detailMeasurement.gaugedP
+                                        )
+                                      ) >=
+                                        this.convertToNumber(
+                                          this.formService.threePartsFourOfMaxAlwbDim(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.detailMeasurement
+                                                .originalThickness,
+                                              k.detailMeasurement.percent
+                                            )
+                                          )
+                                        ) &&
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.detailMeasurement.originalThickness,
+                                          k.detailMeasurement.gaugedP
+                                        )
+                                      ) <=
+                                        this.convertToNumber(
+                                          this.formService.calculateForMaxAlwbDimForString(
+                                            k.detailMeasurement
+                                              .originalThickness,
+                                            k.detailMeasurement.percent
+                                          )
+                                        )
+                                        ? 'S'
+                                        : this.convertToNumber(
+                                            this.formService.calculateForMm(
+                                              k.detailMeasurement
+                                                .originalThickness,
+                                              k.detailMeasurement.gaugedP
+                                            )
+                                          ) >
+                                          this.convertToNumber(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.detailMeasurement
+                                                .originalThickness,
+                                              k.detailMeasurement.percent
+                                            )
+                                          )
+                                        ? 'R'
+                                        : '',
+                                    border: [false, true, true, true],
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${this.formService.calculateForMm(
+                                      k.detailMeasurement.originalThickness,
+                                      k.detailMeasurement.gaugedS
+                                    )}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${this.formService.calculateForPercent(
+                                      k.detailMeasurement.originalThickness,
+                                      k.detailMeasurement.gaugedS
+                                    )}`,
+                                    style: ['txt_center'],
+                                    border: [true, true, false, true],
+                                  },
+                                  {
+                                    text:
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.detailMeasurement.originalThickness,
+                                          k.detailMeasurement.gauged
+                                        )
+                                      ) >=
+                                        this.convertToNumber(
+                                          this.formService.threePartsFourOfMaxAlwbDim(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.detailMeasurement
+                                                .originalThickness,
+                                              k.detailMeasurement.percent
+                                            )
+                                          )
+                                        ) &&
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.detailMeasurement.originalThickness,
+                                          k.detailMeasurement.gauged
+                                        )
+                                      ) <=
+                                        this.convertToNumber(
+                                          this.formService.calculateForMaxAlwbDimForString(
+                                            k.detailMeasurement
+                                              .originalThickness,
+                                            k.detailMeasurement.percent
+                                          )
+                                        )
+                                        ? 'S'
+                                        : this.convertToNumber(
+                                            this.formService.calculateForMm(
+                                              k.detailMeasurement
+                                                .originalThickness,
+                                              k.detailMeasurement.gauged
+                                            )
+                                          ) >
+                                          this.convertToNumber(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.detailMeasurement
+                                                .originalThickness,
+                                              k.detailMeasurement.percent
+                                            )
+                                          )
+                                        ? 'R'
+                                        : '',
+
+                                    style: ['txt_center'],
+                                    border: [false, true, true, true],
+                                  },
+                                ]
+                              );
+                              return [title, ...member];
+                            })
+                            .flat(),
                         ],
+                      },
+                      layout: {
+                        paddingTop: () => 1,
+                        paddingBottom: () => 1,
                       },
                     },
                   ]
@@ -7264,6 +5478,21 @@ export class ReviewComponent implements OnInit {
             x.formList.map((y: any) =>
               y.type == 'TM5'
                 ? [
+                    this.lsSketch.map((a) =>
+                      a.map((b: any) =>
+                        b.formId === y.id && b.formType == 'form_tm5'
+                          ? [
+                              {
+                                margin: [-30, -30, -30, -30] as Margins,
+                                pageBreak: 'before' as PageBreak,
+                                pageOrientation: 'landscape' as PageOrientation,
+                                fit: [pageSizee.width, pageSizee.height],
+                                image: `data:image/png;base64,${b.value}`,
+                              },
+                            ]
+                          : []
+                      )
+                    ),
                     {
                       pageBreak: 'before' as PageBreak,
                       pageOrientation: 'landscape' as PageOrientation,
@@ -7272,11 +5501,10 @@ export class ReviewComponent implements OnInit {
                         headerRows: 10,
                         widths: [
                           '30%',
-                          '25%',
+                          '5%',
                           '7%',
                           '10%',
                           '13%',
-                          '5%',
                           '5%',
                           '5%',
                           '5%',
@@ -7289,7 +5517,7 @@ export class ReviewComponent implements OnInit {
                           //Table header
                           [
                             {
-                              text: `TM5-${this.lsFormTm5[0].code}(1 July 2023)`,
+                              text: `TM5-${y.code}(1 July 2023)`,
                               style: ['txt_center'],
                               colSpan: 12,
                               alignment: 'right' as Alignment,
@@ -7333,6 +5561,8 @@ export class ReviewComponent implements OnInit {
                               colSpan: 12,
                               decoration: 'underline' as Decoration,
                               bold: true,
+                              margin: [0, 0, 0, 5] as Margins,
+
                               border: [false, false, false, false],
                             },
                             {},
@@ -7439,7 +5669,12 @@ export class ReviewComponent implements OnInit {
                               colSpan: 1,
                               style: 'txt_center',
                             },
-                            { text: 'a', colSpan: 11, rowSpan: 1, bold: true },
+                            {
+                              text: `${y.tankHolDescription}`,
+                              colSpan: 11,
+                              rowSpan: 1,
+                              bold: true,
+                            },
                             {},
                             {},
                             {},
@@ -7460,7 +5695,7 @@ export class ReviewComponent implements OnInit {
                               style: ['txt_center', 'txt_center'],
                             },
                             {
-                              text: 'a',
+                              text: `${y.locationOfStructure}`,
                               colSpan: 6,
                               bold: true,
                             },
@@ -7534,7 +5769,1722 @@ export class ReviewComponent implements OnInit {
                             { text: '%', style: 'txt_center', colSpan: 2 },
                             {},
                           ],
+
+                          ...y.structuralTM5List
+                            .map((z: any) => {
+                              let title = [
+                                {
+                                  text: `${z.name}`,
+                                  bold: true,
+                                },
+                                {},
+                                {},
+                                {},
+                                {},
+                                {},
+                                {},
+                                {},
+                                {},
+                                {},
+                                {},
+                                {},
+                              ];
+
+                              let member = z.measurementTM5List.map(
+                                (k: any) => [
+                                  {
+                                    text: `${k.structuralComponentType}`,
+                                    style: ['txt_center'],
+                                  },
+                                  { text: `${k.item}`, style: ['txt_center'] },
+
+                                  {
+                                    text: `${k.measurementDetail.originalThickness}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${this.formService.calculateForMaxAlwbDimForString(
+                                      k.measurementDetail.originalThickness,
+                                      k.measurementDetail.percent
+                                    )}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${k.measurementDetail.gaugedP}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${k.measurementDetail.gaugedS}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${this.formService.calculateForMm(
+                                      k.measurementDetail.originalThickness,
+                                      k.measurementDetail.gaugedP
+                                    )}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${this.formService.calculateForPercent(
+                                      k.measurementDetail.originalThickness,
+                                      k.measurementDetail.gaugedP
+                                    )}`,
+                                    style: ['txt_center'],
+                                    border: [true, true, false, true],
+                                  },
+                                  {
+                                    text:
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.measurementDetail.originalThickness,
+                                          k.measurementDetail.gaugedP
+                                        )
+                                      ) >=
+                                        this.convertToNumber(
+                                          this.formService.threePartsFourOfMaxAlwbDim(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.measurementDetail
+                                                .originalThickness,
+                                              k.measurementDetail.percent
+                                            )
+                                          )
+                                        ) &&
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.measurementDetail.originalThickness,
+                                          k.measurementDetail.gaugedP
+                                        )
+                                      ) <=
+                                        this.convertToNumber(
+                                          this.formService.calculateForMaxAlwbDimForString(
+                                            k.measurementDetail
+                                              .originalThickness,
+                                            k.measurementDetail.percent
+                                          )
+                                        )
+                                        ? 'S'
+                                        : this.convertToNumber(
+                                            this.formService.calculateForMm(
+                                              k.measurementDetail
+                                                .originalThickness,
+                                              k.measurementDetail.gaugedP
+                                            )
+                                          ) >
+                                          this.convertToNumber(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.measurementDetail
+                                                .originalThickness,
+                                              k.measurementDetail.percent
+                                            )
+                                          )
+                                        ? 'R'
+                                        : '',
+                                    style: ['txt_center'],
+                                    border: [false, true, true, true],
+                                  },
+                                  {
+                                    text: `${this.formService.calculateForMm(
+                                      k.measurementDetail.originalThickness,
+                                      k.measurementDetail.gaugedS
+                                    )}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${this.formService.calculateForPercent(
+                                      k.measurementDetail.originalThickness,
+                                      k.measurementDetail.gaugedS
+                                    )}`,
+                                    style: ['txt_center'],
+                                    border: [true, true, false, true],
+                                  },
+                                  {
+                                    text:
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.measurementDetail.originalThickness,
+                                          k.measurementDetail.gaugedS
+                                        )
+                                      ) >=
+                                        this.convertToNumber(
+                                          this.formService.threePartsFourOfMaxAlwbDim(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.measurementDetail
+                                                .originalThickness,
+                                              k.measurementDetail.percent
+                                            )
+                                          )
+                                        ) &&
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.measurementDetail.originalThickness,
+                                          k.measurementDetail.gaugedS
+                                        )
+                                      ) <=
+                                        this.convertToNumber(
+                                          this.formService.calculateForMaxAlwbDimForString(
+                                            k.measurementDetail
+                                              .originalThickness,
+                                            k.measurementDetail.percent
+                                          )
+                                        )
+                                        ? 'S'
+                                        : this.convertToNumber(
+                                            this.formService.calculateForMm(
+                                              k.measurementDetail
+                                                .originalThickness,
+                                              k.measurementDetail.gaugedS
+                                            )
+                                          ) >
+                                          this.convertToNumber(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.measurementDetail
+                                                .originalThickness,
+                                              k.measurementDetail.percent
+                                            )
+                                          )
+                                        ? 'R'
+                                        : '',
+                                    style: ['txt_center'],
+                                    border: [false, true, true, true],
+                                  },
+                                ]
+                              );
+                              return [title, ...member];
+                            })
+                            .flat(),
                         ],
+                      },
+                      layout: {
+                        paddingTop: () => 1,
+                        paddingBottom: () => 1,
+                      },
+                    },
+                  ]
+                : []
+            ),
+
+            x.formList.map((y: any) =>
+              y.type == 'TM6'
+                ? [
+                    this.lsSketch.map((a) =>
+                      a.map((b: any) =>
+                        b.formId === y.id && b.formType == 'form_tm6'
+                          ? [
+                              {
+                                margin: [-30, -30, -30, -30] as Margins,
+                                pageBreak: 'before' as PageBreak,
+                                pageOrientation: 'landscape' as PageOrientation,
+                                fit: [pageSizee.width, pageSizee.height],
+                                image: `data:image/png;base64,${b.value}`,
+                              },
+                            ]
+                          : []
+                      )
+                    ),
+                    {
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      style: ['tableStyle', 'fontS8'],
+                      table: {
+                        headerRows: 10,
+                        widths: [
+                          // '5%',
+                          '30%',
+                          '10%',
+                          '10%',
+                          '10%',
+                          '5%',
+                          '5%',
+                          '5%',
+                          '5%',
+                          '5%',
+                          '5%',
+                          '5%',
+                          '5%',
+                        ],
+                        body: [
+                          //Table header
+                          [
+                            {
+                              text: `TM6-${y.code}(1 July 2023)`,
+                              style: ['txt_center'],
+                              colSpan: 12,
+                              alignment: 'right' as Alignment,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: '',
+                              colSpan: 12,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          //Table name
+
+                          [
+                            {
+                              text: 'Report on THICKNESS MEASUREMENT OF MISCELLANEOUS STRUCTURAL MEMBERS',
+                              style: ['txt_center', 'fontS11'],
+                              colSpan: 12,
+                              decoration: 'underline' as Decoration,
+                              bold: true,
+                              margin: [0, 0, 0, 5] as Margins,
+
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              colSpan: 12,
+                              text: '',
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: "Ship's name:",
+
+                              alignment: 'center' as Alignment,
+                              colSpan: 1,
+                              border: [false, false, false, false],
+                            },
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: `${this.inShipName}`,
+                              colSpan: 2,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {
+                              text: 'Class Identity No. ',
+                              colSpan: 2,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: `${this.inABS}`,
+                              colSpan: 2,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+
+                            {
+                              text: 'Report No. ',
+                              colSpan: 2,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: `${this.generalParticular[0].reportNo}`,
+                              colSpan: 3,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: '',
+                              colSpan: 12,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          //Table content
+                          [
+                            {
+                              text: 'STRUCTURAL MEMBERS :',
+                              alignment: 'left' as Alignment,
+                              colSpan: 1,
+                              style: 'txt_center',
+                            },
+                            {
+                              text: `${y.structuralMembers}`,
+                              colSpan: 11,
+                              rowSpan: 1,
+                              bold: true,
+                            },
+                            'Price',
+                            'Date',
+                            'Image',
+                            'isEdited',
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: 'LOCATION OF STRUCTURE:',
+                              alignment: 'left' as Alignment,
+                              colSpan: 1,
+                              style: ['txt_center', 'txt_center'],
+                            },
+                            {
+                              text: `${y.locationOfStructure}`,
+                              colSpan: 11,
+                              bold: true,
+                            },
+                            'Price',
+                            'Date',
+                            'Image',
+                            'isEdited',
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: 'Description',
+                              rowSpan: 2,
+                              style: 'txt_center',
+                            },
+                            { text: 'Item', rowSpan: 2, style: 'txt_center' },
+
+                            {
+                              text: 'Original Thickness(mm)',
+                              rowSpan: 2,
+                              style: 'txt_center',
+                            },
+                            {
+                              text: 'Maximum Allowable Dim(mm)',
+                              rowSpan: 2,
+                              style: 'txt_center',
+                            },
+                            { text: 'Gauged', colSpan: 2, style: 'txt_center' },
+                            {},
+                            {
+                              text: 'Diminution P',
+                              colSpan: 3,
+                              style: 'txt_center',
+                            },
+                            {},
+                            {},
+                            {
+                              text: 'Diminution S',
+                              colSpan: 3,
+                              style: 'txt_center',
+                            },
+                            {},
+                            {},
+                          ],
+                          [
+                            {},
+                            {},
+                            {},
+                            {},
+                            { text: 'P', style: 'txt_center' },
+                            { text: 'S', style: 'txt_center' },
+                            { text: 'mm', style: 'txt_center' },
+                            { text: '%', style: 'txt_center', colSpan: 2 },
+                            {},
+                            { text: 'mm', style: 'txt_center' },
+                            { text: '%', style: 'txt_center', colSpan: 2 },
+                            {},
+                          ],
+
+                          ...y.structuralDescriptionTM6List
+                            .map((z: any) => {
+                              let title = [
+                                {
+                                  text: `${z.structuralDescriptionTitle}`,
+                                  bold: true,
+                                },
+                                {},
+                                {},
+                                {},
+                                {},
+                                {},
+                                {},
+                                {},
+                                {},
+                                {},
+                                {},
+                                {},
+                              ];
+
+                              let member = z.measurementTM6DTOList.map(
+                                (k: any) => [
+                                  {
+                                    text: `${k.description}`,
+                                  },
+                                  { text: `${k.item}`, style: ['txt_center'] },
+
+                                  {
+                                    text: `${k.detailMeasurement.originalThickness}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${this.formService.calculateForMaxAlwbDimForString(
+                                      k.detailMeasurement.originalThickness,
+                                      k.detailMeasurement.percent
+                                    )}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${k.detailMeasurement.gaugedP}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${k.detailMeasurement.gaugedS}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${this.formService.calculateForMm(
+                                      k.detailMeasurement.originalThickness,
+                                      k.detailMeasurement.gaugedP
+                                    )}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${this.formService.calculateForPercent(
+                                      k.detailMeasurement.originalThickness,
+                                      k.detailMeasurement.gaugedP
+                                    )}`,
+                                    style: ['txt_center'],
+                                    border: [true, true, false, true],
+                                  },
+                                  {
+                                    text:
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.detailMeasurement.originalThickness,
+                                          k.detailMeasurement.gaugedP
+                                        )
+                                      ) >=
+                                        this.convertToNumber(
+                                          this.formService.threePartsFourOfMaxAlwbDim(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.detailMeasurement
+                                                .originalThickness,
+                                              k.detailMeasurement.percent
+                                            )
+                                          )
+                                        ) &&
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.detailMeasurement.originalThickness,
+                                          k.detailMeasurement.gaugedP
+                                        )
+                                      ) <=
+                                        this.convertToNumber(
+                                          this.formService.calculateForMaxAlwbDimForString(
+                                            k.detailMeasurement
+                                              .originalThickness,
+                                            k.detailMeasurement.percent
+                                          )
+                                        )
+                                        ? 'S'
+                                        : this.convertToNumber(
+                                            this.formService.calculateForMm(
+                                              k.detailMeasurement
+                                                .originalThickness,
+                                              k.detailMeasurement.gaugedP
+                                            )
+                                          ) >
+                                          this.convertToNumber(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.detailMeasurement
+                                                .originalThickness,
+                                              k.detailMeasurement.percent
+                                            )
+                                          )
+                                        ? 'R'
+                                        : '',
+                                    border: [false, true, true, true],
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${this.formService.calculateForMm(
+                                      k.detailMeasurement.originalThickness,
+                                      k.detailMeasurement.gaugedS
+                                    )}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${this.formService.calculateForPercent(
+                                      k.detailMeasurement.originalThickness,
+                                      k.detailMeasurement.gaugedS
+                                    )}`,
+                                    style: ['txt_center'],
+                                    border: [true, true, false, true],
+                                  },
+                                  {
+                                    text:
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.detailMeasurement.originalThickness,
+                                          k.detailMeasurement.gaugedS
+                                        )
+                                      ) >=
+                                        this.convertToNumber(
+                                          this.formService.threePartsFourOfMaxAlwbDim(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.detailMeasurement
+                                                .originalThickness,
+                                              k.detailMeasurement.percent
+                                            )
+                                          )
+                                        ) &&
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.detailMeasurement.originalThickness,
+                                          k.detailMeasurement.gaugedS
+                                        )
+                                      ) <=
+                                        this.convertToNumber(
+                                          this.formService.calculateForMaxAlwbDimForString(
+                                            k.detailMeasurement
+                                              .originalThickness,
+                                            k.detailMeasurement.percent
+                                          )
+                                        )
+                                        ? 'S'
+                                        : this.convertToNumber(
+                                            this.formService.calculateForMm(
+                                              k.detailMeasurement
+                                                .originalThickness,
+                                              k.detailMeasurement.gaugedS
+                                            )
+                                          ) >
+                                          this.convertToNumber(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.detailMeasurement
+                                                .originalThickness,
+                                              k.detailMeasurement.percent
+                                            )
+                                          )
+                                        ? 'R'
+                                        : '',
+                                    style: ['txt_center'],
+                                    border: [false, true, true, true],
+                                  },
+                                ]
+                              );
+                              return [title, ...member];
+                            })
+                            .flat(),
+                        ],
+                      },
+                      layout: {
+                        paddingTop: () => 1,
+                        paddingBottom: () => 1,
+                      },
+                    },
+                  ]
+                : []
+            ),
+
+            x.formList.map((y: any) =>
+              y.type == 'TM7'
+                ? [
+                    this.lsSketch.map((a) =>
+                      a.map((b: any) =>
+                        b.formId === y.id && b.formType == 'form_tm7'
+                          ? [
+                              {
+                                margin: [-30, -30, -30, -30] as Margins,
+                                pageBreak: 'before' as PageBreak,
+                                pageOrientation: 'landscape' as PageOrientation,
+                                fit: [pageSizee.width, pageSizee.height],
+                                image: `data:image/png;base64,${b.value}`,
+                              },
+                            ]
+                          : []
+                      )
+                    ),
+                    {
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      style: ['tableStyle', 'fontS8'],
+                      table: {
+                        headerRows: 10,
+                        widths: [
+                          // '2.2%',
+                          '16.8%',
+                          //2
+                          '3.2%',
+                          '3.2%',
+                          '3.2%',
+                          '3.2%',
+                          '3.2%',
+                          '3.2%',
+                          '1%',
+                          '3.2%',
+                          '3.2%',
+                          '1%',
+
+                          '3.2%',
+                          '3.2%',
+                          '3.2%',
+                          '3.2%',
+                          '3.2%',
+                          '3.2%',
+                          '1%',
+                          '3.2%',
+                          '3.2%',
+                          '1%',
+
+                          '3.2%',
+                          '3.2%',
+                          '3.2%',
+                          '3.2%',
+                          '3.2%',
+                          '3.2%',
+                          '1%',
+                          '3.2%',
+                          '3.2%',
+                          '1%',
+                        ],
+                        body: [
+                          //Table header
+                          [
+                            {
+                              text: `TM7-${y.code}(1 July 2023)`,
+                              style: ['txt_center'],
+                              colSpan: 31,
+                              alignment: 'right' as Alignment,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: '',
+                              colSpan: 31,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          // Table content
+                          [
+                            {
+                              text: 'Report on THICKNESS MEASUREMENT OF SHELL AND DECK PLATING (one, two or three transverse sections)',
+                              style: ['txt_center', 'fontS11'],
+                              colSpan: 31,
+                              decoration: 'underline' as Decoration,
+                              bold: true,
+                              margin: [0, 0, 0, 5] as Margins,
+
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              colSpan: 31,
+                              text: '',
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: "Ship's name:",
+
+                              alignment: 'center' as Alignment,
+
+                              colSpan: 3,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: ``,
+                              colSpan: 8,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {
+                              text: 'Class Identity No. ',
+                              colSpan: 4,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: ``,
+                              colSpan: 8,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {
+                              text: 'Report No. ',
+                              colSpan: 3,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: ``,
+                              colSpan: 5,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              colSpan: 31,
+                              text: '',
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              style: 'txt_center',
+                              text: 'CARGO HOLD NO. 1',
+                              colSpan: 31,
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              style: 'txt_center',
+                              text: '',
+                              colSpan: 1,
+                            },
+                            {
+                              style: 'txt_center',
+                              text: 'UPPER PART',
+                              colSpan: 10,
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'MID PART',
+                              colSpan: 10,
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'LOWER PART',
+                              colSpan: 10,
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              style: 'txt_center',
+                              text: 'FRAME NUMBER',
+                              rowSpan: 2,
+                            },
+                            { style: 'txt_center', text: 'Org.Thk.' },
+                            { style: 'txt_center', text: 'Max.Alwb.Dim' },
+                            {
+                              style: 'txt_center',
+                              text: 'Gauged mm  ',
+                              colSpan: 2,
+                            },
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'Diminution P  ',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: '    Diminution S  ',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                            { style: 'txt_center', text: 'Org.Thk.' },
+                            { style: 'txt_center', text: 'Max.Alwb.Dim' },
+                            {
+                              style: 'txt_center',
+                              text: 'Gauged mm',
+                              colSpan: 2,
+                            },
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'Diminution P',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'Diminution S',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                            { style: 'txt_center', text: 'Org.Thk.' },
+                            { style: 'txt_center', text: 'Max.Alwb.Dim' },
+                            {
+                              style: 'txt_center',
+                              text: 'Gauged mm',
+                              colSpan: 2,
+                            },
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'Diminution P',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'Diminution S',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                          ],
+                          [
+                            {},
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'P' },
+                            { style: 'txt_center', text: 'S' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'P' },
+                            { style: 'txt_center', text: 'S' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'P' },
+                            { style: 'txt_center', text: 'S' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+                          ],
+                          ...y.frameNumberList
+                            .map((z: any) => {
+                              let title = [
+                                {
+                                  text: `${z.name}`,
+                                  bold: true,
+                                },
+                                {},
+                                {},
+                                {},
+                                {},
+                                {},
+                                {},
+                                {},
+                                {},
+                                {},
+                                {},
+
+                                {},
+                                {},
+                                {},
+                                {},
+                                {},
+                                {},
+                                {},
+                                {},
+                                {},
+                                {},
+
+                                {},
+                                {},
+                                {},
+                                {},
+                                {},
+                                {},
+                                {},
+                                {},
+                                {},
+                                {},
+                              ];
+
+                              let member = z.measurementTM7DTOList.map(
+                                (k: any) => [
+                                  { text: `${k.item}` },
+
+                                  {
+                                    text: `${k.upperPart.originalThickness}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${this.formService.calculateForMaxAlwbDimForString(
+                                      k.upperPart.originalThickness,
+                                      k.upperPart.percent
+                                    )}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${k.upperPart.gaugedP}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${k.upperPart.gaugedS}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${this.formService.calculateForMm(
+                                      k.upperPart.originalThickness,
+                                      k.upperPart.gaugedP
+                                    )}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${this.formService.calculateForPercent(
+                                      k.upperPart.originalThickness,
+                                      k.upperPart.gaugedP
+                                    )}`,
+                                    style: ['txt_center'],
+                                    border: [true, true, false, true],
+                                  },
+                                  {
+                                    text:
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.upperPart.originalThickness,
+                                          k.upperPart.gaugedP
+                                        )
+                                      ) >=
+                                        this.convertToNumber(
+                                          this.formService.threePartsFourOfMaxAlwbDim(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.upperPart.originalThickness,
+                                              k.upperPart.percent
+                                            )
+                                          )
+                                        ) &&
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.upperPart.originalThickness,
+                                          k.upperPart.gaugedP
+                                        )
+                                      ) <=
+                                        this.convertToNumber(
+                                          this.formService.calculateForMaxAlwbDimForString(
+                                            k.upperPart.originalThickness,
+                                            k.upperPart.percent
+                                          )
+                                        )
+                                        ? 'S'
+                                        : this.convertToNumber(
+                                            this.formService.calculateForMm(
+                                              k.upperPart.originalThickness,
+                                              k.upperPart.gaugedP
+                                            )
+                                          ) >
+                                          this.convertToNumber(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.upperPart.originalThickness,
+                                              k.upperPart.percent
+                                            )
+                                          )
+                                        ? 'R'
+                                        : '',
+                                    style: ['txt_center'],
+                                    border: [false, true, true, true],
+                                  },
+                                  {
+                                    text: `${this.formService.calculateForMm(
+                                      k.upperPart.originalThickness,
+                                      k.upperPart.gaugedS
+                                    )}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${this.formService.calculateForPercent(
+                                      k.upperPart.originalThickness,
+                                      k.upperPart.gaugedS
+                                    )}`,
+                                    style: ['txt_center'],
+                                    border: [true, true, false, true],
+                                  },
+                                  {
+                                    text:
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.upperPart.originalThickness,
+                                          k.upperPart.gaugedS
+                                        )
+                                      ) >=
+                                        this.convertToNumber(
+                                          this.formService.threePartsFourOfMaxAlwbDim(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.upperPart.originalThickness,
+                                              k.upperPart.percent
+                                            )
+                                          )
+                                        ) &&
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.upperPart.originalThickness,
+                                          k.upperPart.gaugedS
+                                        )
+                                      ) <=
+                                        this.convertToNumber(
+                                          this.formService.calculateForMaxAlwbDimForString(
+                                            k.upperPart.originalThickness,
+                                            k.upperPart.percent
+                                          )
+                                        )
+                                        ? 'S'
+                                        : this.convertToNumber(
+                                            this.formService.calculateForMm(
+                                              k.upperPart.originalThickness,
+                                              k.upperPart.gaugedS
+                                            )
+                                          ) >
+                                          this.convertToNumber(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.upperPart.originalThickness,
+                                              k.upperPart.percent
+                                            )
+                                          )
+                                        ? 'R'
+                                        : '',
+                                    style: ['txt_center'],
+                                    border: [false, true, true, true],
+                                  },
+
+                                  {
+                                    text: `${k.midPart.originalThickness}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${this.formService.calculateForMaxAlwbDimForString(
+                                      k.midPart.originalThickness,
+                                      k.midPart.percent
+                                    )}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${k.midPart.gaugedP}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${k.midPart.gaugedS}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${this.formService.calculateForMm(
+                                      k.midPart.originalThickness,
+                                      k.midPart.gaugedP
+                                    )}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${this.formService.calculateForPercent(
+                                      k.midPart.originalThickness,
+                                      k.midPart.gaugedP
+                                    )}`,
+                                    style: ['txt_center'],
+                                    border: [true, true, false, true],
+                                  },
+                                  {
+                                    text:
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.midPart.originalThickness,
+                                          k.midPart.gaugedP
+                                        )
+                                      ) >=
+                                        this.convertToNumber(
+                                          this.formService.threePartsFourOfMaxAlwbDim(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.midPart.originalThickness,
+                                              k.midPart.percent
+                                            )
+                                          )
+                                        ) &&
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.midPart.originalThickness,
+                                          k.midPart.gaugedP
+                                        )
+                                      ) <=
+                                        this.convertToNumber(
+                                          this.formService.calculateForMaxAlwbDimForString(
+                                            k.midPart.originalThickness,
+                                            k.midPart.percent
+                                          )
+                                        )
+                                        ? 'S'
+                                        : this.convertToNumber(
+                                            this.formService.calculateForMm(
+                                              k.midPart.originalThickness,
+                                              k.midPart.gaugedP
+                                            )
+                                          ) >
+                                          this.convertToNumber(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.midPart.originalThickness,
+                                              k.midPart.percent
+                                            )
+                                          )
+                                        ? 'R'
+                                        : '',
+                                    style: ['txt_center'],
+                                    border: [false, true, true, true],
+                                  },
+                                  {
+                                    text: `${this.formService.calculateForMm(
+                                      k.midPart.originalThickness,
+                                      k.midPart.gaugedS
+                                    )}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${this.formService.calculateForPercent(
+                                      k.midPart.originalThickness,
+                                      k.midPart.gaugedS
+                                    )}`,
+                                    style: ['txt_center'],
+                                    border: [true, true, false, true],
+                                  },
+                                  {
+                                    text:
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.midPart.originalThickness,
+                                          k.midPart.gaugedS
+                                        )
+                                      ) >=
+                                        this.convertToNumber(
+                                          this.formService.threePartsFourOfMaxAlwbDim(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.midPart.originalThickness,
+                                              k.midPart.percent
+                                            )
+                                          )
+                                        ) &&
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.midPart.originalThickness,
+                                          k.midPart.gaugedS
+                                        )
+                                      ) <=
+                                        this.convertToNumber(
+                                          this.formService.calculateForMaxAlwbDimForString(
+                                            k.midPart.originalThickness,
+                                            k.midPart.percent
+                                          )
+                                        )
+                                        ? 'S'
+                                        : this.convertToNumber(
+                                            this.formService.calculateForMm(
+                                              k.midPart.originalThickness,
+                                              k.midPart.gaugedS
+                                            )
+                                          ) >
+                                          this.convertToNumber(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.midPart.originalThickness,
+                                              k.midPart.percent
+                                            )
+                                          )
+                                        ? 'R'
+                                        : '',
+                                    style: ['txt_center'],
+                                    border: [false, true, true, true],
+                                  },
+                                  {
+                                    text: `${k.lowerPart.originalThickness}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${this.formService.calculateForMaxAlwbDimForString(
+                                      k.lowerPart.originalThickness,
+                                      k.lowerPart.percent
+                                    )}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${k.lowerPart.gaugedP}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${k.lowerPart.gaugedS}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${this.formService.calculateForMm(
+                                      k.lowerPart.originalThickness,
+                                      k.lowerPart.gaugedP
+                                    )}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${this.formService.calculateForPercent(
+                                      k.lowerPart.originalThickness,
+                                      k.lowerPart.gaugedP
+                                    )}`,
+                                    style: ['txt_center'],
+                                    border: [true, true, false, true],
+                                  },
+                                  {
+                                    text:
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.lowerPart.originalThickness,
+                                          k.lowerPart.gaugedP
+                                        )
+                                      ) >=
+                                        this.convertToNumber(
+                                          this.formService.threePartsFourOfMaxAlwbDim(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.lowerPart.originalThickness,
+                                              k.lowerPart.percent
+                                            )
+                                          )
+                                        ) &&
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.lowerPart.originalThickness,
+                                          k.lowerPart.gaugedP
+                                        )
+                                      ) <=
+                                        this.convertToNumber(
+                                          this.formService.calculateForMaxAlwbDimForString(
+                                            k.lowerPart.originalThickness,
+                                            k.lowerPart.percent
+                                          )
+                                        )
+                                        ? 'S'
+                                        : this.convertToNumber(
+                                            this.formService.calculateForMm(
+                                              k.lowerPart.originalThickness,
+                                              k.lowerPart.gaugedP
+                                            )
+                                          ) >
+                                          this.convertToNumber(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.lowerPart.originalThickness,
+                                              k.lowerPart.percent
+                                            )
+                                          )
+                                        ? 'R'
+                                        : '',
+                                    style: ['txt_center'],
+                                    border: [false, true, true, true],
+                                  },
+                                  {
+                                    text: `${this.formService.calculateForMm(
+                                      k.lowerPart.originalThickness,
+                                      k.lowerPart.gaugedS
+                                    )}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${this.formService.calculateForPercent(
+                                      k.lowerPart.originalThickness,
+                                      k.lowerPart.gaugedS
+                                    )}`,
+                                    style: ['txt_center'],
+                                    border: [true, true, false, true],
+                                  },
+                                  {
+                                    text:
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.lowerPart.originalThickness,
+                                          k.lowerPart.gaugedS
+                                        )
+                                      ) >=
+                                        this.convertToNumber(
+                                          this.formService.threePartsFourOfMaxAlwbDim(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.lowerPart.originalThickness,
+                                              k.lowerPart.percent
+                                            )
+                                          )
+                                        ) &&
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.lowerPart.originalThickness,
+                                          k.lowerPart.gaugedS
+                                        )
+                                      ) <=
+                                        this.convertToNumber(
+                                          this.formService.calculateForMaxAlwbDimForString(
+                                            k.lowerPart.originalThickness,
+                                            k.lowerPart.percent
+                                          )
+                                        )
+                                        ? 'S'
+                                        : this.convertToNumber(
+                                            this.formService.calculateForMm(
+                                              k.lowerPart.originalThickness,
+                                              k.lowerPart.gaugedS
+                                            )
+                                          ) >
+                                          this.convertToNumber(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.lowerPart.originalThickness,
+                                              k.lowerPart.percent
+                                            )
+                                          )
+                                        ? 'R'
+                                        : '',
+                                    style: ['txt_center'],
+                                    border: [false, true, true, true],
+                                  },
+                                ]
+                              );
+                              return [title, ...member];
+                            })
+                            .flat(),
+
+                          //heck lengh > 2
+                          // [
+                          //   y.frameNumberList[1].name,
+                          // {},
+                          //   {},
+                          //   {},
+                          //   {},
+                          //   {},
+                          //   {},
+                          //   {},
+                          //   {},
+                          //   {},
+                          //   {},
+
+                          //   {},
+                          //   {},
+                          //   {},
+                          //   {},
+                          //   {},
+                          //   {},
+                          //   {},
+                          //   {},
+                          //   {},
+                          //   {},
+
+                          //   {},
+                          //   {},
+                          //   {},
+                          //   {},
+                          //   {},
+                          //   {},
+                          //   {},
+                          //   {},
+                          //   {},
+                          //   {},
+                          // ],
+                        ],
+                      },
+                      layout: {
+                        paddingTop: () => 1,
+                        paddingBottom: () => 1,
                       },
                     },
                   ]
@@ -7567,7 +7517,7 @@ export class ReviewComponent implements OnInit {
           alignment: 'center' as Alignment,
         },
         tableStyle: {
-          margin: [-20, 0, -20, 0] as Margins,
+          margin: [-20, -25, -20, 0] as Margins,
         },
         shipNameGeneral: {
           margin: [100, 10, 100, 0] as Margins,
@@ -7640,974 +7590,45 @@ export class ReviewComponent implements OnInit {
 
   exportTestPdf() {
     var pdfTest = {
+      footer: function (currentPage: any, pageCount: any) {
+        var currentPageContent = pdfTest.content[currentPage - 1];
+        if (currentPageContent?.image) {
+          return '';
+        }
+        return {
+          columns: [
+            [
+              {
+                alignment: 'left' as Alignment,
+                text: "Operator's signature:.................",
+              },
+            ],
+
+            [
+              {
+                alignment: 'right' as Alignment,
+                style: 'txt_center',
+                text: 'R: Renewed; S: Substantial corrosion ',
+              },
+              {
+                alignment: 'right' as Alignment,
+                text: 'Page: ' + currentPage.toString(),
+              },
+            ],
+          ],
+          columnGap: 25,
+          style: ['txt_center', 'footer'],
+        };
+      },
       pageOrientation: 'landscape' as PageOrientation,
       content: [
         {
-          style: ['tableStyle', 'fontS8'],
-          table: {
-            headerRows: 10,
-            widths: [
-              // '2.2%',
-              '9.8%',
-              //2
-              '3.3%', //2
-              '3.2%', //1
-              '3.2%', //2
-              '3.2%',
-              '3.2%',
-              '3.2%',
-              '3.2%',
-              '0.5%', //10
-              '3.2%',
-              '3.2%',
-              '0.5%', //13
-
-              '3.3%', //2
-              '3.2%', //1
-              '3.2%', //2
-              '3.2%',
-              '3.2%',
-              '3.2%',
-              '3.2%',
-              '0.5%', //10
-              '3.2%',
-              '3.2%',
-              '0.5%', //13
-
-              '3.3%', //2
-              '3.2%', //1
-              '3.2%', //2
-              '3.2%',
-              '3.2%',
-              '3.2%',
-              '3.2%',
-              '0.5%', //10
-              '3.2%',
-              '3.2%',
-              '0.5%', //13
-            ],
-            body: [
-              //Table header
-              [
-                {
-                  text: `TM2i-(1 July 2023)`,
-                  style: ['txt_center'],
-                  colSpan: 34,
-                  alignment: 'right' as Alignment,
-                  border: [false, false, false, false],
-                },
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-              ],
-              [
-                {
-                  text: '',
-                  colSpan: 34,
-                  border: [false, false, false, false],
-                },
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-              ],
-              // Table content
-              [
-                {
-                  text: 'Report on THICKNESS MEASUREMENT OF SHELL AND DECK PLATING (one, two or three transverse sections)',
-                  style: ['txt_center', 'fontS11'],
-                  colSpan: 34,
-                  decoration: 'underline' as Decoration,
-                  bold: true,
-                  border: [false, false, false, false],
-                },
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-              ],
-              [
-                {
-                  colSpan: 34,
-                  text: '',
-                  border: [false, false, false, false],
-                },
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-              ],
-              [
-                {
-                  text: "Ship's name:",
-
-                  alignment: 'center' as Alignment,
-
-                  colSpan: 3,
-                  border: [false, false, false, false],
-                },
-                {},
-                {},
-                {
-                  decoration: 'underline' as Decoration,
-                  text: ``,
-                  colSpan: 8,
-                  bold: true,
-                  border: [false, false, false, false],
-                },
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {
-                  text: 'Class Identity No. ',
-                  colSpan: 4,
-                  border: [false, false, false, false],
-                },
-                {},
-                {},
-                {},
-                {
-                  decoration: 'underline' as Decoration,
-                  text: ``,
-                  colSpan: 8,
-                  bold: true,
-                  border: [false, false, false, false],
-                },
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-
-                {
-                  text: 'Report No. ',
-                  colSpan: 3,
-                  border: [false, false, false, false],
-                },
-                {},
-                {},
-                {
-                  decoration: 'underline' as Decoration,
-                  text: ``,
-                  colSpan: 8,
-                  bold: true,
-                  border: [false, false, false, false],
-                },
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-              ],
-              [
-                {
-                  colSpan: 34,
-                  text: '',
-                  border: [false, false, false, false],
-                },
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-              ],
-              [
-                {
-                  style: 'txt_center',
-                  text: 'STRENGTH DECK AND SHEER STRAKE PLATING',
-                  colSpan: 34,
-                },
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-              ],
-              [
-                {},
-                {
-                  style: 'txt_center',
-                  text: '1st TRANSVERSE SECTION at Fr.No: ',
-                  colSpan: 8,
-                  border: [true, true, false, true],
-                },
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {
-                  text: ``,
-                  border: [false, true, true, true],
-                  colSpan: 3,
-                  bold: true,
-                },
-                {},
-                {},
-                {
-                  style: 'txt_center',
-                  text: '2nd TRANSVERSE SECTION at Fr.No: ',
-                  colSpan: 8,
-                  border: [true, true, false, true],
-                },
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {
-                  text: ``,
-                  border: [false, true, true, true],
-                  colSpan: 3,
-                  bold: true,
-                },
-                {},
-                {},
-                {
-                  style: 'txt_center',
-                  text: '3rd TRANSVERSE SECTION at Fr.No: ',
-                  colSpan: 8,
-                  border: [true, true, false, true],
-                },
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {
-                  text: ``,
-                  border: [false, true, true, true],
-                  colSpan: 3,
-                  bold: true,
-                },
-                {},
-                {},
-              ],
-              [
-                {
-                  style: 'txt_center',
-                  text: 'STRAKE POSITION',
-                  rowSpan: 2,
-                },
-                { style: 'txt_center', text: 'No. or Letter', rowSpan: 2 },
-                { style: 'txt_center', text: 'Org.Thk.' },
-                { style: 'txt_center', text: 'Max.Alwb.Dim' },
-                { style: 'txt_center', text: 'Gauged mm  ', colSpan: 2 },
-                {},
-                { style: 'txt_center', text: 'Diminution P  ', colSpan: 3 },
-                {},
-                {},
-                { style: 'txt_center', text: '    Diminution S  ', colSpan: 3 },
-                {},
-                {},
-                { style: 'txt_center', text: 'No. or Letter', rowSpan: 2 },
-                { style: 'txt_center', text: 'Org.Thk.' },
-                { style: 'txt_center', text: 'Max.Alwb.Dim' },
-                { style: 'txt_center', text: 'Gauged mm', colSpan: 2 },
-                {},
-                { style: 'txt_center', text: 'Diminution P', colSpan: 3 },
-                {},
-                {},
-                { style: 'txt_center', text: 'Diminution S', colSpan: 3 },
-                {},
-                {},
-                { style: 'txt_center', text: 'No. or Letter', rowSpan: 2 },
-                { style: 'txt_center', text: 'Org.Thk.' },
-                { style: 'txt_center', text: 'Max.Alwb.Dim' },
-                { style: 'txt_center', text: 'Gauged mm', colSpan: 2 },
-                {},
-                { style: 'txt_center', text: 'Diminution P', colSpan: 3 },
-                {},
-                {},
-                { style: 'txt_center', text: 'Diminution S', colSpan: 3 },
-                {},
-                {},
-              ],
-              [
-                {},
-                {},
-                { style: 'txt_center', text: 'mm' },
-                { style: 'txt_center', text: 'mm' },
-                { style: 'txt_center', text: 'P' },
-                { style: 'txt_center', text: 'S' },
-                { style: 'txt_center', text: 'mm' },
-                { style: 'txt_center', text: '%', colSpan: 2 },
-                {},
-                { style: 'txt_center', text: 'mm' },
-                { style: 'txt_center', text: '%', colSpan: 2 },
-                {},
-                {},
-
-                { style: 'txt_center', text: 'mm' },
-                { style: 'txt_center', text: 'mm' },
-                { style: 'txt_center', text: 'P' },
-                { style: 'txt_center', text: 'S' },
-                { style: 'txt_center', text: 'mm' },
-                { style: 'txt_center', text: '%', colSpan: 2 },
-                {},
-                { style: 'txt_center', text: 'mm' },
-                { style: 'txt_center', text: '%', colSpan: 2 },
-                {},
-                {},
-
-                { style: 'txt_center', text: 'mm' },
-                { style: 'txt_center', text: 'mm' },
-                { style: 'txt_center', text: 'P' },
-                { style: 'txt_center', text: 'S' },
-                { style: 'txt_center', text: 'mm' },
-                { style: 'txt_center', text: '%', colSpan: 2 },
-                {},
-                { style: 'txt_center', text: 'mm' },
-                { style: 'txt_center', text: '%', colSpan: 2 },
-                {},
-              ],
-              [
-                { text: '2nd strake inboard' },
-
-                { text: 'M14' },
-                { text: '14.5' },
-                { text: '14.5' },
-                { text: '14.5' },
-                { text: '14.5' },
-                { text: '14.5' },
-                { text: '14.5' },
-                { text: 'R' },
-                { text: '14.5' },
-                { text: '14.5' },
-                { text: 'R' },
-
-                { text: 'M14' },
-                { text: '14.5' },
-                { text: '14.5' },
-                { text: '14.5' },
-                { text: '14.5' },
-                { text: '14.5' },
-                { text: '14.5' },
-                { text: 'R' },
-                { text: '14.5' },
-                { text: '14.5' },
-                { text: 'R' },
-
-                { text: 'M14' },
-                { text: '14.5' },
-                { text: '14.5' },
-                { text: '14.5' },
-                { text: '14.5' },
-                { text: '14.5' },
-                { text: '14.5' },
-                { text: 'R' },
-                { text: '14.5' },
-                { text: '14.5' },
-                { text: 'R' },
-              ],
-            ],
-          },
+          image: 'snow2',
+          // pageBreak: 'before' as PageBreak,
         },
         {
-          style: ['tableStyle', 'fontS8'],
-          table: {
-            headerRows: 10,
-            //23 rows
-            widths: [
-              // '4%',
-              '38.5%',
-              '6%',
-              '4.5%',
-              '3%',
-              '3%',
-              '3%',
-              '3%',
-              '1.5%', //9
-              '3%',
-              '3%',
-              '1.5%', //12
-              '3%',
-              '3%',
-              '3%',
-              '3%',
-              '1.5%', //17
-              '3%',
-              '3%',
-              '1.5%', //20
-              '3%',
-              '3%',
-              '3%',
-            ],
-            body: [
-              //Table header
-              [
-                {
-                  text: `TM1`,
-                  //   text: `TM1-${this.typeForm}(1 July 2023)`,
-                  style: ['txt_center'],
-                  colSpan: 22,
-                  alignment: 'right' as Alignment,
-                  border: [false, false, false, false],
-                },
-                {},
-                {},
-
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-              ],
-              [
-                {
-                  text: '',
-                  colSpan: 22,
-                  border: [false, false, false, false],
-                },
-                {},
-                {},
-
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-              ],
-              // table info
-              [
-                {
-                  text: 'Report on THICKNESS MEASUREMENT of ALL DECK PLATING, ALL BOTTOM SHELL PLATING or SIDE SHELL PLATING',
-                  style: ['txt_center', 'fontS11'],
-                  colSpan: 22,
-                  decoration: 'underline' as Decoration,
-                  bold: true,
-                  border: [false, false, false, false],
-                },
-                {},
-                {},
-
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-              ],
-              [
-                {
-                  colSpan: 22,
-                  text: '',
-                  border: [false, false, false, false],
-                },
-                {},
-                {},
-
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-              ],
-              [
-                {
-                  text: "Ship's name:",
-                  alignment: 'center' as Alignment,
-                  // colSpan: 2,
-                  border: [false, false, false, false],
-                },
-                {
-                  decoration: 'underline' as Decoration,
-                  text: ``,
-                  colSpan: 5,
-                  bold: true,
-                  border: [false, false, false, false],
-                },
-                {},
-                {},
-                {},
-                {},
-                {
-                  text: 'Class Identity No. ',
-                  colSpan: 3,
-                  border: [false, false, false, false],
-                },
-                {},
-                {},
-                {
-                  decoration: 'underline' as Decoration,
-                  text: ``,
-                  colSpan: 5,
-                  bold: true,
-                  border: [false, false, false, false],
-                },
-                {},
-                {},
-                {},
-                {},
-
-                {
-                  text: 'Report No. ',
-                  colSpan: 3,
-                  border: [false, false, false, false],
-                },
-                {},
-                {},
-                {
-                  decoration: 'underline' as Decoration,
-                  text: ``,
-                  colSpan: 5,
-                  bold: true,
-                  border: [false, false, false, false],
-                },
-
-                {},
-                {},
-                {},
-                {},
-              ],
-              [
-                {
-                  colSpan: 22,
-                  text: '',
-                  border: [false, false, false, false],
-                },
-                {},
-                {},
-
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-              ],
-              // table content
-              [
-                {
-                  text: 'STRAKE POSITION',
-                  alignment: 'left' as Alignment,
-                  style: 'txt_center',
-                },
-                {
-                  text: `2`,
-                  colSpan: 21,
-                  rowSpan: 1,
-                  bold: true,
-                },
-
-                {},
-
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-              ],
-              [
-                {
-                  style: 'txt_center',
-                  text: 'PLATE POSITION',
-                  rowSpan: 3,
-                },
-                { style: 'txt_center', text: 'No. or Letter', rowSpan: 3 },
-                { style: 'txt_center', text: 'Org.Thk.', rowSpan: 3 },
-                { style: 'txt_center', text: 'Forward Reading', colSpan: 8 },
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-
-                { style: 'txt_center', text: 'Aft Reading', colSpan: 8 },
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-
-                {
-                  style: 'txt_center',
-                  text: 'Mean Dimunution (%)',
-                  colSpan: 2,
-                  rowSpan: 2,
-                },
-                {},
-
-                { style: 'txt_center', text: 'Max Alwb Dim', rowSpan: 2 },
-              ],
-              [
-                {},
-                {},
-                {},
-                { text: 'Gauged mm', colSpan: 2, style: 'txt_center' },
-                {},
-                { text: 'Diminution P', colSpan: 3, style: 'txt_center' },
-                {},
-                {},
-                { text: 'Diminution S', colSpan: 3, style: 'txt_center' },
-                {},
-                {},
-
-                { text: 'Gauged (mm)', colSpan: 2, style: 'txt_center' },
-                {},
-                { text: 'Diminution P', colSpan: 3, style: 'txt_center' },
-                {},
-                {},
-                { text: 'Diminution S', colSpan: 3, style: 'txt_center' },
-                {},
-                {},
-
-                { text: '', colSpan: 2, style: 'txt_center' },
-
-                {},
-                { text: 'Max Alwb Dim' },
-              ],
-              [
-                {},
-                {},
-                {},
-                { text: 'P', style: 'txt_center' },
-                { text: 'S', style: 'txt_center' },
-                { text: 'mm', style: 'txt_center' },
-                { text: '%', style: 'txt_center', colSpan: 2 },
-                {},
-                { text: 'mm', style: 'txt_center' },
-                { text: '%', style: 'txt_center', colSpan: 2 },
-                {},
-
-                { text: 'P', style: 'txt_center' },
-                { text: 'S', style: 'txt_center' },
-                { text: 'mm', style: 'txt_center' },
-                { text: '%', style: 'txt_center', colSpan: 2 },
-                {},
-                { text: 'mm', style: 'txt_center' },
-                { text: '%', style: 'txt_center', colSpan: 2 },
-                {},
-
-                { text: 'P', style: 'txt_center' },
-                { text: 'S', style: 'txt_center' },
-                { text: 'mm', style: 'txt_center' },
-              ],
-              [
-                { text: '9th forward' },
-                { text: 'E10' },
-                { text: '14.5' },
-
-                { text: '14.5' },
-                { text: '14.5' },
-                { text: '14.5' },
-                { text: '14.5' },
-                { text: 'R' },
-                { text: '14.5' },
-                { text: '14.5' },
-                { text: 'R' },
-
-                { text: '14.5' },
-                { text: '14.5' },
-                { text: '14.5' },
-                { text: '14.5' },
-                { text: 'R' },
-                { text: '14.5' },
-                { text: '14.5' },
-                { text: 'R' },
-
-                { text: '14.5' },
-                { text: '14.5' },
-                { text: '14.5' },
-              ],
-            ],
-          },
-        },
-        {
-          text: `${this.formService.calculateForMaxAlwbDim('10', 1)}`,
-        },
-        {
-          image:
-            'data:image/png;base64,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',
+          pageBreak: 'before' as PageBreak,
+          text: '123',
         },
       ],
       images: {
@@ -8615,6 +7636,7 @@ export class ReviewComponent implements OnInit {
         // snow: 'https://scontent.fhan17-1.fna.fbcdn.net/v/t1.6435-9/67246509_111387816859260_2386012619652726784_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=e3f864&_nc_ohc=mq_yiuP1cvEAX8MvYsU&_nc_ht=scontent.fhan17-1.fna&oh=00_AfDw51jhjfX5tfjXBaYXDj8k51y19mb9SGycIt5cqMpoVw&oe=6482AE6A',
         // snow: 'http://vimisco.com/img/logo/logo%20trong.gif',
         snow: `data:image/gif;base64,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`,
+        snow2: `data:image/gif;base64,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`,
       },
 
       styles: {
@@ -8633,7 +7655,7 @@ export class ReviewComponent implements OnInit {
           alignment: 'center' as Alignment,
         },
         tableStyle: {
-          margin: [-20, 0, -20, 0] as Margins,
+          margin: [-20, -40, -20, 0] as Margins,
         },
         shipNameGeneral: {
           margin: [100, 10, 100, 0] as Margins,
@@ -8701,11 +7723,16 @@ export class ReviewComponent implements OnInit {
     pdfMake.createPdf(pdfTest).open({}, window);
   }
 
+  //
+  // handle(arr: []){
+  //   let newArr = arr.flat(
+  //     return new
+  //   )
+  // }
+
   ngOnInit() {
     this.isLoadingSaveButton = true;
-
     this.mainData = this.localService.getMainData();
-
     this.generalParticularervice.getGeneralParticularsFromAPI().subscribe(
       (data) => {
         this.generalParticular = data;
@@ -8758,137 +7785,89 @@ export class ReviewComponent implements OnInit {
           this.parts = this.reportIndex.parts;
           console.log('part:');
           console.log(this.parts);
+          this.formInfo = this.parts.flatMap((part) =>
+            part.forms.map((form) => ({
+              formType: form.name,
+              formId: form.formID,
+            }))
+          );
+          console.log('id va type');
+          console.log(this.formInfo);
+          for (let i = 0; i < this.formInfo.length; i++) {
+            if (this.formInfo[i].formType.includes('TM1')) {
+              this.sketchService
+                .getSketchFromApi('form_tm1', this.formInfo[i].formId)
+                .subscribe((data) => {
+                  this.lsSketch.push(data);
+                });
+            }
+            //thiêu tm2i 2ii
+            if (this.formInfo[i].formType.includes('TM3')) {
+              this.sketchService
+                .getSketchFromApi('form_tm3', this.formInfo[i].formId)
+                .subscribe((data) => {
+                  this.lsSketch.push(data);
+                });
+            }
+            if (this.formInfo[i].formType.includes('TM4')) {
+              this.sketchService
+                .getSketchFromApi('form_tm4', this.formInfo[i].formId)
+                .subscribe((data) => {
+                  this.lsSketch.push(data);
+                });
+            }
+            if (this.formInfo[i].formType.includes('TM5')) {
+              this.sketchService
+                .getSketchFromApi('form_tm5', this.formInfo[i].formId)
+                .subscribe((data) => {
+                  this.lsSketch.push(data);
+                });
+            }
+            if (this.formInfo[i].formType.includes('TM6')) {
+              this.sketchService
+                .getSketchFromApi('form_tm6', this.formInfo[i].formId)
+                .subscribe((data) => {
+                  this.lsSketch.push(data);
+                });
+            }
+            if (this.formInfo[i].formType.includes('TM7')) {
+              this.sketchService
+                .getSketchFromApi('form_tm7', this.formInfo[i].formId)
+                .subscribe((data) => {
+                  this.lsSketch.push(data);
+                });
+            }
+            console.log('lssketch');
+
+            console.log(this.lsSketch);
+          }
           this.id_part = this.parts.map((x) => x.id);
 
           console.log(this.id_part);
-
+          let listPro = [];
           for (let i = 0; i < this.id_part.length; i++) {
-            this.dataTm1S
-              .getReport_index(this.id_part[i])
-              .subscribe((data: {}) => {
-                // this.data_part.push(data);
-                console.log('data');
-                this.data_part.push(data);
-                console.log(data);
-                console.log(this.data_part);
-              });
+            listPro.push(this.dataTm1S.getReport_index(this.id_part[i]));
           }
-
-          for (let i = 0; i < this.parts.length; i++) {
-            for (let j = 0; j < this.parts[i].forms.length; j++) {
-              switch (this.parts[i].forms[j].name) {
-                case 'FORM TM1':
-                  this.isTm1OfPart = true;
-                  break;
-                case 'FORM TM3':
-                  this.isTm3OfPart = true;
-                  break;
-                default:
-                  break;
-              }
-              // if (this.parts[i].forms[j].name == 'FORM TM1') {
-              //   this.isTm1OfPart = true;
-              //   this.isTm3OfPart = true;
-              // }
+          zip(...listPro).subscribe((data: {}) => {
+            // this.data_part.push(data);
+            // console.log('data');
+            // this.data_part.push(data);
+            console.log(Array.isArray(data));
+            if (Array.isArray(data)) {
+              this.data_part = data;
             }
-          }
-          this.form_id_name = this.parts.flatMap((part) =>
-            part.forms.map((form) => ({
-              idForm: form.formID,
-              nameForm: form.name,
-            }))
-          );
-          console.log(this.form_id_name);
-
-          for (let i = 0; i < this.form_id_name.length; i++) {
-            if (this.form_id_name[i].nameForm === 'FORM TM1') {
-              this.dataTm1S
-                .getDataTm1FromApi('tm1s', this.form_id_name[i].idForm)
-                .subscribe((data) => {
-                  this.lsFormTm1.push(data);
-                  console.log('tm1');
-
-                  console.log(this.lsFormTm1);
-                });
-            }
-            if (this.form_id_name[i].nameForm === 'FORM TM2(I)') {
-              this.dataTm1S
-                .getDataTm1FromApi('tm2s', this.form_id_name[i].idForm)
-                .subscribe((data) => {
-                  this.lsFormTm2i.push(data);
-                  console.log('tm2i');
-
-                  console.log(this.lsFormTm2i);
-                });
-            }
-            if (this.form_id_name[i].nameForm === 'FORM TM2(II)') {
-              this.dataTm1S
-                .getDataTm1FromApi('tm2s', this.form_id_name[i].idForm)
-                .subscribe((data) => {
-                  this.lsFormTm2ii.push(data);
-                  console.log('tm2ii');
-
-                  console.log(this.lsFormTm2ii);
-                });
-            }
-            if (this.form_id_name[i].nameForm === 'FORM TM3') {
-              this.dataTm1S
-                .getDataTm1FromApi('tm3s', this.form_id_name[i].idForm)
-                .subscribe((data) => {
-                  this.lsFormTm3.push(data);
-                  console.log('tm3');
-
-                  console.log(this.lsFormTm3);
-                });
-            }
-            if (this.form_id_name[i].nameForm === 'FORM TM5') {
-              this.dataTm1S
-                .getDataTm1FromApi('tm5s', this.form_id_name[i].idForm)
-                .subscribe((data) => {
-                  this.lsFormTm5.push(data);
-                  console.log('tm5');
-
-                  console.log(this.lsFormTm5);
-                });
-            }
-            if (this.form_id_name[i].nameForm === 'FORM TM4') {
-              this.dataTm1S
-                .getDataTm1FromApi('tm4s', this.form_id_name[i].idForm)
-                .subscribe((data) => {
-                  this.lsFormTm4.push(data);
-                  console.log('tm4');
-
-                  console.log(this.lsFormTm4);
-                });
-            }
-            if (this.form_id_name[i].nameForm === 'FORM TM6') {
-              this.dataTm1S
-                .getDataTm1FromApi('tm6s', this.form_id_name[i].idForm)
-                .subscribe((data) => {
-                  this.lsFormTm6.push(data);
-                  console.log('tm6');
-
-                  console.log(this.lsFormTm6);
-                });
-            }
-            if (this.form_id_name[i].nameForm === 'FORM TM7') {
-              this.dataTm1S
-                .getDataTm1FromApi('tm7s', this.form_id_name[i].idForm)
-                .subscribe((data) => {
-                  this.lsFormTm7.push(data);
-                  console.log('tm7');
-
-                  console.log(this.lsFormTm7);
-                });
-            }
-          }
-          this.isLoadingSaveButton = false;
+            console.log(this.data_part);
+            this.isLoadingSaveButton = false;
+          });
         },
         (err) => {
           console.log(err);
           console.log('error');
         }
       );
-    // this.exportTestPdf();
+
+    this.sketchService.getSketchFromApi('form_tm4', 19).subscribe((data) => {
+      console.log(data);
+    });
   }
 }
