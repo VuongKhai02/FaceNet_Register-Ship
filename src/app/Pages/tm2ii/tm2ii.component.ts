@@ -5,6 +5,11 @@ import { measurementTM2 } from 'src/app/share/models/form/measurementTM2.model';
 import { FormService } from 'src/app/share/services/form/form.service';
 import { CdkDragEnd, CdkDragDrop } from '@angular/cdk/drag-drop';
 import { catchError, retry, throwError } from 'rxjs';
+import { NavigationEnd, Router } from '@angular/router';
+import { ParamValueService } from 'src/app/share/services/param-value.service';
+import { ParamValue } from 'src/app/share/models/paramValue.model';
+import { GeneralParticular } from 'src/app/share/models/generalParticulars.model';
+import { API_END_POINT } from 'src/environments/environment';
 
 @Component({
   selector: 'app-tm2ii',
@@ -14,7 +19,9 @@ import { catchError, retry, throwError } from 'rxjs';
 export class Tm2iiComponent {
   constructor(
     public formService: FormService,
-    private message: NzMessageService
+    private message: NzMessageService,
+    private router: Router,
+    private paramValueService: ParamValueService
   ) {}
 
   addRowValue: number = 0;
@@ -29,14 +36,15 @@ export class Tm2iiComponent {
   listRow: measurementTM2[] = [];
   formTM2: formTM2 = {
     code: '',
-    name: 'FORM TM2(II)',
+    name: 'TM2(I)',
     firstFrameNoTM2: '',
     secondFrameNoTM2: '',
     thirdFrameNoTM2: '',
     measurementTM2List: this.listRow,
   };
 
-  API_URL: string = `http://222.252.25.37:9080/api/v1/report-indexes/1/tm2s`;
+  partId: string = this.router.url.split('/')[2];
+  API_URL: string = `http://222.252.25.37:9080/api/v1/report-indexes/${this.partId}/tm2s`;
 
   listPercentOption = [
     { label: '20%', value: 1 },
@@ -46,9 +54,9 @@ export class Tm2iiComponent {
   ];
 
   percentSelected: number = 0;
+  percentValue: string = '';
 
-  selectedRow: number = -1;
-  selectedRowValue: measurementTM2 = {
+  emptyRow: measurementTM2 = {
     strakePosition: '',
     noOrLetter: '',
     firstTransverseSectionMeasurementDetailTM2: {
@@ -80,62 +88,97 @@ export class Tm2iiComponent {
   isVisible = false;
   isLoadingSaveButton: boolean = false;
 
+  selectedRow: number[] = [];
+
+  listFormCode: ParamValue[] = [];
+
+  generalParticular!: GeneralParticular;
+
+  selectedFile: any;
+
+  isLoadingDataForm: boolean = false;
+
   ngOnInit(): void {
-    for (let i = 1; i <= 20; i++)
-      this.listRow.push({
-        strakePosition: '',
-        noOrLetter: '',
-        firstTransverseSectionMeasurementDetailTM2: {
-          originalThickness: '',
-          maxAlwbDim: '',
-          gaugedP: '',
-          gaugedS: '',
-          percent: '',
-        },
-        secondTransverseSectionMeasurementDetailTM2: {
-          originalThickness: '',
-          maxAlwbDim: '',
-          gaugedP: '',
-          gaugedS: '',
-          percent: '',
-        },
-        thirdTransverseSectionMeasurementDetailTM2: {
-          originalThickness: '',
-          maxAlwbDim: '',
-          gaugedP: '',
-          gaugedS: '',
-          percent: '',
-        },
-      });
+    this.router.events.subscribe((event) => {
+      if (
+        event instanceof NavigationEnd &&
+        this.router.url.split('/')[1] === 'part' &&
+        this.router.url.split('/')[3].slice(0, 3) === 'tm2' &&
+        this.router.url.split('/')[4] !== '-1'
+      ) {
+        this.isLoadingDataForm = false;
+
+        this.partId = this.router.url.split('/')[2];
+        this.formService
+          .getDataForm('tm2s', this.router.url.split('/')[4])
+          .subscribe((data) => {
+            this.formTM2.code = data.code;
+            this.listRow = data.measurementTM2DTOList;
+            if (data.measurementTM2DTOList.length > 0) {
+              this.percentValue =
+                data.measurementTM2DTOList[0].firstTransverseSectionMeasurementDetailTM2.percent;
+              if (
+                this.listPercentOption.filter(
+                  (percent) => percent.label === this.percentValue
+                ).length > 0
+              )
+                this.percentSelected = this.listPercentOption.filter(
+                  (percent) => percent.label === this.percentValue
+                )[0].value;
+            }
+          });
+
+        this.isLoadingDataForm = false;
+      } else if (
+        event instanceof NavigationEnd &&
+        this.router.url.split('/')[4] === '-1'
+      ) {
+        this.listRow = [];
+        for (let i = 1; i <= 20; i++)
+          this.listRow.push(JSON.parse(JSON.stringify(this.emptyRow)));
+      }
+    });
+
+    if (Number(this.router.url.split('/')[4]) === -1) {
+      for (let i = 1; i <= 20; i++)
+        this.listRow.push(JSON.parse(JSON.stringify(this.emptyRow)));
+    } else {
+      this.isLoadingDataForm = true;
+
+      this.formService
+        .getDataForm('tm2s', this.router.url.split('/')[4])
+        .subscribe((data) => {
+          this.formTM2.code = data.code;
+          this.listRow = data.measurementTM2DTOList;
+          if (data.measurementTM2DTOList.length > 0) {
+            this.percentValue =
+              data.measurementTM2DTOList[0].firstTransverseSectionMeasurementDetailTM2.percent;
+            if (
+              this.listPercentOption.filter(
+                (percent) => percent.label === this.percentValue
+              ).length > 0
+            )
+              this.percentSelected = this.listPercentOption.filter(
+                (percent) => percent.label === this.percentValue
+              )[0].value;
+          }
+        });
+
+      this.isLoadingDataForm = false;
+    }
+
+    this.paramValueService.getParamValueByType(11).subscribe((data) => {
+      this.listFormCode = data;
+    });
+
+    if (this.formService.getParticularData() != null)
+      this.generalParticular = this.formService.getParticularData();
   }
 
   addRow() {
-    for (let i = 1; i <= this.addRowValue; i++)
-      this.listRow.push({
-        strakePosition: '',
-        noOrLetter: '',
-        firstTransverseSectionMeasurementDetailTM2: {
-          originalThickness: '',
-          maxAlwbDim: '',
-          gaugedP: '',
-          gaugedS: '',
-          percent: '',
-        },
-        secondTransverseSectionMeasurementDetailTM2: {
-          originalThickness: '',
-          maxAlwbDim: '',
-          gaugedP: '',
-          gaugedS: '',
-          percent: '',
-        },
-        thirdTransverseSectionMeasurementDetailTM2: {
-          originalThickness: '',
-          maxAlwbDim: '',
-          gaugedP: '',
-          gaugedS: '',
-          percent: '',
-        },
-      });
+    if (this.addRowValue > 0 && this.addRowValue <= 100)
+      for (let i = 1; i <= this.addRowValue; i++)
+        this.listRow.push(JSON.parse(JSON.stringify(this.emptyRow)));
   }
 
   convertToNumber(str: string) {
@@ -152,6 +195,8 @@ export class Tm2iiComponent {
 
   onSaveForm() {
     this.isLoadingSaveButton = true;
+    this.formTM2.measurementTM2List = this.listRow;
+    this.onChangePercent();
     this.formTM2.measurementTM2List = this.formTM2.measurementTM2List.filter(
       (form) =>
         form.strakePosition !== '' ||
@@ -169,103 +214,93 @@ export class Tm2iiComponent {
         form.thirdTransverseSectionMeasurementDetailTM2.gaugedP !== '' ||
         form.thirdTransverseSectionMeasurementDetailTM2.gaugedS !== ''
     );
+
+    this.listRow = this.formTM2.measurementTM2List;
+
     this.formTM2.firstFrameNoTM2 = `${this.firstTransverseSectionFrom} ~ ${this.firstTransverseSectionTo}`;
     this.formTM2.secondFrameNoTM2 = `${this.secondTransverseSectionFrom} ~ ${this.secondTransverseSectionTo}`;
     this.formTM2.thirdFrameNoTM2 = `${this.thirdTransverseSectionFrom} ~ ${this.thirdTransverseSectionTo}`;
-    this.formService
-      .addFormToAPI(this.API_URL, this.formTM2)
-      .pipe(
-        retry(3),
-        catchError(() => {
-          return throwError('Something went wrong');
-        })
-      )
-      .subscribe({
-        next: (result) => {
-          this.isLoadingSaveButton = false;
-          this.message.create('success', 'Save form success');
-        },
-        error: (error) => {
-          this.isLoadingSaveButton = false;
-          this.message.create(
-            'error',
-            'Something went wrong, please try later'
-          );
-        },
-      });
+
+    if (Number(this.router.url.split('/')[4]) === -1) {
+      this.formService
+        .addFormToAPI(this.API_URL, this.formTM2)
+        .pipe(
+          retry(3),
+          catchError(() => {
+            return throwError('Something went wrong');
+          })
+        )
+        .subscribe({
+          next: (result) => {
+            this.isLoadingSaveButton = false;
+            this.message.create('success', 'Save form success');
+            this.router.navigate([
+              'part',
+              this.partId,
+              this.router.url.split('/')[3],
+              result.id,
+            ]);
+          },
+          error: (error) => {
+            this.isLoadingSaveButton = false;
+            this.message.create(
+              'error',
+              'Something went wrong, please try later'
+            );
+          },
+        });
+    } else {
+      this.formService
+        .updateForm('tm2s', this.router.url.split('/')[4], this.formTM2)
+        .pipe(
+          retry(3),
+          catchError(() => {
+            return throwError('Something went wrong');
+          })
+        )
+        .subscribe({
+          next: (result) => {
+            this.isLoadingSaveButton = false;
+            this.message.create('success', 'Save form success');
+          },
+          error: (error) => {
+            this.isLoadingSaveButton = false;
+            this.message.create(
+              'error',
+              'Something went wrong, please try later'
+            );
+          },
+        });
+    }
   }
 
   onDragEnded(event: CdkDragEnd) {
     event.source.reset();
   }
 
-  selectRow(index: number) {
-    this.selectedRow = index;
-    this.selectedRowValue = this.listRow[index];
+  selectRow(index: number): void {
+    if (
+      index === this.selectedRow.sort()[0] - 1 ||
+      index === this.selectedRow.sort()[this.selectedRow.length - 1] + 1 ||
+      index === this.selectedRow.sort()[0] ||
+      index === this.selectedRow.sort()[this.selectedRow.length - 1]
+    ) {
+      if (this.selectedRow.includes(index) === false)
+        this.selectedRow.push(index);
+      else this.selectedRow = this.selectedRow.filter((e) => e !== index);
+    } else if (this.selectedRow.length === 0) this.selectedRow.push(index);
   }
 
   onDrop(event: CdkDragDrop<measurementTM2[]>) {
-    this.startIndex = event.previousIndex;
-    this.endIndex = event.currentIndex;
-    if (this.startIndex < this.endIndex) {
-      for (let i = this.startIndex + 1; i <= this.endIndex; i++) {
-        this.listRow[i].strakePosition = this.selectedRowValue.strakePosition;
-        this.listRow[i].noOrLetter = this.selectedRowValue.noOrLetter;
-        this.listRow[
-          i
-        ].firstTransverseSectionMeasurementDetailTM2.originalThickness =
-          this.selectedRowValue.firstTransverseSectionMeasurementDetailTM2.originalThickness;
-        this.listRow[i].firstTransverseSectionMeasurementDetailTM2.gaugedP =
-          this.selectedRowValue.firstTransverseSectionMeasurementDetailTM2.gaugedP;
-        this.listRow[i].firstTransverseSectionMeasurementDetailTM2.gaugedS =
-          this.selectedRowValue.firstTransverseSectionMeasurementDetailTM2.gaugedS;
-        this.listRow[
-          i
-        ].secondTransverseSectionMeasurementDetailTM2.originalThickness =
-          this.selectedRowValue.secondTransverseSectionMeasurementDetailTM2.originalThickness;
-        this.listRow[i].secondTransverseSectionMeasurementDetailTM2.gaugedP =
-          this.selectedRowValue.secondTransverseSectionMeasurementDetailTM2.gaugedP;
-        this.listRow[i].secondTransverseSectionMeasurementDetailTM2.gaugedS =
-          this.selectedRowValue.secondTransverseSectionMeasurementDetailTM2.gaugedS;
-        this.listRow[
-          i
-        ].thirdTransverseSectionMeasurementDetailTM2.originalThickness =
-          this.selectedRowValue.thirdTransverseSectionMeasurementDetailTM2.originalThickness;
-        this.listRow[i].thirdTransverseSectionMeasurementDetailTM2.gaugedP =
-          this.selectedRowValue.thirdTransverseSectionMeasurementDetailTM2.gaugedP;
-        this.listRow[i].thirdTransverseSectionMeasurementDetailTM2.gaugedS =
-          this.selectedRowValue.thirdTransverseSectionMeasurementDetailTM2.gaugedS;
+    this.selectedRow.forEach((row) => {
+      for (
+        let i = row + this.selectedRow.length;
+        i <= event.currentIndex;
+        i += this.selectedRow.length
+      ) {
+        this.listRow[i] = JSON.parse(JSON.stringify(this.listRow[row]));
       }
-    } else {
-      for (let i = this.startIndex - 1; i >= this.endIndex; i--) {
-        this.listRow[i].strakePosition = this.selectedRowValue.strakePosition;
-        this.listRow[i].noOrLetter = this.selectedRowValue.noOrLetter;
-        this.listRow[
-          i
-        ].firstTransverseSectionMeasurementDetailTM2.originalThickness =
-          this.selectedRowValue.firstTransverseSectionMeasurementDetailTM2.originalThickness;
-        this.listRow[i].firstTransverseSectionMeasurementDetailTM2.gaugedP =
-          this.selectedRowValue.firstTransverseSectionMeasurementDetailTM2.gaugedP;
-        this.listRow[i].firstTransverseSectionMeasurementDetailTM2.gaugedS =
-          this.selectedRowValue.firstTransverseSectionMeasurementDetailTM2.gaugedS;
-        this.listRow[
-          i
-        ].secondTransverseSectionMeasurementDetailTM2.originalThickness =
-          this.selectedRowValue.secondTransverseSectionMeasurementDetailTM2.originalThickness;
-        this.listRow[i].secondTransverseSectionMeasurementDetailTM2.gaugedP =
-          this.selectedRowValue.secondTransverseSectionMeasurementDetailTM2.gaugedP;
-        this.listRow[i].secondTransverseSectionMeasurementDetailTM2.gaugedS =
-          this.selectedRowValue.secondTransverseSectionMeasurementDetailTM2.gaugedS;
-        this.listRow[
-          i
-        ].thirdTransverseSectionMeasurementDetailTM2.originalThickness =
-          this.selectedRowValue.thirdTransverseSectionMeasurementDetailTM2.originalThickness;
-        this.listRow[i].thirdTransverseSectionMeasurementDetailTM2.gaugedP =
-          this.selectedRowValue.thirdTransverseSectionMeasurementDetailTM2.gaugedP;
-        this.listRow[i].thirdTransverseSectionMeasurementDetailTM2.gaugedS =
-          this.selectedRowValue.thirdTransverseSectionMeasurementDetailTM2.gaugedS;
-      }
-    }
+    });
   }
 
   showModal(): void {
@@ -293,11 +328,87 @@ export class Tm2iiComponent {
   onChangePercent() {
     for (let i = 0; i < this.listRow.length; i++) {
       this.listRow[i].firstTransverseSectionMeasurementDetailTM2.percent =
-        this.percentSelected.toString();
+        this.percentValue;
       this.listRow[i].secondTransverseSectionMeasurementDetailTM2.percent =
-        this.percentSelected.toString();
+        this.percentValue;
       this.listRow[i].thirdTransverseSectionMeasurementDetailTM2.percent =
-        this.percentSelected.toString();
+        this.percentValue;
     }
+
+    this.percentSelected = this.listPercentOption.filter(
+      (percent) => percent.label === this.percentValue
+    )[0].value;
+  }
+
+  clearRow(index: number) {
+    this.listRow[index] = JSON.parse(JSON.stringify(this.emptyRow));
+  }
+
+  deleteRow(index: number) {
+    this.listRow.splice(index, 1);
+    if (this.listRow.length === 0) {
+      this.listRow = [];
+    } else {
+      this.listRow = this.listRow;
+    }
+  }
+
+  onImportExcel(event: any) {
+    this.isLoadingDataForm = true;
+
+    const formData = new FormData();
+    formData.append('excelFile', event.target.files[0]);
+    this.formService
+      .importExcel(`${API_END_POINT}/sheet/tm2s`, formData)
+      .subscribe((data) => {
+        this.listRow = [];
+
+        this.firstTransverseSectionFrom = data.firstFrameNoTM2.split('~')[0];
+        this.firstTransverseSectionTo = data.firstFrameNoTM2.split('~')[1];
+        this.secondTransverseSectionFrom = data.secondFrameNoTM2.split('~')[0];
+        this.secondTransverseSectionTo = data.secondFrameNoTM2.split('~')[1];
+        this.thirdTransverseSectionFrom = data.thirdFrameNoTM2.split('~')[0];
+        this.thirdTransverseSectionTo = data.thirdFrameNoTM2.split('~')[1];
+
+        data.measurementTM2DTOList.forEach((data: any) => {
+          this.listRow.push({
+            strakePosition: data.strakePosition,
+            noOrLetter: data.noOrLetter,
+            firstTransverseSectionMeasurementDetailTM2: {
+              originalThickness:
+                data.firstTransverseSectionMeasurementDetailTM2
+                  .originalThickness,
+              maxAlwbDim:
+                data.firstTransverseSectionMeasurementDetailTM2.maxAlwbDim,
+              gaugedP: data.firstTransverseSectionMeasurementDetailTM2.gaugedP,
+              gaugedS: data.firstTransverseSectionMeasurementDetailTM2.gaugedS,
+              percent: data.firstTransverseSectionMeasurementDetailTM2.percent,
+            },
+            secondTransverseSectionMeasurementDetailTM2: {
+              originalThickness:
+                data.secondTransverseSectionMeasurementDetailTM2
+                  .originalThickness,
+              maxAlwbDim:
+                data.secondTransverseSectionMeasurementDetailTM2.maxAlwbDim,
+              gaugedP: data.secondTransverseSectionMeasurementDetailTM2.gaugedP,
+              gaugedS: data.secondTransverseSectionMeasurementDetailTM2.gaugedS,
+              percent: data.secondTransverseSectionMeasurementDetailTM2.percent,
+            },
+            thirdTransverseSectionMeasurementDetailTM2: {
+              originalThickness:
+                data.thirdTransverseSectionMeasurementDetailTM2
+                  .originalThickness,
+              maxAlwbDim:
+                data.thirdTransverseSectionMeasurementDetailTM2.maxAlwbDim,
+              gaugedP: data.thirdTransverseSectionMeasurementDetailTM2.gaugedP,
+              gaugedS: data.thirdTransverseSectionMeasurementDetailTM2.gaugedS,
+              percent: data.thirdTransverseSectionMeasurementDetailTM2.percent,
+            },
+          });
+        });
+      });
+    this.selectedFile = null;
+
+    this.isLoadingDataForm = false;
   }
 }

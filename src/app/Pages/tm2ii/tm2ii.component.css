@@ -86,3 +86,47 @@ input.ng-dirty.ng-invalid {
   color: red;
   border-color: red;
 }
+
+.ant-table-tbody > tr.ant-table-row:hover > td {
+  background: none;
+}
+
+.table-header-right {
+  position: sticky;
+  right: 0;
+  z-index: 2;
+  border-left: 1px solid #f0f0f0;
+}
+
+.table-body-right {
+  position: sticky;
+  right: 0;
+  z-index: 2;
+  background-color: #f0f0f0;
+  border-left: 1px solid #f0f0f0;
+}
+
+.table-body-left {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background-color: #f0f0f0;
+  border-left: 1px solid #f0f0f0;
+  cursor: pointer;
+}
+
+.form-code {
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px;
+}
+
+.import-excel {
+  display: block;
+  background-color: rgb(20, 139, 250);
+  border: 0;
+  cursor: pointer;
+  color: white;
+  width: max-content;
+  padding: 4px 15px;
+}

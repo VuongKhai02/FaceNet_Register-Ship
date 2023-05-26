@@ -8,6 +8,10 @@ import { ParamValue } from 'src/app/share/models/paramValue.model';
 import { FormService } from 'src/app/share/services/form/form.service';
 import { ParamValueService } from 'src/app/share/services/param-value.service';
 import { CdkDragEnd, CdkDragDrop } from '@angular/cdk/drag-drop';
+import { NavigationEnd, Router } from '@angular/router';
+import { GeneralParticular } from 'src/app/share/models/generalParticulars.model';
+import { API_END_POINT } from 'src/environments/environment';
+import { newParamValue } from 'src/app/share/models/newParamValue.model';
 
 @Component({
   selector: 'app-tm6',
@@ -18,7 +22,8 @@ export class Tm6Component implements OnInit {
   constructor(
     public formService: FormService,
     public paramValueService: ParamValueService,
-    private message: NzMessageService
+    private message: NzMessageService,
+    private router: Router
   ) {}
 
   addRowValue: number = 0;
@@ -38,9 +43,11 @@ export class Tm6Component implements OnInit {
   percentSelected: number = 1;
   structuralMemberSelected: number = -1;
 
-  API_URL: string = `http://222.252.25.37:9080/api/v1/report-indexes/1/tm6s`;
+  partId: string = this.router.url.split('/')[2];
+  tmId: string = this.router.url.split('/')[4];
+  API_URL: string = `http://222.252.25.37:9080/api/v1/report-indexes/${this.partId}/tm6s`;
 
-  selectedRowValue: measurementTM6 = {
+  emptyRow: measurementTM6 = {
     description: '',
     item: '',
     detailMeasurement: {
@@ -52,77 +59,149 @@ export class Tm6Component implements OnInit {
     },
   };
 
-  startIndex: number = -1;
-  endIndex: number = -1;
-
   isLoadingSaveButton: boolean = false;
 
   isAddRowVisible: boolean = false;
 
+  selectedRow: number[] = [];
+  selectedListRow: number = -1;
+  listFormCode: ParamValue[] = [];
+
+  isLoadingImportExcel: boolean = false;
+
+  generalParticular!: GeneralParticular;
+
+  listNewStructuralMember: newParamValue[] = [];
+
+  selectedFile: any;
+
   ngOnInit(): void {
-    this.addRowList();
-    for (let i = 1; i <= 20; i++)
-      this.listRow.push({
-        description: '',
-        item: '',
-        detailMeasurement: {
-          originalThickness: '',
-          maxAlwbDim: '',
-          gaugedP: '',
-          gaugedS: '',
-          percent: '',
-        },
+    this.router.events.subscribe((event) => {
+      if (
+        event instanceof NavigationEnd &&
+        this.router.url.split('/')[1] === 'part' &&
+        this.router.url.split('/')[3].slice(0, 3) === 'tm6' &&
+        this.router.url.split('/')[4] !== '-1'
+      ) {
+        this.partId = this.router.url.split('/')[2];
+        this.tmId = this.router.url.split('/')[4];
+        this.formService.getDataForm('tm6s', this.tmId).subscribe((data) => {
+          this.formTM6.code = data.code;
+          this.formTM6.structuralMembers = data.structuralMembers;
+          this.formTM6.locationOfStructure = data.locationOfStructure;
+          this.formTM6.structuralDescriptionTM6List =
+            data.structuralDescriptionTM6List;
+
+          for (
+            let i = 0;
+            i < this.formTM6.structuralDescriptionTM6List.length;
+            i++
+          ) {
+            this.formTM6.structuralDescriptionTM6List[i].measurementTM6List =
+              data.structuralDescriptionTM6List[i].measurementTM6DTOList;
+          }
+
+          this.listStructuralMember.map((member) => {
+            data.structuralDescriptionTM6List.forEach((structural: any) => {
+              structural.measurementTM6DTOList.forEach((measurement: any) => {
+                if (member.param == measurement.structuralMember) {
+                  member.value = measurement.detailMeasurement.percent;
+                  return;
+                }
+              });
+            });
+          });
+        });
+      } else if (
+        event instanceof NavigationEnd &&
+        this.router.url.split('/')[4] === '-1'
+      ) {
+        this.formTM6.structuralDescriptionTM6List = [];
+        this.formTM6.structuralDescriptionTM6List.push({
+          structuralDescriptionTitle: 'New list',
+          measurementTM6List: [],
+        });
+
+        for (let i = 1; i <= 20; i++) {
+          this.formTM6.structuralDescriptionTM6List[0].measurementTM6List.push(
+            JSON.parse(JSON.stringify(this.emptyRow))
+          );
+        }
+      }
+    });
+
+    if (Number(this.tmId) === -1) {
+      this.formTM6.structuralDescriptionTM6List = [];
+      this.formTM6.structuralDescriptionTM6List.push({
+        structuralDescriptionTitle: 'New list',
+        measurementTM6List: [],
       });
+      for (let i = 1; i <= 20; i++) {
+        this.formTM6.structuralDescriptionTM6List[0].measurementTM6List.push(
+          JSON.parse(JSON.stringify(this.emptyRow))
+        );
+      }
+    } else {
+      this.formService.getDataForm('tm6s', this.tmId).subscribe((data) => {
+        this.formTM6.code = data.code;
+        this.formTM6.structuralMembers = data.structuralMembers;
+        this.formTM6.locationOfStructure = data.locationOfStructure;
+        this.formTM6.structuralDescriptionTM6List =
+          data.structuralDescriptionTM6List;
+
+        for (
+          let i = 0;
+          i < this.formTM6.structuralDescriptionTM6List.length;
+          i++
+        ) {
+          this.formTM6.structuralDescriptionTM6List[i].measurementTM6List =
+            data.structuralDescriptionTM6List[i].measurementTM6DTOList;
+        }
+
+        this.listStructuralMember.map((member) => {
+          data.structuralDescriptionTM6List.forEach((structural: any) => {
+            structural.measurementTM6DTOList.forEach((measurement: any) => {
+              if (member.param == measurement.structuralMember) {
+                member.value = measurement.detailMeasurement.percent;
+                return;
+              }
+            });
+          });
+        });
+      });
+    }
 
     this.paramValueService.getParamValueByType(9).subscribe((data) => {
       this.listStructuralMember = data;
     });
+
+    this.paramValueService.getParamValueByType(11).subscribe((data) => {
+      this.listFormCode = data;
+    });
+
+    if (this.formService.getParticularData() != null)
+      this.generalParticular = this.formService.getParticularData();
   }
 
   addRow() {
-    if (this.structuralMemberSelected >= 0) {
-      for (let i = 1; i <= this.addRowValue; i++)
-        this.listStructuralDescription[
-          this.structuralMemberSelected
-        ].measurementTM6List.push({
-          description: '',
-          item: '',
-          detailMeasurement: {
-            originalThickness: '',
-            maxAlwbDim: '',
-            gaugedP: '',
-            gaugedS: '',
-            percent: '',
-          },
+    if (this.addRowValue > 0 && this.addRowValue <= 100) {
+      if (this.structuralMemberSelected >= 0) {
+        for (let i = 1; i <= this.addRowValue; i++)
+          this.formTM6.structuralDescriptionTM6List[
+            this.structuralMemberSelected
+          ].measurementTM6List.push(JSON.parse(JSON.stringify(this.emptyRow)));
+      } else if (this.structuralMemberSelected == -1) {
+        this.formTM6.structuralDescriptionTM6List.push({
+          structuralDescriptionTitle: 'New list',
+          measurementTM6List: [],
         });
-    } else if (this.structuralMemberSelected == -1) {
-      this.listStructuralDescription.push({
-        structuralDescriptionTitle: 'New list',
-        measurementTM6List: [],
-      });
 
-      for (let i = 1; i <= this.addRowValue; i++)
-        this.listStructuralDescription[
-          this.listStructuralDescription.length - 1
-        ].measurementTM6List.push({
-          description: '',
-          item: '',
-          detailMeasurement: {
-            originalThickness: '',
-            maxAlwbDim: '',
-            gaugedP: '',
-            gaugedS: '',
-            percent: '',
-          },
-        });
+        for (let i = 1; i <= this.addRowValue; i++)
+          this.formTM6.structuralDescriptionTM6List[
+            this.formTM6.structuralDescriptionTM6List.length - 1
+          ].measurementTM6List.push(JSON.parse(JSON.stringify(this.emptyRow)));
+      }
     }
-  }
-
-  addRowList() {
-    this.listStructuralDescription.push({
-      structuralDescriptionTitle: '',
-      measurementTM6List: this.listRow,
-    });
   }
 
   showModalPercentManage() {
@@ -196,117 +275,206 @@ export class Tm6Component implements OnInit {
   onSaveForm() {
     this.isLoadingSaveButton = true;
 
-    var newFormTM6 = JSON.parse(JSON.stringify(this.formTM6));
+    this.formTM6.structuralDescriptionTM6List.forEach((structuralMember) => {
+      structuralMember.measurementTM6List =
+        structuralMember.measurementTM6List.filter((measurementTM6) => {
+          return (
+            measurementTM6.description !== '' ||
+            measurementTM6.item !== '' ||
+            measurementTM6.detailMeasurement.originalThickness !== '' ||
+            measurementTM6.detailMeasurement.gaugedP !== '' ||
+            measurementTM6.detailMeasurement.gaugedS !== ''
+          );
+        });
+    });
 
-    for (let i = 0; i < this.formTM6.structuralDescriptionTM6List.length; i++) {
-      newFormTM6.structuralDescriptionTM6List[i].measurementTM4List =
-        this.formTM6.structuralDescriptionTM6List[i].measurementTM6List.filter(
-          (e) => {
-            return (
-              e.description !== '' ||
-              e.item !== '' ||
-              e.detailMeasurement.originalThickness !== '' ||
-              e.detailMeasurement.gaugedP !== '' ||
-              e.detailMeasurement.gaugedS !== ''
+    if (Number(this.tmId) === -1) {
+      this.formService
+        .addFormToAPI(this.API_URL, this.formTM6)
+        .pipe(
+          retry(3),
+          catchError(() => {
+            return throwError('Something went wrong');
+          })
+        )
+        .subscribe({
+          next: (result) => {
+            this.isLoadingSaveButton = false;
+            this.message.create('success', 'Save form success');
+            this.router.navigate([
+              'part',
+              this.partId,
+              this.router.url.split('/')[3],
+              result.id,
+            ]);
+          },
+          error: (error) => {
+            this.isLoadingSaveButton = false;
+            this.message.create(
+              'error',
+              'Something went wrong, please try later'
             );
-          }
-        );
+          },
+        });
+    } else {
+      this.formService
+        .updateForm('tm6s', this.tmId, this.formTM6)
+        .pipe(
+          retry(3),
+          catchError(() => {
+            return throwError('Something went wrong');
+          })
+        )
+        .subscribe({
+          next: (result) => {
+            this.isLoadingSaveButton = false;
+            this.message.create('success', 'Save form success');
+          },
+          error: (error) => {
+            this.isLoadingSaveButton = false;
+            this.message.create(
+              'error',
+              'Something went wrong, please try later'
+            );
+          },
+        });
     }
 
-    this.formService
-      .addFormToAPI(this.API_URL, newFormTM6)
-      .pipe(
-        retry(3),
-        catchError(() => {
-          return throwError('Something went wrong');
-        })
-      )
-      .subscribe({
-        next: (result) => {
-          this.isLoadingSaveButton = false;
-          this.message.create('success', 'Save form success');
-        },
-        error: (error) => {
-          this.isLoadingSaveButton = false;
-          this.message.create(
-            'error',
-            'Something went wrong, please try later'
-          );
-        },
+    if (this.listNewStructuralMember.length > 0) {
+      this.listNewStructuralMember.forEach((newStructuralMember) => {
+        this.paramValueService.addParamValue(newStructuralMember).subscribe();
       });
+    }
   }
 
   onDragEnded(event: CdkDragEnd) {
     event.source.reset();
   }
 
-  selectRow(structuralMemberTitleIndex: number, structuralMemberIndex: number) {
-    this.selectedRowValue =
-      this.formTM6.structuralDescriptionTM6List[
-        structuralMemberTitleIndex
-      ].measurementTM6List[structuralMemberIndex];
+  selectRow(rowIndex: number, listRowIndex: number): void {
+    if (this.selectedListRow === -1 || this.selectedRow.length === 0) {
+      this.selectedListRow = listRowIndex;
+      if (
+        rowIndex === this.selectedRow.sort()[0] - 1 ||
+        rowIndex === this.selectedRow.sort()[this.selectedRow.length - 1] + 1 ||
+        rowIndex === this.selectedRow.sort()[0] ||
+        rowIndex === this.selectedRow.sort()[this.selectedRow.length - 1]
+      ) {
+        if (this.selectedRow.includes(rowIndex) === false)
+          this.selectedRow.push(rowIndex);
+        else this.selectedRow = this.selectedRow.filter((e) => e !== rowIndex);
+      } else if (this.selectedRow.length === 0) this.selectedRow.push(rowIndex);
+    } else {
+      if (this.selectedListRow === listRowIndex) {
+        if (
+          rowIndex === this.selectedRow.sort()[0] - 1 ||
+          rowIndex ===
+            this.selectedRow.sort()[this.selectedRow.length - 1] + 1 ||
+          rowIndex === this.selectedRow.sort()[0] ||
+          rowIndex === this.selectedRow.sort()[this.selectedRow.length - 1]
+        ) {
+          if (this.selectedRow.includes(rowIndex) === false)
+            this.selectedRow.push(rowIndex);
+          else
+            this.selectedRow = this.selectedRow.filter((e) => e !== rowIndex);
+        } else if (this.selectedRow.length === 0)
+          this.selectedRow.push(rowIndex);
+      }
+    }
   }
 
   onDrop(event: CdkDragDrop<measurementTM6[]>, index: number) {
-    this.startIndex = event.previousIndex;
-    this.endIndex = event.currentIndex;
-    if (this.startIndex < this.endIndex) {
-      for (let i = this.startIndex + 1; i <= this.endIndex; i++) {
-        this.formTM6.structuralDescriptionTM6List[index].measurementTM6List[
-          i
-        ].description = this.selectedRowValue.description;
-        this.formTM6.structuralDescriptionTM6List[index].measurementTM6List[
-          i
-        ].item = this.selectedRowValue.item;
-        this.formTM6.structuralDescriptionTM6List[index].measurementTM6List[
-          i
-        ].detailMeasurement.originalThickness =
-          this.selectedRowValue.detailMeasurement.originalThickness;
-        this.formTM6.structuralDescriptionTM6List[index].measurementTM6List[
-          i
-        ].detailMeasurement.gaugedP =
-          this.selectedRowValue.detailMeasurement.gaugedP;
-        this.formTM6.structuralDescriptionTM6List[index].measurementTM6List[
-          i
-        ].detailMeasurement.gaugedS =
-          this.selectedRowValue.detailMeasurement.gaugedS;
-        this.formTM6.structuralDescriptionTM6List[index].measurementTM6List[
-          i
-        ].detailMeasurement.percent =
-          this.selectedRowValue.detailMeasurement.percent;
+    this.selectedRow.forEach((row) => {
+      for (
+        let i = row + this.selectedRow.length;
+        i <= event.currentIndex;
+        i += this.selectedRow.length
+      ) {
+        this.formTM6.structuralDescriptionTM6List[index].measurementTM6List[i] =
+          JSON.parse(
+            JSON.stringify(
+              this.formTM6.structuralDescriptionTM6List[index]
+                .measurementTM6List[row]
+            )
+          );
       }
-    } else {
-      for (let i = this.startIndex - 1; i >= this.endIndex; i--) {
-        this.formTM6.structuralDescriptionTM6List[index].measurementTM6List[
-          i
-        ].description = this.selectedRowValue.description;
-        this.formTM6.structuralDescriptionTM6List[index].measurementTM6List[
-          i
-        ].item = this.selectedRowValue.item;
-        this.formTM6.structuralDescriptionTM6List[index].measurementTM6List[
-          i
-        ].detailMeasurement.originalThickness =
-          this.selectedRowValue.detailMeasurement.originalThickness;
-        this.formTM6.structuralDescriptionTM6List[index].measurementTM6List[
-          i
-        ].detailMeasurement.gaugedP =
-          this.selectedRowValue.detailMeasurement.gaugedP;
-        this.formTM6.structuralDescriptionTM6List[index].measurementTM6List[
-          i
-        ].detailMeasurement.gaugedS =
-          this.selectedRowValue.detailMeasurement.gaugedS;
-        this.formTM6.structuralDescriptionTM6List[index].measurementTM6List[
-          i
-        ].detailMeasurement.percent =
-          this.selectedRowValue.detailMeasurement.percent;
-      }
-    }
+    });
   }
 
   countRowBefore(index: number): number {
     var sum: number = 0;
     for (let i = 0; i < index; i++)
-      sum += this.listStructuralDescription[i].measurementTM6List.length + 1;
+      sum +=
+        this.formTM6.structuralDescriptionTM6List[i].measurementTM6List.length +
+        1;
     return sum;
+  }
+
+  clearRow(i: number, j: number) {
+    this.formTM6.structuralDescriptionTM6List[i].measurementTM6List[j] =
+      JSON.parse(JSON.stringify(this.emptyRow));
+  }
+
+  deleteRow(i: number, j: number) {
+    this.formTM6.structuralDescriptionTM6List[i].measurementTM6List.splice(
+      j,
+      1
+    );
+  }
+
+  deleteListRow(index: number) {
+    this.formTM6.structuralDescriptionTM6List.splice(index, 1);
+    if (this.formTM6.structuralDescriptionTM6List.length === 0) {
+      this.formTM6.structuralDescriptionTM6List = [];
+    } else {
+      this.formTM6.structuralDescriptionTM6List =
+        this.formTM6.structuralDescriptionTM6List;
+    }
+  }
+
+  onImportExcel(event: any) {
+    const formData = new FormData();
+    formData.append('excelFile', event.target.files[0]);
+    this.formService
+      .importExcel(`${API_END_POINT}/sheet/tm6s`, formData)
+      .subscribe((data) => {
+        this.formTM6.structuralMembers = data.structuralMembers;
+        this.formTM6.locationOfStructure = data.locationOfStructure;
+        this.formTM6.structuralDescriptionTM6List =
+          data.structuralDescriptionTM6List;
+
+        for (
+          let i = 0;
+          i < this.formTM6.structuralDescriptionTM6List.length;
+          i++
+        ) {
+          this.formTM6.structuralDescriptionTM6List[i].measurementTM6List =
+            data.structuralDescriptionTM6List[i].measurementTM6DTOList;
+
+          data.structuralDescriptionTM6List[i].measurementTM6DTOList.forEach(
+            (measurementTM6DTO: any) => {
+              if (
+                this.listStructuralMember.find(
+                  (item) => item.param === measurementTM6DTO.description
+                ) === undefined
+              ) {
+                this.listStructuralMember.push({
+                  id: 0,
+                  param: measurementTM6DTO.description,
+                  value: measurementTM6DTO.description,
+                  type: 'TM5_VALUE',
+                  edit: false,
+                });
+                this.listNewStructuralMember.push({
+                  param: measurementTM6DTO.description,
+                  value: measurementTM6DTO.description,
+                  type: 8,
+                });
+              }
+            }
+          );
+        }
+      });
+    this.selectedFile = null;
   }
 }

@@ -53,6 +53,7 @@ import { APP_INITIALIZER } from '@angular/core';
 import { KeycloakAngularModule, KeycloakService } from 'keycloak-angular';
 import { initializeKeycloak } from './utility/app.init';
 import { ExportPdfComponent } from './Pages/export-pdf/export-pdf.component';
+import { NzUploadModule } from 'ng-zorro-antd/upload';
 import { AuthInterceptorProvider } from './share/services/auth.service';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NgxSpinnerModule } from 'ngx-spinner';
@@ -112,8 +113,9 @@ registerLocaleData(en);
     NzModalModule,
     DragDropModule,
     KeycloakAngularModule,
-    NzSpinModule,
     NgxSpinnerModule,
+    NzUploadModule,
+    NzSpinModule,
   ],
   providers: [
     { provide: NZ_I18N, useValue: en_US },
