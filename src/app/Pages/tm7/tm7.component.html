@@ -148,6 +148,7 @@
       <span nz-icon nzType="save" nzTheme="outline"></span>Save
     </button>
   </div>
+
   <nz-table
     [nzData]="formTM7.frameNumberList"
     [nzFrontPagination]="false"
@@ -255,7 +256,32 @@
         [style.background]="
           selectedRow.includes(j) && selectedListRow === i
             ? '#FFE6C1 !important'
-            : ''
+            : formService.checkBeforeSave(
+                row.upperPart.originalThickness,
+                row.upperPart.gaugedP
+              ) &&
+              formService.checkBeforeSave(
+                row.upperPart.originalThickness,
+                row.upperPart.gaugedS
+              ) &&
+              formService.checkBeforeSave(
+                row.midPart.originalThickness,
+                row.midPart.gaugedP
+              ) &&
+              formService.checkBeforeSave(
+                row.midPart.originalThickness,
+                row.midPart.gaugedS
+              ) &&
+              formService.checkBeforeSave(
+                row.lowerPart.originalThickness,
+                row.lowerPart.gaugedP
+              ) &&
+              formService.checkBeforeSave(
+                row.lowerPart.originalThickness,
+                row.lowerPart.gaugedS
+              )
+            ? ''
+            : '#FF3333 !important'
         "
       >
         <td
@@ -1001,7 +1027,7 @@
             nz-input
             type="number"
             min="0"
-            [(ngModel)]="row.lowerPart.originalThickness"
+            [(ngModel)]="row.upperPart.originalThickness"
           />
         </td>
         <td>

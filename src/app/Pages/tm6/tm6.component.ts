@@ -45,7 +45,7 @@ export class Tm6Component implements OnInit {
 
   partId: string = this.router.url.split('/')[2];
   tmId: string = this.router.url.split('/')[4];
-  API_URL: string = `http://222.252.25.37:9080/api/v1/report-indexes/${this.partId}/tm6s`;
+  API_URL: string = `${API_END_POINT}/report-indexes/${this.partId}/tm6s`;
 
   emptyRow: measurementTM6 = {
     description: '',
@@ -67,8 +67,6 @@ export class Tm6Component implements OnInit {
   selectedListRow: number = -1;
   listFormCode: ParamValue[] = [];
 
-  isLoadingImportExcel: boolean = false;
-
   generalParticular!: GeneralParticular;
 
   listNewStructuralMember: newParamValue[] = [];
@@ -76,7 +74,20 @@ export class Tm6Component implements OnInit {
   selectedFile: any;
 
   ngOnInit(): void {
+    this.paramValueService.getParamValueByType(9).subscribe((data) => {
+      this.listStructuralMember = data;
+    });
+
+    this.paramValueService.getParamValueByType(11).subscribe((data) => {
+      this.listFormCode = data;
+    });
+
+    if (this.formService.getParticularData() != null)
+      this.generalParticular = this.formService.getParticularData();
+
     this.router.events.subscribe((event) => {
+      this.formService.isLoadingData = true;
+
       if (
         event instanceof NavigationEnd &&
         this.router.url.split('/')[1] === 'part' &&
@@ -111,6 +122,7 @@ export class Tm6Component implements OnInit {
               });
             });
           });
+          this.formService.isLoadingData = false;
         });
       } else if (
         event instanceof NavigationEnd &&
@@ -168,19 +180,9 @@ export class Tm6Component implements OnInit {
             });
           });
         });
+        this.formService.isLoadingData = false;
       });
     }
-
-    this.paramValueService.getParamValueByType(9).subscribe((data) => {
-      this.listStructuralMember = data;
-    });
-
-    this.paramValueService.getParamValueByType(11).subscribe((data) => {
-      this.listFormCode = data;
-    });
-
-    if (this.formService.getParticularData() != null)
-      this.generalParticular = this.formService.getParticularData();
   }
 
   addRow() {
@@ -273,6 +275,7 @@ export class Tm6Component implements OnInit {
   }
 
   onSaveForm() {
+    this.formService.isLoadingData = true;
     this.isLoadingSaveButton = true;
 
     this.formTM6.structuralDescriptionTM6List.forEach((structuralMember) => {
@@ -299,7 +302,6 @@ export class Tm6Component implements OnInit {
         )
         .subscribe({
           next: (result) => {
-            this.isLoadingSaveButton = false;
             this.message.create('success', 'Save form success');
             this.router.navigate([
               'part',
@@ -309,11 +311,14 @@ export class Tm6Component implements OnInit {
             ]);
           },
           error: (error) => {
-            this.isLoadingSaveButton = false;
             this.message.create(
               'error',
               'Something went wrong, please try later'
             );
+          },
+          complete: () => {
+            this.formService.isLoadingData = false;
+            this.isLoadingSaveButton = false;
           },
         });
     } else {
@@ -327,15 +332,17 @@ export class Tm6Component implements OnInit {
         )
         .subscribe({
           next: (result) => {
-            this.isLoadingSaveButton = false;
             this.message.create('success', 'Save form success');
           },
           error: (error) => {
-            this.isLoadingSaveButton = false;
             this.message.create(
               'error',
               'Something went wrong, please try later'
             );
+          },
+          complete: () => {
+            this.formService.isLoadingData = false;
+            this.isLoadingSaveButton = false;
           },
         });
     }
@@ -433,6 +440,7 @@ export class Tm6Component implements OnInit {
   }
 
   onImportExcel(event: any) {
+    this.formService.isLoadingData = true;
     const formData = new FormData();
     formData.append('excelFile', event.target.files[0]);
     this.formService
@@ -443,11 +451,7 @@ export class Tm6Component implements OnInit {
         this.formTM6.structuralDescriptionTM6List =
           data.structuralDescriptionTM6List;
 
-        for (
-          let i = 0;
-          i < this.formTM6.structuralDescriptionTM6List.length;
-          i++
-        ) {
+        for (let i = 0; i < data.structuralDescriptionTM6List.length; i++) {
           this.formTM6.structuralDescriptionTM6List[i].measurementTM6List =
             data.structuralDescriptionTM6List[i].measurementTM6DTOList;
 
@@ -474,6 +478,8 @@ export class Tm6Component implements OnInit {
             }
           );
         }
+
+        this.formService.isLoadingData = false;
       });
     this.selectedFile = null;
   }

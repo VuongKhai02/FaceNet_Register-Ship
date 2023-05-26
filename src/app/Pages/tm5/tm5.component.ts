@@ -46,7 +46,7 @@ export class Tm5Component implements OnInit {
 
   partId: string = this.router.url.split('/')[2];
   tmId: string = this.router.url.split('/')[4];
-  API_URL: string = `http://222.252.25.37:9080/api/v1/report-indexes/${this.partId}/tm5s`;
+  API_URL: string = `${API_END_POINT}/report-indexes/${this.partId}/tm5s`;
 
   emptyRow: measurementTM5 = {
     structuralComponent: '',
@@ -67,8 +67,6 @@ export class Tm5Component implements OnInit {
   selectedListRow: number = -1;
   listFormCode: ParamValue[] = [];
 
-  isLoadingDataForm: boolean = false;
-
   generalParticular!: GeneralParticular;
 
   listNewStructuralMember: newParamValue[] = [];
@@ -76,6 +74,17 @@ export class Tm5Component implements OnInit {
   selectedFile: any;
 
   ngOnInit(): void {
+    this.paramValueService.getParamValueByType(8).subscribe((data) => {
+      this.listStructuralMember = data;
+    });
+
+    this.paramValueService.getParamValueByType(11).subscribe((data) => {
+      this.listFormCode = data;
+    });
+
+    if (this.formService.getParticularData() != null)
+      this.generalParticular = this.formService.getParticularData();
+
     this.router.events.subscribe((event) => {
       if (
         event instanceof NavigationEnd &&
@@ -83,6 +92,8 @@ export class Tm5Component implements OnInit {
         this.router.url.split('/')[3].slice(0, 3) === 'tm5' &&
         this.router.url.split('/')[4] !== '-1'
       ) {
+        this.formService.isLoadingData = true;
+
         this.partId = this.router.url.split('/')[2];
         this.tmId = this.router.url.split('/')[4];
         this.formService.getDataForm('tm5s', this.tmId).subscribe((data) => {
@@ -106,6 +117,8 @@ export class Tm5Component implements OnInit {
               });
             });
           });
+
+          this.formService.isLoadingData = false;
         });
       } else if (
         event instanceof NavigationEnd &&
@@ -137,6 +150,8 @@ export class Tm5Component implements OnInit {
         );
       }
     } else {
+      this.formService.isLoadingData = true;
+
       this.formService.getDataForm('tm5s', this.tmId).subscribe((data) => {
         this.formTM5.code = data.code;
         this.formTM5.tankHolDescription = data.tankHolDescription;
@@ -158,19 +173,9 @@ export class Tm5Component implements OnInit {
             });
           });
         });
+        this.formService.isLoadingData = false;
       });
     }
-
-    this.paramValueService.getParamValueByType(8).subscribe((data) => {
-      this.listStructuralMember = data;
-    });
-
-    this.paramValueService.getParamValueByType(11).subscribe((data) => {
-      this.listFormCode = data;
-    });
-
-    if (this.formService.getParticularData() != null)
-      this.generalParticular = this.formService.getParticularData();
   }
 
   addRow() {
@@ -258,6 +263,7 @@ export class Tm5Component implements OnInit {
   }
 
   onSaveForm() {
+    this.formService.isLoadingData = true;
     this.isLoadingSaveButton = true;
 
     this.formTM5.structuralTM5List.forEach((structuralMember) => {
@@ -284,7 +290,6 @@ export class Tm5Component implements OnInit {
         )
         .subscribe({
           next: (result) => {
-            this.isLoadingSaveButton = false;
             this.message.create('success', 'Save form success');
             this.router.navigate([
               'part',
@@ -294,11 +299,14 @@ export class Tm5Component implements OnInit {
             ]);
           },
           error: (error) => {
-            this.isLoadingSaveButton = false;
             this.message.create(
               'error',
               'Something went wrong, please try later'
             );
+          },
+          complete: () => {
+            this.formService.isLoadingData = false;
+            this.isLoadingSaveButton = false;
           },
         });
     } else {
@@ -321,6 +329,10 @@ export class Tm5Component implements OnInit {
               'error',
               'Something went wrong, please try later'
             );
+          },
+          complete: () => {
+            this.formService.isLoadingData = false;
+            this.isLoadingSaveButton = false;
           },
         });
     }
@@ -412,6 +424,7 @@ export class Tm5Component implements OnInit {
   }
 
   onImportExcel(event: any) {
+    this.formService.isLoadingData = true;
     const formData = new FormData();
     formData.append('excelFile', event.target.files[0]);
     this.formService
@@ -421,7 +434,7 @@ export class Tm5Component implements OnInit {
         this.formTM5.locationOfStructure = data.locationOfStructure;
         this.formTM5.structuralTM5List = data.structuralTM5List;
 
-        for (let i = 0; i < this.formTM5.structuralTM5List.length; i++) {
+        for (let i = 0; i < data.structuralTM5List.length; i++) {
           this.formTM5.structuralTM5List[i].measurementTM5List =
             data.structuralTM5List[i].measurementTM5List;
 
@@ -448,6 +461,7 @@ export class Tm5Component implements OnInit {
             }
           );
         }
+        this.formService.isLoadingData = false;
       });
     this.selectedFile = null;
   }

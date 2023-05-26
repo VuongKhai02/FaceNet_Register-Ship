@@ -236,7 +236,40 @@
         cdkDrag
         [cdkDragDisabled]="selectedRow.includes(index) === false"
         [style.background]="
-          selectedRow.includes(index) ? '#FFE6C1 !important' : ''
+          selectedRow.includes(index)
+            ? '#FFE6C1 !important'
+            : formService.checkBeforeSave(
+                row.firstTransverseSectionMeasurementDetailTM2
+                  .originalThickness,
+                row.firstTransverseSectionMeasurementDetailTM2.gaugedP
+              ) &&
+              formService.checkBeforeSave(
+                row.firstTransverseSectionMeasurementDetailTM2
+                  .originalThickness,
+                row.firstTransverseSectionMeasurementDetailTM2.gaugedS
+              ) &&
+              formService.checkBeforeSave(
+                row.secondTransverseSectionMeasurementDetailTM2
+                  .originalThickness,
+                row.secondTransverseSectionMeasurementDetailTM2.gaugedP
+              ) &&
+              formService.checkBeforeSave(
+                row.secondTransverseSectionMeasurementDetailTM2
+                  .originalThickness,
+                row.secondTransverseSectionMeasurementDetailTM2.gaugedS
+              ) &&
+              formService.checkBeforeSave(
+                row.thirdTransverseSectionMeasurementDetailTM2
+                  .originalThickness,
+                row.thirdTransverseSectionMeasurementDetailTM2.gaugedP
+              ) &&
+              formService.checkBeforeSave(
+                row.thirdTransverseSectionMeasurementDetailTM2
+                  .originalThickness,
+                row.thirdTransverseSectionMeasurementDetailTM2.gaugedS
+              )
+            ? ''
+            : '#FF3333 !important'
         "
       >
         <td

@@ -69,8 +69,6 @@ export class Tm4Component implements OnInit {
   selectedListRow: number = -1;
   listFormCode: ParamValue[] = [];
 
-  isLoadingDataForm: boolean = false;
-
   generalParticular!: GeneralParticular;
 
   listNewStructuralMember: newParamValue[] = [];
@@ -78,6 +76,17 @@ export class Tm4Component implements OnInit {
   selectedFile: any;
 
   ngOnInit(): void {
+    this.paramValueService.getParamValueByType(7).subscribe((data) => {
+      this.listStructuralMember = data;
+    });
+
+    this.paramValueService.getParamValueByType(11).subscribe((data) => {
+      this.listFormCode = data;
+    });
+
+    if (this.formService.getParticularData() != null)
+      this.generalParticular = this.formService.getParticularData();
+
     this.router.events.subscribe((event) => {
       if (
         event instanceof NavigationEnd &&
@@ -85,7 +94,7 @@ export class Tm4Component implements OnInit {
         this.router.url.split('/')[3].slice(0, 3) === 'tm4' &&
         this.router.url.split('/')[4] !== '-1'
       ) {
-        this.isLoadingDataForm = true;
+        this.formService.isLoadingData = true;
 
         this.partId = this.router.url.split('/')[2];
         this.formService
@@ -115,7 +124,8 @@ export class Tm4Component implements OnInit {
                 });
               });
             });
-            this.isLoadingDataForm = false;
+
+            this.formService.isLoadingData = false;
           });
       } else if (
         event instanceof NavigationEnd &&
@@ -147,7 +157,8 @@ export class Tm4Component implements OnInit {
         );
       }
     } else {
-      this.isLoadingDataForm = true;
+      this.formService.isLoadingData = true;
+
       this.formService
         .getDataForm('tm4s', this.router.url.split('/')[4])
         .subscribe((data) => {
@@ -175,20 +186,10 @@ export class Tm4Component implements OnInit {
               });
             });
           });
-          this.isLoadingDataForm = false;
+
+          this.formService.isLoadingData = false;
         });
     }
-
-    this.paramValueService.getParamValueByType(7).subscribe((data) => {
-      this.listStructuralMember = data;
-    });
-
-    this.paramValueService.getParamValueByType(11).subscribe((data) => {
-      this.listFormCode = data;
-    });
-
-    if (this.formService.getParticularData() != null)
-      this.generalParticular = this.formService.getParticularData();
   }
 
   addRow() {
@@ -282,6 +283,7 @@ export class Tm4Component implements OnInit {
 
   onSaveForm() {
     this.isLoadingSaveButton = true;
+    this.formService.isLoadingData = true;
 
     this.formTM4.structuralMemberTM4List.forEach((structuralMember) => {
       structuralMember.measurementTM4List =
@@ -307,8 +309,6 @@ export class Tm4Component implements OnInit {
         )
         .subscribe({
           next: (result) => {
-            this.isLoadingSaveButton = false;
-            this.message.create('success', 'Save form success');
             this.listNewStructuralMember = [];
             this.router.navigate([
               'part',
@@ -316,13 +316,17 @@ export class Tm4Component implements OnInit {
               this.router.url.split('/')[3],
               result.id,
             ]);
+            this.message.create('success', 'Save form success');
           },
           error: (error) => {
-            this.isLoadingSaveButton = false;
             this.message.create(
               'error',
               'Something went wrong, please try later'
             );
+          },
+          complete: () => {
+            this.isLoadingSaveButton = false;
+            this.formService.isLoadingData = false;
           },
         });
     } else {
@@ -345,6 +349,10 @@ export class Tm4Component implements OnInit {
               'error',
               'Something went wrong, please try later'
             );
+          },
+          complete: () => {
+            this.isLoadingSaveButton = false;
+            this.formService.isLoadingData = false;
           },
         });
     }
@@ -440,7 +448,7 @@ export class Tm4Component implements OnInit {
   }
 
   onImportExcel(event: any) {
-    this.isLoadingDataForm = true;
+    this.formService.isLoadingData = true;
     const formData = new FormData();
     formData.append('excelFile', event.target.files[0]);
     this.formService
@@ -450,7 +458,7 @@ export class Tm4Component implements OnInit {
         this.formTM4.locationOfStructure = data.locationOfStructure;
         this.formTM4.structuralMemberTM4List = data.structuralMemberTM4List;
 
-        for (let i = 0; i < this.formTM4.structuralMemberTM4List.length; i++) {
+        for (let i = 0; i < data.structuralMemberTM4List.length; i++) {
           this.formTM4.structuralMemberTM4List[i].measurementTM4List =
             data.structuralMemberTM4List[i].measurementTM4DTOList;
 
@@ -477,7 +485,7 @@ export class Tm4Component implements OnInit {
             }
           );
         }
-        this.isLoadingDataForm = false;
+        this.formService.isLoadingData = false;
       });
 
     this.selectedFile = null;

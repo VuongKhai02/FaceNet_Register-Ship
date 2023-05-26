@@ -33,6 +33,7 @@ input {
 }
 .tb {
   position: relative;
+  transition: all 1s ease;
 }
 .tb td {
   text-align: center;

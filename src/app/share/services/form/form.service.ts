@@ -16,6 +16,8 @@ export class FormService {
 
   generalParticular: GeneralParticular[] = [];
 
+  isLoadingData: boolean = false;
+
   // Check arguments are qualified for calculation
   // Condition:
   //   - Not null
@@ -30,6 +32,16 @@ export class FormService {
       Number(originalThickness) > Number(gauged)
     )
       return true;
+    return false;
+  }
+
+  checkBeforeSave(originalThickness: string, gauged: string): boolean {
+    if (
+      (originalThickness === '' && gauged === '') ||
+      (originalThickness === null && gauged === null)
+    )
+      return true;
+    if (Number(originalThickness) > Number(gauged)) return true;
     return false;
   }
 

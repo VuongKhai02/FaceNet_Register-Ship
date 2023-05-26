@@ -45,7 +45,7 @@ export class Tm7Component implements OnInit {
 
   partId: string = this.router.url.split('/')[2];
   tmId: string = this.router.url.split('/')[4];
-  API_URL: string = `http://222.252.25.37:9080/api/v1/report-indexes/${this.partId}/tm7s`;
+  API_URL: string = `${API_END_POINT}/report-indexes/${this.partId}/tm7s`;
 
   emptyRow: measurementTM7 = {
     item: '',
@@ -89,6 +89,18 @@ export class Tm7Component implements OnInit {
   selectedFile: any;
 
   ngOnInit(): void {
+    this.formService.isLoadingData = true;
+    this.paramValueService.getParamValueByType(9).subscribe((data) => {
+      this.listStructuralMember = data;
+    });
+
+    this.paramValueService.getParamValueByType(11).subscribe((data) => {
+      this.listFormCode = data;
+    });
+
+    if (this.formService.getParticularData() != null)
+      this.generalParticular = this.formService.getParticularData();
+
     this.router.events.subscribe((event) => {
       if (
         event instanceof NavigationEnd &&
@@ -117,6 +129,7 @@ export class Tm7Component implements OnInit {
               });
             });
           });
+          this.formService.isLoadingData = false;
         });
       } else if (
         event instanceof NavigationEnd &&
@@ -167,19 +180,9 @@ export class Tm7Component implements OnInit {
             });
           });
         });
+        this.formService.isLoadingData = false;
       });
     }
-
-    this.paramValueService.getParamValueByType(9).subscribe((data) => {
-      this.listStructuralMember = data;
-    });
-
-    this.paramValueService.getParamValueByType(11).subscribe((data) => {
-      this.listFormCode = data;
-    });
-
-    if (this.formService.getParticularData() != null)
-      this.generalParticular = this.formService.getParticularData();
   }
 
   addRow() {
@@ -274,6 +277,7 @@ export class Tm7Component implements OnInit {
   }
 
   onSaveForm() {
+    this.formService.isLoadingData = false;
     this.isLoadingSaveButton = true;
 
     this.formTM7.frameNumberList.forEach((structuralMember) => {
@@ -299,7 +303,6 @@ export class Tm7Component implements OnInit {
         )
         .subscribe({
           next: (result) => {
-            this.isLoadingSaveButton = false;
             this.message.create('success', 'Save form success');
             this.router.navigate([
               'part',
@@ -309,11 +312,14 @@ export class Tm7Component implements OnInit {
             ]);
           },
           error: (error) => {
-            this.isLoadingSaveButton = false;
             this.message.create(
               'error',
               'Something went wrong, please try later'
             );
+          },
+          complete: () => {
+            this.formService.isLoadingData = false;
+            this.isLoadingSaveButton = false;
           },
         });
     } else {
@@ -336,6 +342,10 @@ export class Tm7Component implements OnInit {
               'error',
               'Something went wrong, please try later'
             );
+          },
+          complete: () => {
+            this.formService.isLoadingData = false;
+            this.isLoadingSaveButton = false;
           },
         });
     }
@@ -420,6 +430,7 @@ export class Tm7Component implements OnInit {
   }
 
   onImportExcel(event: any) {
+    this.formService.isLoadingData = true;
     const formData = new FormData();
     formData.append('excelFile', event.target.files[0]);
     this.formService
@@ -427,7 +438,7 @@ export class Tm7Component implements OnInit {
       .subscribe((data) => {
         this.formTM7.frameNumberList = data.frameNumberList;
 
-        for (let i = 0; i < this.formTM7.frameNumberList.length; i++) {
+        for (let i = 0; i < data.frameNumberList.length; i++) {
           this.formTM7.frameNumberList[i].measurementTM7List =
             data.frameNumberList[i].measurementTM7DTOList;
 
@@ -454,6 +465,7 @@ export class Tm7Component implements OnInit {
             }
           );
         }
+        this.formService.isLoadingData = false;
       });
     this.selectedFile = null;
   }

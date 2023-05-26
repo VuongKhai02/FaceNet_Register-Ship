@@ -247,7 +247,16 @@
         [style.background]="
           selectedRow.includes(j) && selectedListRow === i
             ? '#FFE6C1 !important'
-            : ''
+            : formService.checkBeforeSave(
+                row.detailMeasurement.originalThickness,
+                row.detailMeasurement.gaugedP
+              ) &&
+              formService.checkBeforeSave(
+                row.detailMeasurement.originalThickness,
+                row.detailMeasurement.gaugedS
+              )
+            ? ''
+            : '#FF3333 !important'
         "
       >
         <td

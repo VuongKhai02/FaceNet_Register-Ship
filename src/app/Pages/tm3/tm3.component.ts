@@ -87,8 +87,6 @@ export class Tm3Component {
   selectedRow: number[] = [];
   listFormCode: ParamValue[] = [];
 
-  isLoadingImportExcel: boolean = false;
-
   generalParticular!: GeneralParticular;
 
   selectedFile: any;
@@ -96,6 +94,17 @@ export class Tm3Component {
   listNewStructuralMember: newParamValue[] = [];
 
   ngOnInit(): void {
+    this.paramValueService.getParamValueByType(6).subscribe((data) => {
+      this.listStructuralMember = data;
+    });
+
+    this.paramValueService.getParamValueByType(11).subscribe((data) => {
+      this.listFormCode = data;
+    });
+
+    if (this.formService.getParticularData() != null)
+      this.generalParticular = this.formService.getParticularData();
+
     this.router.events.subscribe((event) => {
       if (
         event instanceof NavigationEnd &&
@@ -103,6 +112,8 @@ export class Tm3Component {
         this.router.url.split('/')[3].slice(0, 3) === 'tm3' &&
         this.router.url.split('/')[4] !== '-1'
       ) {
+        this.formService.isLoadingData = true;
+
         this.formService
           .getDataForm('tm3s', this.router.url.split('/')[4])
           .subscribe((data) => {
@@ -125,6 +136,8 @@ export class Tm3Component {
                 }
               });
             });
+
+            this.formService.isLoadingData = false;
           });
       } else if (
         event instanceof NavigationEnd &&
@@ -140,6 +153,8 @@ export class Tm3Component {
       for (let i = 1; i <= 20; i++)
         this.listRow.push(JSON.parse(JSON.stringify(this.emptyRow)));
     } else {
+      this.formService.isLoadingData = true;
+
       this.formService
         .getDataForm('tm3s', this.router.url.split('/')[4])
         .subscribe((data) => {
@@ -162,20 +177,10 @@ export class Tm3Component {
               }
             });
           });
+
+          this.formService.isLoadingData = false;
         });
     }
-
-    this.paramValueService.getParamValueByType(6).subscribe((data) => {
-      this.listStructuralMember = data;
-    });
-
-    this.paramValueService.getParamValueByType(11).subscribe((data) => {
-      this.listFormCode = data;
-    });
-
-    if (this.formService.getParticularData() != null)
-      this.generalParticular = this.formService.getParticularData();
-    console.log(this.formTM3);
   }
 
   addRow() {
@@ -246,6 +251,7 @@ export class Tm3Component {
   }
 
   onSaveForm() {
+    this.formService.isLoadingData = true;
     this.isLoadingSaveButton = true;
     this.formTM3.measurementTM3List = this.listRow;
     this.formTM3.measurementTM3List = this.formTM3.measurementTM3List.filter(
@@ -282,15 +288,17 @@ export class Tm3Component {
         .subscribe({
           next: (result) => {
             this.isLoadingSaveButton = false;
-            this.message.create('success', 'Save form success');
             this.router.navigate([
               'part',
               this.router.url.split('/')[2],
               this.router.url.split('/')[3],
               result.id,
             ]);
+            this.formService.isLoadingData = false;
+            this.message.create('success', 'Save form success');
           },
           error: (error) => {
+            this.formService.isLoadingData = false;
             this.isLoadingSaveButton = false;
             this.message.create(
               'error',
@@ -309,10 +317,12 @@ export class Tm3Component {
         )
         .subscribe({
           next: (result) => {
+            this.formService.isLoadingData = false;
             this.isLoadingSaveButton = false;
             this.message.create('success', 'Save form success');
           },
           error: (error) => {
+            this.formService.isLoadingData = false;
             this.isLoadingSaveButton = false;
             this.message.create(
               'error',
@@ -372,6 +382,7 @@ export class Tm3Component {
   }
 
   onImportExcel(event: any) {
+    this.formService.isLoadingData = true;
     const formData = new FormData();
     formData.append('excelFile', event.target.files[0]);
     this.formService
@@ -420,7 +431,7 @@ export class Tm3Component {
           });
         });
 
-        for (let i = 0; i < this.formTM3.measurementTM3List.length; i++) {
+        for (let i = 0; i < data.measurementTM3DTOList.length; i++) {
           if (
             this.listStructuralMember.find(
               (item) =>
@@ -442,6 +453,9 @@ export class Tm3Component {
             });
           }
         }
+
+        this.formService.isLoadingData = false;
+        this.message.create('success', 'Import excel success');
       });
     this.selectedFile = null;
   }

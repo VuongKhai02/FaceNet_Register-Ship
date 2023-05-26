@@ -74,13 +74,19 @@ export class Tm1Component implements OnInit {
   selectedRow: number[] = [];
   listFormCode: ParamValue[] = [];
 
-  isLoadingDataForm: boolean = false;
-
   generalParticular!: GeneralParticular;
 
   selectedFile: any;
 
   ngOnInit(): void {
+    this.paramValueService.getParamValueByType(11).subscribe((data) => {
+      this.listFormCode = data;
+    });
+
+    if (this.formService.getParticularData() != null) {
+      this.generalParticular = this.formService.getParticularData();
+    }
+
     this.router.events.subscribe((event) => {
       if (
         event instanceof NavigationEnd &&
@@ -88,11 +94,62 @@ export class Tm1Component implements OnInit {
         this.router.url.split('/')[3].slice(0, 3) === 'tm1' &&
         this.router.url.split('/')[4] !== '-1'
       ) {
-        this.isLoadingDataForm = true;
+        this.formService.isLoadingData = true;
 
         this.formService
           .getDataForm('tm1s', this.router.url.split('/')[4])
-          .subscribe((data) => {
+          .subscribe(
+            (data) => {
+              this.formTM1.code = data.code;
+              this.formTM1.strakePosition = data.strakePosition;
+              this.listRow = data.measurementTM1DTOList;
+
+              this.percentValue =
+                data.measurementTM1DTOList[0].forwardReadingMeasurementDetail.percent;
+
+              if (data.measurementTM1DTOList.length > 0) {
+                this.percentValue =
+                  data.measurementTM1DTOList[0].forwardReadingMeasurementDetail.percent;
+                if (
+                  this.listPercentOption.filter(
+                    (percent) => percent.label === this.percentValue
+                  ).length > 0
+                )
+                  this.percentSelected = this.listPercentOption.filter(
+                    (percent) => percent.label === this.percentValue
+                  )[0].value;
+              }
+
+              this.formService.isLoadingData = false;
+            },
+            (error) => {
+              this.formService.isLoadingData = false;
+            }
+          );
+      } else if (
+        event instanceof NavigationEnd &&
+        this.router.url.split('/')[4] === '-1'
+      ) {
+        this.listRow = [];
+        this.formTM1.code = '';
+        this.formTM1.strakePosition = '';
+        this.percentValue = '';
+        for (let i = 1; i <= 20; i++)
+          this.listRow.push(JSON.parse(JSON.stringify(this.emptyRow)));
+      }
+    });
+
+    if (Number(this.router.url.split('/')[4]) === -1) {
+      this.percentValue = '';
+      for (let i = 1; i <= 20; i++)
+        this.listRow.push(JSON.parse(JSON.stringify(this.emptyRow)));
+    } else {
+      this.formService.isLoadingData = true;
+
+      this.formService
+        .getDataForm('tm1s', this.router.url.split('/')[4])
+        .subscribe(
+          (data) => {
             this.formTM1.code = data.code;
             this.formTM1.strakePosition = data.strakePosition;
             this.listRow = data.measurementTM1DTOList;
@@ -112,62 +169,13 @@ export class Tm1Component implements OnInit {
                   (percent) => percent.label === this.percentValue
                 )[0].value;
             }
-          });
 
-        this.isLoadingDataForm = false;
-      } else if (
-        event instanceof NavigationEnd &&
-        this.router.url.split('/')[4] === '-1'
-      ) {
-        this.listRow = [];
-        this.formTM1.code = '';
-        this.formTM1.strakePosition = '';
-        this.percentValue = '';
-        for (let i = 1; i <= 20; i++)
-          this.listRow.push(JSON.parse(JSON.stringify(this.emptyRow)));
-      }
-    });
-
-    if (Number(this.router.url.split('/')[4]) === -1) {
-      this.percentValue = '';
-      for (let i = 1; i <= 20; i++)
-        this.listRow.push(JSON.parse(JSON.stringify(this.emptyRow)));
-    } else {
-      this.isLoadingDataForm = true;
-
-      this.formService
-        .getDataForm('tm1s', this.router.url.split('/')[4])
-        .subscribe((data) => {
-          this.formTM1.code = data.code;
-          this.formTM1.strakePosition = data.strakePosition;
-          this.listRow = data.measurementTM1DTOList;
-
-          this.percentValue =
-            data.measurementTM1DTOList[0].forwardReadingMeasurementDetail.percent;
-
-          if (data.measurementTM1DTOList.length > 0) {
-            this.percentValue =
-              data.measurementTM1DTOList[0].forwardReadingMeasurementDetail.percent;
-            if (
-              this.listPercentOption.filter(
-                (percent) => percent.label === this.percentValue
-              ).length > 0
-            )
-              this.percentSelected = this.listPercentOption.filter(
-                (percent) => percent.label === this.percentValue
-              )[0].value;
+            this.formService.isLoadingData = false;
+          },
+          (error) => {
+            this.formService.isLoadingData = false;
           }
-        });
-
-      this.isLoadingDataForm = false;
-    }
-
-    this.paramValueService.getParamValueByType(11).subscribe((data) => {
-      this.listFormCode = data;
-    });
-
-    if (this.formService.getParticularData() != null) {
-      this.generalParticular = this.formService.getParticularData();
+        );
     }
   }
 
@@ -229,13 +237,14 @@ export class Tm1Component implements OnInit {
         .subscribe({
           next: (result) => {
             this.isLoadingSaveButton = false;
-            this.message.create('success', 'Save form success');
             this.router.navigate([
               'part',
               this.router.url.split('/')[2],
               this.router.url.split('/')[3],
               result.id,
             ]);
+            this.formService.isLoadingData = false;
+            this.message.create('success', 'Save form success');
           },
           error: (error) => {
             this.isLoadingSaveButton = false;
@@ -243,6 +252,7 @@ export class Tm1Component implements OnInit {
               'error',
               'Something went wrong, please try later'
             );
+            this.formService.isLoadingData = false;
           },
         });
     } else {
@@ -257,6 +267,7 @@ export class Tm1Component implements OnInit {
         .subscribe({
           next: (result) => {
             this.isLoadingSaveButton = false;
+            this.formService.isLoadingData = false;
             this.message.create('success', 'Save form success');
           },
           error: (error) => {
@@ -265,6 +276,7 @@ export class Tm1Component implements OnInit {
               'error',
               'Something went wrong, please try later'
             );
+            this.formService.isLoadingData = false;
           },
         });
     }
@@ -328,9 +340,14 @@ export class Tm1Component implements OnInit {
       this.listRow[i].afterReadingMeasurementDetail.percent = this.percentValue;
     }
 
-    this.percentSelected = this.listPercentOption.filter(
-      (percent) => percent.label === this.percentValue
-    )[0].value;
+    if (
+      this.listPercentOption.filter(
+        (percent) => percent.label === this.percentValue
+      ).length > 0
+    )
+      this.percentSelected = this.listPercentOption.filter(
+        (percent) => percent.label === this.percentValue
+      )[0].value;
   }
 
   clearRow(index: number) {
@@ -347,36 +364,44 @@ export class Tm1Component implements OnInit {
   }
 
   onImportExcel(event: any) {
+    this.formService.isLoadingData = false;
     const formData = new FormData();
     formData.append('excelFile', event.target.files[0]);
     this.formService
       .importExcel(`${API_END_POINT}/sheet/tm1s`, formData)
-      .subscribe((data) => {
-        this.listRow = [];
-        this.formTM1.strakePosition = data.strakePosition;
-        data.measurementTM1DTOList.forEach((data: any) => {
-          this.listRow.push({
-            platePosition: data.platePosition,
-            noOrLetter: data.noOrLetter,
-            forwardReadingMeasurementDetail: {
-              originalThickness:
-                data.forwardReadingMeasurementDetail.originalThickness,
-              maxAlwbDim: data.forwardReadingMeasurementDetail.maxAlwbDim,
-              gaugedP: data.forwardReadingMeasurementDetail.gaugedP,
-              gaugedS: data.forwardReadingMeasurementDetail.gaugedS,
-              percent: data.forwardReadingMeasurementDetail.percent,
-            },
-            afterReadingMeasurementDetail: {
-              originalThickness:
-                data.afterReadingMeasurementDetail.originalThickness,
-              maxAlwbDim: data.afterReadingMeasurementDetail.maxAlwbDim,
-              gaugedP: data.afterReadingMeasurementDetail.gaugedP,
-              gaugedS: data.afterReadingMeasurementDetail.gaugedS,
-              percent: data.afterReadingMeasurementDetail.percent,
-            },
+      .subscribe(
+        (data) => {
+          this.listRow = [];
+          this.formTM1.strakePosition = data.strakePosition;
+          data.measurementTM1DTOList.forEach((data: any) => {
+            this.listRow.push({
+              platePosition: data.platePosition,
+              noOrLetter: data.noOrLetter,
+              forwardReadingMeasurementDetail: {
+                originalThickness:
+                  data.forwardReadingMeasurementDetail.originalThickness,
+                maxAlwbDim: data.forwardReadingMeasurementDetail.maxAlwbDim,
+                gaugedP: data.forwardReadingMeasurementDetail.gaugedP,
+                gaugedS: data.forwardReadingMeasurementDetail.gaugedS,
+                percent: data.forwardReadingMeasurementDetail.percent,
+              },
+              afterReadingMeasurementDetail: {
+                originalThickness:
+                  data.afterReadingMeasurementDetail.originalThickness,
+                maxAlwbDim: data.afterReadingMeasurementDetail.maxAlwbDim,
+                gaugedP: data.afterReadingMeasurementDetail.gaugedP,
+                gaugedS: data.afterReadingMeasurementDetail.gaugedS,
+                percent: data.afterReadingMeasurementDetail.percent,
+              },
+            });
           });
-        });
-      });
+          this.formService.isLoadingData = false;
+          this.message.create('success', 'Import excel success');
+        },
+        (error) => {
+          this.formService.isLoadingData = false;
+        }
+      );
     this.selectedFile = null;
   }
 }

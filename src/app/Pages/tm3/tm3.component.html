@@ -119,6 +119,7 @@
         accept=".xls"
         style="display: none"
         id="import-excel"
+        [(ngModel)]="selectedFile"
         (change)="onImportExcel($event)"
       />
     </button>
@@ -254,7 +255,34 @@
         cdkDrag
         [cdkDragDisabled]="selectedRow.includes(index) === false"
         [style.background]="
-          selectedRow.includes(index) ? '#FFE6C1 !important' : ''
+          selectedRow.includes(index)
+            ? '#FFE6C1 !important'
+            : formService.checkBeforeSave(
+                row.firstTransverseSectionMeasurementDetail.originalThickness,
+                row.firstTransverseSectionMeasurementDetail.gaugedP
+              ) &&
+              formService.checkBeforeSave(
+                row.firstTransverseSectionMeasurementDetail.originalThickness,
+                row.firstTransverseSectionMeasurementDetail.gaugedS
+              ) &&
+              formService.checkBeforeSave(
+                row.secondTransverseSectionMeasurementDetail.originalThickness,
+                row.secondTransverseSectionMeasurementDetail.gaugedP
+              ) &&
+              formService.checkBeforeSave(
+                row.secondTransverseSectionMeasurementDetail.originalThickness,
+                row.secondTransverseSectionMeasurementDetail.gaugedS
+              ) &&
+              formService.checkBeforeSave(
+                row.thirdTransverseSectionMeasurementDetail.originalThickness,
+                row.thirdTransverseSectionMeasurementDetail.gaugedP
+              ) &&
+              formService.checkBeforeSave(
+                row.thirdTransverseSectionMeasurementDetail.originalThickness,
+                row.thirdTransverseSectionMeasurementDetail.gaugedS
+              )
+            ? ''
+            : '#FF3333 !important'
         "
       >
         <td
