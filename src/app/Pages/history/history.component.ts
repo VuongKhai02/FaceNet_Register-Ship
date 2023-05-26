@@ -137,6 +137,9 @@ export class HistoryComponent implements OnInit {
     this.router.navigateByUrl('/generalParticulars');
   }
 
+  /**
+   * Hàm dùng để tìm kiếm general paticular theo các trường đã chọn
+   */
   search(): void {
     if (
       this.formSearch.value.name === '' &&
@@ -207,6 +210,10 @@ export class HistoryComponent implements OnInit {
     }
   }
 
+  /**
+   * Hàm dùng để xóa một phần tử trong mảng general paticular
+   * @param id : id của phần tử
+   */
   deleteItem(id: number) {
     this.getdataService.deleteGeneralParticularsFormAPI(id).subscribe(
       (data) => {
