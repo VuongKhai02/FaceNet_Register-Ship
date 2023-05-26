@@ -39,6 +39,9 @@ export class LoginComponent {
     password: new FormControl(),
   });
 
+  /**
+   * Hàm dùng để đăng nhập
+   */
   submitForm(): void {
     this.accountSevice
       .postAccount({
