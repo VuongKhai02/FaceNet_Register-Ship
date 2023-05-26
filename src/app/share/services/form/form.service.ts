@@ -1,16 +1,22 @@
 import { Injectable } from '@angular/core';
-import { BaseServiceService } from '../base-service.service';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { GeneralParticular } from '../../models/generalParticulars.model';
+import { LocalService } from '../local.service';
+import { API_END_POINT } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FormService {
   constructor(
-    private baseService: BaseServiceService,
-    private httpClient: HttpClient
+    private httpClient: HttpClient,
+    private localService: LocalService
   ) {}
+
+  generalParticular: GeneralParticular[] = [];
+
+  isLoadingData: boolean = false;
 
   // Check arguments are qualified for calculation
   // Condition:
@@ -26,6 +32,16 @@ export class FormService {
       Number(originalThickness) > Number(gauged)
     )
       return true;
+    return false;
+  }
+
+  checkBeforeSave(originalThickness: string, gauged: string): boolean {
+    if (
+      (originalThickness === '' && gauged === '') ||
+      (originalThickness === null && gauged === null)
+    )
+      return true;
+    if (Number(originalThickness) > Number(gauged)) return true;
     return false;
   }
 
@@ -95,5 +111,34 @@ export class FormService {
 
   addFormToAPI(API_URL: string, data: any): Observable<any> {
     return this.httpClient.post(API_URL, data);
+  }
+
+  getDataForm(formName: string, tmId: string): Observable<any> {
+    return this.httpClient.get(`${API_END_POINT}/forms/${formName}/${tmId}`);
+  }
+
+  updateForm(formName: string, tmId: string, newData: any): Observable<any> {
+    return this.httpClient.put(
+      `${API_END_POINT}/forms/${formName}/${tmId}`,
+      newData
+    );
+  }
+
+  importExcel(url: string, fileExcel: any): Observable<any> {
+    return this.httpClient.post(url, fileExcel);
+  }
+
+  getParticularData() {
+    this.httpClient
+      .get<GeneralParticular[]>(`${API_END_POINT}/generals_particulars`)
+      .subscribe((data) => {
+        this.generalParticular = data;
+      });
+
+    if (this.localService.getId())
+      return this.generalParticular.filter(
+        (element) => element.id === this.localService.getId()
+      )[0];
+    else return this.generalParticular[0];
   }
 }

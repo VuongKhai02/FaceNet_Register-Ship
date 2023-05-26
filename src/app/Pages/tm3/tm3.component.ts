@@ -7,6 +7,10 @@ import { ParamValue } from 'src/app/share/models/paramValue.model';
 import { ParamValueService } from 'src/app/share/services/param-value.service';
 import { catchError, retry, throwError } from 'rxjs';
 import { CdkDragEnd, CdkDragDrop } from '@angular/cdk/drag-drop';
+import { NavigationEnd, Router } from '@angular/router';
+import { GeneralParticular } from 'src/app/share/models/generalParticulars.model';
+import { API_END_POINT } from 'src/environments/environment';
+import { newParamValue } from 'src/app/share/models/newParamValue.model';
 
 @Component({
   selector: 'app-tm3',
@@ -17,7 +21,8 @@ export class Tm3Component {
   constructor(
     public formService: FormService,
     public paramValueService: ParamValueService,
-    private message: NzMessageService
+    private message: NzMessageService,
+    private router: Router
   ) {}
 
   addRowValue: number = 0;
@@ -40,16 +45,17 @@ export class Tm3Component {
   };
 
   isPercentVisible: boolean = false;
-
   isAddRowVisible: boolean = false;
 
   percentSelected: number = 0;
 
   listStructuralMember: ParamValue[] = [];
 
-  API_URL: string = `http://222.252.25.37:9080/api/v1/report-indexes/1/tm3s`;
+  API_URL: string = `${API_END_POINT}/report-indexes/${
+    this.router.url.split('/')[2]
+  }/tm3s`;
 
-  selectedRowValue: measurementTM3 = {
+  emptyRow: measurementTM3 = {
     structuralMember: '',
     noOrLetter: '',
     firstTransverseSectionMeasurementDetail: {
@@ -75,72 +81,112 @@ export class Tm3Component {
     },
   };
 
-  startIndex: number = -1;
-  endIndex: number = -1;
-
   isVisible = false;
   isLoadingSaveButton: boolean = false;
 
-  ngOnInit(): void {
-    for (let i = 1; i <= 20; i++)
-      this.listRow.push({
-        structuralMember: '',
-        noOrLetter: '',
-        firstTransverseSectionMeasurementDetail: {
-          originalThickness: '',
-          maxAlwbDim: '',
-          gaugedP: '',
-          gaugedS: '',
-          percent: '',
-        },
-        secondTransverseSectionMeasurementDetail: {
-          originalThickness: '',
-          maxAlwbDim: '',
-          gaugedP: '',
-          gaugedS: '',
-          percent: '',
-        },
-        thirdTransverseSectionMeasurementDetail: {
-          originalThickness: '',
-          maxAlwbDim: '',
-          gaugedP: '',
-          gaugedS: '',
-          percent: '',
-        },
-      });
+  selectedRow: number[] = [];
+  listFormCode: ParamValue[] = [];
 
+  generalParticular!: GeneralParticular;
+
+  selectedFile: any;
+
+  listNewStructuralMember: newParamValue[] = [];
+
+  ngOnInit(): void {
     this.paramValueService.getParamValueByType(6).subscribe((data) => {
       this.listStructuralMember = data;
     });
+
+    this.paramValueService.getParamValueByType(11).subscribe((data) => {
+      this.listFormCode = data;
+    });
+
+    if (this.formService.getParticularData() != null)
+      this.generalParticular = this.formService.getParticularData();
+
+    this.router.events.subscribe((event) => {
+      if (
+        event instanceof NavigationEnd &&
+        this.router.url.split('/')[1] === 'part' &&
+        this.router.url.split('/')[3].slice(0, 3) === 'tm3' &&
+        this.router.url.split('/')[4] !== '-1'
+      ) {
+        this.formService.isLoadingData = true;
+
+        this.formService
+          .getDataForm('tm3s', this.router.url.split('/')[4])
+          .subscribe((data) => {
+            this.formTM3.code = data.code;
+            this.listRow = data.measurementTM3DTOList;
+
+            this.firstTransverseSectionFrom = data.firstFrameNo.split('~')[0];
+            this.firstTransverseSectionTo = data.firstFrameNo.split('~')[1];
+            this.secondTransverseSectionFrom = data.secondFrameNo.split('~')[0];
+            this.secondTransverseSectionTo = data.secondFrameNo.split('~')[1];
+            this.thirdTransverseSectionFrom = data.thirdFrameNo.split('~')[0];
+            this.thirdTransverseSectionTo = data.thirdFrameNo.split('~')[1];
+
+            this.listStructuralMember.map((member) => {
+              data.measurementTM3DTOList.forEach((e: any) => {
+                if (member.param == e.structuralMember) {
+                  member.value =
+                    e.firstTransverseSectionMeasurementDetail.percent;
+                  return;
+                }
+              });
+            });
+
+            this.formService.isLoadingData = false;
+          });
+      } else if (
+        event instanceof NavigationEnd &&
+        this.router.url.split('/')[4] === '-1'
+      ) {
+        this.listRow = [];
+        for (let i = 1; i <= 20; i++)
+          this.listRow.push(JSON.parse(JSON.stringify(this.emptyRow)));
+      }
+    });
+
+    if (Number(this.router.url.split('/')[4]) === -1) {
+      for (let i = 1; i <= 20; i++)
+        this.listRow.push(JSON.parse(JSON.stringify(this.emptyRow)));
+    } else {
+      this.formService.isLoadingData = true;
+
+      this.formService
+        .getDataForm('tm3s', this.router.url.split('/')[4])
+        .subscribe((data) => {
+          this.formTM3.code = data.code;
+          this.listRow = data.measurementTM3DTOList;
+
+          this.firstTransverseSectionFrom = data.firstFrameNo.split('~')[0];
+          this.firstTransverseSectionTo = data.firstFrameNo.split('~')[1];
+          this.secondTransverseSectionFrom = data.secondFrameNo.split('~')[0];
+          this.secondTransverseSectionTo = data.secondFrameNo.split('~')[1];
+          this.thirdTransverseSectionFrom = data.thirdFrameNo.split('~')[0];
+          this.thirdTransverseSectionTo = data.thirdFrameNo.split('~')[1];
+
+          this.listStructuralMember.map((member) => {
+            data.measurementTM3DTOList.forEach((e: any) => {
+              if (member.param == e.structuralMember) {
+                member.value =
+                  e.firstTransverseSectionMeasurementDetail.percent;
+                return;
+              }
+            });
+          });
+
+          this.formService.isLoadingData = false;
+        });
+    }
   }
 
   addRow() {
-    for (let i = 1; i <= this.addRowValue; i++)
-      this.listRow.push({
-        structuralMember: '',
-        noOrLetter: '',
-        firstTransverseSectionMeasurementDetail: {
-          originalThickness: '',
-          maxAlwbDim: '',
-          gaugedP: '',
-          gaugedS: '',
-          percent: '',
-        },
-        secondTransverseSectionMeasurementDetail: {
-          originalThickness: '',
-          maxAlwbDim: '',
-          gaugedP: '',
-          gaugedS: '',
-          percent: '',
-        },
-        thirdTransverseSectionMeasurementDetail: {
-          originalThickness: '',
-          maxAlwbDim: '',
-          gaugedP: '',
-          gaugedS: '',
-          percent: '',
-        },
-      });
+    if (this.addRowValue > 0 && this.addRowValue <= 100)
+      for (let i = 1; i <= this.addRowValue; i++)
+        this.listRow.push(JSON.parse(JSON.stringify(this.emptyRow)));
   }
 
   showModalPercentManage() {
@@ -205,7 +251,9 @@ export class Tm3Component {
   }
 
   onSaveForm() {
+    this.formService.isLoadingData = true;
     this.isLoadingSaveButton = true;
+    this.formTM3.measurementTM3List = this.listRow;
     this.formTM3.measurementTM3List = this.formTM3.measurementTM3List.filter(
       (form) =>
         form.structuralMember !== '' ||
@@ -222,104 +270,193 @@ export class Tm3Component {
         form.thirdTransverseSectionMeasurementDetail.gaugedS !== ''
     );
 
-    this.formTM3.firstFrameNo = `${this.firstTransverseSectionFrom} ~ ${this.firstTransverseSectionTo}`;
-    this.formTM3.secondFrameNo = `${this.secondTransverseSectionFrom} ~ ${this.secondTransverseSectionTo}`;
-    this.formTM3.thirdFrameNo = `${this.thirdTransverseSectionFrom} ~ ${this.thirdTransverseSectionTo}`;
+    this.listRow = this.formTM3.measurementTM3List;
 
-    this.formService
-      .addFormToAPI(this.API_URL, this.formTM3)
-      .pipe(
-        retry(3),
-        catchError(() => {
-          return throwError('Something went wrong');
-        })
-      )
-      .subscribe({
-        next: (result) => {
-          this.isLoadingSaveButton = false;
-          this.message.create('success', 'Save form success');
-        },
-        error: (error) => {
-          this.isLoadingSaveButton = false;
-          this.message.create(
-            'error',
-            'Something went wrong, please try later'
-          );
-        },
+    this.formTM3.firstFrameNo = `${this.firstTransverseSectionFrom}~${this.firstTransverseSectionTo}`;
+    this.formTM3.secondFrameNo = `${this.secondTransverseSectionFrom}~${this.secondTransverseSectionTo}`;
+    this.formTM3.thirdFrameNo = `${this.thirdTransverseSectionFrom}~${this.thirdTransverseSectionTo}`;
+
+    if (Number(this.router.url.split('/')[4]) === -1) {
+      this.formService
+        .addFormToAPI(this.API_URL, this.formTM3)
+        .pipe(
+          retry(3),
+          catchError(() => {
+            return throwError('Something went wrong');
+          })
+        )
+        .subscribe({
+          next: (result) => {
+            this.isLoadingSaveButton = false;
+            this.router.navigate([
+              'part',
+              this.router.url.split('/')[2],
+              this.router.url.split('/')[3],
+              result.id,
+            ]);
+            this.formService.isLoadingData = false;
+            this.message.create('success', 'Save form success');
+          },
+          error: (error) => {
+            this.formService.isLoadingData = false;
+            this.isLoadingSaveButton = false;
+            this.message.create(
+              'error',
+              'Something went wrong, please try later'
+            );
+          },
+        });
+    } else {
+      this.formService
+        .updateForm('tm3s', this.router.url.split('/')[4], this.formTM3)
+        .pipe(
+          retry(3),
+          catchError(() => {
+            return throwError('Something went wrong');
+          })
+        )
+        .subscribe({
+          next: (result) => {
+            this.formService.isLoadingData = false;
+            this.isLoadingSaveButton = false;
+            this.message.create('success', 'Save form success');
+          },
+          error: (error) => {
+            this.formService.isLoadingData = false;
+            this.isLoadingSaveButton = false;
+            this.message.create(
+              'error',
+              'Something went wrong, please try later'
+            );
+          },
+        });
+    }
+
+    if (this.listNewStructuralMember.length > 0) {
+      this.listNewStructuralMember.forEach((newStructuralMember) => {
+        this.paramValueService.addParamValue(newStructuralMember).subscribe();
       });
+    }
   }
 
   onDragEnded(event: CdkDragEnd) {
     event.source.reset();
   }
 
-  selectRow(index: number) {
-    this.selectedRowValue = this.listRow[index];
+  selectRow(index: number): void {
+    if (
+      index === this.selectedRow.sort()[0] - 1 ||
+      index === this.selectedRow.sort()[this.selectedRow.length - 1] + 1 ||
+      index === this.selectedRow.sort()[0] ||
+      index === this.selectedRow.sort()[this.selectedRow.length - 1]
+    ) {
+      if (this.selectedRow.includes(index) === false)
+        this.selectedRow.push(index);
+      else this.selectedRow = this.selectedRow.filter((e) => e !== index);
+    } else if (this.selectedRow.length === 0) this.selectedRow.push(index);
   }
 
   onDrop(event: CdkDragDrop<measurementTM3[]>) {
-    this.startIndex = event.previousIndex;
-    this.endIndex = event.currentIndex;
-    if (this.startIndex < this.endIndex) {
-      for (let i = this.startIndex + 1; i <= this.endIndex; i++) {
-        this.listRow[i].structuralMember =
-          this.selectedRowValue.structuralMember;
-        this.listRow[i].noOrLetter = this.selectedRowValue.noOrLetter;
-        this.listRow[
-          i
-        ].firstTransverseSectionMeasurementDetail.originalThickness =
-          this.selectedRowValue.firstTransverseSectionMeasurementDetail.originalThickness;
-        this.listRow[i].firstTransverseSectionMeasurementDetail.gaugedP =
-          this.selectedRowValue.firstTransverseSectionMeasurementDetail.gaugedP;
-        this.listRow[i].firstTransverseSectionMeasurementDetail.gaugedS =
-          this.selectedRowValue.firstTransverseSectionMeasurementDetail.gaugedS;
-        this.listRow[
-          i
-        ].secondTransverseSectionMeasurementDetail.originalThickness =
-          this.selectedRowValue.secondTransverseSectionMeasurementDetail.originalThickness;
-        this.listRow[i].secondTransverseSectionMeasurementDetail.gaugedP =
-          this.selectedRowValue.secondTransverseSectionMeasurementDetail.gaugedP;
-        this.listRow[i].secondTransverseSectionMeasurementDetail.gaugedS =
-          this.selectedRowValue.secondTransverseSectionMeasurementDetail.gaugedS;
-        this.listRow[
-          i
-        ].secondTransverseSectionMeasurementDetail.originalThickness =
-          this.selectedRowValue.secondTransverseSectionMeasurementDetail.originalThickness;
-        this.listRow[i].secondTransverseSectionMeasurementDetail.gaugedP =
-          this.selectedRowValue.secondTransverseSectionMeasurementDetail.gaugedP;
-        this.listRow[i].secondTransverseSectionMeasurementDetail.gaugedS =
-          this.selectedRowValue.secondTransverseSectionMeasurementDetail.gaugedS;
+    this.selectedRow.forEach((row) => {
+      for (
+        let i = row + this.selectedRow.length;
+        i <= event.currentIndex;
+        i += this.selectedRow.length
+      ) {
+        this.listRow[i] = JSON.parse(JSON.stringify(this.listRow[row]));
       }
+    });
+  }
+
+  clearRow(index: number) {
+    this.listRow[index] = JSON.parse(JSON.stringify(this.emptyRow));
+  }
+
+  deleteRow(index: number) {
+    this.listRow.splice(index, 1);
+    if (this.listRow.length === 0) {
+      this.listRow = [];
     } else {
-      for (let i = this.startIndex - 1; i >= this.endIndex; i--) {
-        this.listRow[i].structuralMember =
-          this.selectedRowValue.structuralMember;
-        this.listRow[i].noOrLetter = this.selectedRowValue.noOrLetter;
-        this.listRow[
-          i
-        ].firstTransverseSectionMeasurementDetail.originalThickness =
-          this.selectedRowValue.firstTransverseSectionMeasurementDetail.originalThickness;
-        this.listRow[i].firstTransverseSectionMeasurementDetail.gaugedP =
-          this.selectedRowValue.firstTransverseSectionMeasurementDetail.gaugedP;
-        this.listRow[i].firstTransverseSectionMeasurementDetail.gaugedS =
-          this.selectedRowValue.firstTransverseSectionMeasurementDetail.gaugedS;
-        this.listRow[
-          i
-        ].secondTransverseSectionMeasurementDetail.originalThickness =
-          this.selectedRowValue.secondTransverseSectionMeasurementDetail.originalThickness;
-        this.listRow[i].secondTransverseSectionMeasurementDetail.gaugedP =
-          this.selectedRowValue.secondTransverseSectionMeasurementDetail.gaugedP;
-        this.listRow[i].secondTransverseSectionMeasurementDetail.gaugedS =
-          this.selectedRowValue.secondTransverseSectionMeasurementDetail.gaugedS;
-        this.listRow[
-          i
-        ].secondTransverseSectionMeasurementDetail.originalThickness =
-          this.selectedRowValue.secondTransverseSectionMeasurementDetail.originalThickness;
-        this.listRow[i].secondTransverseSectionMeasurementDetail.gaugedP =
-          this.selectedRowValue.secondTransverseSectionMeasurementDetail.gaugedP;
-        this.listRow[i].secondTransverseSectionMeasurementDetail.gaugedS =
-          this.selectedRowValue.secondTransverseSectionMeasurementDetail.gaugedS;
-      }
+      this.listRow = this.listRow;
     }
+  }
+
+  onImportExcel(event: any) {
+    this.formService.isLoadingData = true;
+    const formData = new FormData();
+    formData.append('excelFile', event.target.files[0]);
+    this.formService
+      .importExcel(`${API_END_POINT}/sheet/tm3s`, formData)
+      .subscribe((data) => {
+        this.listRow = [];
+
+        this.firstTransverseSectionFrom = data.firstFrameNo.split('~')[0];
+        this.firstTransverseSectionTo = data.firstFrameNo.split('~')[1];
+        this.secondTransverseSectionFrom = data.secondFrameNo.split('~')[0];
+        this.secondTransverseSectionTo = data.secondFrameNo.split('~')[1];
+        this.thirdTransverseSectionFrom = data.thirdFrameNo.split('~')[0];
+        this.thirdTransverseSectionTo = data.thirdFrameNo.split('~')[1];
+
+        data.measurementTM3DTOList.forEach((data: any) => {
+          this.listRow.push({
+            structuralMember: data.structuralMember,
+            noOrLetter: data.noOrLetter,
+            firstTransverseSectionMeasurementDetail: {
+              originalThickness:
+                data.firstTransverseSectionMeasurementDetail.originalThickness,
+              maxAlwbDim:
+                data.firstTransverseSectionMeasurementDetail.maxAlwbDim,
+              gaugedP: data.firstTransverseSectionMeasurementDetail.gaugedP,
+              gaugedS: data.firstTransverseSectionMeasurementDetail.gaugedS,
+              percent: data.firstTransverseSectionMeasurementDetail.percent,
+            },
+            secondTransverseSectionMeasurementDetail: {
+              originalThickness:
+                data.secondTransverseSectionMeasurementDetail.originalThickness,
+              maxAlwbDim:
+                data.secondTransverseSectionMeasurementDetail.maxAlwbDim,
+              gaugedP: data.secondTransverseSectionMeasurementDetail.gaugedP,
+              gaugedS: data.secondTransverseSectionMeasurementDetail.gaugedS,
+              percent: data.secondTransverseSectionMeasurementDetail.percent,
+            },
+            thirdTransverseSectionMeasurementDetail: {
+              originalThickness:
+                data.thirdTransverseSectionMeasurementDetail.originalThickness,
+              maxAlwbDim:
+                data.thirdTransverseSectionMeasurementDetail.maxAlwbDim,
+              gaugedP: data.thirdTransverseSectionMeasurementDetail.gaugedP,
+              gaugedS: data.thirdTransverseSectionMeasurementDetail.gaugedS,
+              percent: data.thirdTransverseSectionMeasurementDetail.percent,
+            },
+          });
+        });
+
+        for (let i = 0; i < data.measurementTM3DTOList.length; i++) {
+          if (
+            this.listStructuralMember.find(
+              (item) =>
+                item.param === data.measurementTM3DTOList[i].structuralMember
+            ) === undefined
+          ) {
+            this.listStructuralMember.push({
+              id: 0,
+              param: data.measurementTM3DTOList[i].structuralMember,
+              value: data.measurementTM3DTOList[i].structuralMember,
+              type: 'TM3_VALUE',
+              edit: false,
+            });
+
+            this.listNewStructuralMember.push({
+              param: data.measurementTM3DTOList[i].structuralMember,
+              value: data.measurementTM3DTOList[i].structuralMember,
+              type: 6,
+            });
+          }
+        }
+
+        this.formService.isLoadingData = false;
+        this.message.create('success', 'Import excel success');
+      });
+    this.selectedFile = null;
   }
 }

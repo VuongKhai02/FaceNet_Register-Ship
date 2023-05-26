@@ -1,5 +1,5 @@
 export interface measurementTM7 {
-  name: string;
+  item: string;
   upperPart: {
     originalThickness: string;
     maxAlwbDim: string;

@@ -7,6 +7,7 @@ import { main } from '../models/local.model';
 })
 export class LocalService {
   mainData: main = mainData;
+  loading: boolean = false;
   constructor() {}
 
   getId(): number {
@@ -36,5 +37,9 @@ export class LocalService {
 
   report(): string {
     return this.mainData.reportNumber;
+  }
+
+  getLoading(): boolean {
+    return this.loading;
   }
 }

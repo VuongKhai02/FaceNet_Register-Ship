@@ -1,14 +1,47 @@
 <section>
+  <div class="form-code">
+    <div style="float: right">
+      <nz-input-group nzAddOnBefore="TM7">
+        <nz-select
+          nzShowSearch
+          nzAllowClear
+          nzPlaceHolder="Select a code"
+          [(ngModel)]="formTM7.code"
+          style="min-width: 150px"
+        >
+          <nz-option
+            *ngFor="let option of listFormCode"
+            nzLabel="{{ option.param }}"
+            nzValue="{{ option.param }}"
+          ></nz-option>
+        </nz-select>
+      </nz-input-group>
+    </div>
+  </div>
+
   <div class="header">
     <h1 class="title">
       Report on THICKNESS MEASUREMENT OF CARGO HOLD SIDE SHELL FRAMES
     </h1>
     <div class="infor">
-      <p>Ship's name<span></span></p>
-      <p>Class Identity No.<span></span></p>
-      <p>Report No.<span>VMC.UTM.22.046/5255939</span></p>
+      <p>
+        Ship's name<span>{{
+          generalParticular ? generalParticular.shipInfo.name : ""
+        }}</span>
+      </p>
+      <p>
+        Class Identity No.<span>{{
+          generalParticular ? generalParticular.shipInfo.absIdentification : ""
+        }}</span>
+      </p>
+      <p>
+        Report No.<span>{{
+          generalParticular ? generalParticular.reportNo : ""
+        }}</span>
+      </p>
     </div>
   </div>
+
   <div class="toolBar">
     <button nz-button nzType="primary" (click)="showModalPercentManage()">
       <span nz-icon nzType="reconciliation" nzTheme="outline"></span>Percentage
@@ -90,20 +123,46 @@
       </nz-input-group>
     </nz-modal>
 
-    <button nz-button nzType="primary" (click)="onSaveForm()">
+    <button style="width: fit-content; padding: 0">
+      <label for="import-excel">
+        <div class="import-excel">
+          <span nz-icon nzType="upload" nzTheme="outline"></span
+          ><span style="margin-left: 8px">Import excel</span>
+        </div>
+      </label>
+      <input
+        type="file"
+        accept=".xls"
+        style="display: none"
+        id="import-excel"
+        (change)="onImportExcel($event)"
+      />
+    </button>
+
+    <button
+      nz-button
+      nzType="primary"
+      (click)="onSaveForm()"
+      [nzLoading]="isLoadingSaveButton"
+    >
       <span nz-icon nzType="save" nzTheme="outline"></span>Save
     </button>
   </div>
+
   <nz-table
-    nzTemplateMode=""
+    [nzData]="formTM7.frameNumberList"
+    [nzFrontPagination]="false"
     [nzScroll]="{ x: '2500px', y: '480px' }"
-    nzBordered=""
+    nzBordered
+    class="table"
+    nzTemplateMode=""
     nzSize="small"
   >
     <thead>
       <tr class="th">
         <th rowspan="4">No.</th>
         <th colspan="33">CARDO HOLD NO. 1</th>
+        <th class="table-header-right" colSpan="2" rowspan="4">Action</th>
       </tr>
       <tr class="th">
         <th colspan="3"></th>
@@ -154,7 +213,7 @@
       </tr>
     </thead>
     <tbody
-      *ngFor="let frameNumber of listFrameNumber; index as i"
+      *ngFor="let frameNumber of formTM7.frameNumberList; index as i"
       cdkDropList
       [cdkDropListData]="listRow"
       (cdkDropListDropped)="onDrop($event, i)"
@@ -164,9 +223,25 @@
           {{ i === 0 ? i + 1 : countRowBefore(i) + 1 }}
         </td>
         <td colSpan="3">
-          <input nz-input type="text" (ngModel)="(frameNumber.name)" />
+          <input nz-input type="text" [(ngModel)]="frameNumber.name" />
         </td>
         <td colSpan="30"></td>
+        <td
+          class="table-body-right"
+          style="background-color: white"
+          colSpan="2"
+        >
+          <nz-button-group>
+            <button
+              nz-button
+              nz-popconfirm
+              nzPopconfirmTitle="Sure to delete?"
+              (nzOnConfirm)="deleteListRow(i)"
+            >
+              <span nz-icon nzType="delete" nzTheme="outline"></span>
+            </button>
+          </nz-button-group>
+        </td>
       </tr>
       <tr
         *ngFor="let row of frameNumber.measurementTM7List; index as j"
@@ -175,9 +250,45 @@
         cdkDragBoundary="tbody"
         (cdkDragEnded)="onDragEnded($event)"
         cdkDrag
-        (mousedown)="selectRow(i, j)"
+        [cdkDragDisabled]="
+          selectedRow.includes(j) === false || selectedListRow !== i
+        "
+        [style.background]="
+          selectedRow.includes(j) && selectedListRow === i
+            ? '#FFE6C1 !important'
+            : formService.checkBeforeSave(
+                row.upperPart.originalThickness,
+                row.upperPart.gaugedP
+              ) &&
+              formService.checkBeforeSave(
+                row.upperPart.originalThickness,
+                row.upperPart.gaugedS
+              ) &&
+              formService.checkBeforeSave(
+                row.midPart.originalThickness,
+                row.midPart.gaugedP
+              ) &&
+              formService.checkBeforeSave(
+                row.midPart.originalThickness,
+                row.midPart.gaugedS
+              ) &&
+              formService.checkBeforeSave(
+                row.lowerPart.originalThickness,
+                row.lowerPart.gaugedP
+              ) &&
+              formService.checkBeforeSave(
+                row.lowerPart.originalThickness,
+                row.lowerPart.gaugedS
+              )
+            ? ''
+            : '#FF3333 !important'
+        "
       >
-        <td>
+        <td
+          class="table-body-left"
+          style="background-color: white"
+          (click)="selectRow(j, i)"
+        >
           {{ i === 0 ? j + 2 : j + countRowBefore(i) + 2 }}
         </td>
         <td colSpan="3">
@@ -185,7 +296,7 @@
             nzShowSearch
             nzAllowClear
             nzPlaceHolder="Select a description"
-            [(ngModel)]="row.name"
+            [(ngModel)]="row.item"
             (ngModelChange)="onSelected($event, i, j)"
             style="width: 100%"
           >
@@ -916,7 +1027,7 @@
             nz-input
             type="number"
             min="0"
-            [(ngModel)]="row.lowerPart.originalThickness"
+            [(ngModel)]="row.upperPart.originalThickness"
           />
         </td>
         <td>
@@ -1266,6 +1377,31 @@
           }}
         </td>
         <!-- End lower part -->
+        <td
+          class="table-body-right"
+          style="background-color: white"
+          colSpan="2"
+        >
+          <nz-button-group>
+            <button
+              class="ant-btn-icon-only"
+              nz-button
+              nz-popconfirm
+              nzPopconfirmTitle="Sure to clear?"
+              (nzOnConfirm)="clearRow(i, j)"
+            >
+              <span nz-icon nzType="clear" nzTheme="outline"></span>
+            </button>
+            <button
+              nz-button
+              nz-popconfirm
+              nzPopconfirmTitle="Sure to delete?"
+              (nzOnConfirm)="deleteRow(i, j)"
+            >
+              <span nz-icon nzType="delete" nzTheme="outline"></span>
+            </button>
+          </nz-button-group>
+        </td>
       </tr>
     </tbody>
   </nz-table>

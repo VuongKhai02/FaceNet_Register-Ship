@@ -20,6 +20,7 @@ import { Form } from 'src/app/share/models/form.model';
   styleUrls: ['./history.component.css'],
 })
 export class HistoryComponent implements OnInit {
+  loading: boolean = false;
   link: string = '/history';
   mainData!: main;
   generalParticulars: GeneralParticular[] = [];
@@ -76,6 +77,7 @@ export class HistoryComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loading = this.localService.getLoading();
     this.getdataService.getGeneralParticularsFromAPI().subscribe(
       (data) => {
         this.generalParticulars = data;
@@ -97,6 +99,7 @@ export class HistoryComponent implements OnInit {
   editItem(id: number, report: string): void {
     this.link = '/generalParticulars';
     this.mainData.editMode = true;
+    this.mainData.loading = true;
     this.mainData.reportNumber = report;
     this.mainData.mainId = id;
     this.reportIndexService
@@ -111,6 +114,7 @@ export class HistoryComponent implements OnInit {
                 formID: data.parts[i].forms[j].formID,
                 index: data.parts[i].forms[j].index,
                 name: data.parts[i].forms[j].name,
+                type: data.parts[i].forms[j].type,
               });
             }
             this.parts.push({
@@ -121,7 +125,9 @@ export class HistoryComponent implements OnInit {
               visible: false,
               edit: false,
             });
+            newForm = [];
             this.parts = this.parts.sort((a, b) => a.partIndex - b.partIndex);
+            this.mainData.loading = false;
           }
         },
         (err) => {

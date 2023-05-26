@@ -52,11 +52,11 @@ export class SelectformComponent implements OnInit {
       this.selectForm.value.formName !== '' &&
       this.selectForm.value.formSelect.length > 0
     ) {
+      this.mainData.loading = true;
       this.reportIndexService
         .addReportIndexToAPI(this.mainData.mainId, newReportIndexPush)
         .subscribe(
           (data) => {
-            this.message.create('success', 'Create success');
             this.reportIndexService
               .getReportIndexFromAPI(this.mainData.mainId)
               .subscribe((data) => {
@@ -71,6 +71,7 @@ export class SelectformComponent implements OnInit {
                     formID: -1,
                     index: -1,
                     name: this.selectForm.value.formSelect[i],
+                    type: this.selectForm.value.formSelect[i],
                   });
                 }
 
@@ -83,39 +84,19 @@ export class SelectformComponent implements OnInit {
                   edit: false,
                 };
                 this.parts.push(newPart);
-                if (this.selectForm.value.formSelect[0] === 'FORM TM1') {
-                  this.tmName = 'tm1';
-                } else if (this.selectForm.value.formSelect[0] === 'FORM TM2') {
-                  this.tmName = 'tm2';
-                } else if (
-                  this.selectForm.value.formSelect[0] === 'FORM TM2(I)'
-                ) {
-                  this.tmName = 'tm2i';
-                } else if (
-                  this.selectForm.value.formSelect[0] === 'FORM TM2(II)'
-                ) {
-                  this.tmName = 'tm2ii';
-                } else if (this.selectForm.value.formSelect[0] === 'FORM TM3') {
-                  this.tmName = 'tm3';
-                } else if (this.selectForm.value.formSelect[0] === 'FORM TM4') {
-                  this.tmName = 'tm4';
-                } else if (this.selectForm.value.formSelect[0] === 'FORM TM5') {
-                  this.tmName = 'tm5';
-                } else if (this.selectForm.value.formSelect[0] === 'FORM TM6') {
-                  this.tmName = 'tm6';
-                } else if (this.selectForm.value.formSelect[0] === 'FORM TM7') {
-                  this.tmName = 'tm7';
-                }
+                this.mainData.loading = false;
+                this.message.create('success', 'Create success');
                 this.router.navigate([
                   'part',
-                  data.parts[data.parts.length - 1],
-                  this.tmName,
+                  data.parts[data.parts.length - 1].id,
+                  newForm[0].type.toLowerCase().replace(/[^\w\s]/gi, ''),
                   -1,
                 ]);
               });
           },
           (err) => {
             console.log(err);
+            this.mainData.loading = false;
             this.message.create('error', 'error');
           }
         );
