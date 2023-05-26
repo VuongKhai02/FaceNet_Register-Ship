@@ -43,6 +43,8 @@ export class ReportIndexesService {
   }
 
   putForm(type: string, id: number, index: number): Observable<any> {
+    console.log(type, ' :', index);
+
     return this.http.put(`${API_END_POINT}/forms/index/${type}/${id}`, index);
   }
 }
