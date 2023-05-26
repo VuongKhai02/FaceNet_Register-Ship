@@ -71,6 +71,23 @@ export class FormService {
         return '';
     }
   }
+  calculateForMaxAlwbDimForString(
+    originalThickness: string,
+    percent: string
+  ): string {
+    switch (percent) {
+      case '20%':
+        return (Number(originalThickness) * 0.2).toFixed(1);
+      case '20% + 1':
+        return (Number(originalThickness) * 0.2 + 1).toFixed(1);
+      case '25%':
+        return (Number(originalThickness) * 0.25).toFixed(1);
+      case '30%':
+        return (Number(originalThickness) * 0.3).toFixed(1);
+      default:
+        return '';
+    }
+  }
 
   threePartsFourOfMaxAlwbDim(MaxAlwbDim: string): string {
     return (Number(MaxAlwbDim) * 0.75).toString();

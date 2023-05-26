@@ -19,15 +19,16 @@
     </div>
     <div>
       <button style="    width: 75%;font-size: 16px" nz-popconfirm nzPopconfirmTitle="Are you sure export to Pdf?"
-        nzPopconfirmPlacement="bottom" (nzOnConfirm)="exportPdf()" nz-button nzType="primary">
+        nzPopconfirmPlacement="bottom" (nzOnConfirm)="exportPdf()" [nzLoading]="isLoadingSaveButton" nz-button
+        nzType="primary">
         <span nz-icon nzType="export" nzTheme="outline"></span>
         <span style="color: white;">Export to PDF</span>
       </button>
     </div>
 
   </div>
-  <!-- <button (click)="exportTestPdf()" nz-button nzType="primary">
+  <button (click)="exportTestPdf()" nz-button nzType="primary">
     <span style="color: white" nz-icon nzTheme="outline"></span>
     <span style="color: white">Export Test PDF</span>
-  </button> -->
+  </button>
 </section>

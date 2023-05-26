@@ -29,7 +29,7 @@ export var tableTm3_template = {
     //Table header
     [
       {
-        text: `TM5-(1 July 2023)`,
+        text: `TM3-(1 July 2023)`,
         //   text: `TM5-${this.typeForm}(1 July 2023)`,
         style: ['txt_center'],
         colSpan: 13,
@@ -268,10 +268,10 @@ export var tableTm3_template = {
       { text: 'P', style: 'txt_center' },
       { text: 'S', style: 'txt_center' },
       { text: 'mm', style: 'txt_center' },
-      { text: '%', style: 'txt_center' },
+      { text: '%', style: 'txt_center', colSpan: 2 },
       {},
       { text: 'mm', style: 'txt_center' },
-      { text: '%', style: 'txt_center' },
+      { text: '%', style: 'txt_center', colSpan: 2 },
       {},
     ],
     // ...this.tm4.map((x) => [
