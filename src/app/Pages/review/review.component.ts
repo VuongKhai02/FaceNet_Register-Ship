@@ -31,7 +31,10 @@ interface formInfo {
   formType: string;
   formId: number;
 }
-
+interface id_index_part{
+  id:number;
+  index:number;
+}
 @Component({
   selector: 'app-review',
   templateUrl: './review.component.html',
@@ -52,7 +55,7 @@ export class ReviewComponent implements OnInit {
   formInfo: formInfo[] = [];
   lsSketch: any[] = [];
   report_index: any;
-  id_part: any;
+  id_index_part: id_index_part[] = [];
   data_part: any[] = [];
 
   inShipName: string = '';
@@ -100,7 +103,6 @@ export class ReviewComponent implements OnInit {
   }
   exportPdf() {
     var checkSignature = this.isSurveyorCheck;
-    var _pageCount = 0;
     this.ckeckSurveyorSignature();
     // Define Table of content
     var tableOfContent = {
@@ -124,7 +126,7 @@ export class ReviewComponent implements OnInit {
             style: 'txt_center',
           },
         ],
-        ...this.reportIndex.parts.map((x) => [
+        ...this.reportIndex.parts.sort((a, b) => a.partIndex - b.partIndex).map((x) => [
           {
             text: `${this.partIndex_ToC++}`,
             style: ['txt_center'],
@@ -147,8 +149,6 @@ export class ReviewComponent implements OnInit {
     // Define pdfDocument
     var pdfDocument = {
       footer: function (currentPage: any, pageCount: any) {
-        (_pageCount = pageCount.toString()),
-          console.log('This is pg:' + _pageCount);
         return {
           columns: [
             [
@@ -659,7 +659,7 @@ export class ReviewComponent implements OnInit {
                         headerRows: 10,
                         //23 rows
                         widths: [
-                          '38.5%',
+                          '46.5%',
                           '6%',
                           '4.5%',
                           '3%',
@@ -1453,7 +1453,7 @@ export class ReviewComponent implements OnInit {
                       table: {
                         headerRows: 10,
                         widths: [
-                          '13.6%',
+                          '19.6%',
 
                           '3.3%',
                           '2.9%',
@@ -2656,7 +2656,7 @@ export class ReviewComponent implements OnInit {
                       table: {
                         headerRows: 10,
                         widths: [
-                          '13.6%',
+                          '19.6%',
 
                           '3.3%',
                           '2.9%',
@@ -3856,7 +3856,7 @@ export class ReviewComponent implements OnInit {
                       table: {
                         headerRows: 10,
                         widths: [
-                          '13.6%',
+                          '19.6%',
                           '3.65%',
                           '2.9%',
                           '2.95%',
@@ -4977,7 +4977,7 @@ export class ReviewComponent implements OnInit {
                         headerRows: 10,
                         widths: [
                           // '5%',
-                          '30%',
+                          '36%',
                           '7%',
                           '10%',
                           '13%',
@@ -5450,18 +5450,13 @@ export class ReviewComponent implements OnInit {
                       )
                     ),
                     {
-                      text: '',
-                      pageBreak: 'before' as PageBreak,
-                      pageOrientation: 'portrait' as PageOrientation,
-                    },
-                    {
                       pageBreak: 'before' as PageBreak,
                       pageOrientation: 'landscape' as PageOrientation,
                       style: ['tableStyle', 'fontS8'],
                       table: {
                         headerRows: 10,
                         widths: [
-                          '30%',
+                          '36%',
                           '5%',
                           '7%',
                           '10%',
@@ -5946,7 +5941,7 @@ export class ReviewComponent implements OnInit {
                         headerRows: 10,
                         widths: [
                           // '5%',
-                          '30%',
+                          '36%',
                           '10%',
                           '10%',
                           '10%',
@@ -6422,7 +6417,7 @@ export class ReviewComponent implements OnInit {
                       table: {
                         headerRows: 10,
                         widths: [
-                          '16.8%',
+                          '22.8%',
                           '3.2%',
                           '3.2%',
                           '3.2%',
@@ -7412,7 +7407,7 @@ export class ReviewComponent implements OnInit {
           alignment: 'center' as Alignment,
         },
         tableStyle: {
-          margin: [-20, 0, -20, -5] as Margins,
+          margin: [-20, 0, 20, 0] as Margins,
         },
         footer: {
           margin: [20, 10, 20, 30] as Margins,
@@ -7559,13 +7554,17 @@ export class ReviewComponent implements OnInit {
                 });
             }
           }
-          this.id_part = this.parts.map((x) => x.id);
+          this.id_index_part = this.parts.map((x) => ({
+            id: x.id,
+            index: x.partIndex,
+          })).sort((a, b) => a.index - b.index);
+          
           let listPro = [];
-          for (let i = 0; i < this.id_part.length; i++) {
-            listPro.push(this.dataTm1S.getReport_index(this.id_part[i]));
+          for (let i = 0; i < this.id_index_part.length; i++) {
+            listPro.push(this.dataTm1S.getReport_index(this.id_index_part[i].id));
           }
+          
           zip(...listPro).subscribe((data: {}) => {
-            console.log(Array.isArray(data));
             if (Array.isArray(data)) {
               this.data_part = data;
             }
