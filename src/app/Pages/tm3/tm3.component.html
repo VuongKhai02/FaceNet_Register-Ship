@@ -107,6 +107,123 @@
       </div>
     </nz-modal>
 
+    <button class="btn-add-row" nz-button (click)="showAddSketches()">
+      <span nz-icon nzType="folder-add" nzTheme="outline"></span> Add sketches
+    </button>
+    <nz-modal
+      [nzStyle]="{ top: '10%' }"
+      [(nzVisible)]="isVisibleAddSketches"
+      nzTitle="Add sketches"
+      [nzFooter]="modalFooter"
+      (nzOnCancel)="handleCancelAddSketches()"
+      (nzOnOk)="handleOkAddSketches()"
+      nzWidth="70%"
+    >
+      <div *nzModalContent>
+        <div *ngIf="isLoadingSketches; else showSketches">
+          <nz-spin
+            nzSimple
+            [nzSpinning]="isLoadingSketches"
+            [nzSize]="'large'"
+            style="display: flex; justify-content: center; margin-top: 30px"
+          >
+          </nz-spin>
+        </div>
+        <ng-template #showSketches>
+          <input
+            nz-input
+            type="file"
+            accept="image/*"
+            (change)="onChangeImage($event)"
+            multiple
+          />
+          <div
+            *ngIf="listPreviewSketches.length > 0 && !isLoadingSketches"
+            class="preview-container"
+          >
+            <div class="preview-title">
+              <h1
+                style="margin-bottom: 0; padding: 0 5px; line-height: initial"
+              >
+                Preview
+              </h1>
+            </div>
+            <div class="preview-sketches">
+              <div
+                *ngFor="let sketch of listPreviewSketches; index as index"
+                class="preview-image"
+                [style.background-image]="'url(' + sketch + ')'"
+              >
+                <div class="preview-sketches-overlay">
+                  <span
+                    nz-icon
+                    class="delete-button"
+                    nzType="delete"
+                    nzTheme="outline"
+                    nz-popconfirm
+                    nzPopconfirmTitle="Sure to delete?"
+                    (nzOnConfirm)="deletePreviewSketches(index)"
+                  ></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            *ngIf="listSketches.length > 0 && !isLoadingSketches"
+            class="preview-container"
+          >
+            <div class="preview-title">
+              <h1
+                style="margin-bottom: 0; padding: 0 5px; line-height: initial"
+              >
+                Saved
+              </h1>
+            </div>
+            <div class="preview-sketches">
+              <div
+                *ngFor="let sketch of listSketches; index as index"
+                class="preview-image"
+                [style.background-image]="
+                  'url(' +
+                  'data:' +
+                  sketch.type +
+                  ';base64,' +
+                  sketch.value +
+                  ')'
+                "
+              >
+                <div class="preview-sketches-overlay">
+                  <span
+                    nz-icon
+                    class="delete-button"
+                    nzType="delete"
+                    nzTheme="outline"
+                    nz-popconfirm
+                    nzPopconfirmTitle="Sure to delete?"
+                    (nzOnConfirm)="deleteSavedSketches(sketch.id)"
+                  ></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </div>
+      <ng-template #modalFooter>
+        <button nz-button nzType="default" (click)="handleCancelAddSketches()">
+          Cancel
+        </button>
+        <button
+          nz-button
+          nzType="primary"
+          [disabled]="isLoadingSketches"
+          (click)="handleOkAddSketches()"
+          [nzLoading]="isConfirmLoadingSketches"
+        >
+          Save
+        </button>
+      </ng-template>
+    </nz-modal>
+
     <button style="width: fit-content; padding: 0">
       <label for="import-excel">
         <div class="import-excel">

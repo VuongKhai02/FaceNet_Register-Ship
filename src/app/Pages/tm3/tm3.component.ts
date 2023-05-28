@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { formTM3 } from 'src/app/share/models/form/formTM3.model';
 import { measurementTM3 } from 'src/app/share/models/form/measurementTM3.model';
@@ -11,13 +11,14 @@ import { NavigationEnd, Router } from '@angular/router';
 import { GeneralParticular } from 'src/app/share/models/generalParticulars.model';
 import { API_END_POINT } from 'src/environments/environment';
 import { newParamValue } from 'src/app/share/models/newParamValue.model';
+import { Sketch } from 'src/app/share/models/sketches.model';
 
 @Component({
   selector: 'app-tm3',
   templateUrl: './tm3.component.html',
   styleUrls: ['./tm3.component.css'],
 })
-export class Tm3Component {
+export class Tm3Component implements OnInit {
   constructor(
     public formService: FormService,
     public paramValueService: ParamValueService,
@@ -92,6 +93,14 @@ export class Tm3Component {
   selectedFile: any;
 
   listNewStructuralMember: newParamValue[] = [];
+
+  isVisibleAddSketches: boolean = false;
+  isConfirmLoadingSketches: boolean = false;
+  isLoadingSketches: boolean = false;
+  listSketches: Sketch[] = [];
+  listPreviewSketches: any[] = [];
+  listCurrentSketChes: File[] = [];
+  listSaveSketches: FormData = new FormData();
 
   ngOnInit(): void {
     this.paramValueService.getParamValueByType(6).subscribe((data) => {
@@ -458,5 +467,105 @@ export class Tm3Component {
         this.message.create('success', 'Import excel success');
       });
     this.selectedFile = null;
+  }
+
+  showAddSketches() {
+    this.isVisibleAddSketches = true;
+    this.isLoadingSketches = true;
+
+    this.formService
+      .getListSketches('form_tm1', this.router.url.split('/')[4])
+      .subscribe({
+        next: (data) => {
+          this.listSketches = data;
+          this.isLoadingSketches = false;
+        },
+        error: (error) => {
+          this.isLoadingSketches = false;
+          this.message.create(
+            'error',
+            'Something went wrong, please try later'
+          );
+        },
+      });
+  }
+
+  handleCancelAddSketches() {
+    this.isVisibleAddSketches = false;
+    this.listPreviewSketches = [];
+    this.listSaveSketches.delete('files');
+  }
+
+  handleOkAddSketches() {
+    if (this.listSaveSketches.has('multipartFiles')) {
+      this.isConfirmLoadingSketches = true;
+      this.formService
+        .saveListSketches(
+          'form_tm1',
+          this.router.url.split('/')[4],
+          this.listSaveSketches
+        )
+        .subscribe({
+          next: (data) => {
+            this.listPreviewSketches = [];
+            this.listSaveSketches.delete('multipartFiles');
+            this.isConfirmLoadingSketches = false;
+            this.message.create('success', 'Save sketches success');
+            this.showAddSketches();
+          },
+          error: (error) => {
+            this.isConfirmLoadingSketches = false;
+            this.message.create(
+              'error',
+              'Something went wrong, please try later'
+            );
+          },
+        });
+    } else {
+      this.isVisibleAddSketches = false;
+    }
+  }
+
+  onChangeImage(event: any) {
+    this.listCurrentSketChes = event.target.files;
+
+    for (let i = 0; i < event.target.files.length; i++) {
+      let fReader = new FileReader();
+      fReader.readAsDataURL(event.target.files[i]);
+      fReader.onloadend = (e: any) => {
+        if (e.target) {
+          this.listPreviewSketches.push(e.target.result);
+        }
+      };
+
+      this.listSaveSketches.append('multipartFiles', event.target.files[i]);
+    }
+  }
+
+  deletePreviewSketches(index: number) {
+    this.listPreviewSketches.splice(index, 1);
+    this.listSaveSketches.delete('multipartFiles');
+    var tempListCurrentSketches = Array.from(this.listCurrentSketChes);
+    tempListCurrentSketches.splice(index, 1);
+    this.listCurrentSketChes = tempListCurrentSketches;
+
+    for (let i = 0; i < tempListCurrentSketches.length; i++) {
+      this.listSaveSketches.append(
+        'multipartFiles',
+        tempListCurrentSketches[i]
+      );
+    }
+  }
+
+  deleteSavedSketches(sketchesId: number) {
+    this.formService.deleteSketches(sketchesId).subscribe({
+      next: (data) => {
+        this.message.create('success', 'Delete sketches success');
+        this.showAddSketches();
+      },
+      error: (error) => {
+        this.message.create('error', 'Something went wrong, please try later');
+      },
+    });
   }
 }

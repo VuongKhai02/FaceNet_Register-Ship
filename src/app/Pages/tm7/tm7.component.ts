@@ -12,6 +12,10 @@ import { NavigationEnd, Router } from '@angular/router';
 import { GeneralParticular } from 'src/app/share/models/generalParticulars.model';
 import { API_END_POINT } from 'src/environments/environment';
 import { newParamValue } from 'src/app/share/models/newParamValue.model';
+import { ReportIndexesService } from 'src/app/share/services/report-indexes.service';
+import { main, partLocal } from 'src/app/share/models/local.model';
+import { ReportIndex } from 'src/app/share/models/report-index.model';
+import { Sketch } from 'src/app/share/models/sketches.model';
 
 @Component({
   selector: 'app-tm7',
@@ -23,7 +27,8 @@ export class Tm7Component implements OnInit {
     public formService: FormService,
     public paramValueService: ParamValueService,
     private message: NzMessageService,
-    private router: Router
+    private router: Router,
+    private reportIndexService: ReportIndexesService
   ) {}
 
   addRowValue: number = 0;
@@ -88,8 +93,15 @@ export class Tm7Component implements OnInit {
 
   selectedFile: any;
 
+  isVisibleAddSketches: boolean = false;
+  isConfirmLoadingSketches: boolean = false;
+  isLoadingSketches: boolean = false;
+  listSketches: Sketch[] = [];
+  listPreviewSketches: any[] = [];
+  listCurrentSketChes: File[] = [];
+  listSaveSketches: FormData = new FormData();
+
   ngOnInit(): void {
-    this.formService.isLoadingData = true;
     this.paramValueService.getParamValueByType(9).subscribe((data) => {
       this.listStructuralMember = data;
     });
@@ -108,6 +120,8 @@ export class Tm7Component implements OnInit {
         this.router.url.split('/')[3].slice(0, 3) === 'tm7' &&
         this.router.url.split('/')[4] !== '-1'
       ) {
+        this.formService.isLoadingData = true;
+
         this.partId = this.router.url.split('/')[2];
         this.tmId = this.router.url.split('/')[4];
         this.formService.getDataForm('tm7s', this.tmId).subscribe((data) => {
@@ -468,5 +482,105 @@ export class Tm7Component implements OnInit {
         this.formService.isLoadingData = false;
       });
     this.selectedFile = null;
+  }
+
+  showAddSketches() {
+    this.isVisibleAddSketches = true;
+    this.isLoadingSketches = true;
+
+    this.formService
+      .getListSketches('form_tm1', this.router.url.split('/')[4])
+      .subscribe({
+        next: (data) => {
+          this.listSketches = data;
+          this.isLoadingSketches = false;
+        },
+        error: (error) => {
+          this.isLoadingSketches = false;
+          this.message.create(
+            'error',
+            'Something went wrong, please try later'
+          );
+        },
+      });
+  }
+
+  handleCancelAddSketches() {
+    this.isVisibleAddSketches = false;
+    this.listPreviewSketches = [];
+    this.listSaveSketches.delete('files');
+  }
+
+  handleOkAddSketches() {
+    if (this.listSaveSketches.has('multipartFiles')) {
+      this.isConfirmLoadingSketches = true;
+      this.formService
+        .saveListSketches(
+          'form_tm1',
+          this.router.url.split('/')[4],
+          this.listSaveSketches
+        )
+        .subscribe({
+          next: (data) => {
+            this.listPreviewSketches = [];
+            this.listSaveSketches.delete('multipartFiles');
+            this.isConfirmLoadingSketches = false;
+            this.message.create('success', 'Save sketches success');
+            this.showAddSketches();
+          },
+          error: (error) => {
+            this.isConfirmLoadingSketches = false;
+            this.message.create(
+              'error',
+              'Something went wrong, please try later'
+            );
+          },
+        });
+    } else {
+      this.isVisibleAddSketches = false;
+    }
+  }
+
+  onChangeImage(event: any) {
+    this.listCurrentSketChes = event.target.files;
+
+    for (let i = 0; i < event.target.files.length; i++) {
+      let fReader = new FileReader();
+      fReader.readAsDataURL(event.target.files[i]);
+      fReader.onloadend = (e: any) => {
+        if (e.target) {
+          this.listPreviewSketches.push(e.target.result);
+        }
+      };
+
+      this.listSaveSketches.append('multipartFiles', event.target.files[i]);
+    }
+  }
+
+  deletePreviewSketches(index: number) {
+    this.listPreviewSketches.splice(index, 1);
+    this.listSaveSketches.delete('multipartFiles');
+    var tempListCurrentSketches = Array.from(this.listCurrentSketChes);
+    tempListCurrentSketches.splice(index, 1);
+    this.listCurrentSketChes = tempListCurrentSketches;
+
+    for (let i = 0; i < tempListCurrentSketches.length; i++) {
+      this.listSaveSketches.append(
+        'multipartFiles',
+        tempListCurrentSketches[i]
+      );
+    }
+  }
+
+  deleteSavedSketches(sketchesId: number) {
+    this.formService.deleteSketches(sketchesId).subscribe({
+      next: (data) => {
+        this.message.create('success', 'Delete sketches success');
+        this.showAddSketches();
+      },
+      error: (error) => {
+        this.message.create('error', 'Something went wrong, please try later');
+      },
+    });
   }
 }

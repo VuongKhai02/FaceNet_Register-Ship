@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { GeneralParticular } from '../../models/generalParticulars.model';
 import { LocalService } from '../local.service';
@@ -140,5 +140,30 @@ export class FormService {
         (element) => element.id === this.localService.getId()
       )[0];
     else return this.generalParticular[0];
+  }
+
+  getListSketches(formType: string, formId: string): Observable<any> {
+    return this.httpClient.get(
+      `${API_END_POINT}/sketches/${formType}/${formId}`
+    );
+  }
+
+  saveListSketches(
+    formType: string,
+    formId: string,
+    listFile: any
+  ): Observable<any> {
+    const headers: HttpHeaders = new HttpHeaders();
+    headers.append('Content-Type', 'multipart/form-data');
+
+    return this.httpClient.post(
+      `${API_END_POINT}/sketches/${formType}/${formId}`,
+      listFile,
+      { headers: headers }
+    );
+  }
+
+  deleteSketches(sketchesId: number): Observable<any> {
+    return this.httpClient.delete(`${API_END_POINT}/sketches/${sketchesId}`);
   }
 }
