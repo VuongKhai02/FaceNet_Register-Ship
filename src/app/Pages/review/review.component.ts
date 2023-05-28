@@ -31,9 +31,9 @@ interface formInfo {
   formType: string;
   formId: number;
 }
-interface id_index_part{
-  id:number;
-  index:number;
+interface id_index_part {
+  id: number;
+  index: number;
 }
 @Component({
   selector: 'app-review',
@@ -126,18 +126,20 @@ export class ReviewComponent implements OnInit {
             style: 'txt_center',
           },
         ],
-        ...this.reportIndex.parts.sort((a, b) => a.partIndex - b.partIndex).map((x) => [
-          {
-            text: `${this.partIndex_ToC++}`,
-            style: ['txt_center'],
-          },
-          {
-            text: `${x.item}`,
-          },
-          {
-            text: `....`,
-          },
-        ]),
+        ...this.reportIndex.parts
+          .sort((a, b) => a.partIndex - b.partIndex)
+          .map((x) => [
+            {
+              text: `${this.partIndex_ToC++}`,
+              style: ['txt_center'],
+            },
+            {
+              text: `${x.item}`,
+            },
+            {
+              text: `....`,
+            },
+          ]),
       ],
     };
     //Define sizeA4
@@ -7482,13 +7484,11 @@ export class ReviewComponent implements OnInit {
         this.inSuveyor = this.generalParticular[0].surveyorInfo;
       },
       (err) => {
-        console.log(err);
         alert('Failure to load data from server');
       }
     );
     this.paramService.getParamValueByType(5).subscribe((data) => {
       this.inParam_qualification = data[0].param;
-      console.log('param' + this.inParam_qualification);
     });
 
     this.reportIndexService
@@ -7554,27 +7554,29 @@ export class ReviewComponent implements OnInit {
                 });
             }
           }
-          this.id_index_part = this.parts.map((x) => ({
-            id: x.id,
-            index: x.partIndex,
-          })).sort((a, b) => a.index - b.index);
-          
+          this.id_index_part = this.parts
+            .map((x) => ({
+              id: x.id,
+              index: x.partIndex,
+            }))
+            .sort((a, b) => a.index - b.index);
+
           let listPro = [];
           for (let i = 0; i < this.id_index_part.length; i++) {
-            listPro.push(this.dataTm1S.getReport_index(this.id_index_part[i].id));
+            listPro.push(
+              this.dataTm1S.getReport_index(this.id_index_part[i].id)
+            );
           }
-          
+
           zip(...listPro).subscribe((data: {}) => {
             if (Array.isArray(data)) {
               this.data_part = data;
             }
-            console.log(this.data_part);
             this.isLoadingSaveButton = false;
           });
         },
         (err) => {
           console.log(err);
-          console.log('error');
         }
       );
   }
