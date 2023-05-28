@@ -27,6 +27,7 @@ import jwtDecode from 'jwt-decode';
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnInit {
+  exportVisible: boolean = false;
   loading: boolean = false;
   accounts: Account[] = [];
   oldPassword: string = '';
@@ -238,6 +239,10 @@ export class AppComponent implements OnInit {
 
   accLose() {
     this.logOutVisible = false;
+  }
+
+  closeExport() {
+    this.exportVisible = false;
   }
 
   cancel() {}
