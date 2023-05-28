@@ -154,6 +154,29 @@
         </li>
         <li nz-menu-item nzMatchRouter>
           <a
+            nz-popover
+            nzPopoverTitle="Sure to export"
+            [(nzPopoverVisible)]="exportVisible"
+            (nzPopoverVisibleChange)="change($event)"
+            nzPopoverTrigger="click"
+            [nzPopoverContent]="exportTemplate"
+            ><span nz-icon nzType="export" nzTheme="outline"></span>
+            <span>Export to pdf</span></a
+          >
+        </li>
+        <ng-template #exportTemplate>
+          Surveyor's signature?
+          <input type="checkbox" />
+          <br />
+          <br />
+          <button (click)="closeExport()" nz-button nzType="default">
+            Cancel
+          </button>
+          <nz-divider nzType="vertical"></nz-divider>
+          <button nz-button nzType="primary">Ok</button>
+        </ng-template>
+        <li nz-menu-item nzMatchRouter>
+          <a
             nz-popconfirm
             nzPopconfirmTitle="Sure to reset?"
             (nzOnConfirm)="reset()"

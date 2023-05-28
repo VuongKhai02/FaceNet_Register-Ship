@@ -53,6 +53,7 @@ export class HistoryComponent implements OnInit {
     this.inReportNumber = '';
     this.inFirstDate = '';
     this.inEndDate = '';
+    this.ngOnInit();
   }
 
   constructor(
@@ -145,69 +146,88 @@ export class HistoryComponent implements OnInit {
       this.formSearch.value.name === '' &&
       this.formSearch.value.imo === '' &&
       this.formSearch.value.report === '' &&
-      this.formSearch.value.dateOfBuild === '' &&
-      this.formSearch.value.firstDate === '' &&
-      this.formSearch.value.endDate === ''
+      (this.formSearch.value.dateOfBuild === '' ||
+        this.formSearch.value.dateOfBuild === null) &&
+      (this.formSearch.value.firstDate === '' ||
+        this.formSearch.value.firstDate === null) &&
+      (this.formSearch.value.endDate === '' ||
+        this.formSearch.value.endDate === null)
     ) {
-      this.getGeneralParticulars();
+      this.ngOnInit();
+      return;
     }
-    if (this.formSearch.value.name !== '') {
-      this.generalParticulars = this.generalParticulars.filter((x) =>
-        x.shipInfo.name
-          .toLowerCase()
-          .normalize('NFD')
-          .replace(/[\u0300-\u036f]/g, '')
-          .includes(
-            this.formSearch.value.name
+    this.getdataService.getGeneralParticularsFromAPI().subscribe(
+      (data) => {
+        this.generalParticulars = data;
+        if (this.formSearch.value.name !== '') {
+          this.generalParticulars = this.generalParticulars.filter((x) =>
+            x.shipInfo.name
               .toLowerCase()
               .normalize('NFD')
               .replace(/[\u0300-\u036f]/g, '')
-          )
-      );
-    }
-    if (this.formSearch.value.imo !== '') {
-      this.generalParticulars = this.generalParticulars.filter((x) =>
-        x.shipInfo.imoNumber
-          .toLowerCase()
-          .normalize('NFD')
-          .replace(/[\u0300-\u036f]/g, '')
-          .includes(
-            this.formSearch.value.imo
+              .includes(
+                this.formSearch.value.name
+                  .toLowerCase()
+                  .normalize('NFD')
+                  .replace(/[\u0300-\u036f]/g, '')
+              )
+          );
+        }
+        if (this.formSearch.value.imo !== '') {
+          this.generalParticulars = this.generalParticulars.filter((x) =>
+            x.shipInfo.imoNumber
               .toLowerCase()
               .normalize('NFD')
               .replace(/[\u0300-\u036f]/g, '')
-          )
-      );
-    }
-    if (this.formSearch.value.report !== '') {
-      this.generalParticulars = this.generalParticulars.filter((x) =>
-        x.reportNo
-          .toLowerCase()
-          .normalize('NFD')
-          .replace(/[\u0300-\u036f]/g, '')
-          .includes(
-            this.formSearch.value.report
+              .includes(
+                this.formSearch.value.imo
+                  .toLowerCase()
+                  .normalize('NFD')
+                  .replace(/[\u0300-\u036f]/g, '')
+              )
+          );
+        }
+        if (this.formSearch.value.report !== '') {
+          this.generalParticulars = this.generalParticulars.filter((x) =>
+            x.reportNo
               .toLowerCase()
               .normalize('NFD')
               .replace(/[\u0300-\u036f]/g, '')
-          )
-      );
-    }
-    if (this.formSearch.value.dateOfBuild !== '') {
-      this.generalParticulars = this.generalParticulars.filter(
-        (x) => x.shipInfo.dateOfBuild === this.inDateOfBuild
-      );
-    }
-    if (this.formSearch.value.firstDate !== '') {
-      this.generalParticulars = this.generalParticulars.filter(
-        (x) => x.firstDateOfMeasurement === this.inFirstDate
-      );
-    }
-    if (this.formSearch.value.lastDate !== '') {
-      this.generalParticulars = this.generalParticulars.filter(
-        (x) => x.lastDateOfMeasurement
-      );
-    }
+              .includes(
+                this.formSearch.value.report
+                  .toLowerCase()
+                  .normalize('NFD')
+                  .replace(/[\u0300-\u036f]/g, '')
+              )
+          );
+        }
+        if (this.formSearch.value.dateOfBuild !== '') {
+          this.generalParticulars = this.generalParticulars.filter((x) =>
+            String(new Date(x.shipInfo.dateOfBuild))
+              .slice(0, 15)
+              .includes(String(this.formSearch.value.dateOfBuild).slice(0, 15))
+          );
+        }
+        if (this.formSearch.value.firstDate !== '') {
+          this.generalParticulars = this.generalParticulars.filter(
+            (x) =>
+              String(new Date(x.firstDateOfMeasurement)).slice(0, 15) ==
+              String(this.formSearch.value.firstDate).slice(0, 15)
+          );
+        }
+        if (this.formSearch.value.endDate !== '') {
+          this.generalParticulars = this.generalParticulars.filter(
+            (x) =>
+              String(new Date(x.lastDateOfMeasurement)).slice(0, 15) ==
+              String(this.formSearch.value.endDate).slice(0, 15)
+          );
+        }
+      },
+      (err) => {
+        console.log(err);
+        this.message.create('error', 'connection to data failed');
+      }
+    );
   }
 
   /**
