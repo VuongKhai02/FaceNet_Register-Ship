@@ -16,6 +16,7 @@ import { NavigationEnd, Router } from '@angular/router';
 import { GeneralParticular } from 'src/app/share/models/generalParticulars.model';
 import { API_END_POINT } from 'src/environments/environment';
 import { newParamValue } from 'src/app/share/models/newParamValue.model';
+import { Sketch } from 'src/app/share/models/sketches.model';
 
 @Component({
   selector: 'app-tm4',
@@ -69,15 +70,32 @@ export class Tm4Component implements OnInit {
   selectedListRow: number = -1;
   listFormCode: ParamValue[] = [];
 
-  isLoadingDataForm: boolean = false;
-
   generalParticular!: GeneralParticular;
 
   listNewStructuralMember: newParamValue[] = [];
 
   selectedFile: any;
 
+  isVisibleAddSketches: boolean = false;
+  isConfirmLoadingSketches: boolean = false;
+  isLoadingSketches: boolean = false;
+  listSketches: Sketch[] = [];
+  listPreviewSketches: any[] = [];
+  listCurrentSketChes: File[] = [];
+  listSaveSketches: FormData = new FormData();
+
   ngOnInit(): void {
+    this.paramValueService.getParamValueByType(7).subscribe((data) => {
+      this.listStructuralMember = data;
+    });
+
+    this.paramValueService.getParamValueByType(11).subscribe((data) => {
+      this.listFormCode = data;
+    });
+
+    if (this.formService.getParticularData() != null)
+      this.generalParticular = this.formService.getParticularData();
+
     this.router.events.subscribe((event) => {
       if (
         event instanceof NavigationEnd &&
@@ -85,7 +103,7 @@ export class Tm4Component implements OnInit {
         this.router.url.split('/')[3].slice(0, 3) === 'tm4' &&
         this.router.url.split('/')[4] !== '-1'
       ) {
-        this.isLoadingDataForm = true;
+        this.formService.isLoadingData = true;
 
         this.partId = this.router.url.split('/')[2];
         this.formService
@@ -115,7 +133,8 @@ export class Tm4Component implements OnInit {
                 });
               });
             });
-            this.isLoadingDataForm = false;
+
+            this.formService.isLoadingData = false;
           });
       } else if (
         event instanceof NavigationEnd &&
@@ -147,7 +166,8 @@ export class Tm4Component implements OnInit {
         );
       }
     } else {
-      this.isLoadingDataForm = true;
+      this.formService.isLoadingData = true;
+
       this.formService
         .getDataForm('tm4s', this.router.url.split('/')[4])
         .subscribe((data) => {
@@ -175,20 +195,10 @@ export class Tm4Component implements OnInit {
               });
             });
           });
-          this.isLoadingDataForm = false;
+
+          this.formService.isLoadingData = false;
         });
     }
-
-    this.paramValueService.getParamValueByType(7).subscribe((data) => {
-      this.listStructuralMember = data;
-    });
-
-    this.paramValueService.getParamValueByType(11).subscribe((data) => {
-      this.listFormCode = data;
-    });
-
-    if (this.formService.getParticularData() != null)
-      this.generalParticular = this.formService.getParticularData();
   }
 
   addRow() {
@@ -282,6 +292,7 @@ export class Tm4Component implements OnInit {
 
   onSaveForm() {
     this.isLoadingSaveButton = true;
+    this.formService.isLoadingData = true;
 
     this.formTM4.structuralMemberTM4List.forEach((structuralMember) => {
       structuralMember.measurementTM4List =
@@ -307,8 +318,6 @@ export class Tm4Component implements OnInit {
         )
         .subscribe({
           next: (result) => {
-            this.isLoadingSaveButton = false;
-            this.message.create('success', 'Save form success');
             this.listNewStructuralMember = [];
             this.router.navigate([
               'part',
@@ -316,13 +325,17 @@ export class Tm4Component implements OnInit {
               this.router.url.split('/')[3],
               result.id,
             ]);
+            this.message.create('success', 'Save form success');
           },
           error: (error) => {
-            this.isLoadingSaveButton = false;
             this.message.create(
               'error',
               'Something went wrong, please try later'
             );
+          },
+          complete: () => {
+            this.isLoadingSaveButton = false;
+            this.formService.isLoadingData = false;
           },
         });
     } else {
@@ -345,6 +358,10 @@ export class Tm4Component implements OnInit {
               'error',
               'Something went wrong, please try later'
             );
+          },
+          complete: () => {
+            this.isLoadingSaveButton = false;
+            this.formService.isLoadingData = false;
           },
         });
     }
@@ -440,7 +457,7 @@ export class Tm4Component implements OnInit {
   }
 
   onImportExcel(event: any) {
-    this.isLoadingDataForm = true;
+    this.formService.isLoadingData = true;
     const formData = new FormData();
     formData.append('excelFile', event.target.files[0]);
     this.formService
@@ -450,7 +467,7 @@ export class Tm4Component implements OnInit {
         this.formTM4.locationOfStructure = data.locationOfStructure;
         this.formTM4.structuralMemberTM4List = data.structuralMemberTM4List;
 
-        for (let i = 0; i < this.formTM4.structuralMemberTM4List.length; i++) {
+        for (let i = 0; i < data.structuralMemberTM4List.length; i++) {
           this.formTM4.structuralMemberTM4List[i].measurementTM4List =
             data.structuralMemberTM4List[i].measurementTM4DTOList;
 
@@ -477,9 +494,109 @@ export class Tm4Component implements OnInit {
             }
           );
         }
-        this.isLoadingDataForm = false;
+        this.formService.isLoadingData = false;
       });
 
     this.selectedFile = null;
+  }
+
+  showAddSketches() {
+    this.isVisibleAddSketches = true;
+    this.isLoadingSketches = true;
+
+    this.formService
+      .getListSketches('form_tm1', this.router.url.split('/')[4])
+      .subscribe({
+        next: (data) => {
+          this.listSketches = data;
+          this.isLoadingSketches = false;
+        },
+        error: (error) => {
+          this.isLoadingSketches = false;
+          this.message.create(
+            'error',
+            'Something went wrong, please try later'
+          );
+        },
+      });
+  }
+
+  handleCancelAddSketches() {
+    this.isVisibleAddSketches = false;
+    this.listPreviewSketches = [];
+    this.listSaveSketches.delete('files');
+  }
+
+  handleOkAddSketches() {
+    if (this.listSaveSketches.has('multipartFiles')) {
+      this.isConfirmLoadingSketches = true;
+      this.formService
+        .saveListSketches(
+          'form_tm1',
+          this.router.url.split('/')[4],
+          this.listSaveSketches
+        )
+        .subscribe({
+          next: (data) => {
+            this.listPreviewSketches = [];
+            this.listSaveSketches.delete('multipartFiles');
+            this.isConfirmLoadingSketches = false;
+            this.message.create('success', 'Save sketches success');
+            this.showAddSketches();
+          },
+          error: (error) => {
+            this.isConfirmLoadingSketches = false;
+            this.message.create(
+              'error',
+              'Something went wrong, please try later'
+            );
+          },
+        });
+    } else {
+      this.isVisibleAddSketches = false;
+    }
+  }
+
+  onChangeImage(event: any) {
+    this.listCurrentSketChes = event.target.files;
+
+    for (let i = 0; i < event.target.files.length; i++) {
+      let fReader = new FileReader();
+      fReader.readAsDataURL(event.target.files[i]);
+      fReader.onloadend = (e: any) => {
+        if (e.target) {
+          this.listPreviewSketches.push(e.target.result);
+        }
+      };
+
+      this.listSaveSketches.append('multipartFiles', event.target.files[i]);
+    }
+  }
+
+  deletePreviewSketches(index: number) {
+    this.listPreviewSketches.splice(index, 1);
+    this.listSaveSketches.delete('multipartFiles');
+    var tempListCurrentSketches = Array.from(this.listCurrentSketChes);
+    tempListCurrentSketches.splice(index, 1);
+    this.listCurrentSketChes = tempListCurrentSketches;
+
+    for (let i = 0; i < tempListCurrentSketches.length; i++) {
+      this.listSaveSketches.append(
+        'multipartFiles',
+        tempListCurrentSketches[i]
+      );
+    }
+  }
+
+  deleteSavedSketches(sketchesId: number) {
+    this.formService.deleteSketches(sketchesId).subscribe({
+      next: (data) => {
+        this.message.create('success', 'Delete sketches success');
+        this.showAddSketches();
+      },
+      error: (error) => {
+        this.message.create('error', 'Something went wrong, please try later');
+      },
+    });
   }
 }

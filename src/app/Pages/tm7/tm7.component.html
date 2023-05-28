@@ -86,41 +86,230 @@
       <span nz-icon nzType="file-add" nzTheme="outline"></span> Add row
     </button>
     <nz-modal
-      [nzStyle]="{ top: '20%' }"
-      [(nzVisible)]="isAddRowVisible"
-      nzTitle="Enter number of rows"
-      (nzOnCancel)="handleCancel()"
-      (nzOnOk)="handleOk()"
-      nzWidth="400px"
+      [nzStyle]="{ top: '10%' }"
+      [(nzVisible)]="isVisibleAddSketches"
+      nzTitle="Add sketches"
+      [nzFooter]="modalFooter"
+      (nzOnCancel)="handleCancelAddSketches()"
+      (nzOnOk)="handleOkAddSketches()"
+      nzWidth="70%"
     >
-      <nz-input-group nzCompact *nzModalContent>
-        <nz-select
-          nzShowSearch
-          nzAllowClear
-          nzPlaceHolder="Select a structural member title"
-          [(ngModel)]="structuralMemberSelected"
-          style="width: 70%"
+      <div *nzModalContent>
+        <div *ngIf="isLoadingSketches; else showSketches">
+          <nz-spin
+            nzSimple
+            [nzSpinning]="isLoadingSketches"
+            [nzSize]="'large'"
+            style="display: flex; justify-content: center; margin-top: 30px"
+          >
+          </nz-spin>
+        </div>
+        <ng-template #showSketches>
+          <input
+            nz-input
+            type="file"
+            accept="image/*"
+            (change)="onChangeImage($event)"
+            multiple
+          />
+          <div
+            *ngIf="listPreviewSketches.length > 0 && !isLoadingSketches"
+            class="preview-container"
+          >
+            <div class="preview-title">
+              <h1
+                style="margin-bottom: 0; padding: 0 5px; line-height: initial"
+              >
+                Preview
+              </h1>
+            </div>
+            <div class="preview-sketches">
+              <div
+                *ngFor="let sketch of listPreviewSketches; index as index"
+                class="preview-image"
+                [style.background-image]="'url(' + sketch + ')'"
+              >
+                <div class="preview-sketches-overlay">
+                  <span
+                    nz-icon
+                    class="delete-button"
+                    nzType="delete"
+                    nzTheme="outline"
+                    nz-popconfirm
+                    nzPopconfirmTitle="Sure to delete?"
+                    (nzOnConfirm)="deletePreviewSketches(index)"
+                  ></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            *ngIf="listSketches.length > 0 && !isLoadingSketches"
+            class="preview-container"
+          >
+            <div class="preview-title">
+              <h1
+                style="margin-bottom: 0; padding: 0 5px; line-height: initial"
+              >
+                Saved
+              </h1>
+            </div>
+            <div class="preview-sketches">
+              <div
+                *ngFor="let sketch of listSketches; index as index"
+                class="preview-image"
+                [style.background-image]="
+                  'url(' +
+                  'data:' +
+                  sketch.type +
+                  ';base64,' +
+                  sketch.value +
+                  ')'
+                "
+              >
+                <div class="preview-sketches-overlay">
+                  <span
+                    nz-icon
+                    class="delete-button"
+                    nzType="delete"
+                    nzTheme="outline"
+                    nz-popconfirm
+                    nzPopconfirmTitle="Sure to delete?"
+                    (nzOnConfirm)="deleteSavedSketches(sketch.id)"
+                  ></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </div>
+      <ng-template #modalFooter>
+        <button nz-button nzType="default" (click)="handleCancelAddSketches()">
+          Cancel
+        </button>
+        <button
+          nz-button
+          nzType="primary"
+          [disabled]="isLoadingSketches"
+          (click)="handleOkAddSketches()"
+          [nzLoading]="isConfirmLoadingSketches"
         >
-          <nz-option nzLabel="Add a new list" nzValue="{{ -1 }}"></nz-option>
-          <nz-option
-            *ngFor="
-              let structuralDescription of formTM7.frameNumberList;
-              index as index
-            "
-            nzLabel="{{ structuralDescription.name }}"
-            nzValue="{{ index }}"
-          ></nz-option>
-        </nz-select>
-        <input
-          class="input-row-value"
-          nz-input
-          type="number"
-          min="0"
-          max="100"
-          [(ngModel)]="addRowValue"
-          pattern="^(?:[1-9]|[1-9][0-9]|100)$"
-        />
-      </nz-input-group>
+          Save
+        </button>
+      </ng-template>
+    </nz-modal>
+
+    <button class="btn-add-row" nz-button (click)="showAddSketches()">
+      <span nz-icon nzType="folder-add" nzTheme="outline"></span> Add sketches
+    </button>
+    <nz-modal
+      [nzStyle]="{ top: '10%' }"
+      [(nzVisible)]="isVisibleAddSketches"
+      nzTitle="Add sketches"
+      [nzFooter]="modalFooter"
+      (nzOnCancel)="handleCancelAddSketches()"
+      (nzOnOk)="handleOkAddSketches()"
+      nzWidth="70%"
+    >
+      <div *nzModalContent>
+        <div *ngIf="isLoadingSketches; else showSketches">
+          <nz-spin
+            nzSimple
+            [nzSpinning]="isLoadingSketches"
+            [nzSize]="'large'"
+            style="display: flex; justify-content: center; margin-top: 30px"
+          >
+          </nz-spin>
+        </div>
+        <ng-template #showSketches>
+          <input
+            nz-input
+            type="file"
+            accept="image/*"
+            (change)="onChangeImage($event)"
+            multiple
+          />
+          <div
+            *ngIf="listPreviewSketches.length > 0 && !isLoadingSketches"
+            class="preview-container"
+          >
+            <div class="preview-title">
+              <h1
+                style="margin-bottom: 0; padding: 0 5px; line-height: initial"
+              >
+                Preview
+              </h1>
+            </div>
+            <div class="preview-sketches">
+              <div
+                *ngFor="let sketch of listPreviewSketches; index as index"
+                class="preview-image"
+                [style.background-image]="'url(' + sketch + ')'"
+              >
+                <div class="preview-sketches-overlay">
+                  <span
+                    nz-icon
+                    class="delete-button"
+                    nzType="delete"
+                    nzTheme="outline"
+                    (click)="deletePreviewSketches(index)"
+                  ></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            *ngIf="listSketches.length > 0 && !isLoadingSketches"
+            class="preview-container"
+          >
+            <div class="preview-title">
+              <h1
+                style="margin-bottom: 0; padding: 0 5px; line-height: initial"
+              >
+                Saved
+              </h1>
+            </div>
+            <div class="preview-sketches">
+              <div
+                *ngFor="let sketch of listSketches; index as index"
+                class="preview-image"
+                [style.background-image]="
+                  'url(' +
+                  'data:' +
+                  sketch.type +
+                  ';base64,' +
+                  sketch.value +
+                  ')'
+                "
+              >
+                <div class="preview-sketches-overlay">
+                  <span
+                    nz-icon
+                    class="delete-button"
+                    nzType="delete"
+                    nzTheme="outline"
+                    (click)="deleteSavedSketches(index)"
+                  ></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </div>
+      <ng-template #modalFooter>
+        <button nz-button nzType="default" (click)="handleCancelAddSketches()">
+          Cancel
+        </button>
+        <button
+          nz-button
+          nzType="primary"
+          [disabled]="isLoadingSketches"
+          (click)="handleOkAddSketches()"
+          [nzLoading]="isConfirmLoadingSketches"
+        >
+          Save
+        </button>
+      </ng-template>
     </nz-modal>
 
     <button style="width: fit-content; padding: 0">
@@ -135,6 +324,7 @@
         accept=".xls"
         style="display: none"
         id="import-excel"
+        [(ngModel)]="selectedFile"
         (change)="onImportExcel($event)"
       />
     </button>
@@ -148,6 +338,7 @@
       <span nz-icon nzType="save" nzTheme="outline"></span>Save
     </button>
   </div>
+
   <nz-table
     [nzData]="formTM7.frameNumberList"
     [nzFrontPagination]="false"
@@ -255,7 +446,32 @@
         [style.background]="
           selectedRow.includes(j) && selectedListRow === i
             ? '#FFE6C1 !important'
-            : ''
+            : formService.checkBeforeSave(
+                row.upperPart.originalThickness,
+                row.upperPart.gaugedP
+              ) &&
+              formService.checkBeforeSave(
+                row.upperPart.originalThickness,
+                row.upperPart.gaugedS
+              ) &&
+              formService.checkBeforeSave(
+                row.midPart.originalThickness,
+                row.midPart.gaugedP
+              ) &&
+              formService.checkBeforeSave(
+                row.midPart.originalThickness,
+                row.midPart.gaugedS
+              ) &&
+              formService.checkBeforeSave(
+                row.lowerPart.originalThickness,
+                row.lowerPart.gaugedP
+              ) &&
+              formService.checkBeforeSave(
+                row.lowerPart.originalThickness,
+                row.lowerPart.gaugedS
+              )
+            ? ''
+            : '#FF3333 !important'
         "
       >
         <td
@@ -1001,7 +1217,7 @@
             nz-input
             type="number"
             min="0"
-            [(ngModel)]="row.lowerPart.originalThickness"
+            [(ngModel)]="row.upperPart.originalThickness"
           />
         </td>
         <td>

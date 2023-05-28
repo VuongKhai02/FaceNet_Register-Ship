@@ -20,6 +20,7 @@ import { Account } from './share/models/account.model';
 import { AccountService } from './share/services/account.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import jwtDecode from 'jwt-decode';
+import { FormService } from './share/services/form/form.service';
 
 @Component({
   selector: 'app-root',
@@ -51,7 +52,8 @@ export class AppComponent implements OnInit {
     private partsService: PartsService,
     private localService: LocalService,
     private reportIndexService: ReportIndexesService,
-    private router: Router
+    private router: Router,
+    public formService: FormService
   ) {}
 
   clickMe(i: number): void {

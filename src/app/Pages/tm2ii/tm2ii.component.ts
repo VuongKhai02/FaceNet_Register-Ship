@@ -10,6 +10,7 @@ import { ParamValueService } from 'src/app/share/services/param-value.service';
 import { ParamValue } from 'src/app/share/models/paramValue.model';
 import { GeneralParticular } from 'src/app/share/models/generalParticulars.model';
 import { API_END_POINT } from 'src/environments/environment';
+import { Sketch } from 'src/app/share/models/sketches.model';
 
 @Component({
   selector: 'app-tm2ii',
@@ -36,15 +37,16 @@ export class Tm2iiComponent {
   listRow: measurementTM2[] = [];
   formTM2: formTM2 = {
     code: '',
-    name: 'TM2(I)',
+    name: 'TM2(II)',
     firstFrameNoTM2: '',
     secondFrameNoTM2: '',
     thirdFrameNoTM2: '',
     measurementTM2List: this.listRow,
   };
 
-  partId: string = this.router.url.split('/')[2];
-  API_URL: string = `http://222.252.25.37:9080/api/v1/report-indexes/${this.partId}/tm2s`;
+  API_URL: string = `${API_END_POINT}/report-indexes/${
+    this.router.url.split('/')[2]
+  }/tm2s`;
 
   listPercentOption = [
     { label: '20%', value: 1 },
@@ -96,9 +98,22 @@ export class Tm2iiComponent {
 
   selectedFile: any;
 
-  isLoadingDataForm: boolean = false;
+  isVisibleAddSketches: boolean = false;
+  isConfirmLoadingSketches: boolean = false;
+  isLoadingSketches: boolean = false;
+  listSketches: Sketch[] = [];
+  listPreviewSketches: any[] = [];
+  listCurrentSketChes: File[] = [];
+  listSaveSketches: FormData = new FormData();
 
   ngOnInit(): void {
+    this.paramValueService.getParamValueByType(11).subscribe((data) => {
+      this.listFormCode = data;
+    });
+
+    if (this.formService.getParticularData() != null)
+      this.generalParticular = this.formService.getParticularData();
+
     this.router.events.subscribe((event) => {
       if (
         event instanceof NavigationEnd &&
@@ -106,29 +121,47 @@ export class Tm2iiComponent {
         this.router.url.split('/')[3].slice(0, 3) === 'tm2' &&
         this.router.url.split('/')[4] !== '-1'
       ) {
-        this.isLoadingDataForm = false;
+        this.formService.isLoadingData = true;
 
-        this.partId = this.router.url.split('/')[2];
         this.formService
           .getDataForm('tm2s', this.router.url.split('/')[4])
-          .subscribe((data) => {
-            this.formTM2.code = data.code;
-            this.listRow = data.measurementTM2DTOList;
-            if (data.measurementTM2DTOList.length > 0) {
-              this.percentValue =
-                data.measurementTM2DTOList[0].firstTransverseSectionMeasurementDetailTM2.percent;
-              if (
-                this.listPercentOption.filter(
-                  (percent) => percent.label === this.percentValue
-                ).length > 0
-              )
-                this.percentSelected = this.listPercentOption.filter(
-                  (percent) => percent.label === this.percentValue
-                )[0].value;
-            }
-          });
+          .subscribe(
+            (data) => {
+              this.formTM2.code = data.code;
+              this.listRow = data.measurementTM2DTOList;
 
-        this.isLoadingDataForm = false;
+              this.firstTransverseSectionFrom =
+                data.firstFrameNoTM2.split('~')[0];
+              this.firstTransverseSectionTo =
+                data.firstFrameNoTM2.split('~')[1];
+              this.secondTransverseSectionFrom =
+                data.secondFrameNoTM2.split('~')[0];
+              this.secondTransverseSectionTo =
+                data.secondFrameNoTM2.split('~')[1];
+              this.thirdTransverseSectionFrom =
+                data.thirdFrameNoTM2.split('~')[0];
+              this.thirdTransverseSectionTo =
+                data.thirdFrameNoTM2.split('~')[1];
+
+              if (data.measurementTM2DTOList.length > 0) {
+                this.percentValue =
+                  data.measurementTM2DTOList[0].firstTransverseSectionMeasurementDetailTM2.percent;
+                if (
+                  this.listPercentOption.filter(
+                    (percent) => percent.label === this.percentValue
+                  ).length > 0
+                )
+                  this.percentSelected = this.listPercentOption.filter(
+                    (percent) => percent.label === this.percentValue
+                  )[0].value;
+              }
+
+              this.formService.isLoadingData = false;
+            },
+            (error) => {
+              this.formService.isLoadingData = false;
+            }
+          );
       } else if (
         event instanceof NavigationEnd &&
         this.router.url.split('/')[4] === '-1'
@@ -143,36 +176,46 @@ export class Tm2iiComponent {
       for (let i = 1; i <= 20; i++)
         this.listRow.push(JSON.parse(JSON.stringify(this.emptyRow)));
     } else {
-      this.isLoadingDataForm = true;
+      this.formService.isLoadingData = true;
 
       this.formService
         .getDataForm('tm2s', this.router.url.split('/')[4])
-        .subscribe((data) => {
-          this.formTM2.code = data.code;
-          this.listRow = data.measurementTM2DTOList;
-          if (data.measurementTM2DTOList.length > 0) {
-            this.percentValue =
-              data.measurementTM2DTOList[0].firstTransverseSectionMeasurementDetailTM2.percent;
-            if (
-              this.listPercentOption.filter(
-                (percent) => percent.label === this.percentValue
-              ).length > 0
-            )
-              this.percentSelected = this.listPercentOption.filter(
-                (percent) => percent.label === this.percentValue
-              )[0].value;
+        .subscribe(
+          (data) => {
+            this.formTM2.code = data.code;
+            this.listRow = data.measurementTM2DTOList;
+
+            this.firstTransverseSectionFrom =
+              data.firstFrameNoTM2.split('~')[0];
+            this.firstTransverseSectionTo = data.firstFrameNoTM2.split('~')[1];
+            this.secondTransverseSectionFrom =
+              data.secondFrameNoTM2.split('~')[0];
+            this.secondTransverseSectionTo =
+              data.secondFrameNoTM2.split('~')[1];
+            this.thirdTransverseSectionFrom =
+              data.thirdFrameNoTM2.split('~')[0];
+            this.thirdTransverseSectionTo = data.thirdFrameNoTM2.split('~')[1];
+
+            if (data.measurementTM2DTOList.length > 0) {
+              this.percentValue =
+                data.measurementTM2DTOList[0].firstTransverseSectionMeasurementDetailTM2.percent;
+              if (
+                this.listPercentOption.filter(
+                  (percent) => percent.label === this.percentValue
+                ).length > 0
+              )
+                this.percentSelected = this.listPercentOption.filter(
+                  (percent) => percent.label === this.percentValue
+                )[0].value;
+            }
+
+            this.formService.isLoadingData = false;
+          },
+          (error) => {
+            this.formService.isLoadingData = false;
           }
-        });
-
-      this.isLoadingDataForm = false;
+        );
     }
-
-    this.paramValueService.getParamValueByType(11).subscribe((data) => {
-      this.listFormCode = data;
-    });
-
-    if (this.formService.getParticularData() != null)
-      this.generalParticular = this.formService.getParticularData();
   }
 
   addRow() {
@@ -194,6 +237,7 @@ export class Tm2iiComponent {
   }
 
   onSaveForm() {
+    this.formService.isLoadingData = true;
     this.isLoadingSaveButton = true;
     this.formTM2.measurementTM2List = this.listRow;
     this.onChangePercent();
@@ -217,9 +261,9 @@ export class Tm2iiComponent {
 
     this.listRow = this.formTM2.measurementTM2List;
 
-    this.formTM2.firstFrameNoTM2 = `${this.firstTransverseSectionFrom} ~ ${this.firstTransverseSectionTo}`;
-    this.formTM2.secondFrameNoTM2 = `${this.secondTransverseSectionFrom} ~ ${this.secondTransverseSectionTo}`;
-    this.formTM2.thirdFrameNoTM2 = `${this.thirdTransverseSectionFrom} ~ ${this.thirdTransverseSectionTo}`;
+    this.formTM2.firstFrameNoTM2 = `${this.firstTransverseSectionFrom}~${this.firstTransverseSectionTo}`;
+    this.formTM2.secondFrameNoTM2 = `${this.secondTransverseSectionFrom}~${this.secondTransverseSectionTo}`;
+    this.formTM2.thirdFrameNoTM2 = `${this.thirdTransverseSectionFrom}~${this.thirdTransverseSectionTo}`;
 
     if (Number(this.router.url.split('/')[4]) === -1) {
       this.formService
@@ -233,16 +277,18 @@ export class Tm2iiComponent {
         .subscribe({
           next: (result) => {
             this.isLoadingSaveButton = false;
+            this.formService.isLoadingData = false;
             this.message.create('success', 'Save form success');
             this.router.navigate([
               'part',
-              this.partId,
+              this.router.url.split('/')[2],
               this.router.url.split('/')[3],
               result.id,
             ]);
           },
           error: (error) => {
             this.isLoadingSaveButton = false;
+            this.formService.isLoadingData = false;
             this.message.create(
               'error',
               'Something went wrong, please try later'
@@ -261,10 +307,12 @@ export class Tm2iiComponent {
         .subscribe({
           next: (result) => {
             this.isLoadingSaveButton = false;
+            this.formService.isLoadingData = false;
             this.message.create('success', 'Save form success');
           },
           error: (error) => {
             this.isLoadingSaveButton = false;
+            this.formService.isLoadingData = false;
             this.message.create(
               'error',
               'Something went wrong, please try later'
@@ -335,9 +383,14 @@ export class Tm2iiComponent {
         this.percentValue;
     }
 
-    this.percentSelected = this.listPercentOption.filter(
-      (percent) => percent.label === this.percentValue
-    )[0].value;
+    if (
+      this.listPercentOption.filter(
+        (percent) => percent.label === this.percentValue
+      ).length > 0
+    )
+      this.percentSelected = this.listPercentOption.filter(
+        (percent) => percent.label === this.percentValue
+      )[0].value;
   }
 
   clearRow(index: number) {
@@ -354,61 +407,177 @@ export class Tm2iiComponent {
   }
 
   onImportExcel(event: any) {
-    this.isLoadingDataForm = true;
+    this.formService.isLoadingData = true;
 
     const formData = new FormData();
     formData.append('excelFile', event.target.files[0]);
     this.formService
       .importExcel(`${API_END_POINT}/sheet/tm2s`, formData)
-      .subscribe((data) => {
-        this.listRow = [];
+      .subscribe(
+        (data) => {
+          this.listRow = [];
 
-        this.firstTransverseSectionFrom = data.firstFrameNoTM2.split('~')[0];
-        this.firstTransverseSectionTo = data.firstFrameNoTM2.split('~')[1];
-        this.secondTransverseSectionFrom = data.secondFrameNoTM2.split('~')[0];
-        this.secondTransverseSectionTo = data.secondFrameNoTM2.split('~')[1];
-        this.thirdTransverseSectionFrom = data.thirdFrameNoTM2.split('~')[0];
-        this.thirdTransverseSectionTo = data.thirdFrameNoTM2.split('~')[1];
+          this.firstTransverseSectionFrom = data.firstFrameNoTM2.split('~')[0];
+          this.firstTransverseSectionTo = data.firstFrameNoTM2.split('~')[1];
+          this.secondTransverseSectionFrom =
+            data.secondFrameNoTM2.split('~')[0];
+          this.secondTransverseSectionTo = data.secondFrameNoTM2.split('~')[1];
+          this.thirdTransverseSectionFrom = data.thirdFrameNoTM2.split('~')[0];
+          this.thirdTransverseSectionTo = data.thirdFrameNoTM2.split('~')[1];
 
-        data.measurementTM2DTOList.forEach((data: any) => {
-          this.listRow.push({
-            strakePosition: data.strakePosition,
-            noOrLetter: data.noOrLetter,
-            firstTransverseSectionMeasurementDetailTM2: {
-              originalThickness:
-                data.firstTransverseSectionMeasurementDetailTM2
-                  .originalThickness,
-              maxAlwbDim:
-                data.firstTransverseSectionMeasurementDetailTM2.maxAlwbDim,
-              gaugedP: data.firstTransverseSectionMeasurementDetailTM2.gaugedP,
-              gaugedS: data.firstTransverseSectionMeasurementDetailTM2.gaugedS,
-              percent: data.firstTransverseSectionMeasurementDetailTM2.percent,
-            },
-            secondTransverseSectionMeasurementDetailTM2: {
-              originalThickness:
-                data.secondTransverseSectionMeasurementDetailTM2
-                  .originalThickness,
-              maxAlwbDim:
-                data.secondTransverseSectionMeasurementDetailTM2.maxAlwbDim,
-              gaugedP: data.secondTransverseSectionMeasurementDetailTM2.gaugedP,
-              gaugedS: data.secondTransverseSectionMeasurementDetailTM2.gaugedS,
-              percent: data.secondTransverseSectionMeasurementDetailTM2.percent,
-            },
-            thirdTransverseSectionMeasurementDetailTM2: {
-              originalThickness:
-                data.thirdTransverseSectionMeasurementDetailTM2
-                  .originalThickness,
-              maxAlwbDim:
-                data.thirdTransverseSectionMeasurementDetailTM2.maxAlwbDim,
-              gaugedP: data.thirdTransverseSectionMeasurementDetailTM2.gaugedP,
-              gaugedS: data.thirdTransverseSectionMeasurementDetailTM2.gaugedS,
-              percent: data.thirdTransverseSectionMeasurementDetailTM2.percent,
-            },
+          data.measurementTM2DTOList.forEach((data: any) => {
+            this.listRow.push({
+              strakePosition: data.strakePosition,
+              noOrLetter: data.noOrLetter,
+              firstTransverseSectionMeasurementDetailTM2: {
+                originalThickness:
+                  data.firstTransverseSectionMeasurementDetailTM2
+                    .originalThickness,
+                maxAlwbDim:
+                  data.firstTransverseSectionMeasurementDetailTM2.maxAlwbDim,
+                gaugedP:
+                  data.firstTransverseSectionMeasurementDetailTM2.gaugedP,
+                gaugedS:
+                  data.firstTransverseSectionMeasurementDetailTM2.gaugedS,
+                percent:
+                  data.firstTransverseSectionMeasurementDetailTM2.percent,
+              },
+              secondTransverseSectionMeasurementDetailTM2: {
+                originalThickness:
+                  data.secondTransverseSectionMeasurementDetailTM2
+                    .originalThickness,
+                maxAlwbDim:
+                  data.secondTransverseSectionMeasurementDetailTM2.maxAlwbDim,
+                gaugedP:
+                  data.secondTransverseSectionMeasurementDetailTM2.gaugedP,
+                gaugedS:
+                  data.secondTransverseSectionMeasurementDetailTM2.gaugedS,
+                percent:
+                  data.secondTransverseSectionMeasurementDetailTM2.percent,
+              },
+              thirdTransverseSectionMeasurementDetailTM2: {
+                originalThickness:
+                  data.thirdTransverseSectionMeasurementDetailTM2
+                    .originalThickness,
+                maxAlwbDim:
+                  data.thirdTransverseSectionMeasurementDetailTM2.maxAlwbDim,
+                gaugedP:
+                  data.thirdTransverseSectionMeasurementDetailTM2.gaugedP,
+                gaugedS:
+                  data.thirdTransverseSectionMeasurementDetailTM2.gaugedS,
+                percent:
+                  data.thirdTransverseSectionMeasurementDetailTM2.percent,
+              },
+            });
           });
-        });
-      });
-    this.selectedFile = null;
 
-    this.isLoadingDataForm = false;
+          this.formService.isLoadingData = false;
+          this.message.create('success', 'Import excel success');
+        },
+        (error) => {
+          this.formService.isLoadingData = false;
+        }
+      );
+    this.selectedFile = null;
+  }
+
+  showAddSketches() {
+    this.isVisibleAddSketches = true;
+    this.isLoadingSketches = true;
+
+    this.formService
+      .getListSketches('form_tm1', this.router.url.split('/')[4])
+      .subscribe({
+        next: (data) => {
+          this.listSketches = data;
+          this.isLoadingSketches = false;
+        },
+        error: (error) => {
+          this.isLoadingSketches = false;
+          this.message.create(
+            'error',
+            'Something went wrong, please try later'
+          );
+        },
+      });
+  }
+
+  handleCancelAddSketches() {
+    this.isVisibleAddSketches = false;
+    this.listPreviewSketches = [];
+    this.listSaveSketches.delete('files');
+  }
+
+  handleOkAddSketches() {
+    if (this.listSaveSketches.has('multipartFiles')) {
+      this.isConfirmLoadingSketches = true;
+      this.formService
+        .saveListSketches(
+          'form_tm1',
+          this.router.url.split('/')[4],
+          this.listSaveSketches
+        )
+        .subscribe({
+          next: (data) => {
+            this.listPreviewSketches = [];
+            this.listSaveSketches.delete('multipartFiles');
+            this.isConfirmLoadingSketches = false;
+            this.message.create('success', 'Save sketches success');
+            this.showAddSketches();
+          },
+          error: (error) => {
+            this.isConfirmLoadingSketches = false;
+            this.message.create(
+              'error',
+              'Something went wrong, please try later'
+            );
+          },
+        });
+    } else {
+      this.isVisibleAddSketches = false;
+    }
+  }
+
+  onChangeImage(event: any) {
+    this.listCurrentSketChes = event.target.files;
+
+    for (let i = 0; i < event.target.files.length; i++) {
+      let fReader = new FileReader();
+      fReader.readAsDataURL(event.target.files[i]);
+      fReader.onloadend = (e: any) => {
+        if (e.target) {
+          this.listPreviewSketches.push(e.target.result);
+        }
+      };
+
+      this.listSaveSketches.append('multipartFiles', event.target.files[i]);
+    }
+  }
+
+  deletePreviewSketches(index: number) {
+    this.listPreviewSketches.splice(index, 1);
+    this.listSaveSketches.delete('multipartFiles');
+    var tempListCurrentSketches = Array.from(this.listCurrentSketChes);
+    tempListCurrentSketches.splice(index, 1);
+    this.listCurrentSketChes = tempListCurrentSketches;
+
+    for (let i = 0; i < tempListCurrentSketches.length; i++) {
+      this.listSaveSketches.append(
+        'multipartFiles',
+        tempListCurrentSketches[i]
+      );
+    }
+  }
+
+  deleteSavedSketches(sketchesId: number) {
+    this.formService.deleteSketches(sketchesId).subscribe({
+      next: (data) => {
+        this.message.create('success', 'Delete sketches success');
+        this.showAddSketches();
+      },
+      error: (error) => {
+        this.message.create('error', 'Something went wrong, please try later');
+      },
+    });
   }
 }

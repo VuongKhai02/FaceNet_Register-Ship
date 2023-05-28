@@ -113,9 +113,9 @@ registerLocaleData(en);
     NzModalModule,
     DragDropModule,
     KeycloakAngularModule,
-    NgxSpinnerModule,
     NzUploadModule,
     NzSpinModule,
+    NgxSpinnerModule,
   ],
   providers: [
     { provide: NZ_I18N, useValue: en_US },

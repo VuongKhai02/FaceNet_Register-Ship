@@ -11,6 +11,7 @@ import { NavigationEnd, Router } from '@angular/router';
 import { GeneralParticular } from 'src/app/share/models/generalParticulars.model';
 import { API_END_POINT } from 'src/environments/environment';
 import { newParamValue } from 'src/app/share/models/newParamValue.model';
+import { Sketch } from 'src/app/share/models/sketches.model';
 
 @Component({
   selector: 'app-tm5',
@@ -44,12 +45,12 @@ export class Tm5Component implements OnInit {
   percentSelected: number = 0;
   structuralMemberSelected: number = -2;
 
-  partId: string = this.router.url.split('/')[2];
-  tmId: string = this.router.url.split('/')[4];
-  API_URL: string = `http://222.252.25.37:9080/api/v1/report-indexes/${this.partId}/tm5s`;
+  API_URL: string = `${API_END_POINT}/report-indexes/${
+    this.router.url.split('/')[2]
+  }/tm5s`;
 
   emptyRow: measurementTM5 = {
-    structuralComponent: '',
+    structuralComponentType: '',
     item: '',
     measurementDetail: {
       originalThickness: '',
@@ -67,15 +68,32 @@ export class Tm5Component implements OnInit {
   selectedListRow: number = -1;
   listFormCode: ParamValue[] = [];
 
-  isLoadingDataForm: boolean = false;
-
   generalParticular!: GeneralParticular;
 
   listNewStructuralMember: newParamValue[] = [];
 
   selectedFile: any;
 
+  isVisibleAddSketches: boolean = false;
+  isConfirmLoadingSketches: boolean = false;
+  isLoadingSketches: boolean = false;
+  listSketches: Sketch[] = [];
+  listPreviewSketches: any[] = [];
+  listCurrentSketChes: File[] = [];
+  listSaveSketches: FormData = new FormData();
+
   ngOnInit(): void {
+    this.paramValueService.getParamValueByType(8).subscribe((data) => {
+      this.listStructuralMember = data;
+    });
+
+    this.paramValueService.getParamValueByType(11).subscribe((data) => {
+      this.listFormCode = data;
+    });
+
+    if (this.formService.getParticularData() != null)
+      this.generalParticular = this.formService.getParticularData();
+
     this.router.events.subscribe((event) => {
       if (
         event instanceof NavigationEnd &&
@@ -83,30 +101,35 @@ export class Tm5Component implements OnInit {
         this.router.url.split('/')[3].slice(0, 3) === 'tm5' &&
         this.router.url.split('/')[4] !== '-1'
       ) {
-        this.partId = this.router.url.split('/')[2];
-        this.tmId = this.router.url.split('/')[4];
-        this.formService.getDataForm('tm5s', this.tmId).subscribe((data) => {
-          this.formTM5.code = data.code;
-          this.formTM5.tankHolDescription = data.tankHolDescription;
-          this.formTM5.locationOfStructure = data.locationOfStructure;
-          this.formTM5.structuralTM5List = data.structuralTM5List;
+        this.formService.isLoadingData = true;
 
-          for (let i = 0; i < this.formTM5.structuralTM5List.length; i++) {
-            this.formTM5.structuralTM5List[i].measurementTM5List =
-              data.structuralTM5List[i].measurementTM5DTOList;
-          }
+        this.formService
+          .getDataForm('tm5s', this.router.url.split('/')[4])
+          .subscribe((data) => {
+            this.formTM5.code = data.code;
+            this.formTM5.tankHolDescription = data.tankHolDescription;
+            this.formTM5.locationOfStructure = data.locationOfStructure;
+            this.formTM5.frameNo = data.frameNo;
+            this.formTM5.structuralTM5List = data.structuralTM5List;
 
-          this.listStructuralMember.map((member) => {
-            data.structuralTM5List.forEach((structural: any) => {
-              structural.measurementTM5DTOList.forEach((measurement: any) => {
-                if (member.param == measurement.item) {
-                  member.value = measurement.measurementDetail.percent;
-                  return;
-                }
+            for (let i = 0; i < this.formTM5.structuralTM5List.length; i++) {
+              this.formTM5.structuralTM5List[i].measurementTM5List =
+                data.structuralTM5List[i].measurementTM5List;
+            }
+
+            this.listStructuralMember.map((member) => {
+              data.structuralTM5List.forEach((structural: any) => {
+                structural.measurementTM5List.forEach((measurement: any) => {
+                  if (member.param == measurement.item) {
+                    member.value = measurement.measurementDetail.percent;
+                    return;
+                  }
+                });
               });
             });
+
+            this.formService.isLoadingData = false;
           });
-        });
       } else if (
         event instanceof NavigationEnd &&
         this.router.url.split('/')[4] === '-1'
@@ -125,7 +148,7 @@ export class Tm5Component implements OnInit {
       }
     });
 
-    if (Number(this.tmId) === -1) {
+    if (Number(this.router.url.split('/')[4]) === -1) {
       this.formTM5.structuralTM5List = [];
       this.formTM5.structuralTM5List.push({
         name: 'New list',
@@ -137,40 +160,35 @@ export class Tm5Component implements OnInit {
         );
       }
     } else {
-      this.formService.getDataForm('tm5s', this.tmId).subscribe((data) => {
-        this.formTM5.code = data.code;
-        this.formTM5.tankHolDescription = data.tankHolDescription;
-        this.formTM5.locationOfStructure = data.locationOfStructure;
-        this.formTM5.structuralTM5List = data.structuralTM5List;
+      this.formService.isLoadingData = true;
 
-        for (let i = 0; i < this.formTM5.structuralTM5List.length; i++) {
-          this.formTM5.structuralTM5List[i].measurementTM5List =
-            data.structuralTM5List[i].measurementTM5DTOList;
-        }
+      this.formService
+        .getDataForm('tm5s', this.router.url.split('/')[4])
+        .subscribe((data) => {
+          this.formTM5.code = data.code;
+          this.formTM5.tankHolDescription = data.tankHolDescription;
+          this.formTM5.locationOfStructure = data.locationOfStructure;
+          this.formTM5.frameNo = data.frameNo;
+          this.formTM5.structuralTM5List = data.structuralTM5List;
 
-        this.listStructuralMember.map((member) => {
-          data.structuralTM5List.forEach((structural: any) => {
-            structural.measurementTM5DTOList.forEach((measurement: any) => {
-              if (member.param == measurement.item) {
-                member.value = measurement.measurementDetail.percent;
-                return;
-              }
+          for (let i = 0; i < this.formTM5.structuralTM5List.length; i++) {
+            this.formTM5.structuralTM5List[i].measurementTM5List =
+              data.structuralTM5List[i].measurementTM5List;
+          }
+
+          this.listStructuralMember.map((member) => {
+            data.structuralTM5List.forEach((structural: any) => {
+              structural.measurementTM5List.forEach((measurement: any) => {
+                if (member.param == measurement.item) {
+                  member.value = measurement.measurementDetail.percent;
+                  return;
+                }
+              });
             });
           });
+          this.formService.isLoadingData = false;
         });
-      });
     }
-
-    this.paramValueService.getParamValueByType(8).subscribe((data) => {
-      this.listStructuralMember = data;
-    });
-
-    this.paramValueService.getParamValueByType(11).subscribe((data) => {
-      this.listFormCode = data;
-    });
-
-    if (this.formService.getParticularData() != null)
-      this.generalParticular = this.formService.getParticularData();
   }
 
   addRow() {
@@ -258,13 +276,14 @@ export class Tm5Component implements OnInit {
   }
 
   onSaveForm() {
+    this.formService.isLoadingData = true;
     this.isLoadingSaveButton = true;
 
     this.formTM5.structuralTM5List.forEach((structuralMember) => {
       structuralMember.measurementTM5List =
         structuralMember.measurementTM5List.filter((measurementTM5) => {
           return (
-            measurementTM5.structuralComponent !== '' ||
+            measurementTM5.structuralComponentType !== '' ||
             measurementTM5.item !== '' ||
             measurementTM5.measurementDetail.originalThickness !== '' ||
             measurementTM5.measurementDetail.gaugedP !== '' ||
@@ -273,7 +292,7 @@ export class Tm5Component implements OnInit {
         });
     });
 
-    if (Number(this.tmId) === -1) {
+    if (Number(this.router.url.split('/')[4]) === -1) {
       this.formService
         .addFormToAPI(this.API_URL, this.formTM5)
         .pipe(
@@ -284,26 +303,28 @@ export class Tm5Component implements OnInit {
         )
         .subscribe({
           next: (result) => {
-            this.isLoadingSaveButton = false;
             this.message.create('success', 'Save form success');
             this.router.navigate([
               'part',
-              this.partId,
+              this.router.url.split('/')[2],
               this.router.url.split('/')[3],
               result.id,
             ]);
           },
           error: (error) => {
-            this.isLoadingSaveButton = false;
             this.message.create(
               'error',
               'Something went wrong, please try later'
             );
           },
+          complete: () => {
+            this.formService.isLoadingData = false;
+            this.isLoadingSaveButton = false;
+          },
         });
     } else {
       this.formService
-        .updateForm('tm5', this.tmId, this.formTM5)
+        .updateForm('tm5s', this.router.url.split('/')[4], this.formTM5)
         .pipe(
           retry(3),
           catchError(() => {
@@ -321,6 +342,10 @@ export class Tm5Component implements OnInit {
               'error',
               'Something went wrong, please try later'
             );
+          },
+          complete: () => {
+            this.formService.isLoadingData = false;
+            this.isLoadingSaveButton = false;
           },
         });
     }
@@ -412,6 +437,7 @@ export class Tm5Component implements OnInit {
   }
 
   onImportExcel(event: any) {
+    this.formService.isLoadingData = true;
     const formData = new FormData();
     formData.append('excelFile', event.target.files[0]);
     this.formService
@@ -419,36 +445,139 @@ export class Tm5Component implements OnInit {
       .subscribe((data) => {
         this.formTM5.tankHolDescription = data.tankHolDescription;
         this.formTM5.locationOfStructure = data.locationOfStructure;
+        this.formTM5.frameNo = data.frameNo;
         this.formTM5.structuralTM5List = data.structuralTM5List;
 
-        for (let i = 0; i < this.formTM5.structuralTM5List.length; i++) {
+        for (let i = 0; i < data.structuralTM5List.length; i++) {
           this.formTM5.structuralTM5List[i].measurementTM5List =
             data.structuralTM5List[i].measurementTM5List;
 
           data.structuralTM5List[i].measurementTM5List.forEach(
-            (measurementTM5List: any) => {
+            (measurementTM5: any) => {
               if (
                 this.listStructuralMember.find(
-                  (item) => item.param === measurementTM5List.item
+                  (item) =>
+                    item.param === measurementTM5.structuralComponentType
                 ) === undefined
               ) {
                 this.listStructuralMember.push({
                   id: 0,
-                  param: measurementTM5List.item,
-                  value: measurementTM5List.item,
+                  param: measurementTM5.structuralComponentType,
+                  value: measurementTM5.structuralComponentType,
                   type: 'TM5_VALUE',
                   edit: false,
                 });
                 this.listNewStructuralMember.push({
-                  param: measurementTM5List.item,
-                  value: measurementTM5List.item,
+                  param: measurementTM5.structuralComponentType,
+                  value: measurementTM5.structuralComponentType,
                   type: 8,
                 });
               }
             }
           );
         }
+        this.formService.isLoadingData = false;
       });
     this.selectedFile = null;
+  }
+
+  showAddSketches() {
+    this.isVisibleAddSketches = true;
+    this.isLoadingSketches = true;
+
+    this.formService
+      .getListSketches('form_tm1', this.router.url.split('/')[4])
+      .subscribe({
+        next: (data) => {
+          this.listSketches = data;
+          this.isLoadingSketches = false;
+        },
+        error: (error) => {
+          this.isLoadingSketches = false;
+          this.message.create(
+            'error',
+            'Something went wrong, please try later'
+          );
+        },
+      });
+  }
+
+  handleCancelAddSketches() {
+    this.isVisibleAddSketches = false;
+    this.listPreviewSketches = [];
+    this.listSaveSketches.delete('files');
+  }
+
+  handleOkAddSketches() {
+    if (this.listSaveSketches.has('multipartFiles')) {
+      this.isConfirmLoadingSketches = true;
+      this.formService
+        .saveListSketches(
+          'form_tm1',
+          this.router.url.split('/')[4],
+          this.listSaveSketches
+        )
+        .subscribe({
+          next: (data) => {
+            this.listPreviewSketches = [];
+            this.listSaveSketches.delete('multipartFiles');
+            this.isConfirmLoadingSketches = false;
+            this.message.create('success', 'Save sketches success');
+            this.showAddSketches();
+          },
+          error: (error) => {
+            this.isConfirmLoadingSketches = false;
+            this.message.create(
+              'error',
+              'Something went wrong, please try later'
+            );
+          },
+        });
+    } else {
+      this.isVisibleAddSketches = false;
+    }
+  }
+
+  onChangeImage(event: any) {
+    this.listCurrentSketChes = event.target.files;
+
+    for (let i = 0; i < event.target.files.length; i++) {
+      let fReader = new FileReader();
+      fReader.readAsDataURL(event.target.files[i]);
+      fReader.onloadend = (e: any) => {
+        if (e.target) {
+          this.listPreviewSketches.push(e.target.result);
+        }
+      };
+
+      this.listSaveSketches.append('multipartFiles', event.target.files[i]);
+    }
+  }
+
+  deletePreviewSketches(index: number) {
+    this.listPreviewSketches.splice(index, 1);
+    this.listSaveSketches.delete('multipartFiles');
+    var tempListCurrentSketches = Array.from(this.listCurrentSketChes);
+    tempListCurrentSketches.splice(index, 1);
+    this.listCurrentSketChes = tempListCurrentSketches;
+
+    for (let i = 0; i < tempListCurrentSketches.length; i++) {
+      this.listSaveSketches.append(
+        'multipartFiles',
+        tempListCurrentSketches[i]
+      );
+    }
+  }
+
+  deleteSavedSketches(sketchesId: number) {
+    this.formService.deleteSketches(sketchesId).subscribe({
+      next: (data) => {
+        this.message.create('success', 'Delete sketches success');
+        this.showAddSketches();
+      },
+      error: (error) => {
+        this.message.create('error', 'Something went wrong, please try later');
+      },
+    });
   }
 }

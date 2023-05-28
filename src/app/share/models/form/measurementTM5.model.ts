@@ -1,5 +1,5 @@
 export interface measurementTM5 {
-  structuralComponent: string;
+  structuralComponentType: string;
   item: string;
   measurementDetail: {
     originalThickness: string;

@@ -4,6 +4,9 @@
 
 <ng-template #mainLayout>
   <nz-layout class="app-layout">
+    <div class="overlay" *ngIf="formService.isLoadingData">
+      <nz-spin nzSimple [nzSize]="'large'"></nz-spin>
+    </div>
     <div class="overlay" *ngIf="mainData.loading">
       <nz-spin nzSimple [nzSize]="'large'"></nz-spin>
     </div>

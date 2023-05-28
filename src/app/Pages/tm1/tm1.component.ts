@@ -11,6 +11,7 @@ import { ParamValueService } from 'src/app/share/services/param-value.service';
 import { NavigationEnd, Router } from '@angular/router';
 import { API_END_POINT } from 'src/environments/environment';
 import { GeneralParticular } from 'src/app/share/models/generalParticulars.model';
+import { Sketch } from 'src/app/share/models/sketches.model';
 
 @Component({
   selector: 'app-tm1',
@@ -74,13 +75,27 @@ export class Tm1Component implements OnInit {
   selectedRow: number[] = [];
   listFormCode: ParamValue[] = [];
 
-  isLoadingDataForm: boolean = false;
-
   generalParticular!: GeneralParticular;
 
   selectedFile: any;
 
+  isVisibleAddSketches: boolean = false;
+  isConfirmLoadingSketches: boolean = false;
+  isLoadingSketches: boolean = false;
+  listSketches: Sketch[] = [];
+  listPreviewSketches: any[] = [];
+  listCurrentSketChes: File[] = [];
+  listSaveSketches: FormData = new FormData();
+
   ngOnInit(): void {
+    this.paramValueService.getParamValueByType(11).subscribe((data) => {
+      this.listFormCode = data;
+    });
+
+    if (this.formService.getParticularData() != null) {
+      this.generalParticular = this.formService.getParticularData();
+    }
+
     this.router.events.subscribe((event) => {
       if (
         event instanceof NavigationEnd &&
@@ -88,11 +103,62 @@ export class Tm1Component implements OnInit {
         this.router.url.split('/')[3].slice(0, 3) === 'tm1' &&
         this.router.url.split('/')[4] !== '-1'
       ) {
-        this.isLoadingDataForm = true;
+        this.formService.isLoadingData = true;
 
         this.formService
           .getDataForm('tm1s', this.router.url.split('/')[4])
-          .subscribe((data) => {
+          .subscribe(
+            (data) => {
+              this.formTM1.code = data.code;
+              this.formTM1.strakePosition = data.strakePosition;
+              this.listRow = data.measurementTM1DTOList;
+
+              this.percentValue =
+                data.measurementTM1DTOList[0].forwardReadingMeasurementDetail.percent;
+
+              if (data.measurementTM1DTOList.length > 0) {
+                this.percentValue =
+                  data.measurementTM1DTOList[0].forwardReadingMeasurementDetail.percent;
+                if (
+                  this.listPercentOption.filter(
+                    (percent) => percent.label === this.percentValue
+                  ).length > 0
+                )
+                  this.percentSelected = this.listPercentOption.filter(
+                    (percent) => percent.label === this.percentValue
+                  )[0].value;
+              }
+
+              this.formService.isLoadingData = false;
+            },
+            (error) => {
+              this.formService.isLoadingData = false;
+            }
+          );
+      } else if (
+        event instanceof NavigationEnd &&
+        this.router.url.split('/')[4] === '-1'
+      ) {
+        this.listRow = [];
+        this.formTM1.code = '';
+        this.formTM1.strakePosition = '';
+        this.percentValue = '';
+        for (let i = 1; i <= 20; i++)
+          this.listRow.push(JSON.parse(JSON.stringify(this.emptyRow)));
+      }
+    });
+
+    if (Number(this.router.url.split('/')[4]) === -1) {
+      this.percentValue = '';
+      for (let i = 1; i <= 20; i++)
+        this.listRow.push(JSON.parse(JSON.stringify(this.emptyRow)));
+    } else {
+      this.formService.isLoadingData = true;
+
+      this.formService
+        .getDataForm('tm1s', this.router.url.split('/')[4])
+        .subscribe(
+          (data) => {
             this.formTM1.code = data.code;
             this.formTM1.strakePosition = data.strakePosition;
             this.listRow = data.measurementTM1DTOList;
@@ -112,62 +178,13 @@ export class Tm1Component implements OnInit {
                   (percent) => percent.label === this.percentValue
                 )[0].value;
             }
-          });
 
-        this.isLoadingDataForm = false;
-      } else if (
-        event instanceof NavigationEnd &&
-        this.router.url.split('/')[4] === '-1'
-      ) {
-        this.listRow = [];
-        this.formTM1.code = '';
-        this.formTM1.strakePosition = '';
-        this.percentValue = '';
-        for (let i = 1; i <= 20; i++)
-          this.listRow.push(JSON.parse(JSON.stringify(this.emptyRow)));
-      }
-    });
-
-    if (Number(this.router.url.split('/')[4]) === -1) {
-      this.percentValue = '';
-      for (let i = 1; i <= 20; i++)
-        this.listRow.push(JSON.parse(JSON.stringify(this.emptyRow)));
-    } else {
-      this.isLoadingDataForm = true;
-
-      this.formService
-        .getDataForm('tm1s', this.router.url.split('/')[4])
-        .subscribe((data) => {
-          this.formTM1.code = data.code;
-          this.formTM1.strakePosition = data.strakePosition;
-          this.listRow = data.measurementTM1DTOList;
-
-          this.percentValue =
-            data.measurementTM1DTOList[0].forwardReadingMeasurementDetail.percent;
-
-          if (data.measurementTM1DTOList.length > 0) {
-            this.percentValue =
-              data.measurementTM1DTOList[0].forwardReadingMeasurementDetail.percent;
-            if (
-              this.listPercentOption.filter(
-                (percent) => percent.label === this.percentValue
-              ).length > 0
-            )
-              this.percentSelected = this.listPercentOption.filter(
-                (percent) => percent.label === this.percentValue
-              )[0].value;
+            this.formService.isLoadingData = false;
+          },
+          (error) => {
+            this.formService.isLoadingData = false;
           }
-        });
-
-      this.isLoadingDataForm = false;
-    }
-
-    this.paramValueService.getParamValueByType(11).subscribe((data) => {
-      this.listFormCode = data;
-    });
-
-    if (this.formService.getParticularData() != null) {
-      this.generalParticular = this.formService.getParticularData();
+        );
     }
   }
 
@@ -229,16 +246,18 @@ export class Tm1Component implements OnInit {
         .subscribe({
           next: (result) => {
             this.isLoadingSaveButton = false;
-            this.message.create('success', 'Save form success');
+            this.formService.isLoadingData = false;
             this.router.navigate([
               'part',
               this.router.url.split('/')[2],
               this.router.url.split('/')[3],
               result.id,
             ]);
+            this.message.create('success', 'Save form success');
           },
           error: (error) => {
             this.isLoadingSaveButton = false;
+            this.formService.isLoadingData = false;
             this.message.create(
               'error',
               'Something went wrong, please try later'
@@ -257,10 +276,12 @@ export class Tm1Component implements OnInit {
         .subscribe({
           next: (result) => {
             this.isLoadingSaveButton = false;
+            this.formService.isLoadingData = false;
             this.message.create('success', 'Save form success');
           },
           error: (error) => {
             this.isLoadingSaveButton = false;
+            this.formService.isLoadingData = false;
             this.message.create(
               'error',
               'Something went wrong, please try later'
@@ -328,9 +349,14 @@ export class Tm1Component implements OnInit {
       this.listRow[i].afterReadingMeasurementDetail.percent = this.percentValue;
     }
 
-    this.percentSelected = this.listPercentOption.filter(
-      (percent) => percent.label === this.percentValue
-    )[0].value;
+    if (
+      this.listPercentOption.filter(
+        (percent) => percent.label === this.percentValue
+      ).length > 0
+    )
+      this.percentSelected = this.listPercentOption.filter(
+        (percent) => percent.label === this.percentValue
+      )[0].value;
   }
 
   clearRow(index: number) {
@@ -341,42 +367,148 @@ export class Tm1Component implements OnInit {
     this.listRow.splice(index, 1);
     if (this.listRow.length === 0) {
       this.listRow = [];
-    } else {
-      this.listRow = this.listRow;
     }
   }
 
   onImportExcel(event: any) {
+    this.formService.isLoadingData = true;
     const formData = new FormData();
     formData.append('excelFile', event.target.files[0]);
     this.formService
       .importExcel(`${API_END_POINT}/sheet/tm1s`, formData)
-      .subscribe((data) => {
-        this.listRow = [];
-        this.formTM1.strakePosition = data.strakePosition;
-        data.measurementTM1DTOList.forEach((data: any) => {
-          this.listRow.push({
-            platePosition: data.platePosition,
-            noOrLetter: data.noOrLetter,
-            forwardReadingMeasurementDetail: {
-              originalThickness:
-                data.forwardReadingMeasurementDetail.originalThickness,
-              maxAlwbDim: data.forwardReadingMeasurementDetail.maxAlwbDim,
-              gaugedP: data.forwardReadingMeasurementDetail.gaugedP,
-              gaugedS: data.forwardReadingMeasurementDetail.gaugedS,
-              percent: data.forwardReadingMeasurementDetail.percent,
-            },
-            afterReadingMeasurementDetail: {
-              originalThickness:
-                data.afterReadingMeasurementDetail.originalThickness,
-              maxAlwbDim: data.afterReadingMeasurementDetail.maxAlwbDim,
-              gaugedP: data.afterReadingMeasurementDetail.gaugedP,
-              gaugedS: data.afterReadingMeasurementDetail.gaugedS,
-              percent: data.afterReadingMeasurementDetail.percent,
-            },
+      .subscribe(
+        (data) => {
+          this.listRow = [];
+          this.formTM1.strakePosition = data.strakePosition;
+          data.measurementTM1DTOList.forEach((data: any) => {
+            this.listRow.push({
+              platePosition: data.platePosition,
+              noOrLetter: data.noOrLetter,
+              forwardReadingMeasurementDetail: {
+                originalThickness:
+                  data.forwardReadingMeasurementDetail.originalThickness,
+                maxAlwbDim: data.forwardReadingMeasurementDetail.maxAlwbDim,
+                gaugedP: data.forwardReadingMeasurementDetail.gaugedP,
+                gaugedS: data.forwardReadingMeasurementDetail.gaugedS,
+                percent: data.forwardReadingMeasurementDetail.percent,
+              },
+              afterReadingMeasurementDetail: {
+                originalThickness:
+                  data.afterReadingMeasurementDetail.originalThickness,
+                maxAlwbDim: data.afterReadingMeasurementDetail.maxAlwbDim,
+                gaugedP: data.afterReadingMeasurementDetail.gaugedP,
+                gaugedS: data.afterReadingMeasurementDetail.gaugedS,
+                percent: data.afterReadingMeasurementDetail.percent,
+              },
+            });
           });
-        });
-      });
+          this.formService.isLoadingData = false;
+          this.message.create('success', 'Import excel success');
+        },
+        (error) => {
+          this.formService.isLoadingData = false;
+        }
+      );
     this.selectedFile = null;
+  }
+
+  showAddSketches() {
+    this.isVisibleAddSketches = true;
+    this.isLoadingSketches = true;
+
+    this.formService
+      .getListSketches('form_tm1', this.router.url.split('/')[4])
+      .subscribe({
+        next: (data) => {
+          this.listSketches = data;
+          this.isLoadingSketches = false;
+        },
+        error: (error) => {
+          this.isLoadingSketches = false;
+          this.message.create(
+            'error',
+            'Something went wrong, please try later'
+          );
+        },
+      });
+  }
+
+  handleCancelAddSketches() {
+    this.isVisibleAddSketches = false;
+    this.listPreviewSketches = [];
+    this.listSaveSketches.delete('files');
+  }
+
+  handleOkAddSketches() {
+    if (this.listSaveSketches.has('multipartFiles')) {
+      this.isConfirmLoadingSketches = true;
+      this.formService
+        .saveListSketches(
+          'form_tm1',
+          this.router.url.split('/')[4],
+          this.listSaveSketches
+        )
+        .subscribe({
+          next: (data) => {
+            this.listPreviewSketches = [];
+            this.listSaveSketches.delete('multipartFiles');
+            this.isConfirmLoadingSketches = false;
+            this.message.create('success', 'Save sketches success');
+            this.showAddSketches();
+          },
+          error: (error) => {
+            this.isConfirmLoadingSketches = false;
+            this.message.create(
+              'error',
+              'Something went wrong, please try later'
+            );
+          },
+        });
+    } else {
+      this.isVisibleAddSketches = false;
+    }
+  }
+
+  onChangeImage(event: any) {
+    this.listCurrentSketChes = event.target.files;
+
+    for (let i = 0; i < event.target.files.length; i++) {
+      let fReader = new FileReader();
+      fReader.readAsDataURL(event.target.files[i]);
+      fReader.onloadend = (e: any) => {
+        if (e.target) {
+          this.listPreviewSketches.push(e.target.result);
+        }
+      };
+
+      this.listSaveSketches.append('multipartFiles', event.target.files[i]);
+    }
+  }
+
+  deletePreviewSketches(index: number) {
+    this.listPreviewSketches.splice(index, 1);
+    this.listSaveSketches.delete('multipartFiles');
+    var tempListCurrentSketches = Array.from(this.listCurrentSketChes);
+    tempListCurrentSketches.splice(index, 1);
+    this.listCurrentSketChes = tempListCurrentSketches;
+
+    for (let i = 0; i < tempListCurrentSketches.length; i++) {
+      this.listSaveSketches.append(
+        'multipartFiles',
+        tempListCurrentSketches[i]
+      );
+    }
+  }
+
+  deleteSavedSketches(sketchesId: number) {
+    this.formService.deleteSketches(sketchesId).subscribe({
+      next: (data) => {
+        this.message.create('success', 'Delete sketches success');
+        this.showAddSketches();
+      },
+      error: (error) => {
+        this.message.create('error', 'Something went wrong, please try later');
+      },
+    });
   }
 }
