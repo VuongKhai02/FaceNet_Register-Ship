@@ -11,6 +11,9 @@ import { ParamValue } from 'src/app/share/models/paramValue.model';
 import { GeneralParticular } from 'src/app/share/models/generalParticulars.model';
 import { API_END_POINT } from 'src/environments/environment';
 import { Sketch } from 'src/app/share/models/sketches.model';
+import { main } from 'src/app/share/models/local.model';
+import { LocalService } from 'src/app/share/services/local.service';
+import { PartsService } from 'src/app/share/services/parts.service';
 
 @Component({
   selector: 'app-tm2ii',
@@ -18,11 +21,14 @@ import { Sketch } from 'src/app/share/models/sketches.model';
   styleUrls: ['./tm2ii.component.css'],
 })
 export class Tm2iiComponent {
+  mainData!: main;
   constructor(
     public formService: FormService,
     private message: NzMessageService,
     private router: Router,
-    private paramValueService: ParamValueService
+    private paramValueService: ParamValueService,
+    private partsService: PartsService,
+    private localService: LocalService
   ) {}
 
   addRowValue: number = 0;
@@ -107,6 +113,7 @@ export class Tm2iiComponent {
   listSaveSketches: FormData = new FormData();
 
   ngOnInit(): void {
+    this.mainData = this.localService.getMainData();
     this.paramValueService.getParamValueByType(11).subscribe((data) => {
       this.listFormCode = data;
     });
@@ -279,6 +286,7 @@ export class Tm2iiComponent {
             this.isLoadingSaveButton = false;
             this.formService.isLoadingData = false;
             this.message.create('success', 'Save form success');
+            this.partsService.reloadParts(this.mainData.mainId);
             this.router.navigate([
               'part',
               this.router.url.split('/')[2],
@@ -309,6 +317,7 @@ export class Tm2iiComponent {
             this.isLoadingSaveButton = false;
             this.formService.isLoadingData = false;
             this.message.create('success', 'Save form success');
+            this.partsService.reloadParts(this.mainData.mainId);
           },
           error: (error) => {
             this.isLoadingSaveButton = false;

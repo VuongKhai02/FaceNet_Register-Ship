@@ -13,9 +13,12 @@ import { GeneralParticular } from 'src/app/share/models/generalParticulars.model
 import { API_END_POINT } from 'src/environments/environment';
 import { newParamValue } from 'src/app/share/models/newParamValue.model';
 import { ReportIndexesService } from 'src/app/share/services/report-indexes.service';
-import { main, partLocal } from 'src/app/share/models/local.model';
+import { partLocal } from 'src/app/share/models/local.model';
 import { ReportIndex } from 'src/app/share/models/report-index.model';
 import { Sketch } from 'src/app/share/models/sketches.model';
+import { main } from 'src/app/share/models/local.model';
+import { LocalService } from 'src/app/share/services/local.service';
+import { PartsService } from 'src/app/share/services/parts.service';
 
 @Component({
   selector: 'app-tm7',
@@ -23,12 +26,15 @@ import { Sketch } from 'src/app/share/models/sketches.model';
   styleUrls: ['./tm7.component.css'],
 })
 export class Tm7Component implements OnInit {
+  mainData!: main;
   constructor(
     public formService: FormService,
     public paramValueService: ParamValueService,
     private message: NzMessageService,
     private router: Router,
-    private reportIndexService: ReportIndexesService
+    private reportIndexService: ReportIndexesService,
+    private partsService: PartsService,
+    private localService: LocalService
   ) {}
 
   addRowValue: number = 0;
@@ -102,6 +108,7 @@ export class Tm7Component implements OnInit {
   listSaveSketches: FormData = new FormData();
 
   ngOnInit(): void {
+    this.mainData = this.localService.getMainData();
     this.paramValueService.getParamValueByType(9).subscribe((data) => {
       this.listStructuralMember = data;
     });
@@ -318,6 +325,7 @@ export class Tm7Component implements OnInit {
         .subscribe({
           next: (result) => {
             this.message.create('success', 'Save form success');
+            this.partsService.reloadParts(this.mainData.mainId);
             this.router.navigate([
               'part',
               this.partId,
@@ -349,6 +357,7 @@ export class Tm7Component implements OnInit {
           next: (result) => {
             this.isLoadingSaveButton = false;
             this.message.create('success', 'Save form success');
+            this.partsService.reloadParts(this.mainData.mainId);
           },
           error: (error) => {
             this.isLoadingSaveButton = false;
