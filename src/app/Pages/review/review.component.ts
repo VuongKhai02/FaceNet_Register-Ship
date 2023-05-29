@@ -43,9 +43,7 @@ interface id_index_part{
 export class ReviewComponent implements OnInit {
   constructor(
     private dataTm1S: FormTm1Service,
-    private shipSevice: ShipService,
     private generalParticularervice: GetDataService,
-    private certificateService: CertificateService,
     private localService: LocalService,
     private paramService: ParamValueService,
     private reportIndexService: ReportIndexesService,
@@ -91,7 +89,6 @@ export class ReviewComponent implements OnInit {
   partIndex_formTm: number = 1;
 
   isLoadingSaveButton: boolean = false;
-
   isSurveyorCheck: boolean = false;
 
   ckeckSurveyorSignature() {
@@ -131,19 +128,15 @@ export class ReviewComponent implements OnInit {
             text: `${this.partIndex_ToC++}`,
             style: ['txt_center'],
           },
-          {
-            text: `${x.item}`,
-          },
-          {
-            text: `....`,
-          },
+          {text: `${x.item}`,},
+          {text: `....`,},
         ]),
       ],
     };
     //Define sizeA4
     const pageSizee = {
-      width: 805,
-      height: 920,
+      width: 800,
+      height: 925,
     };
 
     // Define pdfDocument
@@ -623,8 +616,7 @@ export class ReviewComponent implements OnInit {
               },
             ],
             //Form tm1
-            x.formList.map((y: any) =>
-              y.type == 'TM1'
+            x.formList.map((y: any) =>y.type == 'TM1'
                 ? [
                     /*
                   - y: form object in formList[]
@@ -638,17 +630,14 @@ export class ReviewComponent implements OnInit {
                           ? [
                               //image
                               {
-                                margin: [-20, -30, -20, -30] as Margins,
+                                margin: [-20, -40, -20, -30] as Margins,
                                 //Trước phần tử này là chuyển sang trang mới, vì vậy trang có image là 1 trang mới
                                 pageBreak: 'before' as PageBreak,
                                 pageOrientation: 'landscape' as PageOrientation,
                                 fit: [pageSizee.width, pageSizee.height],
-                                // fit: [100, 100],
                                 image: `data:image/png;base64,${b.value}`,
                               },
-                            ]
-                          : []
-                      )
+                            ]: [])
                     ),
                     //form
                     {
@@ -657,30 +646,10 @@ export class ReviewComponent implements OnInit {
                       style: ['tableStyle', 'fontS8'],
                       table: {
                         headerRows: 10,
-                        //23 rows
+                        //23 rows, 106.5%
                         widths: [
-                          '46.5%',
-                          '6%',
-                          '4.5%',
-                          '3%',
-                          '3%',
-                          '3%',
-                          '3%',
-                          '1.5%',
-                          '3%',
-                          '3%',
-                          '1.5%',
-                          '3%',
-                          '3%',
-                          '3%',
-                          '3%',
-                          '1.5%',
-                          '3%',
-                          '3%',
-                          '1.5%',
-                          '3%',
-                          '3%',
-                          '3%',
+                          '45%','6%','4.5%','3%','3%','3%','3%','1.5%','3%','3%','1.5%','3%','3%','3%','3%','1.5%','3%','3%',
+                          '1.5%','3%','3%','3%',
                         ],
                         body: [
                           //Table header
@@ -692,29 +661,7 @@ export class ReviewComponent implements OnInit {
                               alignment: 'right' as Alignment,
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},
                           ],
                           [
                             {
@@ -722,29 +669,7 @@ export class ReviewComponent implements OnInit {
                               colSpan: 22,
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},
                           ],
                           // table info
                           [
@@ -755,32 +680,9 @@ export class ReviewComponent implements OnInit {
                               decoration: 'underline' as Decoration,
                               bold: true,
                               margin: [0, 0, 0, 5] as Margins,
-
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},
                           ],
                           [
                             {
@@ -788,29 +690,7 @@ export class ReviewComponent implements OnInit {
                               text: '',
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},
                           ],
                           [
                             {
@@ -825,17 +705,13 @@ export class ReviewComponent implements OnInit {
                               bold: true,
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},
                             {
                               text: 'Class Identity No. ',
                               colSpan: 3,
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
+                            {},{},
                             {
                               decoration: 'underline' as Decoration,
                               text: `${this.inABS}`,
@@ -843,29 +719,20 @@ export class ReviewComponent implements OnInit {
                               bold: true,
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-
+                            {},{},{},{},
                             {
                               text: 'Report No. ',
                               colSpan: 3,
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
+                            {},{},
                             {
                               decoration: 'underline' as Decoration,
                               text: `${this.generalParticular[0].reportNo}`,
                               colSpan: 5,
                               bold: true,
                               border: [false, false, false, false],
-                            },
-                            {},
-                            {},
-                            {},
-                            {},
+                            },{},{},{},{},
                           ],
                           [
                             {
@@ -873,29 +740,7 @@ export class ReviewComponent implements OnInit {
                               text: '',
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},
                           ],
                           // table content
                           [
@@ -909,29 +754,8 @@ export class ReviewComponent implements OnInit {
                               colSpan: 21,
                               rowSpan: 1,
                               bold: true,
-                            },
-                            {},
-
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            },{},
+                            {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},
                           ],
                           [
                             {
@@ -954,35 +778,19 @@ export class ReviewComponent implements OnInit {
                               text: 'Forward Reading',
                               colSpan: 8,
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-
+                            {},{},{},{},{},{},{},
                             {
                               style: 'txt_center',
                               text: 'Aft Reading',
                               colSpan: 8,
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-
+                            {},{},{},{},{},{},{},
                             {
                               style: 'txt_center',
                               text: 'Mean Dimunution (%)',
                               colSpan: 2,
                               rowSpan: 2,
-                            },
-                            {},
-
+                            },{},
                             {
                               style: 'txt_center',
                               text: 'Max Alwb Dim',
@@ -990,77 +798,56 @@ export class ReviewComponent implements OnInit {
                             },
                           ],
                           [
-                            {},
-                            {},
-                            {},
+                            {},{},{},
                             {
                               text: 'Gauged mm',
                               colSpan: 2,
                               style: 'txt_center',
-                            },
-                            {},
+                            },{},
                             {
                               text: 'Diminution P',
                               colSpan: 3,
                               style: 'txt_center',
-                            },
-                            {},
-                            {},
+                            },{},{},
                             {
                               text: 'Diminution S',
                               colSpan: 3,
                               style: 'txt_center',
-                            },
-                            {},
-                            {},
+                            },{},{},
 
                             {
                               text: 'Gauged (mm)',
                               colSpan: 2,
                               style: 'txt_center',
-                            },
-                            {},
+                            },{},
                             {
                               text: 'Diminution P',
                               colSpan: 3,
                               style: 'txt_center',
-                            },
-                            {},
-                            {},
+                            },{},{},
                             {
                               text: 'Diminution S',
                               colSpan: 3,
                               style: 'txt_center',
-                            },
-                            {},
-                            {},
-
-                            { text: '', colSpan: 2, style: 'txt_center' },
-
-                            {},
+                            },{},{},
+                            { text: '', colSpan: 2, style: 'txt_center' },{},
                             { text: 'Max Alwb Dim' },
                           ],
                           [
-                            {},
-                            {},
-                            {},
+                            {},{},{},
                             { text: 'P', style: 'txt_center' },
                             { text: 'S', style: 'txt_center' },
                             { text: 'mm', style: 'txt_center' },
-                            { text: '%', style: 'txt_center', colSpan: 2 },
-                            {},
+                            { text: '%', style: 'txt_center', colSpan: 2 },{},
                             { text: 'mm', style: 'txt_center' },
-                            { text: '%', style: 'txt_center', colSpan: 2 },
-                            {},
+                            { text: '%', style: 'txt_center', colSpan: 2 },{},
 
                             { text: 'P', style: 'txt_center' },
                             { text: 'S', style: 'txt_center' },
                             { text: 'mm', style: 'txt_center' },
-                            { text: '%', style: 'txt_center', colSpan: 2 },
-                            {},
+                            { text: '%', style: 'txt_center', colSpan: 2 },{},
                             { text: 'mm', style: 'txt_center' },
-                            { text: '%', style: 'txt_center', colSpan: 2 },
-                            {},
+                            { text: '%', style: 'txt_center', colSpan: 2 },{},
 
                             { text: 'P', style: 'txt_center' },
                             { text: 'S', style: 'txt_center' },
@@ -1068,37 +855,40 @@ export class ReviewComponent implements OnInit {
                           ],
 
                           ...y.measurementTM1DTOList?.map((z: any) => [
-                            { text: `${z.platePosition}` },
-                            { style: ['txt_center'], text: `${z.noOrLetter}` },
+                            { text: `${z.platePosition??""}` },
+                            { style: ['txt_center'], text: `${z.noOrLetter??""}` },
                             {
                               style: ['txt_center'],
-                              text: `${z.forwardReadingMeasurementDetail.originalThickness}`,
+                              text: `${z.forwardReadingMeasurementDetail.originalThickness??""}`,
                             },
 
                             {
                               style: ['txt_center'],
-                              text: `${z.forwardReadingMeasurementDetail.gaugedP}`,
+                              text: `${z.forwardReadingMeasurementDetail.gaugedP??""}`,
                             },
                             {
                               style: ['txt_center'],
-                              text: `${z.forwardReadingMeasurementDetail.gaugedS}`,
+                              text: `${z.forwardReadingMeasurementDetail.gaugedS??""}`,
                             },
                             {
                               style: ['txt_center'],
-                              text: `${this.formService.calculateForMm(
-                                z.forwardReadingMeasurementDetail
-                                  .originalThickness,
+                              text: `${Number(this.formService.calculateForMm(
+                                z.forwardReadingMeasurementDetail.originalThickness,
+                                z.forwardReadingMeasurementDetail.gaugedP
+                              ))== 0.0 ?"":this.formService.calculateForMm(
+                                z.forwardReadingMeasurementDetail.originalThickness,
                                 z.forwardReadingMeasurementDetail.gaugedP
                               )}`,
                             },
                             {
                               style: ['txt_center'],
                               border: [true, true, false, true],
-                              text: `${this.formService.calculateForPercent(
-                                z.forwardReadingMeasurementDetail
-                                  .originalThickness,
+                              text: `${Number.isNaN(Number(this.formService.calculateForPercent(
+                                z.forwardReadingMeasurementDetail.originalThickness,
+                                z.forwardReadingMeasurementDetail.gaugedP)))?"":Number(this.formService.calculateForPercent(
+                                z.forwardReadingMeasurementDetail.originalThickness,
                                 z.forwardReadingMeasurementDetail.gaugedP
-                              )}`,
+                              ))}`,
                             },
                             //R
                             {
@@ -1156,100 +946,94 @@ export class ReviewComponent implements OnInit {
                             },
                             {
                               style: ['txt_center'],
-                              text: `${this.formService.calculateForMm(
-                                z.forwardReadingMeasurementDetail
-                                  .originalThickness,
+                              text: `${Number(this.formService.calculateForMm(
+                                z.forwardReadingMeasurementDetail.originalThickness,
+                                z.forwardReadingMeasurementDetail.gaugedS
+                              ))== 0.0 ?"":this.formService.calculateForMm(
+                                z.forwardReadingMeasurementDetail.originalThickness,
                                 z.forwardReadingMeasurementDetail.gaugedS
                               )}`,
                             },
                             {
                               style: ['txt_center'],
                               border: [true, true, false, true],
-                              text: `${this.formService.calculateForPercent(
-                                z.forwardReadingMeasurementDetail
-                                  .originalThickness,
+                              text: `${Number.isNaN(Number(this.formService.calculateForPercent(
+                                z.forwardReadingMeasurementDetail.originalThickness,
                                 z.forwardReadingMeasurementDetail.gaugedS
-                              )}`,
+                              )))?"":Number(this.formService.calculateForPercent(
+                                z.forwardReadingMeasurementDetail.originalThickness,
+                                z.forwardReadingMeasurementDetail.gaugedS
+                              ))}`,
                             },
                             {
                               style: ['txt_center'],
                               border: [false, true, true, true],
-                              text:
-                                this.convertToNumber(
+                              text:this.convertToNumber(
                                   this.formService.calculateForMm(
-                                    z.forwardReadingMeasurementDetail
-                                      .originalThickness,
+                                    z.forwardReadingMeasurementDetail.originalThickness,
                                     z.forwardReadingMeasurementDetail.gaugedS
                                   )
-                                ) >=
-                                  this.convertToNumber(
+                                ) >=this.convertToNumber(
                                     this.formService.threePartsFourOfMaxAlwbDim(
                                       this.formService.calculateForMaxAlwbDimForString(
-                                        z.afterReadingMeasurementDetail
-                                          .originalThickness,
+                                        z.afterReadingMeasurementDetail.originalThickness,
                                         z.afterReadingMeasurementDetail.percent
                                       )
                                     )
-                                  ) &&
-                                this.convertToNumber(
+                                  ) &&this.convertToNumber(
                                   this.formService.calculateForMm(
-                                    z.forwardReadingMeasurementDetail
-                                      .originalThickness,
+                                    z.forwardReadingMeasurementDetail.originalThickness,
                                     z.forwardReadingMeasurementDetail.gaugedS
                                   )
-                                ) <=
-                                  this.convertToNumber(
+                                ) <=this.convertToNumber(
                                     this.formService.calculateForMaxAlwbDimForString(
-                                      z.afterReadingMeasurementDetail
-                                        .originalThickness,
+                                      z.afterReadingMeasurementDetail.originalThickness,
                                       z.afterReadingMeasurementDetail.percent
                                     )
                                   )
-                                  ? 'S'
-                                  : this.convertToNumber(
+                                  ? 'S': this.convertToNumber(
                                       this.formService.calculateForMm(
-                                        z.forwardReadingMeasurementDetail
-                                          .originalThickness,
-                                        z.forwardReadingMeasurementDetail
-                                          .gaugedS
+                                        z.forwardReadingMeasurementDetail.originalThickness,
+                                        z.forwardReadingMeasurementDetail.gaugedS
                                       )
-                                    ) >
-                                    this.convertToNumber(
+                                    ) >this.convertToNumber(
                                       this.formService.calculateForMaxAlwbDimForString(
-                                        z.afterReadingMeasurementDetail
-                                          .originalThickness,
+                                        z.afterReadingMeasurementDetail.originalThickness,
                                         z.afterReadingMeasurementDetail.percent
                                       )
                                     )
-                                  ? 'R'
-                                  : '',
+                                  ? 'R': '',
                             },
 
                             //after
                             {
                               style: ['txt_center'],
-                              text: `${z.afterReadingMeasurementDetail.gaugedP}`,
+                              text: `${z.afterReadingMeasurementDetail.gaugedP??""}`,
                             },
                             {
                               style: ['txt_center'],
-                              text: `${z.afterReadingMeasurementDetail.gaugedS}`,
+                              text: `${z.afterReadingMeasurementDetail.gaugedS??""}`,
                             },
                             {
                               style: ['txt_center'],
-                              text: `${this.formService.calculateForMm(
-                                z.afterReadingMeasurementDetail
-                                  .originalThickness,
+                              text: `${Number(this.formService.calculateForMm(
+                                z.afterReadingMeasurementDetail.originalThickness,
+                                z.afterReadingMeasurementDetail.gaugedP
+                              ))== 0.0 ?"":this.formService.calculateForMm(
+                                z.afterReadingMeasurementDetail.originalThickness,
                                 z.afterReadingMeasurementDetail.gaugedP
                               )}`,
                             },
                             {
                               style: ['txt_center'],
                               border: [true, true, false, true],
-                              text: `${this.formService.calculateForPercent(
-                                z.afterReadingMeasurementDetail
-                                  .originalThickness,
+                              text: `${Number.isNaN(Number(this.formService.calculateForPercent(
+                                z.afterReadingMeasurementDetail.originalThickness,
                                 z.afterReadingMeasurementDetail.gaugedP
-                              )}`,
+                              )))?"":Number(this.formService.calculateForPercent(
+                                z.afterReadingMeasurementDetail.originalThickness,
+                                z.afterReadingMeasurementDetail.gaugedP
+                              ))}`,
                             },
                             {
                               style: ['txt_center'],
@@ -1305,114 +1089,118 @@ export class ReviewComponent implements OnInit {
                             },
                             {
                               style: ['txt_center'],
-                              text: `${this.formService.calculateForMm(
-                                z.afterReadingMeasurementDetail
-                                  .originalThickness,
+                              text: `${Number(this.formService.calculateForMm(
+                                z.afterReadingMeasurementDetail.originalThickness,
+                                z.afterReadingMeasurementDetail.gaugedS
+                              ))== 0.0 ?"":this.formService.calculateForMm(
+                                z.afterReadingMeasurementDetail.originalThickness,
                                 z.afterReadingMeasurementDetail.gaugedS
                               )}`,
                             },
                             {
                               style: ['txt_center'],
                               border: [true, true, false, true],
-                              text: `${this.formService.calculateForPercent(
-                                z.afterReadingMeasurementDetail
-                                  .originalThickness,
+                              text: `${Number.isNaN(Number(this.formService.calculateForPercent(
+                                z.afterReadingMeasurementDetail.originalThickness,
                                 z.afterReadingMeasurementDetail.gaugedS
-                              )}`,
+                              )))?"":Number(this.formService.calculateForPercent(
+                                z.afterReadingMeasurementDetail.originalThickness,
+                                z.afterReadingMeasurementDetail.gaugedS
+                              ))}`,
                             },
                             {
                               style: ['txt_center'],
                               border: [false, true, true, true],
-                              text:
-                                this.convertToNumber(
+                              text:this.convertToNumber(
                                   this.formService.calculateForMm(
-                                    z.forwardReadingMeasurementDetail
-                                      .originalThickness,
+                                    z.forwardReadingMeasurementDetail.originalThickness,
                                     z.afterReadingMeasurementDetail.gaugedP
                                   )
-                                ) >=
-                                  this.convertToNumber(
+                                ) >=this.convertToNumber(
                                     this.formService.threePartsFourOfMaxAlwbDim(
                                       this.formService.calculateForMaxAlwbDimForString(
-                                        z.afterReadingMeasurementDetail
-                                          .originalThickness,
+                                        z.afterReadingMeasurementDetail.originalThickness,
                                         z.afterReadingMeasurementDetail.percent
                                       )
                                     )
-                                  ) &&
-                                this.convertToNumber(
+                                  ) &&this.convertToNumber(
                                   this.formService.calculateForMm(
-                                    z.forwardReadingMeasurementDetail
-                                      .originalThickness,
+                                    z.forwardReadingMeasurementDetail.originalThickness,
                                     z.afterReadingMeasurementDetail.gaugedP
                                   )
-                                ) <=
-                                  this.convertToNumber(
+                                ) <=this.convertToNumber(
                                     this.formService.calculateForMaxAlwbDimForString(
-                                      z.afterReadingMeasurementDetail
-                                        .originalThickness,
+                                      z.afterReadingMeasurementDetail.originalThickness,
                                       z.afterReadingMeasurementDetail.percent
                                     )
                                   )
-                                  ? 'S'
-                                  : this.convertToNumber(
+                                  ? 'S': this.convertToNumber(
                                       this.formService.calculateForMm(
-                                        z.forwardReadingMeasurementDetail
-                                          .originalThickness,
+                                        z.forwardReadingMeasurementDetail.originalThickness,
                                         z.afterReadingMeasurementDetail.gaugedP
                                       )
-                                    ) >
-                                    this.convertToNumber(
+                                    ) >this.convertToNumber(
                                       this.formService.calculateForMaxAlwbDimForString(
-                                        z.afterReadingMeasurementDetail
-                                          .originalThickness,
+                                        z.afterReadingMeasurementDetail.originalThickness,
                                         z.afterReadingMeasurementDetail.percent
                                       )
                                     )
-                                  ? 'R'
-                                  : '',
+                                  ? 'R': '',
                             },
 
                             //mean
                             {
                               style: ['txt_center'],
-                              text: `${this.formService.calculateAveragePercent(
-                                z.forwardReadingMeasurementDetail
-                                  .originalThickness,
+                              text: `${Number.isNaN(Number(this.formService.calculateAveragePercent(
+                                z.forwardReadingMeasurementDetail.originalThickness,
                                 this.formService.calculateForPercent(
-                                  z.forwardReadingMeasurementDetail
-                                    .originalThickness,
+                                  z.forwardReadingMeasurementDetail.originalThickness,
                                   z.forwardReadingMeasurementDetail.gaugedP
                                 ),
                                 this.formService.calculateForPercent(
-                                  z.afterReadingMeasurementDetail
-                                    .originalThickness,
+                                  z.afterReadingMeasurementDetail.originalThickness,
                                   z.afterReadingMeasurementDetail.gaugedP
                                 )
-                              )}`,
+                              )))?"":Number(this.formService.calculateAveragePercent(
+                                z.forwardReadingMeasurementDetail.originalThickness,
+                                this.formService.calculateForPercent(
+                                  z.forwardReadingMeasurementDetail.originalThickness,
+                                  z.forwardReadingMeasurementDetail.gaugedP
+                                ),
+                                this.formService.calculateForPercent(
+                                  z.afterReadingMeasurementDetail.originalThickness,
+                                  z.afterReadingMeasurementDetail.gaugedP
+                                )
+                              ))}`,
                             },
                             {
                               style: ['txt_center'],
-                              text: `${this.formService.calculateAveragePercent(
-                                z.forwardReadingMeasurementDetail
-                                  .originalThickness,
+                              text: `${Number.isNaN(Number(this.formService.calculateAveragePercent(
+                                z.forwardReadingMeasurementDetail.originalThickness,
                                 this.formService.calculateForPercent(
-                                  z.forwardReadingMeasurementDetail
-                                    .originalThickness,
+                                  z.forwardReadingMeasurementDetail.originalThickness,
                                   z.forwardReadingMeasurementDetail.gaugedS
                                 ),
                                 this.formService.calculateForPercent(
-                                  z.forwardReadingMeasurementDetail
-                                    .originalThickness,
+                                  z.forwardReadingMeasurementDetail.originalThickness,
                                   z.afterReadingMeasurementDetail.gaugedS
                                 )
-                              )}`,
+                              )))?"":Number(this.formService.calculateAveragePercent(
+                                z.forwardReadingMeasurementDetail.originalThickness,
+                                this.formService.calculateForPercent(
+                                  z.forwardReadingMeasurementDetail.originalThickness,
+                                  z.forwardReadingMeasurementDetail.gaugedS
+                                ),
+                                this.formService.calculateForPercent(
+                                  z.forwardReadingMeasurementDetail.originalThickness,
+                                  z.afterReadingMeasurementDetail.gaugedS
+                                )
+                              ))}`,
                             },
                             {
                               style: ['txt_center'],
                               text: `${this.formService.calculateForMaxAlwbDimForString(
-                                z.afterReadingMeasurementDetail
-                                  .originalThickness,
+                                z.afterReadingMeasurementDetail.originalThickness,
                                 z.afterReadingMeasurementDetail.percent
                               )}`,
                             },
@@ -1424,27 +1212,23 @@ export class ReviewComponent implements OnInit {
                         paddingBottom: () => 1,
                       },
                     },
-                  ]
-                : []
+                  ]: []
             ),
             //Form tm2i
-            x.formList.map((y: any) =>
-              y.type == 'TM2(I)'
+            x.formList.map((y: any) => y.type == 'TM2(I)'
                 ? [
                     this.lsSketch.map((a) =>
                       a.map((b: any) =>
                         b.formId === y.id && b.formType == 'form_tm2'
                           ? [
                               {
-                                margin: [-20, -30, -20, -30] as Margins,
+                                margin: [-20, -40, -20, -30] as Margins,
                                 pageBreak: 'before' as PageBreak,
                                 pageOrientation: 'landscape' as PageOrientation,
                                 fit: [pageSizee.width, pageSizee.height],
                                 image: `data:image/png;base64,${b.value}`,
                               },
-                            ]
-                          : []
-                      )
+                            ]: [])
                     ),
                     {
                       pageBreak: 'before' as PageBreak,
@@ -1453,43 +1237,9 @@ export class ReviewComponent implements OnInit {
                       table: {
                         headerRows: 10,
                         widths: [
-                          '19.6%',
-
-                          '3.3%',
-                          '2.9%',
-                          '3.0%',
-                          '3.0%',
-                          '3.0%',
-                          '3.0%',
-                          '3.0%',
-                          '0.8%',
-                          '3.0%',
-                          '3.0%',
-                          '0.8%',
-
-                          '3.3%',
-                          '2.9%',
-                          '3.0%',
-                          '3.0%',
-                          '3.0%',
-                          '3.0%',
-                          '3.0%',
-                          '0.8%',
-                          '3.0%',
-                          '3.0%',
-                          '0.8%',
-
-                          '3.3%',
-                          '2.9%',
-                          '3.0%',
-                          '3.0%',
-                          '3.0%',
-                          '3.0%',
-                          '3.0%',
-                          '0.8%',
-                          '3.0%',
-                          '3.0%',
-                          '0.8%',
+                          '19.6%','3.3%','2.9%','3.0%','3.0%','3.0%','3.0%','3.0%','0.8%','3.0%','3.0%','0.8%','3.3%','2.9%','3.0%',
+                          '3.0%','3.0%','3.0%','3.0%','0.8%','3.0%','3.0%','0.8%','3.3%','2.9%','3.0%','3.0%','3.0%','3.0%','3.0%',
+                          '0.8%','3.0%','3.0%','0.8%',
                         ],
                         body: [
                           //Table header
@@ -1501,41 +1251,7 @@ export class ReviewComponent implements OnInit {
                               alignment: 'right' as Alignment,
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},
                           ],
                           [
                             {
@@ -1543,89 +1259,20 @@ export class ReviewComponent implements OnInit {
                               colSpan: 34,
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},
                           ],
                           // Table content
                           [
                             {
-                              margin: [0, 0, 0, 5] as Margins,
                               text: 'Report on THICKNESS MEASUREMENT OF SHELL AND DECK PLATING (one, two or three transverse sections)',
                               style: ['txt_center', 'fontS11'],
                               colSpan: 34,
                               decoration: 'underline' as Decoration,
                               bold: true,
-
+                              margin: [0, 0, 0, 5] as Margins,
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},
                           ],
                           [
                             {
@@ -1633,51 +1280,18 @@ export class ReviewComponent implements OnInit {
                               text: '',
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},
                           ],
                           [
                             {
                               text: "Ship's name:",
+
                               alignment: 'center' as Alignment,
+
                               colSpan: 3,
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
+                            {},{},
                             {
                               decoration: 'underline' as Decoration,
                               text: `${this.inShipName}`,
@@ -1685,21 +1299,13 @@ export class ReviewComponent implements OnInit {
                               bold: true,
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},
                             {
                               text: 'Class Identity No. ',
                               colSpan: 4,
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
+                            {},{},{},
                             {
                               decoration: 'underline' as Decoration,
                               text: `${this.inABS}`,
@@ -1707,21 +1313,13 @@ export class ReviewComponent implements OnInit {
                               bold: true,
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-
+                            {},{},{},{},{},{},{},
                             {
                               text: 'Report No. ',
                               colSpan: 3,
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
+                            {},{},
                             {
                               decoration: 'underline' as Decoration,
                               text: `${this.generalParticular[0].reportNo}`,
@@ -1729,13 +1327,7 @@ export class ReviewComponent implements OnInit {
                               bold: true,
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},
                           ],
                           [
                             {
@@ -1743,81 +1335,15 @@ export class ReviewComponent implements OnInit {
                               text: '',
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},
                           ],
                           [
                             {
                               style: 'txt_center',
-                              text: 'STRENGTH DECK AND SHEER STRAKE PLATING',
+                              text: 'SHELL PLATING',
                               colSpan: 34,
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},
                           ],
                           [
                             {},
@@ -1827,63 +1353,42 @@ export class ReviewComponent implements OnInit {
                               colSpan: 8,
                               border: [true, true, false, true],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},
                             {
                               text: `${y.firstFrameNoTM2}`,
                               border: [false, true, true, true],
                               colSpan: 3,
                               bold: true,
                             },
-                            {},
-                            {},
+                            {},{},
                             {
                               style: 'txt_center',
                               text: '2nd TRANSVERSE SECTION at Fr.No: ',
                               colSpan: 8,
                               border: [true, true, false, true],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},
                             {
                               text: `${y.secondFrameNoTM2}`,
                               border: [false, true, true, true],
                               colSpan: 3,
                               bold: true,
                             },
-                            {},
-                            {},
+                            {},{},
                             {
                               style: 'txt_center',
                               text: '3rd TRANSVERSE SECTION at Fr.No: ',
                               colSpan: 8,
                               border: [true, true, false, true],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},
                             {
                               text: `${y.thirdFrameNoTM2}`,
                               border: [false, true, true, true],
                               colSpan: 3,
                               bold: true,
                             },
-                            {},
-                            {},
+                            {},{},
                           ],
                           [
                             {
@@ -1902,22 +1407,19 @@ export class ReviewComponent implements OnInit {
                               style: 'txt_center',
                               text: 'Gauged mm  ',
                               colSpan: 2,
-                            },
-                            {},
+                            },{},
                             {
                               style: 'txt_center',
                               text: 'Diminution P  ',
                               colSpan: 3,
                             },
-                            {},
-                            {},
+                            {},{},
                             {
                               style: 'txt_center',
                               text: '    Diminution S  ',
                               colSpan: 3,
                             },
-                            {},
-                            {},
+                            {},{},
                             {
                               style: 'txt_center',
                               text: 'No. or Letter',
@@ -1929,22 +1431,19 @@ export class ReviewComponent implements OnInit {
                               style: 'txt_center',
                               text: 'Gauged mm',
                               colSpan: 2,
-                            },
-                            {},
+                            },{},
                             {
                               style: 'txt_center',
                               text: 'Diminution P',
                               colSpan: 3,
                             },
-                            {},
-                            {},
+                            {},{},
                             {
                               style: 'txt_center',
                               text: 'Diminution S',
                               colSpan: 3,
                             },
-                            {},
-                            {},
+                            {},{},
                             {
                               style: 'txt_center',
                               text: 'No. or Letter',
@@ -1956,105 +1455,92 @@ export class ReviewComponent implements OnInit {
                               style: 'txt_center',
                               text: 'Gauged mm',
                               colSpan: 2,
-                            },
-                            {},
+                            },{},
                             {
                               style: 'txt_center',
                               text: 'Diminution P',
                               colSpan: 3,
                             },
-                            {},
-                            {},
+                            {},{},
                             {
                               style: 'txt_center',
                               text: 'Diminution S',
                               colSpan: 3,
                             },
-                            {},
-                            {},
+                            {},{},
                           ],
                           [
-                            {},
-                            {},
+                            {},{},
                             { style: 'txt_center', text: 'mm' },
                             { style: 'txt_center', text: 'mm' },
                             { style: 'txt_center', text: 'P' },
                             { style: 'txt_center', text: 'S' },
                             { style: 'txt_center', text: 'mm' },
-                            { style: 'txt_center', text: '%', colSpan: 2 },
-                            {},
+                            { style: 'txt_center', text: '%', colSpan: 2 },{},
                             { style: 'txt_center', text: 'mm' },
                             { style: 'txt_center', text: '%', colSpan: 2 },
-                            {},
-                            {},
+                            {},{},
 
                             { style: 'txt_center', text: 'mm' },
                             { style: 'txt_center', text: 'mm' },
                             { style: 'txt_center', text: 'P' },
                             { style: 'txt_center', text: 'S' },
                             { style: 'txt_center', text: 'mm' },
-                            { style: 'txt_center', text: '%', colSpan: 2 },
-                            {},
+                            { style: 'txt_center', text: '%', colSpan: 2 },{},
                             { style: 'txt_center', text: 'mm' },
                             { style: 'txt_center', text: '%', colSpan: 2 },
-                            {},
-                            {},
+                            {},{},
 
                             { style: 'txt_center', text: 'mm' },
                             { style: 'txt_center', text: 'mm' },
                             { style: 'txt_center', text: 'P' },
                             { style: 'txt_center', text: 'S' },
                             { style: 'txt_center', text: 'mm' },
-                            { style: 'txt_center', text: '%', colSpan: 2 },
-                            {},
+                            { style: 'txt_center', text: '%', colSpan: 2 },{},
                             { style: 'txt_center', text: 'mm' },
-                            { style: 'txt_center', text: '%', colSpan: 2 },
-                            {},
+                            { style: 'txt_center', text: '%', colSpan: 2 },{},
                           ],
                           ...y.measurementTM2DTOList?.map((z: any) => [
-                            {
-                              text: `${z.strakePosition}`,
-                            },
-
+                            {text: `${z.strakePosition??""}`,},
                             //fr 1
-                            { text: `${z.noOrLetter}`, style: ['txt_center'] },
+                            { text: `${z.noOrLetter??""}`, style: ['txt_center'] },
                             {
-                              text: `${z.firstTransverseSectionMeasurementDetailTM2.originalThickness}`,
+                              text: `${z.firstTransverseSectionMeasurementDetailTM2.originalThickness??""}`,
                               style: ['txt_center'],
                             },
                             {
                               text: `${this.formService.calculateForMaxAlwbDimForString(
-                                z.firstTransverseSectionMeasurementDetailTM2
-                                  .originalThickness,
-                                z.firstTransverseSectionMeasurementDetailTM2
-                                  .percent
+                                z.firstTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.firstTransverseSectionMeasurementDetailTM2.percent
                               )}`,
                               style: ['txt_center'],
                             },
                             {
-                              text: `${z.firstTransverseSectionMeasurementDetailTM2.gaugedP}`,
+                              text: `${z.firstTransverseSectionMeasurementDetailTM2.gaugedP??""}`,
                               style: ['txt_center'],
                             },
                             {
-                              text: `${z.firstTransverseSectionMeasurementDetailTM2.gaugedS}`,
+                              text: `${z.firstTransverseSectionMeasurementDetailTM2.gaugedS??""}`,
                               style: ['txt_center'],
                             },
                             {
-                              text: `${this.formService.calculateForMm(
-                                z.firstTransverseSectionMeasurementDetailTM2
-                                  .originalThickness,
-                                z.firstTransverseSectionMeasurementDetailTM2
-                                  .gaugedP
+                              text: `${Number(this.formService.calculateForMm(
+                                z.firstTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.firstTransverseSectionMeasurementDetailTM2.gaugedP
+                              ))== 0.0 ?"":this.formService.calculateForMm(
+                                z.firstTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.firstTransverseSectionMeasurementDetailTM2.gaugedP
                               )}`,
                               style: ['txt_center'],
                             },
                             {
-                              text: `${this.formService.calculateForPercent(
-                                z.firstTransverseSectionMeasurementDetailTM2
-                                  .originalThickness,
-                                z.firstTransverseSectionMeasurementDetailTM2
-                                  .gaugedP
-                              )}`,
+                              text: `${Number.isNaN(Number(this.formService.calculateForPercent(
+                                z.firstTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.firstTransverseSectionMeasurementDetailTM2.gaugedP
+                              )))?"":Number(this.formService.calculateForPercent(
+                                z.firstTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.firstTransverseSectionMeasurementDetailTM2.gaugedP
+                              ))}`,
 
                               style: ['txt_center'],
                               border: [true, true, false, true],
@@ -2063,84 +1549,59 @@ export class ReviewComponent implements OnInit {
                               text:
                                 this.convertToNumber(
                                   this.formService.calculateForMm(
-                                    z.firstTransverseSectionMeasurementDetailTM2
-                                      .originalThickness,
-                                    z.firstTransverseSectionMeasurementDetailTM2
-                                      .gaugedP
+                                    z.firstTransverseSectionMeasurementDetailTM2.originalThickness,
+                                    z.firstTransverseSectionMeasurementDetailTM2.gaugedP
                                   )
-                                ) >=
-                                  this.convertToNumber(
+                                ) >= this.convertToNumber(
                                     this.formService.threePartsFourOfMaxAlwbDim(
                                       this.formService.calculateForMaxAlwbDimForString(
-                                        z
-                                          .firstTransverseSectionMeasurementDetailTM2
-                                          .originalThickness,
-                                        z
-                                          .firstTransverseSectionMeasurementDetailTM2
-                                          .percent
+                                        z.firstTransverseSectionMeasurementDetailTM2.originalThickness,
+                                        z.firstTransverseSectionMeasurementDetailTM2.percent
                                       )
                                     )
-                                  ) &&
-                                this.convertToNumber(
+                                  ) && this.convertToNumber(
                                   this.formService.calculateForMm(
-                                    z.firstTransverseSectionMeasurementDetailTM2
-                                      .originalThickness,
-                                    z.firstTransverseSectionMeasurementDetailTM2
-                                      .gaugedP
+                                    z.firstTransverseSectionMeasurementDetailTM2.originalThickness,
+                                    z.firstTransverseSectionMeasurementDetailTM2.gaugedP
                                   )
-                                ) <=
-                                  this.convertToNumber(
+                                ) <= this.convertToNumber(
                                     this.formService.calculateForMaxAlwbDimForString(
-                                      z
-                                        .firstTransverseSectionMeasurementDetailTM2
-                                        .originalThickness,
-                                      z
-                                        .firstTransverseSectionMeasurementDetailTM2
-                                        .percent
+                                      z.firstTransverseSectionMeasurementDetailTM2.originalThickness,
+                                      z.firstTransverseSectionMeasurementDetailTM2.percent
                                     )
                                   )
-                                  ? 'S'
-                                  : this.convertToNumber(
+                                  ? 'S' : this.convertToNumber(
                                       this.formService.calculateForMm(
-                                        z
-                                          .firstTransverseSectionMeasurementDetailTM2
-                                          .originalThickness,
-                                        z
-                                          .firstTransverseSectionMeasurementDetailTM2
-                                          .gaugedP
+                                        z.firstTransverseSectionMeasurementDetailTM2.originalThickness,
+                                        z.firstTransverseSectionMeasurementDetailTM2.gaugedP
                                       )
-                                    ) >
-                                    this.convertToNumber(
+                                    ) > this.convertToNumber(
                                       this.formService.calculateForMaxAlwbDimForString(
-                                        z
-                                          .firstTransverseSectionMeasurementDetailTM2
-                                          .originalThickness,
-                                        z
-                                          .firstTransverseSectionMeasurementDetailTM2
-                                          .percent
+                                        z.firstTransverseSectionMeasurementDetailTM2.originalThickness,
+                                        z.firstTransverseSectionMeasurementDetailTM2.percent
                                       )
                                     )
-                                  ? 'R'
-                                  : '',
-
+                                  ? 'R': '',
                               style: ['txt_center'],
                               border: [false, true, true, true],
                             },
                             {
-                              text: `${this.formService.calculateForMm(
-                                z.firstTransverseSectionMeasurementDetailTM2
-                                  .originalThickness,
-                                z.firstTransverseSectionMeasurementDetailTM2
-                                  .gaugedS
+                              text: `${Number(this.formService.calculateForMm(
+                                z.firstTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.firstTransverseSectionMeasurementDetailTM2.gaugedS
+                              ))== 0.0 ?"":this.formService.calculateForMm(
+                                z.firstTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.firstTransverseSectionMeasurementDetailTM2.gaugedS
                               )}`,
                               style: ['txt_center'],
                             },
                             {
-                              text: `${this.formService.calculateForPercent(
-                                z.firstTransverseSectionMeasurementDetailTM2
-                                  .originalThickness,
-                                z.firstTransverseSectionMeasurementDetailTM2
-                                  .gaugedS
+                              text: `${Number.isNaN(Number(this.formService.calculateForPercent(
+                                z.firstTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.firstTransverseSectionMeasurementDetailTM2.gaugedS
+                              )))?"":this.formService.calculateForPercent(
+                                z.firstTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.firstTransverseSectionMeasurementDetailTM2.gaugedS
                               )}`,
                               style: ['txt_center'],
                               border: [true, true, false, true],
@@ -2149,110 +1610,83 @@ export class ReviewComponent implements OnInit {
                               text:
                                 this.convertToNumber(
                                   this.formService.calculateForMm(
-                                    z.firstTransverseSectionMeasurementDetailTM2
-                                      .originalThickness,
-                                    z.firstTransverseSectionMeasurementDetailTM2
-                                      .gaugedS
+                                    z.firstTransverseSectionMeasurementDetailTM2.originalThickness,
+                                    z.firstTransverseSectionMeasurementDetailTM2.gaugedS
                                   )
-                                ) >=
-                                  this.convertToNumber(
+                                ) >= this.convertToNumber(
                                     this.formService.threePartsFourOfMaxAlwbDim(
                                       this.formService.calculateForMaxAlwbDimForString(
-                                        z
-                                          .firstTransverseSectionMeasurementDetailTM2
-                                          .originalThickness,
-                                        z
-                                          .firstTransverseSectionMeasurementDetailTM2
-                                          .percent
+                                        z.firstTransverseSectionMeasurementDetailTM2.originalThickness,
+                                        z.firstTransverseSectionMeasurementDetailTM2.percent
                                       )
                                     )
-                                  ) &&
-                                this.convertToNumber(
+                                  ) && this.convertToNumber(
                                   this.formService.calculateForMm(
-                                    z.firstTransverseSectionMeasurementDetailTM2
-                                      .originalThickness,
-                                    z.firstTransverseSectionMeasurementDetailTM2
-                                      .gaugedS
+                                    z.firstTransverseSectionMeasurementDetailTM2.originalThickness,
+                                    z.firstTransverseSectionMeasurementDetailTM2.gaugedS
                                   )
-                                ) <=
-                                  this.convertToNumber(
+                                ) <= this.convertToNumber(
                                     this.formService.calculateForMaxAlwbDimForString(
-                                      z
-                                        .firstTransverseSectionMeasurementDetailTM2
-                                        .originalThickness,
-                                      z
-                                        .firstTransverseSectionMeasurementDetailTM2
-                                        .percent
+                                      z.firstTransverseSectionMeasurementDetailTM2.originalThickness,
+                                      z.firstTransverseSectionMeasurementDetailTM2.percent
                                     )
                                   )
-                                  ? 'S'
-                                  : this.convertToNumber(
+                                  ? 'S' : this.convertToNumber(
                                       this.formService.calculateForMm(
-                                        z
-                                          .firstTransverseSectionMeasurementDetailTM2
-                                          .originalThickness,
-                                        z
-                                          .firstTransverseSectionMeasurementDetailTM2
-                                          .gaugedS
+                                        z.firstTransverseSectionMeasurementDetailTM2.originalThickness,
+                                        z.firstTransverseSectionMeasurementDetailTM2.gaugedS
                                       )
-                                    ) >
-                                    this.convertToNumber(
+                                    ) > this.convertToNumber(
                                       this.formService.calculateForMaxAlwbDimForString(
-                                        z
-                                          .firstTransverseSectionMeasurementDetailTM2
-                                          .originalThickness,
-                                        z
-                                          .firstTransverseSectionMeasurementDetailTM2
-                                          .percent
+                                        z.firstTransverseSectionMeasurementDetailTM2.originalThickness,
+                                        z.firstTransverseSectionMeasurementDetailTM2.percent
                                       )
                                     )
-                                  ? 'R'
-                                  : '',
-
+                                  ? 'R' : '',
                               style: ['txt_center'],
                               border: [false, true, true, true],
                             },
 
                             //fr 2
 
-                            { text: `${z.noOrLetter}`, style: ['txt_center'] },
+                            { text: `${z.noOrLetter??""}`, style: ['txt_center'] },
                             {
-                              text: `${z.secondTransverseSectionMeasurementDetailTM2.originalThickness}`,
+                              text: `${z.secondTransverseSectionMeasurementDetailTM2.originalThickness??""}`,
                               style: ['txt_center'],
                             },
                             {
                               text: `${this.formService.calculateForMaxAlwbDimForString(
-                                z.secondTransverseSectionMeasurementDetailTM2
-                                  .originalThickness,
-                                z.secondTransverseSectionMeasurementDetailTM2
-                                  .percent
+                                z.secondTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.secondTransverseSectionMeasurementDetailTM2.percent
                               )}`,
                               style: ['txt_center'],
                             },
                             {
-                              text: `${z.secondTransverseSectionMeasurementDetailTM2.gaugedP}`,
+                              text: `${z.secondTransverseSectionMeasurementDetailTM2.gaugedP??""}`,
                               style: ['txt_center'],
                             },
                             {
-                              text: `${z.secondTransverseSectionMeasurementDetailTM2.gaugedS}`,
+                              text: `${z.secondTransverseSectionMeasurementDetailTM2.gaugedS??""}`,
                               style: ['txt_center'],
                             },
                             {
-                              text: `${this.formService.calculateForMm(
-                                z.secondTransverseSectionMeasurementDetailTM2
-                                  .originalThickness,
-                                z.secondTransverseSectionMeasurementDetailTM2
-                                  .gaugedP
+                              text: `${Number(this.formService.calculateForMm(
+                                z.secondTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.secondTransverseSectionMeasurementDetailTM2.gaugedP
+                              ))== 0.0 ?"":this.formService.calculateForMm(
+                                z.secondTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.secondTransverseSectionMeasurementDetailTM2.gaugedP
                               )}`,
                               style: ['txt_center'],
                             },
                             {
-                              text: `${this.formService.calculateForPercent(
-                                z.secondTransverseSectionMeasurementDetailTM2
-                                  .originalThickness,
-                                z.secondTransverseSectionMeasurementDetailTM2
-                                  .gaugedP
-                              )}`,
+                              text: `${Number.isNaN(Number(this.formService.calculateForPercent(
+                                z.secondTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.secondTransverseSectionMeasurementDetailTM2.gaugedP
+                              )))?"":Number(this.formService.calculateForPercent(
+                                z.secondTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.secondTransverseSectionMeasurementDetailTM2.gaugedP
+                              ))}`,
 
                               style: ['txt_center'],
                               border: [true, true, false, true],
@@ -2261,89 +1695,61 @@ export class ReviewComponent implements OnInit {
                               text:
                                 this.convertToNumber(
                                   this.formService.calculateForMm(
-                                    z
-                                      .secondTransverseSectionMeasurementDetailTM2
-                                      .originalThickness,
-                                    z
-                                      .secondTransverseSectionMeasurementDetailTM2
-                                      .gaugedP
+                                    z.secondTransverseSectionMeasurementDetailTM2.originalThickness,
+                                    z.secondTransverseSectionMeasurementDetailTM2.gaugedP
                                   )
                                 ) >=
                                   this.convertToNumber(
                                     this.formService.threePartsFourOfMaxAlwbDim(
                                       this.formService.calculateForMaxAlwbDimForString(
-                                        z
-                                          .secondTransverseSectionMeasurementDetailTM2
-                                          .originalThickness,
-                                        z
-                                          .secondTransverseSectionMeasurementDetailTM2
-                                          .percent
+                                        z.secondTransverseSectionMeasurementDetailTM2.originalThickness,
+                                        z.secondTransverseSectionMeasurementDetailTM2.percent
                                       )
                                     )
-                                  ) &&
-                                this.convertToNumber(
+                                  ) &&this.convertToNumber(
                                   this.formService.calculateForMm(
-                                    z
-                                      .secondTransverseSectionMeasurementDetailTM2
-                                      .originalThickness,
-                                    z
-                                      .secondTransverseSectionMeasurementDetailTM2
-                                      .gaugedP
+                                    z.secondTransverseSectionMeasurementDetailTM2.originalThickness,
+                                    z.secondTransverseSectionMeasurementDetailTM2.gaugedP
                                   )
-                                ) <=
-                                  this.convertToNumber(
+                                ) <=this.convertToNumber(
                                     this.formService.calculateForMaxAlwbDimForString(
-                                      z
-                                        .secondTransverseSectionMeasurementDetailTM2
-                                        .originalThickness,
-                                      z
-                                        .secondTransverseSectionMeasurementDetailTM2
-                                        .percent
+                                      z.secondTransverseSectionMeasurementDetailTM2.originalThickness,
+                                      z.secondTransverseSectionMeasurementDetailTM2.percent
                                     )
                                   )
-                                  ? 'S'
-                                  : this.convertToNumber(
+                                  ? 'S': this.convertToNumber(
                                       this.formService.calculateForMm(
-                                        z
-                                          .secondTransverseSectionMeasurementDetailTM2
-                                          .originalThickness,
-                                        z
-                                          .secondTransverseSectionMeasurementDetailTM2
-                                          .gaugedP
+                                        z.secondTransverseSectionMeasurementDetailTM2.originalThickness,
+                                        z.secondTransverseSectionMeasurementDetailTM2.gaugedP
                                       )
-                                    ) >
-                                    this.convertToNumber(
+                                    ) >this.convertToNumber(
                                       this.formService.calculateForMaxAlwbDimForString(
-                                        z
-                                          .secondTransverseSectionMeasurementDetailTM2
-                                          .originalThickness,
-                                        z
-                                          .secondTransverseSectionMeasurementDetailTM2
-                                          .percent
+                                        z.secondTransverseSectionMeasurementDetailTM2.originalThickness,
+                                        z.secondTransverseSectionMeasurementDetailTM2.percent
                                       )
                                     )
-                                  ? 'R'
-                                  : '',
-
+                                  ? 'R': '',
                               style: ['txt_center'],
                               border: [false, true, true, true],
                             },
                             {
-                              text: `${this.formService.calculateForMm(
-                                z.secondTransverseSectionMeasurementDetailTM2
-                                  .originalThickness,
-                                z.secondTransverseSectionMeasurementDetailTM2
-                                  .gaugedS
+                              text: `${Number(this.formService.calculateForMm(
+                                z.secondTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.secondTransverseSectionMeasurementDetailTM2.gaugedS
+                              ))== 0.0 ?"":this.formService.calculateForMm(
+                                z.secondTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.secondTransverseSectionMeasurementDetailTM2.gaugedS
                               )}`,
                               style: ['txt_center'],
                             },
                             {
-                              text: `${this.formService.calculateForPercent(
-                                z.secondTransverseSectionMeasurementDetailTM2
-                                  .originalThickness,
-                                z.secondTransverseSectionMeasurementDetailTM2
-                                  .gaugedS
-                              )}`,
+                              text: `${Number.isNaN(Number(this.formService.calculateForPercent(
+                                z.secondTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.secondTransverseSectionMeasurementDetailTM2.gaugedS
+                              )))?"":Number(this.formService.calculateForPercent(
+                                z.secondTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.secondTransverseSectionMeasurementDetailTM2.gaugedS
+                              ))}`,
                               style: ['txt_center'],
                               border: [true, true, false, true],
                             },
@@ -2351,268 +1757,185 @@ export class ReviewComponent implements OnInit {
                               text:
                                 this.convertToNumber(
                                   this.formService.calculateForMm(
-                                    z
-                                      .secondTransverseSectionMeasurementDetailTM2
-                                      .originalThickness,
-                                    z
-                                      .secondTransverseSectionMeasurementDetailTM2
-                                      .gaugedS
+                                    z.secondTransverseSectionMeasurementDetailTM2.originalThickness,
+                                    z.secondTransverseSectionMeasurementDetailTM2.gaugedS
                                   )
-                                ) >=
-                                  this.convertToNumber(
+                                ) >=this.convertToNumber(
                                     this.formService.threePartsFourOfMaxAlwbDim(
                                       this.formService.calculateForMaxAlwbDimForString(
-                                        z
-                                          .secondTransverseSectionMeasurementDetailTM2
-                                          .originalThickness,
-                                        z
-                                          .secondTransverseSectionMeasurementDetailTM2
-                                          .percent
+                                        z.secondTransverseSectionMeasurementDetailTM2.originalThickness,
+                                        z.secondTransverseSectionMeasurementDetailTM2.percent
                                       )
                                     )
-                                  ) &&
-                                this.convertToNumber(
+                                  ) &&this.convertToNumber(
                                   this.formService.calculateForMm(
-                                    z
-                                      .secondTransverseSectionMeasurementDetailTM2
-                                      .originalThickness,
-                                    z
-                                      .secondTransverseSectionMeasurementDetailTM2
-                                      .gaugedS
+                                    z.secondTransverseSectionMeasurementDetailTM2.originalThickness,
+                                    z.secondTransverseSectionMeasurementDetailTM2.gaugedS
                                   )
-                                ) <=
-                                  this.convertToNumber(
+                                ) <=this.convertToNumber(
                                     this.formService.calculateForMaxAlwbDimForString(
-                                      z
-                                        .secondTransverseSectionMeasurementDetailTM2
-                                        .originalThickness,
-                                      z
-                                        .secondTransverseSectionMeasurementDetailTM2
-                                        .percent
+                                      z.secondTransverseSectionMeasurementDetailTM2.originalThickness,
+                                      z.secondTransverseSectionMeasurementDetailTM2.percent
                                     )
                                   )
-                                  ? 'S'
-                                  : this.convertToNumber(
+                                  ? 'S': this.convertToNumber(
                                       this.formService.calculateForMm(
-                                        z
-                                          .secondTransverseSectionMeasurementDetailTM2
-                                          .originalThickness,
-                                        z
-                                          .secondTransverseSectionMeasurementDetailTM2
-                                          .gaugedS
+                                        z.secondTransverseSectionMeasurementDetailTM2.originalThickness,
+                                        z.secondTransverseSectionMeasurementDetailTM2.gaugedS
                                       )
-                                    ) >
-                                    this.convertToNumber(
+                                    ) >this.convertToNumber(
                                       this.formService.calculateForMaxAlwbDimForString(
-                                        z
-                                          .secondTransverseSectionMeasurementDetailTM2
-                                          .originalThickness,
-                                        z
-                                          .secondTransverseSectionMeasurementDetailTM2
-                                          .percent
+                                        z.secondTransverseSectionMeasurementDetailTM2.originalThickness,
+                                        z.secondTransverseSectionMeasurementDetailTM2.percent
                                       )
                                     )
-                                  ? 'R'
-                                  : '',
+                                  ? 'R': '',
 
                               style: ['txt_center'],
                               border: [false, true, true, true],
                             },
-                            ///
                             //fr3
 
-                            { text: `${z.noOrLetter}`, style: ['txt_center'] },
+                            { text: `${z.noOrLetter??""}`, style: ['txt_center'] },
                             {
-                              text: `${z.thirdTransverseSectionMeasurementDetailTM2.originalThickness}`,
+                              text: `${z.thirdTransverseSectionMeasurementDetailTM2.originalThickness??""}`,
                               style: ['txt_center'],
                             },
                             {
                               text: `${this.formService.calculateForMaxAlwbDimForString(
-                                z.thirdTransverseSectionMeasurementDetailTM2
-                                  .originalThickness,
-                                z.thirdTransverseSectionMeasurementDetailTM2
-                                  .percent
+                                z.thirdTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.thirdTransverseSectionMeasurementDetailTM2.percent
                               )}`,
                               style: ['txt_center'],
                             },
                             {
-                              text: `${z.thirdTransverseSectionMeasurementDetailTM2.gaugedP}`,
+                              text: `${z.thirdTransverseSectionMeasurementDetailTM2.gaugedP??""}`,
                               style: ['txt_center'],
                             },
                             {
-                              text: `${z.thirdTransverseSectionMeasurementDetailTM2.gaugedS}`,
+                              text: `${z.thirdTransverseSectionMeasurementDetailTM2.gaugedS??""}`,
                               style: ['txt_center'],
                             },
                             {
-                              text: `${this.formService.calculateForMm(
-                                z.thirdTransverseSectionMeasurementDetailTM2
-                                  .originalThickness,
-                                z.thirdTransverseSectionMeasurementDetailTM2
-                                  .gaugedP
+                              text: `${Number(this.formService.calculateForMm(
+                                z.thirdTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.thirdTransverseSectionMeasurementDetailTM2.gaugedP
+                              ))== 0.0 ?"":this.formService.calculateForMm(
+                                z.thirdTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.thirdTransverseSectionMeasurementDetailTM2.gaugedP
                               )}`,
                               style: ['txt_center'],
                             },
                             {
-                              text: `${this.formService.calculateForPercent(
-                                z.thirdTransverseSectionMeasurementDetailTM2
-                                  .originalThickness,
-                                z.thirdTransverseSectionMeasurementDetailTM2
-                                  .gaugedP
-                              )}`,
+                              text: `${Number.isNaN(Number(this.formService.calculateForPercent(
+                                z.thirdTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.thirdTransverseSectionMeasurementDetailTM2.gaugedP
+                              )))?"":Number(this.formService.calculateForPercent(
+                                z.thirdTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.thirdTransverseSectionMeasurementDetailTM2.gaugedP
+                              ))}`,
 
                               style: ['txt_center'],
                               border: [true, true, false, true],
                             },
                             {
-                              text:
-                                this.convertToNumber(
+                              text:this.convertToNumber(
                                   this.formService.calculateForMm(
-                                    z.thirdTransverseSectionMeasurementDetailTM2
-                                      .originalThickness,
-                                    z.thirdTransverseSectionMeasurementDetailTM2
-                                      .gaugedP
+                                    z.thirdTransverseSectionMeasurementDetailTM2.originalThickness,
+                                    z.thirdTransverseSectionMeasurementDetailTM2.gaugedP
                                   )
-                                ) >=
-                                  this.convertToNumber(
+                                ) >=this.convertToNumber(
                                     this.formService.threePartsFourOfMaxAlwbDim(
                                       this.formService.calculateForMaxAlwbDimForString(
-                                        z
-                                          .thirdTransverseSectionMeasurementDetailTM2
-                                          .originalThickness,
-                                        z
-                                          .thirdTransverseSectionMeasurementDetailTM2
-                                          .percent
+                                        z.thirdTransverseSectionMeasurementDetailTM2.originalThickness,
+                                        z.thirdTransverseSectionMeasurementDetailTM2.percent
                                       )
                                     )
-                                  ) &&
-                                this.convertToNumber(
+                                  ) &&this.convertToNumber(
                                   this.formService.calculateForMm(
-                                    z.thirdTransverseSectionMeasurementDetailTM2
-                                      .originalThickness,
-                                    z.thirdTransverseSectionMeasurementDetailTM2
-                                      .gaugedP
+                                    z.thirdTransverseSectionMeasurementDetailTM2.originalThickness,
+                                    z.thirdTransverseSectionMeasurementDetailTM2.gaugedP
                                   )
-                                ) <=
-                                  this.convertToNumber(
+                                ) <=this.convertToNumber(
                                     this.formService.calculateForMaxAlwbDimForString(
-                                      z
-                                        .thirdTransverseSectionMeasurementDetailTM2
-                                        .originalThickness,
-                                      z
-                                        .thirdTransverseSectionMeasurementDetailTM2
-                                        .percent
+                                      z.thirdTransverseSectionMeasurementDetailTM2.originalThickness,
+                                      z.thirdTransverseSectionMeasurementDetailTM2.percent
                                     )
                                   )
-                                  ? 'S'
-                                  : this.convertToNumber(
+                                  ? 'S': this.convertToNumber(
                                       this.formService.calculateForMm(
-                                        z
-                                          .thirdTransverseSectionMeasurementDetailTM2
-                                          .originalThickness,
-                                        z
-                                          .thirdTransverseSectionMeasurementDetailTM2
-                                          .gaugedP
+                                        z.thirdTransverseSectionMeasurementDetailTM2.originalThickness,
+                                        z.thirdTransverseSectionMeasurementDetailTM2.gaugedP
                                       )
                                     ) >
                                     this.convertToNumber(
                                       this.formService.calculateForMaxAlwbDimForString(
-                                        z
-                                          .thirdTransverseSectionMeasurementDetailTM2
-                                          .originalThickness,
-                                        z
-                                          .thirdTransverseSectionMeasurementDetailTM2
-                                          .percent
+                                        z.thirdTransverseSectionMeasurementDetailTM2.originalThickness,
+                                        z.thirdTransverseSectionMeasurementDetailTM2.percent
                                       )
                                     )
-                                  ? 'R'
-                                  : '',
+                                  ? 'R': '',
 
                               style: ['txt_center'],
                               border: [false, true, true, true],
                             },
                             {
-                              text: `${this.formService.calculateForMm(
-                                z.thirdTransverseSectionMeasurementDetailTM2
-                                  .originalThickness,
-                                z.thirdTransverseSectionMeasurementDetailTM2
-                                  .gaugedS
+                              text: `${Number(this.formService.calculateForMm(
+                                z.thirdTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.thirdTransverseSectionMeasurementDetailTM2.gaugedS
+                              ))== 0.0 ?"":this.formService.calculateForMm(
+                                z.thirdTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.thirdTransverseSectionMeasurementDetailTM2.gaugedS
                               )}`,
                               style: ['txt_center'],
                             },
                             {
-                              text: `${this.formService.calculateForPercent(
-                                z.thirdTransverseSectionMeasurementDetailTM2
-                                  .originalThickness,
-                                z.thirdTransverseSectionMeasurementDetailTM2
-                                  .gaugedS
-                              )}`,
+                              text: `${Number.isNaN(Number(this.formService.calculateForPercent(
+                                z.thirdTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.thirdTransverseSectionMeasurementDetailTM2.gaugedS
+                              )))?"":Number(this.formService.calculateForPercent(
+                                z.thirdTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.thirdTransverseSectionMeasurementDetailTM2.gaugedS
+                              ))}`,
                               style: ['txt_center'],
                               border: [true, true, false, true],
                             },
                             {
-                              text:
-                                this.convertToNumber(
+                              text:this.convertToNumber(
                                   this.formService.calculateForMm(
-                                    z.thirdTransverseSectionMeasurementDetailTM2
-                                      .originalThickness,
-                                    z.thirdTransverseSectionMeasurementDetailTM2
-                                      .gaugedS
+                                    z.thirdTransverseSectionMeasurementDetailTM2.originalThickness,
+                                    z.thirdTransverseSectionMeasurementDetailTM2.gaugedS
                                   )
-                                ) >=
-                                  this.convertToNumber(
+                                ) >=this.convertToNumber(
                                     this.formService.threePartsFourOfMaxAlwbDim(
                                       this.formService.calculateForMaxAlwbDimForString(
-                                        z
-                                          .thirdTransverseSectionMeasurementDetailTM2
-                                          .originalThickness,
-                                        z
-                                          .thirdTransverseSectionMeasurementDetailTM2
-                                          .percent
+                                        z.thirdTransverseSectionMeasurementDetailTM2.originalThickness,
+                                        z.thirdTransverseSectionMeasurementDetailTM2.percent
                                       )
                                     )
-                                  ) &&
-                                this.convertToNumber(
+                                  ) &&this.convertToNumber(
                                   this.formService.calculateForMm(
-                                    z.thirdTransverseSectionMeasurementDetailTM2
-                                      .originalThickness,
-                                    z.thirdTransverseSectionMeasurementDetailTM2
-                                      .gaugedS
+                                    z.thirdTransverseSectionMeasurementDetailTM2.originalThickness,
+                                    z.thirdTransverseSectionMeasurementDetailTM2.gaugedS
                                   )
-                                ) <=
-                                  this.convertToNumber(
+                                ) <=this.convertToNumber(
                                     this.formService.calculateForMaxAlwbDimForString(
-                                      z
-                                        .thirdTransverseSectionMeasurementDetailTM2
-                                        .originalThickness,
-                                      z
-                                        .thirdTransverseSectionMeasurementDetailTM2
-                                        .percent
+                                      z.thirdTransverseSectionMeasurementDetailTM2.originalThickness,
+                                      z.thirdTransverseSectionMeasurementDetailTM2.percent
                                     )
                                   )
-                                  ? 'S'
-                                  : this.convertToNumber(
+                                  ? 'S': this.convertToNumber(
                                       this.formService.calculateForMm(
-                                        z
-                                          .thirdTransverseSectionMeasurementDetailTM2
-                                          .originalThickness,
-                                        z
-                                          .thirdTransverseSectionMeasurementDetailTM2
-                                          .gaugedS
+                                        z.thirdTransverseSectionMeasurementDetailTM2.originalThickness,
+                                        z.thirdTransverseSectionMeasurementDetailTM2.gaugedS
                                       )
-                                    ) >
-                                    this.convertToNumber(
+                                    ) >this.convertToNumber(
                                       this.formService.calculateForMaxAlwbDimForString(
-                                        z
-                                          .thirdTransverseSectionMeasurementDetailTM2
-                                          .originalThickness,
-                                        z
-                                          .thirdTransverseSectionMeasurementDetailTM2
-                                          .percent
+                                        z.thirdTransverseSectionMeasurementDetailTM2.originalThickness,
+                                        z.thirdTransverseSectionMeasurementDetailTM2.percent
                                       )
                                     )
-                                  ? 'R'
-                                  : '',
-
+                                  ? 'R': '',
                               style: ['txt_center'],
                               border: [false, true, true, true],
                             },
@@ -2630,25 +1953,21 @@ export class ReviewComponent implements OnInit {
                 : []
             ),
             //Form tm2ii
-            x.formList.map((y: any) =>
-              y.type == 'TM2(II)'
+            x.formList.map((y: any) =>y.type == 'TM2(II)'
                 ? [
                     this.lsSketch.map((a) =>
                       a.map((b: any) =>
                         b.formId === y.id && b.formType == 'form_tm2'
                           ? [
                               {
-                                margin: [-20, -30, -20, -30] as Margins,
+                                margin: [-20, -40, -20, -30] as Margins,
                                 pageBreak: 'before' as PageBreak,
                                 pageOrientation: 'landscape' as PageOrientation,
                                 fit: [pageSizee.width, pageSizee.height],
                                 image: `data:image/png;base64,${b.value}`,
                               },
-                            ]
-                          : []
-                      )
+                            ]: [])
                     ),
-
                     {
                       pageBreak: 'before' as PageBreak,
                       pageOrientation: 'landscape' as PageOrientation,
@@ -2656,41 +1975,9 @@ export class ReviewComponent implements OnInit {
                       table: {
                         headerRows: 10,
                         widths: [
-                          '19.6%',
-
-                          '3.3%',
-                          '2.9%',
-                          '3.0%',
-                          '3.0%',
-                          '3.0%',
-                          '3.0%',
-                          '3.0%',
-                          '0.8%',
-                          '3.0%',
-                          '3.0%',
-                          '0.8%',
-                          '3.3%',
-                          '2.9%',
-                          '3.0%',
-                          '3.0%',
-                          '3.0%',
-                          '3.0%',
-                          '3.0%',
-                          '0.8%',
-                          '3.0%',
-                          '3.0%',
-                          '0.8%',
-                          '3.3%',
-                          '2.9%',
-                          '3.0%',
-                          '3.0%',
-                          '3.0%',
-                          '3.0%',
-                          '3.0%',
-                          '0.8%',
-                          '3.0%',
-                          '3.0%',
-                          '0.8%',
+                          '19.6%','3.3%','2.9%','3.0%','3.0%','3.0%','3.0%','3.0%','0.8%','3.0%','3.0%','0.8%','3.3%','2.9%','3.0%',
+                          '3.0%','3.0%','3.0%','3.0%','0.8%','3.0%','3.0%','0.8%','3.3%','2.9%','3.0%','3.0%','3.0%','3.0%','3.0%',
+                          '0.8%','3.0%','3.0%','0.8%',
                         ],
                         body: [
                           //Table header
@@ -2702,41 +1989,7 @@ export class ReviewComponent implements OnInit {
                               alignment: 'right' as Alignment,
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},
                           ],
                           [
                             {
@@ -2744,41 +1997,7 @@ export class ReviewComponent implements OnInit {
                               colSpan: 34,
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},
                           ],
                           // Table content
                           [
@@ -2791,41 +2010,7 @@ export class ReviewComponent implements OnInit {
                               margin: [0, 0, 0, 5] as Margins,
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},
                           ],
                           [
                             {
@@ -2833,41 +2018,7 @@ export class ReviewComponent implements OnInit {
                               text: '',
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},
                           ],
                           [
                             {
@@ -2878,8 +2029,7 @@ export class ReviewComponent implements OnInit {
                               colSpan: 3,
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
+                            {},{},
                             {
                               decoration: 'underline' as Decoration,
                               text: `${this.inShipName}`,
@@ -2887,21 +2037,13 @@ export class ReviewComponent implements OnInit {
                               bold: true,
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},
                             {
                               text: 'Class Identity No. ',
                               colSpan: 4,
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
+                            {},{},{},
                             {
                               decoration: 'underline' as Decoration,
                               text: `${this.inABS}`,
@@ -2909,21 +2051,13 @@ export class ReviewComponent implements OnInit {
                               bold: true,
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-
+                            {},{},{},{},{},{},{},
                             {
                               text: 'Report No. ',
                               colSpan: 3,
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
+                            {},{},
                             {
                               decoration: 'underline' as Decoration,
                               text: `${this.generalParticular[0].reportNo}`,
@@ -2931,13 +2065,7 @@ export class ReviewComponent implements OnInit {
                               bold: true,
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},
                           ],
                           [
                             {
@@ -2945,41 +2073,7 @@ export class ReviewComponent implements OnInit {
                               text: '',
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},
                           ],
                           [
                             {
@@ -2987,39 +2081,7 @@ export class ReviewComponent implements OnInit {
                               text: 'SHELL PLATING',
                               colSpan: 34,
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},
                           ],
                           [
                             {},
@@ -3029,63 +2091,42 @@ export class ReviewComponent implements OnInit {
                               colSpan: 8,
                               border: [true, true, false, true],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},
                             {
                               text: `${y.firstFrameNoTM2}`,
                               border: [false, true, true, true],
                               colSpan: 3,
                               bold: true,
                             },
-                            {},
-                            {},
+                            {},{},
                             {
                               style: 'txt_center',
                               text: '2nd TRANSVERSE SECTION at Fr.No: ',
                               colSpan: 8,
                               border: [true, true, false, true],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},
                             {
                               text: `${y.secondFrameNoTM2}`,
                               border: [false, true, true, true],
                               colSpan: 3,
                               bold: true,
                             },
-                            {},
-                            {},
+                            {},{},
                             {
                               style: 'txt_center',
                               text: '3rd TRANSVERSE SECTION at Fr.No: ',
                               colSpan: 8,
                               border: [true, true, false, true],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},
                             {
                               text: `${y.thirdFrameNoTM2}`,
                               border: [false, true, true, true],
                               colSpan: 3,
                               bold: true,
                             },
-                            {},
-                            {},
+                            {},{},
                           ],
                           [
                             {
@@ -3104,22 +2145,19 @@ export class ReviewComponent implements OnInit {
                               style: 'txt_center',
                               text: 'Gauged mm  ',
                               colSpan: 2,
-                            },
-                            {},
+                            },{},
                             {
                               style: 'txt_center',
                               text: 'Diminution P  ',
                               colSpan: 3,
                             },
-                            {},
-                            {},
+                            {},{},
                             {
                               style: 'txt_center',
                               text: '    Diminution S  ',
                               colSpan: 3,
                             },
-                            {},
-                            {},
+                            {},{},
                             {
                               style: 'txt_center',
                               text: 'No. or Letter',
@@ -3131,22 +2169,19 @@ export class ReviewComponent implements OnInit {
                               style: 'txt_center',
                               text: 'Gauged mm',
                               colSpan: 2,
-                            },
-                            {},
+                            },{},
                             {
                               style: 'txt_center',
                               text: 'Diminution P',
                               colSpan: 3,
                             },
-                            {},
-                            {},
+                            {},{},
                             {
                               style: 'txt_center',
                               text: 'Diminution S',
                               colSpan: 3,
                             },
-                            {},
-                            {},
+                            {},{},
                             {
                               style: 'txt_center',
                               text: 'No. or Letter',
@@ -3158,105 +2193,92 @@ export class ReviewComponent implements OnInit {
                               style: 'txt_center',
                               text: 'Gauged mm',
                               colSpan: 2,
-                            },
-                            {},
+                            },{},
                             {
                               style: 'txt_center',
                               text: 'Diminution P',
                               colSpan: 3,
                             },
-                            {},
-                            {},
+                            {},{},
                             {
                               style: 'txt_center',
                               text: 'Diminution S',
                               colSpan: 3,
                             },
-                            {},
-                            {},
+                            {},{},
                           ],
                           [
-                            {},
-                            {},
+                            {},{},
                             { style: 'txt_center', text: 'mm' },
                             { style: 'txt_center', text: 'mm' },
                             { style: 'txt_center', text: 'P' },
                             { style: 'txt_center', text: 'S' },
                             { style: 'txt_center', text: 'mm' },
-                            { style: 'txt_center', text: '%', colSpan: 2 },
-                            {},
+                            { style: 'txt_center', text: '%', colSpan: 2 },{},
                             { style: 'txt_center', text: 'mm' },
                             { style: 'txt_center', text: '%', colSpan: 2 },
-                            {},
-                            {},
+                            {},{},
 
                             { style: 'txt_center', text: 'mm' },
                             { style: 'txt_center', text: 'mm' },
                             { style: 'txt_center', text: 'P' },
                             { style: 'txt_center', text: 'S' },
                             { style: 'txt_center', text: 'mm' },
-                            { style: 'txt_center', text: '%', colSpan: 2 },
-                            {},
+                            { style: 'txt_center', text: '%', colSpan: 2 },{},
                             { style: 'txt_center', text: 'mm' },
                             { style: 'txt_center', text: '%', colSpan: 2 },
-                            {},
-                            {},
+                            {},{},
 
                             { style: 'txt_center', text: 'mm' },
                             { style: 'txt_center', text: 'mm' },
                             { style: 'txt_center', text: 'P' },
                             { style: 'txt_center', text: 'S' },
                             { style: 'txt_center', text: 'mm' },
-                            { style: 'txt_center', text: '%', colSpan: 2 },
-                            {},
+                            { style: 'txt_center', text: '%', colSpan: 2 },{},
                             { style: 'txt_center', text: 'mm' },
-                            { style: 'txt_center', text: '%', colSpan: 2 },
-                            {},
+                            { style: 'txt_center', text: '%', colSpan: 2 },{},
                           ],
                           ...y.measurementTM2DTOList?.map((z: any) => [
-                            {
-                              text: `${z.strakePosition}`,
-                            },
-
+                            {text: `${z.strakePosition??""}`,},
                             //fr 1
-                            { text: `${z.noOrLetter}`, style: ['txt_center'] },
+                            { text: `${z.noOrLetter??""}`, style: ['txt_center'] },
                             {
-                              text: `${z.firstTransverseSectionMeasurementDetailTM2.originalThickness}`,
+                              text: `${z.firstTransverseSectionMeasurementDetailTM2.originalThickness??""}`,
                               style: ['txt_center'],
                             },
                             {
                               text: `${this.formService.calculateForMaxAlwbDimForString(
-                                z.firstTransverseSectionMeasurementDetailTM2
-                                  .originalThickness,
-                                z.firstTransverseSectionMeasurementDetailTM2
-                                  .percent
+                                z.firstTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.firstTransverseSectionMeasurementDetailTM2.percent
                               )}`,
                               style: ['txt_center'],
                             },
                             {
-                              text: `${z.firstTransverseSectionMeasurementDetailTM2.gaugedP}`,
+                              text: `${z.firstTransverseSectionMeasurementDetailTM2.gaugedP??""}`,
                               style: ['txt_center'],
                             },
                             {
-                              text: `${z.firstTransverseSectionMeasurementDetailTM2.gaugedS}`,
+                              text: `${z.firstTransverseSectionMeasurementDetailTM2.gaugedS??""}`,
                               style: ['txt_center'],
                             },
                             {
-                              text: `${this.formService.calculateForMm(
-                                z.firstTransverseSectionMeasurementDetailTM2
-                                  .originalThickness,
-                                z.firstTransverseSectionMeasurementDetailTM2
-                                  .gaugedP
+                              text: `${Number(this.formService.calculateForMm(
+                                z.firstTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.firstTransverseSectionMeasurementDetailTM2.gaugedP
+                              ))== 0.0 ?"":this.formService.calculateForMm(
+                                z.firstTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.firstTransverseSectionMeasurementDetailTM2.gaugedP
                               )}`,
                               style: ['txt_center'],
                             },
                             {
-                              text: `${this.formService.calculateForPercent(
-                                z.firstTransverseSectionMeasurementDetailTM2
-                                  .originalThickness,
-                                z.firstTransverseSectionMeasurementDetailTM2
-                                  .gaugedP
-                              )}`,
+                              text: `${Number.isNaN(Number(this.formService.calculateForPercent(
+                                z.firstTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.firstTransverseSectionMeasurementDetailTM2.gaugedP
+                              )))?"":Number(this.formService.calculateForPercent(
+                                z.firstTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.firstTransverseSectionMeasurementDetailTM2.gaugedP
+                              ))}`,
 
                               style: ['txt_center'],
                               border: [true, true, false, true],
@@ -3265,84 +2287,59 @@ export class ReviewComponent implements OnInit {
                               text:
                                 this.convertToNumber(
                                   this.formService.calculateForMm(
-                                    z.firstTransverseSectionMeasurementDetailTM2
-                                      .originalThickness,
-                                    z.firstTransverseSectionMeasurementDetailTM2
-                                      .gaugedP
+                                    z.firstTransverseSectionMeasurementDetailTM2.originalThickness,
+                                    z.firstTransverseSectionMeasurementDetailTM2.gaugedP
                                   )
-                                ) >=
-                                  this.convertToNumber(
+                                ) >= this.convertToNumber(
                                     this.formService.threePartsFourOfMaxAlwbDim(
                                       this.formService.calculateForMaxAlwbDimForString(
-                                        z
-                                          .firstTransverseSectionMeasurementDetailTM2
-                                          .originalThickness,
-                                        z
-                                          .firstTransverseSectionMeasurementDetailTM2
-                                          .percent
+                                        z.firstTransverseSectionMeasurementDetailTM2.originalThickness,
+                                        z.firstTransverseSectionMeasurementDetailTM2.percent
                                       )
                                     )
-                                  ) &&
-                                this.convertToNumber(
+                                  ) && this.convertToNumber(
                                   this.formService.calculateForMm(
-                                    z.firstTransverseSectionMeasurementDetailTM2
-                                      .originalThickness,
-                                    z.firstTransverseSectionMeasurementDetailTM2
-                                      .gaugedP
+                                    z.firstTransverseSectionMeasurementDetailTM2.originalThickness,
+                                    z.firstTransverseSectionMeasurementDetailTM2.gaugedP
                                   )
-                                ) <=
-                                  this.convertToNumber(
+                                ) <= this.convertToNumber(
                                     this.formService.calculateForMaxAlwbDimForString(
-                                      z
-                                        .firstTransverseSectionMeasurementDetailTM2
-                                        .originalThickness,
-                                      z
-                                        .firstTransverseSectionMeasurementDetailTM2
-                                        .percent
+                                      z.firstTransverseSectionMeasurementDetailTM2.originalThickness,
+                                      z.firstTransverseSectionMeasurementDetailTM2.percent
                                     )
                                   )
-                                  ? 'S'
-                                  : this.convertToNumber(
+                                  ? 'S' : this.convertToNumber(
                                       this.formService.calculateForMm(
-                                        z
-                                          .firstTransverseSectionMeasurementDetailTM2
-                                          .originalThickness,
-                                        z
-                                          .firstTransverseSectionMeasurementDetailTM2
-                                          .gaugedP
+                                        z.firstTransverseSectionMeasurementDetailTM2.originalThickness,
+                                        z.firstTransverseSectionMeasurementDetailTM2.gaugedP
                                       )
-                                    ) >
-                                    this.convertToNumber(
+                                    ) > this.convertToNumber(
                                       this.formService.calculateForMaxAlwbDimForString(
-                                        z
-                                          .firstTransverseSectionMeasurementDetailTM2
-                                          .originalThickness,
-                                        z
-                                          .firstTransverseSectionMeasurementDetailTM2
-                                          .percent
+                                        z.firstTransverseSectionMeasurementDetailTM2.originalThickness,
+                                        z.firstTransverseSectionMeasurementDetailTM2.percent
                                       )
                                     )
-                                  ? 'R'
-                                  : '',
-
+                                  ? 'R': '',
                               style: ['txt_center'],
                               border: [false, true, true, true],
                             },
                             {
-                              text: `${this.formService.calculateForMm(
-                                z.firstTransverseSectionMeasurementDetailTM2
-                                  .originalThickness,
-                                z.firstTransverseSectionMeasurementDetailTM2
-                                  .gaugedS
+                              text: `${Number(this.formService.calculateForMm(
+                                z.firstTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.firstTransverseSectionMeasurementDetailTM2.gaugedS
+                              ))== 0.0 ?"":this.formService.calculateForMm(
+                                z.firstTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.firstTransverseSectionMeasurementDetailTM2.gaugedS
                               )}`,
                               style: ['txt_center'],
                             },
                             {
-                              text: `${this.formService.calculateForPercent(
-                                z.firstTransverseSectionMeasurementDetailTM2
-                                  .originalThickness,
-                                z.firstTransverseSectionMeasurementDetailTM2
-                                  .gaugedS
+                              text: `${Number.isNaN(Number(this.formService.calculateForPercent(
+                                z.firstTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.firstTransverseSectionMeasurementDetailTM2.gaugedS
+                              )))?"":this.formService.calculateForPercent(
+                                z.firstTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.firstTransverseSectionMeasurementDetailTM2.gaugedS
                               )}`,
                               style: ['txt_center'],
                               border: [true, true, false, true],
@@ -3351,110 +2348,83 @@ export class ReviewComponent implements OnInit {
                               text:
                                 this.convertToNumber(
                                   this.formService.calculateForMm(
-                                    z.firstTransverseSectionMeasurementDetailTM2
-                                      .originalThickness,
-                                    z.firstTransverseSectionMeasurementDetailTM2
-                                      .gaugedS
+                                    z.firstTransverseSectionMeasurementDetailTM2.originalThickness,
+                                    z.firstTransverseSectionMeasurementDetailTM2.gaugedS
                                   )
-                                ) >=
-                                  this.convertToNumber(
+                                ) >= this.convertToNumber(
                                     this.formService.threePartsFourOfMaxAlwbDim(
                                       this.formService.calculateForMaxAlwbDimForString(
-                                        z
-                                          .firstTransverseSectionMeasurementDetailTM2
-                                          .originalThickness,
-                                        z
-                                          .firstTransverseSectionMeasurementDetailTM2
-                                          .percent
+                                        z.firstTransverseSectionMeasurementDetailTM2.originalThickness,
+                                        z.firstTransverseSectionMeasurementDetailTM2.percent
                                       )
                                     )
-                                  ) &&
-                                this.convertToNumber(
+                                  ) && this.convertToNumber(
                                   this.formService.calculateForMm(
-                                    z.firstTransverseSectionMeasurementDetailTM2
-                                      .originalThickness,
-                                    z.firstTransverseSectionMeasurementDetailTM2
-                                      .gaugedS
+                                    z.firstTransverseSectionMeasurementDetailTM2.originalThickness,
+                                    z.firstTransverseSectionMeasurementDetailTM2.gaugedS
                                   )
-                                ) <=
-                                  this.convertToNumber(
+                                ) <= this.convertToNumber(
                                     this.formService.calculateForMaxAlwbDimForString(
-                                      z
-                                        .firstTransverseSectionMeasurementDetailTM2
-                                        .originalThickness,
-                                      z
-                                        .firstTransverseSectionMeasurementDetailTM2
-                                        .percent
+                                      z.firstTransverseSectionMeasurementDetailTM2.originalThickness,
+                                      z.firstTransverseSectionMeasurementDetailTM2.percent
                                     )
                                   )
-                                  ? 'S'
-                                  : this.convertToNumber(
+                                  ? 'S' : this.convertToNumber(
                                       this.formService.calculateForMm(
-                                        z
-                                          .firstTransverseSectionMeasurementDetailTM2
-                                          .originalThickness,
-                                        z
-                                          .firstTransverseSectionMeasurementDetailTM2
-                                          .gaugedS
+                                        z.firstTransverseSectionMeasurementDetailTM2.originalThickness,
+                                        z.firstTransverseSectionMeasurementDetailTM2.gaugedS
                                       )
-                                    ) >
-                                    this.convertToNumber(
+                                    ) > this.convertToNumber(
                                       this.formService.calculateForMaxAlwbDimForString(
-                                        z
-                                          .firstTransverseSectionMeasurementDetailTM2
-                                          .originalThickness,
-                                        z
-                                          .firstTransverseSectionMeasurementDetailTM2
-                                          .percent
+                                        z.firstTransverseSectionMeasurementDetailTM2.originalThickness,
+                                        z.firstTransverseSectionMeasurementDetailTM2.percent
                                       )
                                     )
-                                  ? 'R'
-                                  : '',
-
+                                  ? 'R' : '',
                               style: ['txt_center'],
                               border: [false, true, true, true],
                             },
 
                             //fr 2
 
-                            { text: `${z.noOrLetter}`, style: ['txt_center'] },
+                            { text: `${z.noOrLetter??""}`, style: ['txt_center'] },
                             {
-                              text: `${z.secondTransverseSectionMeasurementDetailTM2.originalThickness}`,
+                              text: `${z.secondTransverseSectionMeasurementDetailTM2.originalThickness??""}`,
                               style: ['txt_center'],
                             },
                             {
                               text: `${this.formService.calculateForMaxAlwbDimForString(
-                                z.secondTransverseSectionMeasurementDetailTM2
-                                  .originalThickness,
-                                z.secondTransverseSectionMeasurementDetailTM2
-                                  .percent
+                                z.secondTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.secondTransverseSectionMeasurementDetailTM2.percent
                               )}`,
                               style: ['txt_center'],
                             },
                             {
-                              text: `${z.secondTransverseSectionMeasurementDetailTM2.gaugedP}`,
+                              text: `${z.secondTransverseSectionMeasurementDetailTM2.gaugedP??""}`,
                               style: ['txt_center'],
                             },
                             {
-                              text: `${z.secondTransverseSectionMeasurementDetailTM2.gaugedS}`,
+                              text: `${z.secondTransverseSectionMeasurementDetailTM2.gaugedS??""}`,
                               style: ['txt_center'],
                             },
                             {
-                              text: `${this.formService.calculateForMm(
-                                z.secondTransverseSectionMeasurementDetailTM2
-                                  .originalThickness,
-                                z.secondTransverseSectionMeasurementDetailTM2
-                                  .gaugedP
+                              text: `${Number(this.formService.calculateForMm(
+                                z.secondTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.secondTransverseSectionMeasurementDetailTM2.gaugedP
+                              ))== 0.0 ?"":this.formService.calculateForMm(
+                                z.secondTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.secondTransverseSectionMeasurementDetailTM2.gaugedP
                               )}`,
                               style: ['txt_center'],
                             },
                             {
-                              text: `${this.formService.calculateForPercent(
-                                z.secondTransverseSectionMeasurementDetailTM2
-                                  .originalThickness,
-                                z.secondTransverseSectionMeasurementDetailTM2
-                                  .gaugedP
-                              )}`,
+                              text: `${Number.isNaN(Number(this.formService.calculateForPercent(
+                                z.secondTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.secondTransverseSectionMeasurementDetailTM2.gaugedP
+                              )))?"":Number(this.formService.calculateForPercent(
+                                z.secondTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.secondTransverseSectionMeasurementDetailTM2.gaugedP
+                              ))}`,
 
                               style: ['txt_center'],
                               border: [true, true, false, true],
@@ -3463,89 +2433,61 @@ export class ReviewComponent implements OnInit {
                               text:
                                 this.convertToNumber(
                                   this.formService.calculateForMm(
-                                    z
-                                      .secondTransverseSectionMeasurementDetailTM2
-                                      .originalThickness,
-                                    z
-                                      .secondTransverseSectionMeasurementDetailTM2
-                                      .gaugedP
+                                    z.secondTransverseSectionMeasurementDetailTM2.originalThickness,
+                                    z.secondTransverseSectionMeasurementDetailTM2.gaugedP
                                   )
                                 ) >=
                                   this.convertToNumber(
                                     this.formService.threePartsFourOfMaxAlwbDim(
                                       this.formService.calculateForMaxAlwbDimForString(
-                                        z
-                                          .secondTransverseSectionMeasurementDetailTM2
-                                          .originalThickness,
-                                        z
-                                          .secondTransverseSectionMeasurementDetailTM2
-                                          .percent
+                                        z.secondTransverseSectionMeasurementDetailTM2.originalThickness,
+                                        z.secondTransverseSectionMeasurementDetailTM2.percent
                                       )
                                     )
-                                  ) &&
-                                this.convertToNumber(
+                                  ) &&this.convertToNumber(
                                   this.formService.calculateForMm(
-                                    z
-                                      .secondTransverseSectionMeasurementDetailTM2
-                                      .originalThickness,
-                                    z
-                                      .secondTransverseSectionMeasurementDetailTM2
-                                      .gaugedP
+                                    z.secondTransverseSectionMeasurementDetailTM2.originalThickness,
+                                    z.secondTransverseSectionMeasurementDetailTM2.gaugedP
                                   )
-                                ) <=
-                                  this.convertToNumber(
+                                ) <=this.convertToNumber(
                                     this.formService.calculateForMaxAlwbDimForString(
-                                      z
-                                        .secondTransverseSectionMeasurementDetailTM2
-                                        .originalThickness,
-                                      z
-                                        .secondTransverseSectionMeasurementDetailTM2
-                                        .percent
+                                      z.secondTransverseSectionMeasurementDetailTM2.originalThickness,
+                                      z.secondTransverseSectionMeasurementDetailTM2.percent
                                     )
                                   )
-                                  ? 'S'
-                                  : this.convertToNumber(
+                                  ? 'S': this.convertToNumber(
                                       this.formService.calculateForMm(
-                                        z
-                                          .secondTransverseSectionMeasurementDetailTM2
-                                          .originalThickness,
-                                        z
-                                          .secondTransverseSectionMeasurementDetailTM2
-                                          .gaugedP
+                                        z.secondTransverseSectionMeasurementDetailTM2.originalThickness,
+                                        z.secondTransverseSectionMeasurementDetailTM2.gaugedP
                                       )
-                                    ) >
-                                    this.convertToNumber(
+                                    ) >this.convertToNumber(
                                       this.formService.calculateForMaxAlwbDimForString(
-                                        z
-                                          .secondTransverseSectionMeasurementDetailTM2
-                                          .originalThickness,
-                                        z
-                                          .secondTransverseSectionMeasurementDetailTM2
-                                          .percent
+                                        z.secondTransverseSectionMeasurementDetailTM2.originalThickness,
+                                        z.secondTransverseSectionMeasurementDetailTM2.percent
                                       )
                                     )
-                                  ? 'R'
-                                  : '',
-
+                                  ? 'R': '',
                               style: ['txt_center'],
                               border: [false, true, true, true],
                             },
                             {
-                              text: `${this.formService.calculateForMm(
-                                z.secondTransverseSectionMeasurementDetailTM2
-                                  .originalThickness,
-                                z.secondTransverseSectionMeasurementDetailTM2
-                                  .gaugedS
+                              text: `${Number(this.formService.calculateForMm(
+                                z.secondTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.secondTransverseSectionMeasurementDetailTM2.gaugedS
+                              ))== 0.0 ?"":this.formService.calculateForMm(
+                                z.secondTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.secondTransverseSectionMeasurementDetailTM2.gaugedS
                               )}`,
                               style: ['txt_center'],
                             },
                             {
-                              text: `${this.formService.calculateForPercent(
-                                z.secondTransverseSectionMeasurementDetailTM2
-                                  .originalThickness,
-                                z.secondTransverseSectionMeasurementDetailTM2
-                                  .gaugedS
-                              )}`,
+                              text: `${Number.isNaN(Number(this.formService.calculateForPercent(
+                                z.secondTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.secondTransverseSectionMeasurementDetailTM2.gaugedS
+                              )))?"":Number(this.formService.calculateForPercent(
+                                z.secondTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.secondTransverseSectionMeasurementDetailTM2.gaugedS
+                              ))}`,
                               style: ['txt_center'],
                               border: [true, true, false, true],
                             },
@@ -3553,267 +2495,185 @@ export class ReviewComponent implements OnInit {
                               text:
                                 this.convertToNumber(
                                   this.formService.calculateForMm(
-                                    z
-                                      .secondTransverseSectionMeasurementDetailTM2
-                                      .originalThickness,
-                                    z
-                                      .secondTransverseSectionMeasurementDetailTM2
-                                      .gaugedS
+                                    z.secondTransverseSectionMeasurementDetailTM2.originalThickness,
+                                    z.secondTransverseSectionMeasurementDetailTM2.gaugedS
                                   )
-                                ) >=
-                                  this.convertToNumber(
+                                ) >=this.convertToNumber(
                                     this.formService.threePartsFourOfMaxAlwbDim(
                                       this.formService.calculateForMaxAlwbDimForString(
-                                        z
-                                          .secondTransverseSectionMeasurementDetailTM2
-                                          .originalThickness,
-                                        z
-                                          .secondTransverseSectionMeasurementDetailTM2
-                                          .percent
+                                        z.secondTransverseSectionMeasurementDetailTM2.originalThickness,
+                                        z.secondTransverseSectionMeasurementDetailTM2.percent
                                       )
                                     )
-                                  ) &&
-                                this.convertToNumber(
+                                  ) &&this.convertToNumber(
                                   this.formService.calculateForMm(
-                                    z
-                                      .secondTransverseSectionMeasurementDetailTM2
-                                      .originalThickness,
-                                    z
-                                      .secondTransverseSectionMeasurementDetailTM2
-                                      .gaugedS
+                                    z.secondTransverseSectionMeasurementDetailTM2.originalThickness,
+                                    z.secondTransverseSectionMeasurementDetailTM2.gaugedS
                                   )
-                                ) <=
-                                  this.convertToNumber(
+                                ) <=this.convertToNumber(
                                     this.formService.calculateForMaxAlwbDimForString(
-                                      z
-                                        .secondTransverseSectionMeasurementDetailTM2
-                                        .originalThickness,
-                                      z
-                                        .secondTransverseSectionMeasurementDetailTM2
-                                        .percent
+                                      z.secondTransverseSectionMeasurementDetailTM2.originalThickness,
+                                      z.secondTransverseSectionMeasurementDetailTM2.percent
                                     )
                                   )
-                                  ? 'S'
-                                  : this.convertToNumber(
+                                  ? 'S': this.convertToNumber(
                                       this.formService.calculateForMm(
-                                        z
-                                          .secondTransverseSectionMeasurementDetailTM2
-                                          .originalThickness,
-                                        z
-                                          .secondTransverseSectionMeasurementDetailTM2
-                                          .gaugedS
+                                        z.secondTransverseSectionMeasurementDetailTM2.originalThickness,
+                                        z.secondTransverseSectionMeasurementDetailTM2.gaugedS
                                       )
-                                    ) >
-                                    this.convertToNumber(
+                                    ) >this.convertToNumber(
                                       this.formService.calculateForMaxAlwbDimForString(
-                                        z
-                                          .secondTransverseSectionMeasurementDetailTM2
-                                          .originalThickness,
-                                        z
-                                          .secondTransverseSectionMeasurementDetailTM2
-                                          .percent
+                                        z.secondTransverseSectionMeasurementDetailTM2.originalThickness,
+                                        z.secondTransverseSectionMeasurementDetailTM2.percent
                                       )
                                     )
-                                  ? 'R'
-                                  : '',
+                                  ? 'R': '',
 
                               style: ['txt_center'],
                               border: [false, true, true, true],
                             },
-                            ///
                             //fr3
 
-                            { text: `${z.noOrLetter}`, style: ['txt_center'] },
+                            { text: `${z.noOrLetter??""}`, style: ['txt_center'] },
                             {
-                              text: `${z.thirdTransverseSectionMeasurementDetailTM2.originalThickness}`,
+                              text: `${z.thirdTransverseSectionMeasurementDetailTM2.originalThickness??""}`,
                               style: ['txt_center'],
                             },
                             {
                               text: `${this.formService.calculateForMaxAlwbDimForString(
-                                z.thirdTransverseSectionMeasurementDetailTM2
-                                  .originalThickness,
-                                z.thirdTransverseSectionMeasurementDetailTM2
-                                  .percent
+                                z.thirdTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.thirdTransverseSectionMeasurementDetailTM2.percent
                               )}`,
                               style: ['txt_center'],
                             },
                             {
-                              text: `${z.thirdTransverseSectionMeasurementDetailTM2.gaugedP}`,
+                              text: `${z.thirdTransverseSectionMeasurementDetailTM2.gaugedP??""}`,
                               style: ['txt_center'],
                             },
                             {
-                              text: `${z.thirdTransverseSectionMeasurementDetailTM2.gaugedS}`,
+                              text: `${z.thirdTransverseSectionMeasurementDetailTM2.gaugedS??""}`,
                               style: ['txt_center'],
                             },
                             {
-                              text: `${this.formService.calculateForMm(
-                                z.thirdTransverseSectionMeasurementDetailTM2
-                                  .originalThickness,
-                                z.thirdTransverseSectionMeasurementDetailTM2
-                                  .gaugedP
+                              text: `${Number(this.formService.calculateForMm(
+                                z.thirdTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.thirdTransverseSectionMeasurementDetailTM2.gaugedP
+                              ))== 0.0 ?"":this.formService.calculateForMm(
+                                z.thirdTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.thirdTransverseSectionMeasurementDetailTM2.gaugedP
                               )}`,
                               style: ['txt_center'],
                             },
                             {
-                              text: `${this.formService.calculateForPercent(
-                                z.thirdTransverseSectionMeasurementDetailTM2
-                                  .originalThickness,
-                                z.thirdTransverseSectionMeasurementDetailTM2
-                                  .gaugedP
-                              )}`,
+                              text: `${Number.isNaN(Number(this.formService.calculateForPercent(
+                                z.thirdTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.thirdTransverseSectionMeasurementDetailTM2.gaugedP
+                              )))?"":Number(this.formService.calculateForPercent(
+                                z.thirdTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.thirdTransverseSectionMeasurementDetailTM2.gaugedP
+                              ))}`,
 
                               style: ['txt_center'],
                               border: [true, true, false, true],
                             },
                             {
-                              text:
-                                this.convertToNumber(
+                              text:this.convertToNumber(
                                   this.formService.calculateForMm(
-                                    z.thirdTransverseSectionMeasurementDetailTM2
-                                      .originalThickness,
-                                    z.thirdTransverseSectionMeasurementDetailTM2
-                                      .gaugedP
+                                    z.thirdTransverseSectionMeasurementDetailTM2.originalThickness,
+                                    z.thirdTransverseSectionMeasurementDetailTM2.gaugedP
                                   )
-                                ) >=
-                                  this.convertToNumber(
+                                ) >=this.convertToNumber(
                                     this.formService.threePartsFourOfMaxAlwbDim(
                                       this.formService.calculateForMaxAlwbDimForString(
-                                        z
-                                          .thirdTransverseSectionMeasurementDetailTM2
-                                          .originalThickness,
-                                        z
-                                          .thirdTransverseSectionMeasurementDetailTM2
-                                          .percent
+                                        z.thirdTransverseSectionMeasurementDetailTM2.originalThickness,
+                                        z.thirdTransverseSectionMeasurementDetailTM2.percent
                                       )
                                     )
-                                  ) &&
-                                this.convertToNumber(
+                                  ) &&this.convertToNumber(
                                   this.formService.calculateForMm(
-                                    z.thirdTransverseSectionMeasurementDetailTM2
-                                      .originalThickness,
-                                    z.thirdTransverseSectionMeasurementDetailTM2
-                                      .gaugedP
+                                    z.thirdTransverseSectionMeasurementDetailTM2.originalThickness,
+                                    z.thirdTransverseSectionMeasurementDetailTM2.gaugedP
                                   )
-                                ) <=
-                                  this.convertToNumber(
+                                ) <=this.convertToNumber(
                                     this.formService.calculateForMaxAlwbDimForString(
-                                      z
-                                        .thirdTransverseSectionMeasurementDetailTM2
-                                        .originalThickness,
-                                      z
-                                        .thirdTransverseSectionMeasurementDetailTM2
-                                        .percent
+                                      z.thirdTransverseSectionMeasurementDetailTM2.originalThickness,
+                                      z.thirdTransverseSectionMeasurementDetailTM2.percent
                                     )
                                   )
-                                  ? 'S'
-                                  : this.convertToNumber(
+                                  ? 'S': this.convertToNumber(
                                       this.formService.calculateForMm(
-                                        z
-                                          .thirdTransverseSectionMeasurementDetailTM2
-                                          .originalThickness,
-                                        z
-                                          .thirdTransverseSectionMeasurementDetailTM2
-                                          .gaugedP
+                                        z.thirdTransverseSectionMeasurementDetailTM2.originalThickness,
+                                        z.thirdTransverseSectionMeasurementDetailTM2.gaugedP
                                       )
                                     ) >
                                     this.convertToNumber(
                                       this.formService.calculateForMaxAlwbDimForString(
-                                        z
-                                          .thirdTransverseSectionMeasurementDetailTM2
-                                          .originalThickness,
-                                        z
-                                          .thirdTransverseSectionMeasurementDetailTM2
-                                          .percent
+                                        z.thirdTransverseSectionMeasurementDetailTM2.originalThickness,
+                                        z.thirdTransverseSectionMeasurementDetailTM2.percent
                                       )
                                     )
-                                  ? 'R'
-                                  : '',
+                                  ? 'R': '',
 
                               style: ['txt_center'],
                               border: [false, true, true, true],
                             },
                             {
-                              text: `${this.formService.calculateForMm(
-                                z.thirdTransverseSectionMeasurementDetailTM2
-                                  .originalThickness,
-                                z.thirdTransverseSectionMeasurementDetailTM2
-                                  .gaugedS
+                              text: `${Number(this.formService.calculateForMm(
+                                z.thirdTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.thirdTransverseSectionMeasurementDetailTM2.gaugedS
+                              ))== 0.0 ?"":this.formService.calculateForMm(
+                                z.thirdTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.thirdTransverseSectionMeasurementDetailTM2.gaugedS
                               )}`,
                               style: ['txt_center'],
                             },
                             {
-                              text: `${this.formService.calculateForPercent(
-                                z.thirdTransverseSectionMeasurementDetailTM2
-                                  .originalThickness,
-                                z.thirdTransverseSectionMeasurementDetailTM2
-                                  .gaugedS
-                              )}`,
+                              text: `${Number.isNaN(Number(this.formService.calculateForPercent(
+                                z.thirdTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.thirdTransverseSectionMeasurementDetailTM2.gaugedS
+                              )))?"":Number(this.formService.calculateForPercent(
+                                z.thirdTransverseSectionMeasurementDetailTM2.originalThickness,
+                                z.thirdTransverseSectionMeasurementDetailTM2.gaugedS
+                              ))}`,
                               style: ['txt_center'],
                               border: [true, true, false, true],
                             },
                             {
-                              text:
-                                this.convertToNumber(
+                              text:this.convertToNumber(
                                   this.formService.calculateForMm(
-                                    z.thirdTransverseSectionMeasurementDetailTM2
-                                      .originalThickness,
-                                    z.thirdTransverseSectionMeasurementDetailTM2
-                                      .gaugedS
+                                    z.thirdTransverseSectionMeasurementDetailTM2.originalThickness,
+                                    z.thirdTransverseSectionMeasurementDetailTM2.gaugedS
                                   )
-                                ) >=
-                                  this.convertToNumber(
+                                ) >=this.convertToNumber(
                                     this.formService.threePartsFourOfMaxAlwbDim(
                                       this.formService.calculateForMaxAlwbDimForString(
-                                        z
-                                          .thirdTransverseSectionMeasurementDetailTM2
-                                          .originalThickness,
-                                        z
-                                          .thirdTransverseSectionMeasurementDetailTM2
-                                          .percent
+                                        z.thirdTransverseSectionMeasurementDetailTM2.originalThickness,
+                                        z.thirdTransverseSectionMeasurementDetailTM2.percent
                                       )
                                     )
-                                  ) &&
-                                this.convertToNumber(
+                                  ) &&this.convertToNumber(
                                   this.formService.calculateForMm(
-                                    z.thirdTransverseSectionMeasurementDetailTM2
-                                      .originalThickness,
-                                    z.thirdTransverseSectionMeasurementDetailTM2
-                                      .gaugedS
+                                    z.thirdTransverseSectionMeasurementDetailTM2.originalThickness,
+                                    z.thirdTransverseSectionMeasurementDetailTM2.gaugedS
                                   )
-                                ) <=
-                                  this.convertToNumber(
+                                ) <=this.convertToNumber(
                                     this.formService.calculateForMaxAlwbDimForString(
-                                      z
-                                        .thirdTransverseSectionMeasurementDetailTM2
-                                        .originalThickness,
-                                      z
-                                        .thirdTransverseSectionMeasurementDetailTM2
-                                        .percent
+                                      z.thirdTransverseSectionMeasurementDetailTM2.originalThickness,
+                                      z.thirdTransverseSectionMeasurementDetailTM2.percent
                                     )
                                   )
-                                  ? 'S'
-                                  : this.convertToNumber(
+                                  ? 'S': this.convertToNumber(
                                       this.formService.calculateForMm(
-                                        z
-                                          .thirdTransverseSectionMeasurementDetailTM2
-                                          .originalThickness,
-                                        z
-                                          .thirdTransverseSectionMeasurementDetailTM2
-                                          .gaugedS
+                                        z.thirdTransverseSectionMeasurementDetailTM2.originalThickness,
+                                        z.thirdTransverseSectionMeasurementDetailTM2.gaugedS
                                       )
-                                    ) >
-                                    this.convertToNumber(
+                                    ) >this.convertToNumber(
                                       this.formService.calculateForMaxAlwbDimForString(
-                                        z
-                                          .thirdTransverseSectionMeasurementDetailTM2
-                                          .originalThickness,
-                                        z
-                                          .thirdTransverseSectionMeasurementDetailTM2
-                                          .percent
+                                        z.thirdTransverseSectionMeasurementDetailTM2.originalThickness,
+                                        z.thirdTransverseSectionMeasurementDetailTM2.percent
                                       )
                                     )
-                                  ? 'R'
-                                  : '',
+                                  ? 'R': '',
                               style: ['txt_center'],
                               border: [false, true, true, true],
                             },
@@ -3827,19 +2687,17 @@ export class ReviewComponent implements OnInit {
                         paddingBottom: () => 1,
                       },
                     },
-                  ]
-                : []
+                  ]: []
             ),
             //Form tm3
-            x.formList.map((y: any) =>
-              y.type == 'TM3'
+            x.formList.map((y: any) =>y.type == 'TM3'
                 ? [
                     this.lsSketch.map((a) =>
                       a.map((b: any) =>
                         b.formId === y.id && b.formType == 'form_tm3'
                           ? [
                               {
-                                margin: [-20, -30, -20, -30] as Margins,
+                                margin: [-20, -40, -20, -30] as Margins,
                                 pageBreak: 'before' as PageBreak,
                                 pageOrientation: 'landscape' as PageOrientation,
                                 fit: [pageSizee.width, pageSizee.height],
@@ -3856,40 +2714,9 @@ export class ReviewComponent implements OnInit {
                       table: {
                         headerRows: 10,
                         widths: [
-                          '19.6%',
-                          '3.65%',
-                          '2.9%',
-                          '2.95%',
-                          '2.95%',
-                          '2.95%',
-                          '2.95%',
-                          '2.95%',
-                          '0.8%',
-                          '2.95%',
-                          '2.95%',
-                          '0.8%',
-                          '3.65%',
-                          '2.9%',
-                          '2.95%',
-                          '2.95%',
-                          '2.95%',
-                          '2.95%',
-                          '2.95%',
-                          '0.8%',
-                          '2.95%',
-                          '2.95%',
-                          '0.8%',
-                          '3.65%',
-                          '2.9%',
-                          '2.95%',
-                          '2.95%',
-                          '2.95%',
-                          '2.95%',
-                          '2.95%',
-                          '0.8%',
-                          '2.95%',
-                          '2.95%',
-                          '0.8%',
+                          '18.1%','4.15%','2.9%','2.95%','2.95%','2.95%','2.95%','2.95%','0.8%','2.95%','2.95%','0.8%','4.155%','2.9%',
+                          '2.95%','2.95%','2.95%','2.95%','2.95%','0.8%','2.95%','2.95%','0.8%','4.15%','2.9%','2.95%','2.95%','2.95%',
+                          '2.95%','2.95%','0.8%','2.95%','2.95%','0.8%',
                         ],
                         body: [
                           //Table header
@@ -3901,39 +2728,7 @@ export class ReviewComponent implements OnInit {
                               alignment: 'right' as Alignment,
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},
                           ],
                           [
                             {
@@ -3941,39 +2736,7 @@ export class ReviewComponent implements OnInit {
                               colSpan: 34,
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},
                           ],
                           // Table content
                           [
@@ -3986,39 +2749,7 @@ export class ReviewComponent implements OnInit {
                               margin: [0, 0, 0, 5] as Margins,
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},
                           ],
                           [
                             {
@@ -4026,51 +2757,16 @@ export class ReviewComponent implements OnInit {
                               text: '',
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},
                           ],
                           [
                             {
                               text: "Ship's name:",
-
                               alignment: 'center' as Alignment,
-
                               colSpan: 3,
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
+                            {},{},
                             {
                               decoration: 'underline' as Decoration,
                               text: `${this.inShipName}`,
@@ -4078,21 +2774,13 @@ export class ReviewComponent implements OnInit {
                               bold: true,
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},
                             {
                               text: 'Class Identity No. ',
                               colSpan: 4,
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
+                            {},{},{},
                             {
                               decoration: 'underline' as Decoration,
                               text: `${this.inABS}`,
@@ -4100,20 +2788,13 @@ export class ReviewComponent implements OnInit {
                               bold: true,
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},
                             {
                               text: 'Report No. ',
                               colSpan: 3,
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
+                            {},{},
                             {
                               decoration: 'underline' as Decoration,
                               text: `${this.generalParticular[0].reportNo}`,
@@ -4122,13 +2803,7 @@ export class ReviewComponent implements OnInit {
                               bold: true,
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},
                           ],
                           [
                             {
@@ -4136,39 +2811,7 @@ export class ReviewComponent implements OnInit {
                               text: '',
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},
                           ],
                           [
                             {
@@ -4181,63 +2824,42 @@ export class ReviewComponent implements OnInit {
                               colSpan: 8,
                               border: [true, true, false, true],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},
                             {
                               text: ` ${y.firstFrameNo}`,
                               border: [false, true, true, true],
                               colSpan: 3,
                               bold: true,
                             },
-                            {},
-                            {},
+                            {},{},
                             {
                               style: 'txt_center',
                               text: `2nd TRANSVERSE SECTION at Fr.No: `,
                               colSpan: 8,
                               border: [true, true, false, true],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},
                             {
                               text: `${y.secondFrameNo}`,
                               border: [false, true, true, true],
                               colSpan: 3,
                               bold: true,
                             },
-                            {},
-                            {},
+                            {},{},
                             {
                               style: 'txt_center',
                               text: `1st TRANSVERSE SECTION at Fr.No: `,
                               colSpan: 8,
                               border: [true, true, false, true],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},
                             {
                               text: `${y.thirdFrameNo}`,
                               border: [false, true, true, true],
                               colSpan: 3,
                               bold: true,
                             },
-                            {},
-                            {},
+                            {},{},
                           ],
                           [
                             {
@@ -4256,22 +2878,19 @@ export class ReviewComponent implements OnInit {
                               style: 'txt_center',
                               text: 'Gauged mm  ',
                               colSpan: 2,
-                            },
-                            {},
+                            },{},
                             {
                               style: 'txt_center',
                               text: 'Diminution P  ',
                               colSpan: 3,
                             },
-                            {},
-                            {},
+                            {},{},
                             {
                               style: 'txt_center',
                               text: '    Diminution S  ',
                               colSpan: 3,
                             },
-                            {},
-                            {},
+                            {},{},
                             {
                               style: 'txt_center',
                               text: 'No. or Letter',
@@ -4283,22 +2902,19 @@ export class ReviewComponent implements OnInit {
                               style: 'txt_center',
                               text: 'Gauged mm',
                               colSpan: 2,
-                            },
-                            {},
+                            },{},
                             {
                               style: 'txt_center',
                               text: 'Diminution P',
                               colSpan: 3,
                             },
-                            {},
-                            {},
+                            {},{},
                             {
                               style: 'txt_center',
                               text: 'Diminution S',
                               colSpan: 3,
                             },
-                            {},
-                            {},
+                            {},{},
                             {
                               style: 'txt_center',
                               text: 'No. or Letter',
@@ -4310,103 +2926,92 @@ export class ReviewComponent implements OnInit {
                               style: 'txt_center',
                               text: 'Gauged mm',
                               colSpan: 2,
-                            },
-                            {},
+                            },{},
                             {
                               style: 'txt_center',
                               text: 'Diminution P',
                               colSpan: 3,
                             },
-                            {},
-                            {},
+                            {},{},
                             {
                               style: 'txt_center',
                               text: 'Diminution S',
                               colSpan: 3,
                             },
-                            {},
-                            {},
+                            {},{},
                           ],
                           [
-                            {},
-                            {},
+                            {},{},
                             { style: 'txt_center', text: 'mm' },
                             { style: 'txt_center', text: 'mm' },
                             { style: 'txt_center', text: 'P' },
                             { style: 'txt_center', text: 'S' },
                             { style: 'txt_center', text: 'mm' },
-                            { style: 'txt_center', text: '%', colSpan: 2 },
-                            {},
+                            { style: 'txt_center', text: '%', colSpan: 2 },{},
                             { style: 'txt_center', text: 'mm' },
                             { style: 'txt_center', text: '%', colSpan: 2 },
-                            {},
-                            {},
+                            {},{},
 
                             { style: 'txt_center', text: 'mm' },
                             { style: 'txt_center', text: 'mm' },
                             { style: 'txt_center', text: 'P' },
                             { style: 'txt_center', text: 'S' },
                             { style: 'txt_center', text: 'mm' },
-                            { style: 'txt_center', text: '%', colSpan: 2 },
-                            {},
+                            { style: 'txt_center', text: '%', colSpan: 2 },{},
                             { style: 'txt_center', text: 'mm' },
                             { style: 'txt_center', text: '%', colSpan: 2 },
-                            {},
-                            {},
+                            {},{},
 
                             { style: 'txt_center', text: 'mm' },
                             { style: 'txt_center', text: 'mm' },
                             { style: 'txt_center', text: 'P' },
                             { style: 'txt_center', text: 'S' },
                             { style: 'txt_center', text: 'mm' },
-                            { style: 'txt_center', text: '%', colSpan: 2 },
-                            {},
+                            { style: 'txt_center', text: '%', colSpan: 2 },{},
                             { style: 'txt_center', text: 'mm' },
-                            { style: 'txt_center', text: '%', colSpan: 2 },
-                            {},
+                            { style: 'txt_center', text: '%', colSpan: 2 },{},
                           ],
                           ...y.measurementTM3DTOList?.map((z: any) => [
-                            { text: `${z.structuralMember}` },
-                            { style: ['txt_center'], text: `${z.noOrLetter}` },
+                            { text: `${z.structuralMember?? ""}` },
+                            { style: ['txt_center'], text: `${z.noOrLetter?? ""}` },
                             {
                               style: ['txt_center'],
-                              text: `${z.firstTransverseSectionMeasurementDetail.originalThickness}`,
+                              text: `${z.firstTransverseSectionMeasurementDetail.originalThickness ?? "" }`,
                             },
                             {
                               style: ['txt_center'],
                               text: `${this.formService.calculateForMaxAlwbDimForString(
-                                z.firstTransverseSectionMeasurementDetail
-                                  .originalThickness,
-                                z.firstTransverseSectionMeasurementDetail
-                                  .percent
-                              )}`,
+                                z.firstTransverseSectionMeasurementDetail.originalThickness,
+                                z.firstTransverseSectionMeasurementDetail.percent)}`,
                             },
                             {
                               style: ['txt_center'],
-                              text: `${z.firstTransverseSectionMeasurementDetail.gaugedP}`,
+                              text: `${z.firstTransverseSectionMeasurementDetail.gaugedP?? ""}`,
                             },
                             {
                               style: ['txt_center'],
-                              text: `${z.firstTransverseSectionMeasurementDetail.gaugedS}`,
+                              text: `${z.firstTransverseSectionMeasurementDetail.gaugedS ?? ""}`,
                             },
 
                             {
                               style: ['txt_center'],
-                              text: `${this.formService.calculateForMm(
-                                z.firstTransverseSectionMeasurementDetail
-                                  .originalThickness,
-                                z.firstTransverseSectionMeasurementDetail
-                                  .gaugedP
-                              )}`,
+                              text: `${Number(this.formService.calculateForMm(
+                                z.firstTransverseSectionMeasurementDetail.originalThickness,
+                                z.firstTransverseSectionMeasurementDetail.gaugedP
+                              ))== 0.0 ?"":Number(this.formService.calculateForMm(
+                                z.firstTransverseSectionMeasurementDetail.originalThickness,
+                                z.firstTransverseSectionMeasurementDetail.gaugedP
+                              ))}`,
                             },
                             {
                               style: ['txt_center'],
                               border: [true, true, false, true],
-                              text: `${this.formService.calculateForPercent(
-                                z.firstTransverseSectionMeasurementDetail
-                                  .originalThickness,
-                                z.firstTransverseSectionMeasurementDetail
-                                  .gaugedP
+                              text: `${Number.isNaN(Number(this.formService.calculateForPercent(
+                                z.firstTransverseSectionMeasurementDetail.originalThickness,
+                                z.firstTransverseSectionMeasurementDetail.gaugedP
+                              )))?"":this.formService.calculateForPercent(
+                                z.firstTransverseSectionMeasurementDetail.originalThickness,
+                                z.firstTransverseSectionMeasurementDetail.gaugedP
                               )}`,
                             },
                             {
@@ -4475,21 +3080,23 @@ export class ReviewComponent implements OnInit {
                             },
                             {
                               style: ['txt_center'],
-                              text: `${this.formService.calculateForMm(
-                                z.firstTransverseSectionMeasurementDetail
-                                  .originalThickness,
-                                z.firstTransverseSectionMeasurementDetail
-                                  .gaugedS
-                              )}`,
+                              text: `${Number(this.formService.calculateForMm(
+                                z.firstTransverseSectionMeasurementDetail.originalThickness,
+                                z.firstTransverseSectionMeasurementDetail.gaugedS
+                              ))== 0.0 ?"":Number(this.formService.calculateForMm(
+                                z.firstTransverseSectionMeasurementDetail.originalThickness,
+                                z.firstTransverseSectionMeasurementDetail.gaugedS
+                              ))}`,
                             },
                             {
                               style: ['txt_center'],
                               border: [true, true, false, true],
-                              text: `${this.formService.calculateForPercent(
-                                z.firstTransverseSectionMeasurementDetail
-                                  .originalThickness,
-                                z.firstTransverseSectionMeasurementDetail
-                                  .gaugedS
+                              text: `${Number.isNaN(Number(this.formService.calculateForPercent(
+                                z.firstTransverseSectionMeasurementDetail.originalThickness,
+                                z.firstTransverseSectionMeasurementDetail.gaugedS
+                              )))?"":this.formService.calculateForPercent(
+                                z.firstTransverseSectionMeasurementDetail.originalThickness,
+                                z.firstTransverseSectionMeasurementDetail.gaugedS
                               )}`,
                             },
                             {
@@ -4557,10 +3164,10 @@ export class ReviewComponent implements OnInit {
                                   : '',
                             },
                             //fr2
-                            { style: ['txt_center'], text: `${z.noOrLetter}` },
+                            { style: ['txt_center'], text: `${z.noOrLetter??""}` },
                             {
                               style: ['txt_center'],
-                              text: `${z.secondTransverseSectionMeasurementDetail.originalThickness}`,
+                              text: `${z.secondTransverseSectionMeasurementDetail.originalThickness??""}`,
                             },
                             {
                               style: ['txt_center'],
@@ -4573,21 +3180,22 @@ export class ReviewComponent implements OnInit {
                             },
                             {
                               style: ['txt_center'],
-                              text: `${z.secondTransverseSectionMeasurementDetail.gaugedP}`,
+                              text: `${z.secondTransverseSectionMeasurementDetail.gaugedP??""}`,
                             },
                             {
                               style: ['txt_center'],
-                              text: `${z.secondTransverseSectionMeasurementDetail.gaugedS}`,
+                              text: `${z.secondTransverseSectionMeasurementDetail.gaugedS??""}`,
                             },
 
                             {
                               style: ['txt_center'],
-                              text: `${this.formService.calculateForMm(
-                                z.secondTransverseSectionMeasurementDetail
-                                  .originalThickness,
-                                z.secondTransverseSectionMeasurementDetail
-                                  .gaugedP
-                              )}`,
+                              text: `${Number(this.formService.calculateForMm(
+                                z.secondTransverseSectionMeasurementDetail.originalThickness,
+                                z.secondTransverseSectionMeasurementDetail.gaugedP
+                              ))== 0.0 ?"":Number(this.formService.calculateForMm(
+                                z.secondTransverseSectionMeasurementDetail.originalThickness,
+                                z.secondTransverseSectionMeasurementDetail.gaugedP
+                              ))}`,
                             },
                             {
                               style: ['txt_center'],
@@ -4665,22 +3273,24 @@ export class ReviewComponent implements OnInit {
                             },
                             {
                               style: ['txt_center'],
-                              text: `${this.formService.calculateForMm(
-                                z.secondTransverseSectionMeasurementDetail
-                                  .originalThickness,
-                                z.secondTransverseSectionMeasurementDetail
-                                  .gaugedS
-                              )}`,
+                              text: `${Number(this.formService.calculateForMm(
+                                z.secondTransverseSectionMeasurementDetail.originalThickness,
+                                z.secondTransverseSectionMeasurementDetail.gaugedS
+                              ))== 0.0 ?"":Number(this.formService.calculateForMm(
+                                z.secondTransverseSectionMeasurementDetail.originalThickness,
+                                z.secondTransverseSectionMeasurementDetail.gaugedS
+                              ))}`,
                             },
                             {
                               style: ['txt_center'],
                               border: [true, true, false, true],
-                              text: `${this.formService.calculateForPercent(
-                                z.secondTransverseSectionMeasurementDetail
-                                  .originalThickness,
-                                z.secondTransverseSectionMeasurementDetail
-                                  .gaugedS
-                              )}`,
+                              text: `${Number.isNaN(Number(this.formService.calculateForPercent(
+                                z.secondTransverseSectionMeasurementDetail.originalThickness,
+                                z.secondTransverseSectionMeasurementDetail.gaugedS
+                              )))?"":Number(this.formService.calculateForPercent(
+                                z.secondTransverseSectionMeasurementDetail.originalThickness,
+                                z.secondTransverseSectionMeasurementDetail.gaugedS
+                              ))}`,
                             },
                             {
                               style: ['txt_center'],
@@ -4748,10 +3358,10 @@ export class ReviewComponent implements OnInit {
                             },
 
                             //fr3
-                            { style: ['txt_center'], text: `${z.noOrLetter}` },
+                            { style: ['txt_center'], text: `${z.noOrLetter??""}` },
                             {
                               style: ['txt_center'],
-                              text: `${z.thirdTransverseSectionMeasurementDetail.originalThickness}`,
+                              text: `${z.thirdTransverseSectionMeasurementDetail.originalThickness??""}`,
                             },
                             {
                               style: ['txt_center'],
@@ -4764,31 +3374,32 @@ export class ReviewComponent implements OnInit {
                             },
                             {
                               style: ['txt_center'],
-                              text: `${z.thirdTransverseSectionMeasurementDetail.gaugedP}`,
+                              text: `${z.thirdTransverseSectionMeasurementDetail.gaugedP??""}`,
                             },
                             {
                               style: ['txt_center'],
-                              text: `${z.thirdTransverseSectionMeasurementDetail.gaugedS}`,
+                              text: `${z.thirdTransverseSectionMeasurementDetail.gaugedS??""}`,
                             },
-
                             {
                               style: ['txt_center'],
-                              text: `${this.formService.calculateForMm(
-                                z.thirdTransverseSectionMeasurementDetail
-                                  .originalThickness,
-                                z.thirdTransverseSectionMeasurementDetail
-                                  .gaugedP
-                              )}`,
+                              text: `${Number(this.formService.calculateForMm(
+                                z.thirdTransverseSectionMeasurementDetail.originalThickness,
+                                z.thirdTransverseSectionMeasurementDetail.gaugedP
+                              ))== 0.0 ?"":Number(this.formService.calculateForMm(
+                                z.thirdTransverseSectionMeasurementDetail.originalThickness,
+                                z.thirdTransverseSectionMeasurementDetail.gaugedP
+                              ))}`,
                             },
                             {
                               style: ['txt_center'],
                               border: [true, true, false, true],
-                              text: `${this.formService.calculateForPercent(
-                                z.thirdTransverseSectionMeasurementDetail
-                                  .originalThickness,
-                                z.thirdTransverseSectionMeasurementDetail
-                                  .gaugedP
-                              )}`,
+                              text: `${Number.isNaN(Number(this.formService.calculateForPercent(
+                                z.thirdTransverseSectionMeasurementDetail.originalThickness,
+                                z.thirdTransverseSectionMeasurementDetail.gaugedP
+                              )))?"":Number(this.formService.calculateForPercent(
+                                z.thirdTransverseSectionMeasurementDetail.originalThickness,
+                                z.thirdTransverseSectionMeasurementDetail.gaugedP
+                              ))}`,
                             },
                             {
                               style: ['txt_center'],
@@ -4856,22 +3467,24 @@ export class ReviewComponent implements OnInit {
                             },
                             {
                               style: ['txt_center'],
-                              text: `${this.formService.calculateForMm(
-                                z.thirdTransverseSectionMeasurementDetail
-                                  .originalThickness,
-                                z.thirdTransverseSectionMeasurementDetail
-                                  .gaugedS
-                              )}`,
+                              text: `${Number(this.formService.calculateForMm(
+                                z.thirdTransverseSectionMeasurementDetail.originalThickness,
+                                z.thirdTransverseSectionMeasurementDetail.gaugedS
+                              ))== 0.0 ?"":Number(this.formService.calculateForMm(
+                                z.thirdTransverseSectionMeasurementDetail.originalThickness,
+                                z.thirdTransverseSectionMeasurementDetail.gaugedS
+                              ))}`,
                             },
                             {
                               style: ['txt_center'],
                               border: [true, true, false, true],
-                              text: `${this.formService.calculateForPercent(
-                                z.thirdTransverseSectionMeasurementDetail
-                                  .originalThickness,
-                                z.thirdTransverseSectionMeasurementDetail
-                                  .gaugedS
-                              )}`,
+                              text: `${Number.isNaN(Number(this.formService.calculateForPercent(
+                                z.thirdTransverseSectionMeasurementDetail.originalThickness,
+                                z.thirdTransverseSectionMeasurementDetail.gaugedS
+                              )))?"":Number(this.formService.calculateForPercent(
+                                z.thirdTransverseSectionMeasurementDetail.originalThickness,
+                                z.thirdTransverseSectionMeasurementDetail.gaugedS
+                              ))}`,
                             },
                             {
                               style: ['txt_center'],
@@ -4951,15 +3564,14 @@ export class ReviewComponent implements OnInit {
                 : []
             ),
             //Form tm4
-            x.formList.map((y: any) =>
-              y.type == 'TM4'
+            x.formList.map((y: any) =>y.type == 'TM4'
                 ? [
                     this.lsSketch.map((a) =>
                       a.map((b: any) =>
                         b.formId === y.id && b.formType == 'form_tm4'
                           ? [
                               {
-                                margin: [-20, -30, -20, -30] as Margins,
+                                margin: [-20, -40, -20, -30] as Margins,
                                 pageBreak: 'before' as PageBreak,
                                 pageOrientation: 'landscape' as PageOrientation,
                                 fit: [pageSizee.width, pageSizee.height],
@@ -4976,42 +3588,19 @@ export class ReviewComponent implements OnInit {
                       table: {
                         headerRows: 10,
                         widths: [
-                          // '5%',
-                          '36%',
-                          '7%',
-                          '10%',
-                          '13%',
-                          '5%',
-                          '5%',
-                          '5%',
-                          '5%',
-                          '5%',
-                          '5%',
-                          '5%',
-                          '5%',
+                          '35.5%','7%','10%','13%','5%','5%','5%','5%','5%','5%','5%','5%',
                         ],
                         body: [
                           //Table header
                           [
                             {
                               text: `TM4-${y.code}(1 July 2023)`,
-                              //   text: `TM4-${this.typeForm}(1 July 2023)`,
                               style: ['txt_center'],
                               colSpan: 12,
                               alignment: 'right' as Alignment,
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},{},{},{},{},
                           ],
                           [
                             {
@@ -5019,17 +3608,7 @@ export class ReviewComponent implements OnInit {
                               colSpan: 12,
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},{},{},{},{},
                           ],
                           // Table content
                           [
@@ -5040,20 +3619,9 @@ export class ReviewComponent implements OnInit {
                               decoration: 'underline' as Decoration,
                               bold: true,
                               margin: [0, 0, 0, 5] as Margins,
-
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},{},{},{},{},
                           ],
                           [
                             {
@@ -5061,17 +3629,7 @@ export class ReviewComponent implements OnInit {
                               text: '',
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},{},{},{},{},
                           ],
                           [
                             {
@@ -5086,56 +3644,39 @@ export class ReviewComponent implements OnInit {
                               colSpan: 2,
                               bold: true,
                               border: [false, false, false, false],
-                            },
-                            {},
+                            },{},
                             {
                               text: 'Class Identity No. ',
                               colSpan: 2,
                               border: [false, false, false, false],
-                            },
-                            {},
+                            },{},
                             {
                               decoration: 'underline' as Decoration,
                               text: `${this.inABS}`,
                               colSpan: 2,
                               bold: true,
                               border: [false, false, false, false],
-                            },
-                            {},
+                            },{},
 
                             {
                               text: 'Report No. ',
                               colSpan: 2,
                               border: [false, false, false, false],
-                            },
-                            {},
+                            },{},
                             {
                               decoration: 'underline' as Decoration,
                               text: `${this.generalParticular[0].reportNo}`,
                               colSpan: 3,
                               bold: true,
                               border: [false, false, false, false],
-                            },
-                            {},
-                            {},
+                            },{},{},
                           ],
                           [
                             {
                               text: '',
                               colSpan: 12,
                               border: [false, false, false, false],
-                            },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            },{},{},{},{},{},{},{},{},{},{},{},
                           ],
                           //Table content
                           [
@@ -5150,17 +3691,7 @@ export class ReviewComponent implements OnInit {
                               colSpan: 11,
                               rowSpan: 1,
                               bold: true,
-                            },
-                            'Price',
-                            'Date',
-                            'Image',
-                            'isEdited',
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            },{},{},{},{},{},{},{},{},{},{},
                           ],
                           [
                             {
@@ -5173,17 +3704,7 @@ export class ReviewComponent implements OnInit {
                               text: `${y.locationOfStructure}`,
                               colSpan: 11,
                               bold: true,
-                            },
-                            'Price',
-                            'Date',
-                            'Image',
-                            'isEdited',
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            },{},{},{},{},{},{},{},{},{},{},
                           ],
                           [
                             {
@@ -5203,36 +3724,26 @@ export class ReviewComponent implements OnInit {
                               rowSpan: 2,
                               style: ['txt_center'],
                             },
-                            { text: 'Gauged', colSpan: 2, style: 'txt_center' },
-                            {},
+                            { text: 'Gauged', colSpan: 2, style: 'txt_center' },{},
                             {
                               text: 'Diminution P',
                               colSpan: 3,
                               style: 'txt_center',
-                            },
-                            {},
-                            {},
+                            },{},{},
                             {
                               text: 'Diminution S',
                               colSpan: 3,
                               style: 'txt_center',
-                            },
-                            {},
-                            {},
+                            },{},{},
                           ],
                           [
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},
                             { text: 'P', style: 'txt_center' },
                             { text: 'S', style: 'txt_center' },
                             { text: 'mm', style: 'txt_center' },
-                            { text: '%', style: 'txt_center', colSpan: 2 },
-                            {},
+                            { text: '%', style: 'txt_center', colSpan: 2 },{},
                             { text: 'mm', style: 'txt_center' },
-                            { text: '%', style: 'txt_center', colSpan: 2 },
-                            {},
+                            { text: '%', style: 'txt_center', colSpan: 2 },{},
                           ],
 
                           ...y.structuralMemberTM4List
@@ -5242,175 +3753,139 @@ export class ReviewComponent implements OnInit {
                                   text: `${z.structuralMemberTitle}`,
                                   bold: true,
                                 },
-                                {},
-                                {},
-                                {},
-                                {},
-                                {},
-                                {},
+                                {},{},{},{},{},{},
                                 {
                                   text: ``,
                                   border: [true, true, false, true],
                                 },
-                                { text: ``, border: [false, true, true, true] },
-                                {},
+                                { text: ``, border: [false, true, true, true] },{},
                                 { text: ``, border: [true, true, false, true] },
                                 { text: ``, border: [false, true, true, true] },
                               ];
 
                               let member = z.measurementTM4DTOList.map(
                                 (k: any) => [
+                                  {text: `${k.structuralMember??""}`,},
+                                  { text: `${k.item??""}`, style: ['txt_center'] },
                                   {
-                                    text: `${k.structuralMember}`,
-                                  },
-                                  { text: `${k.item}`, style: ['txt_center'] },
-
-                                  {
-                                    text: `${k.detailMeasurement.originalThickness}`,
+                                    text: `${k.detailMeasurement.originalThickness??""}`,
                                     style: ['txt_center'],
                                   },
                                   {
                                     text: `${this.formService.calculateForMaxAlwbDimForString(
-                                      k.detailMeasurement.originalThickness,
-                                      k.detailMeasurement.percent
+                                      k.detailMeasurement.originalThickness,k.detailMeasurement.percent
                                     )}`,
                                     style: ['txt_center'],
                                   },
                                   {
-                                    text: `${k.detailMeasurement.gaugedP}`,
+                                    text: `${k.detailMeasurement.gaugedP??""}`,
                                     style: ['txt_center'],
                                   },
                                   {
-                                    text: `${k.detailMeasurement.gaugedS}`,
+                                    text: `${k.detailMeasurement.gaugedS??""}`,
                                     style: ['txt_center'],
                                   },
                                   {
-                                    text: `${this.formService.calculateForMm(
+                                    text: `${Number(this.formService.calculateForMm(
+                                      k.detailMeasurement.originalThickness,
+                                      k.detailMeasurement.gaugedP
+                                    ))== 0.0 ?"":this.formService.calculateForMm(
                                       k.detailMeasurement.originalThickness,
                                       k.detailMeasurement.gaugedP
                                     )}`,
                                     style: ['txt_center'],
                                   },
                                   {
-                                    text: `${this.formService.calculateForPercent(
-                                      k.detailMeasurement.originalThickness,
-                                      k.detailMeasurement.gaugedP
-                                    )}`,
+                                    text: `${Number.isNaN(Number(this.formService.calculateForPercent(
+                                      k.detailMeasurement.originalThickness,k.detailMeasurement.gaugedP
+                                    )))?"":Number(this.formService.calculateForPercent(
+                                      k.detailMeasurement.originalThickness,k.detailMeasurement.gaugedP
+                                    ))}`,
                                     border: [true, true, false, true],
                                     style: ['txt_center'],
                                   },
                                   {
-                                    text:
-                                      this.convertToNumber(
+                                    text:this.convertToNumber(
                                         this.formService.calculateForMm(
-                                          k.detailMeasurement.originalThickness,
-                                          k.detailMeasurement.gaugedP
+                                          k.detailMeasurement.originalThickness,k.detailMeasurement.gaugedP
                                         )
-                                      ) >=
-                                        this.convertToNumber(
+                                      ) >=this.convertToNumber(
                                           this.formService.threePartsFourOfMaxAlwbDim(
                                             this.formService.calculateForMaxAlwbDimForString(
-                                              k.detailMeasurement
-                                                .originalThickness,
-                                              k.detailMeasurement.percent
+                                              k.detailMeasurement.originalThickness,k.detailMeasurement.percent
                                             )
                                           )
-                                        ) &&
-                                      this.convertToNumber(
+                                        ) &&this.convertToNumber(
                                         this.formService.calculateForMm(
-                                          k.detailMeasurement.originalThickness,
-                                          k.detailMeasurement.gaugedP
+                                          k.detailMeasurement.originalThickness,k.detailMeasurement.gaugedP
                                         )
-                                      ) <=
-                                        this.convertToNumber(
+                                      ) <=this.convertToNumber(
                                           this.formService.calculateForMaxAlwbDimForString(
-                                            k.detailMeasurement
-                                              .originalThickness,
-                                            k.detailMeasurement.percent
+                                            k.detailMeasurement.originalThickness,k.detailMeasurement.percent
                                           )
                                         )
-                                        ? 'S'
-                                        : this.convertToNumber(
+                                        ? 'S': this.convertToNumber(
                                             this.formService.calculateForMm(
-                                              k.detailMeasurement
-                                                .originalThickness,
-                                              k.detailMeasurement.gaugedP
+                                              k.detailMeasurement.originalThickness,k.detailMeasurement.gaugedP
                                             )
-                                          ) >
-                                          this.convertToNumber(
+                                          ) >this.convertToNumber(
                                             this.formService.calculateForMaxAlwbDimForString(
-                                              k.detailMeasurement
-                                                .originalThickness,
-                                              k.detailMeasurement.percent
+                                              k.detailMeasurement.originalThickness,k.detailMeasurement.percent
                                             )
                                           )
-                                        ? 'R'
-                                        : '',
+                                        ? 'R': '',
                                     border: [false, true, true, true],
                                     style: ['txt_center'],
                                   },
                                   {
-                                    text: `${this.formService.calculateForMm(
+                                    text: `${Number(this.formService.calculateForMm(
+                                      k.detailMeasurement.originalThickness,
+                                      k.detailMeasurement.gaugedS
+                                    ))== 0.0 ?"":this.formService.calculateForMm(
                                       k.detailMeasurement.originalThickness,
                                       k.detailMeasurement.gaugedS
                                     )}`,
                                     style: ['txt_center'],
                                   },
                                   {
-                                    text: `${this.formService.calculateForPercent(
-                                      k.detailMeasurement.originalThickness,
-                                      k.detailMeasurement.gaugedS
-                                    )}`,
+                                    text: `${Number.isNaN(Number(this.formService.calculateForPercent(
+                                      k.detailMeasurement.originalThickness,k.detailMeasurement.gaugedS
+                                    )))?"":Number(this.formService.calculateForPercent(
+                                      k.detailMeasurement.originalThickness,k.detailMeasurement.gaugedS
+                                    ))}`,
                                     style: ['txt_center'],
                                     border: [true, true, false, true],
                                   },
                                   {
-                                    text:
-                                      this.convertToNumber(
+                                    text:this.convertToNumber(
                                         this.formService.calculateForMm(
-                                          k.detailMeasurement.originalThickness,
-                                          k.detailMeasurement.gauged
+                                          k.detailMeasurement.originalThickness,k.detailMeasurement.gauged
                                         )
-                                      ) >=
-                                        this.convertToNumber(
+                                      ) >=this.convertToNumber(
                                           this.formService.threePartsFourOfMaxAlwbDim(
                                             this.formService.calculateForMaxAlwbDimForString(
-                                              k.detailMeasurement
-                                                .originalThickness,
-                                              k.detailMeasurement.percent
+                                              k.detailMeasurement.originalThickness,k.detailMeasurement.percent
                                             )
                                           )
-                                        ) &&
-                                      this.convertToNumber(
+                                        ) &&this.convertToNumber(
                                         this.formService.calculateForMm(
-                                          k.detailMeasurement.originalThickness,
-                                          k.detailMeasurement.gauged
+                                          k.detailMeasurement.originalThickness,k.detailMeasurement.gauged
                                         )
-                                      ) <=
-                                        this.convertToNumber(
+                                      ) <=this.convertToNumber(
                                           this.formService.calculateForMaxAlwbDimForString(
-                                            k.detailMeasurement
-                                              .originalThickness,
-                                            k.detailMeasurement.percent
+                                            k.detailMeasurement.originalThickness,k.detailMeasurement.percent
                                           )
                                         )
-                                        ? 'S'
-                                        : this.convertToNumber(
+                                        ? 'S': this.convertToNumber(
                                             this.formService.calculateForMm(
-                                              k.detailMeasurement
-                                                .originalThickness,
-                                              k.detailMeasurement.gauged
+                                              k.detailMeasurement.originalThickness,k.detailMeasurement.gauged
                                             )
-                                          ) >
-                                          this.convertToNumber(
+                                          ) >this.convertToNumber(
                                             this.formService.calculateForMaxAlwbDimForString(
-                                              k.detailMeasurement
-                                                .originalThickness,
-                                              k.detailMeasurement.percent
+                                              k.detailMeasurement.originalThickness,k.detailMeasurement.percent
                                             )
                                           )
-                                        ? 'R'
-                                        : '',
+                                        ? 'R': '',
 
                                     style: ['txt_center'],
                                     border: [false, true, true, true],
@@ -5418,8 +3893,7 @@ export class ReviewComponent implements OnInit {
                                 ]
                               );
                               return [title, ...member];
-                            })
-                            .flat(),
+                            }).flat(),
                         ],
                       },
                       layout: {
@@ -5427,26 +3901,23 @@ export class ReviewComponent implements OnInit {
                         paddingBottom: () => 1,
                       },
                     },
-                  ]
-                : []
+                  ]: []
             ),
             //Form tm5
-            x.formList.map((y: any) =>
-              y.type == 'TM5'
+            x.formList.map((y: any) =>y.type == 'TM5'
                 ? [
                     this.lsSketch.map((a) =>
                       a.map((b: any) =>
                         b.formId === y.id && b.formType == 'form_tm5'
                           ? [
                               {
-                                margin: [-20, -30, -20, -30] as Margins,
+                                margin: [-20, -40, -20, -30] as Margins,
                                 pageBreak: 'before' as PageBreak,
                                 pageOrientation: 'landscape' as PageOrientation,
                                 fit: [pageSizee.width, pageSizee.height],
                                 image: `data:image/png;base64,${b.value}`,
                               },
-                            ]
-                          : []
+                            ]: []
                       )
                     ),
                     {
@@ -5455,19 +3926,9 @@ export class ReviewComponent implements OnInit {
                       style: ['tableStyle', 'fontS8'],
                       table: {
                         headerRows: 10,
+                        //12 rows :105.5
                         widths: [
-                          '36%',
-                          '5%',
-                          '7%',
-                          '10%',
-                          '13%',
-                          '5%',
-                          '5%',
-                          '5%',
-                          '5%',
-                          '5%',
-                          '5%',
-                          '5%',
+                          '35.5%','5%','7%','10%','13%','5%','5%','5%','5%','5%','5%','5%',
                         ],
                         body: [
                           //Table header
@@ -5479,17 +3940,7 @@ export class ReviewComponent implements OnInit {
                               alignment: 'right' as Alignment,
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},{},{},{},{},
                           ],
                           [
                             {
@@ -5497,17 +3948,7 @@ export class ReviewComponent implements OnInit {
                               colSpan: 12,
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},{},{},{},{},
                           ],
                           // Table content
                           [
@@ -5518,20 +3959,9 @@ export class ReviewComponent implements OnInit {
                               decoration: 'underline' as Decoration,
                               bold: true,
                               margin: [0, 0, 0, 5] as Margins,
-
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},{},{},{},{},
                           ],
                           [
                             {
@@ -5539,17 +3969,7 @@ export class ReviewComponent implements OnInit {
                               text: '',
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},{},{},{},{},
                           ],
                           [
                             {
@@ -5564,55 +3984,38 @@ export class ReviewComponent implements OnInit {
                               colSpan: 2,
                               bold: true,
                               border: [false, false, false, false],
-                            },
-                            {},
+                            },{},
                             {
                               text: 'Class Identity No. ',
                               colSpan: 2,
                               border: [false, false, false, false],
-                            },
-                            {},
+                            },{},
                             {
                               decoration: 'underline' as Decoration,
                               text: `${this.inABS}`,
                               colSpan: 2,
                               bold: true,
                               border: [false, false, false, false],
-                            },
-                            {},
+                            },{},
                             {
                               text: 'Report No. ',
                               colSpan: 2,
                               border: [false, false, false, false],
-                            },
-                            {},
+                            },{},
                             {
                               decoration: 'underline' as Decoration,
                               text: `${this.generalParticular[0].reportNo}`,
                               colSpan: 3,
                               bold: true,
                               border: [false, false, false, false],
-                            },
-                            {},
-                            {},
+                            },{},{},
                           ],
                           [
                             {
                               text: '',
                               colSpan: 12,
                               border: [false, false, false, false],
-                            },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            },{},{},{},{},{},{},{},{},{},{},{},
                           ],
                           [
                             {
@@ -5626,23 +4029,12 @@ export class ReviewComponent implements OnInit {
                               colSpan: 11,
                               rowSpan: 1,
                               bold: true,
-                            },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            },{},{},{},{},{},{},{},{},{},
                           ],
                           [
                             {
                               text: 'LOCATION OF STRUCTURE:',
                               alignment: 'left' as Alignment,
-
                               colSpan: 1,
                               style: ['txt_center', 'txt_center'],
                             },
@@ -5650,27 +4042,19 @@ export class ReviewComponent implements OnInit {
                               text: `${y.locationOfStructure}`,
                               colSpan: 6,
                               bold: true,
-                            },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            },{},{},{},{},{},
                             {
                               text: 'Frame No. :',
                               alignment: 'center' as Alignment,
                               border: [false, false, false, false],
                               colSpan: 2,
-                            },
-                            {},
+                            },{},
                             {
                               text: '42',
                               border: [false, false, true, false],
                               colSpan: 3,
                               bold: true,
-                            },
-                            {},
-                            {},
+                            },{},{},
                           ],
                           [
                             {
@@ -5690,36 +4074,26 @@ export class ReviewComponent implements OnInit {
                               rowSpan: 2,
                               style: 'txt_center',
                             },
-                            { text: 'Gauged', colSpan: 2, style: 'txt_center' },
-                            {},
+                            { text: 'Gauged', colSpan: 2, style: 'txt_center' },{},
                             {
                               text: 'Diminution P',
                               colSpan: 3,
                               style: 'txt_center',
-                            },
-                            {},
-                            {},
+                            },{},{},
                             {
                               text: 'Diminution S',
                               colSpan: 3,
                               style: 'txt_center',
-                            },
-                            {},
-                            {},
+                            },{},{},
                           ],
                           [
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},
                             { text: 'P', style: 'txt_center' },
                             { text: 'S', style: 'txt_center' },
                             { text: 'mm', style: 'txt_center' },
-                            { text: '%', style: 'txt_center', colSpan: 2 },
-                            {},
+                            { text: '%', style: 'txt_center', colSpan: 2 },{},
                             { text: 'mm', style: 'txt_center' },
-                            { text: '%', style: 'txt_center', colSpan: 2 },
-                            {},
+                            { text: '%', style: 'txt_center', colSpan: 2 },{},
                           ],
 
                           ...y.structuralTM5List
@@ -5728,16 +4102,9 @@ export class ReviewComponent implements OnInit {
                                 {
                                   text: `${z.name}`,
                                   bold: true,
-                                },
-                                {},
-                                {},
-                                {},
-                                {},
-                                {},
-                                {},
+                                },{},{},{},{},{},{},
                                 { text: '', border: [true, true, false, true] },
-                                { text: '', border: [false, true, true, true] },
-                                {},
+                                { text: '', border: [false, true, true, true] },{},
                                 { text: '', border: [true, true, false, true] },
                                 { text: '', border: [false, true, true, true] },
                               ];
@@ -5745,165 +4112,133 @@ export class ReviewComponent implements OnInit {
                               let member = z.measurementTM5List.map(
                                 (k: any) => [
                                   {
-                                    text: `${k.structuralComponentType}`,
+                                    text: `${k.structuralComponentType??""}`,
                                     style: ['txt_center'],
                                   },
-                                  { text: `${k.item}`, style: ['txt_center'] },
+                                  { text: `${k.item??""}`, style: ['txt_center'] },
 
                                   {
-                                    text: `${k.measurementDetail.originalThickness}`,
+                                    text: `${k.measurementDetail.originalThickness??""}`,
                                     style: ['txt_center'],
                                   },
                                   {
                                     text: `${this.formService.calculateForMaxAlwbDimForString(
-                                      k.measurementDetail.originalThickness,
-                                      k.measurementDetail.percent
+                                      k.measurementDetail.originalThickness,k.measurementDetail.percent
                                     )}`,
                                     style: ['txt_center'],
                                   },
                                   {
-                                    text: `${k.measurementDetail.gaugedP}`,
+                                    text: `${k.measurementDetail.gaugedP??""}`,
                                     style: ['txt_center'],
                                   },
                                   {
-                                    text: `${k.measurementDetail.gaugedS}`,
+                                    text: `${k.measurementDetail.gaugedS??""}`,
                                     style: ['txt_center'],
                                   },
                                   {
-                                    text: `${this.formService.calculateForMm(
-                                      k.measurementDetail.originalThickness,
-                                      k.measurementDetail.gaugedP
+                                    text: `${Number(this.formService.calculateForMm(
+                                      k.measurementDetail.originalThickness,k.measurementDetail.gaugedP
+                                    ))== 0.0 ?"":this.formService.calculateForMm(
+                                      k.measurementDetail.originalThickness,k.measurementDetail.gaugedP
                                     )}`,
                                     style: ['txt_center'],
                                   },
                                   {
-                                    text: `${this.formService.calculateForPercent(
-                                      k.measurementDetail.originalThickness,
-                                      k.measurementDetail.gaugedP
-                                    )}`,
+                                    text: `${Number.isNaN(Number(this.formService.calculateForPercent(
+                                      k.measurementDetail.originalThickness,k.measurementDetail.gaugedP
+                                    )))?"":Number(this.formService.calculateForPercent(
+                                      k.measurementDetail.originalThickness,k.measurementDetail.gaugedP
+                                    ))}`,
                                     style: ['txt_center'],
                                     border: [true, true, false, true],
                                   },
                                   {
-                                    text:
-                                      this.convertToNumber(
+                                    text:this.convertToNumber(
                                         this.formService.calculateForMm(
-                                          k.measurementDetail.originalThickness,
-                                          k.measurementDetail.gaugedP
+                                          k.measurementDetail.originalThickness,k.measurementDetail.gaugedP
                                         )
-                                      ) >=
-                                        this.convertToNumber(
+                                      ) >=this.convertToNumber(
                                           this.formService.threePartsFourOfMaxAlwbDim(
                                             this.formService.calculateForMaxAlwbDimForString(
-                                              k.measurementDetail
-                                                .originalThickness,
-                                              k.measurementDetail.percent
+                                              k.measurementDetail.originalThickness,k.measurementDetail.percent
                                             )
                                           )
-                                        ) &&
-                                      this.convertToNumber(
+                                        ) &&this.convertToNumber(
                                         this.formService.calculateForMm(
-                                          k.measurementDetail.originalThickness,
-                                          k.measurementDetail.gaugedP
+                                          k.measurementDetail.originalThickness,k.measurementDetail.gaugedP
                                         )
-                                      ) <=
-                                        this.convertToNumber(
+                                      ) <=this.convertToNumber(
                                           this.formService.calculateForMaxAlwbDimForString(
-                                            k.measurementDetail
-                                              .originalThickness,
-                                            k.measurementDetail.percent
+                                            k.measurementDetail.originalThickness,k.measurementDetail.percent
                                           )
                                         )
-                                        ? 'S'
-                                        : this.convertToNumber(
+                                        ? 'S': this.convertToNumber(
                                             this.formService.calculateForMm(
-                                              k.measurementDetail
-                                                .originalThickness,
-                                              k.measurementDetail.gaugedP
+                                              k.measurementDetail.originalThickness,k.measurementDetail.gaugedP
                                             )
-                                          ) >
-                                          this.convertToNumber(
+                                          ) >this.convertToNumber(
                                             this.formService.calculateForMaxAlwbDimForString(
-                                              k.measurementDetail
-                                                .originalThickness,
-                                              k.measurementDetail.percent
+                                              k.measurementDetail.originalThickness,k.measurementDetail.percent
                                             )
                                           )
-                                        ? 'R'
-                                        : '',
+                                        ? 'R': '',
                                     style: ['txt_center'],
                                     border: [false, true, true, true],
                                   },
                                   {
-                                    text: `${this.formService.calculateForMm(
-                                      k.measurementDetail.originalThickness,
-                                      k.measurementDetail.gaugedS
+                                    text: `${Number(this.formService.calculateForMm(
+                                      k.measurementDetail.originalThickness,k.measurementDetail.gaugedS
+                                    ))== 0.0 ?"":this.formService.calculateForMm(
+                                      k.measurementDetail.originalThickness,k.measurementDetail.gaugedS
                                     )}`,
                                     style: ['txt_center'],
                                   },
                                   {
-                                    text: `${this.formService.calculateForPercent(
-                                      k.measurementDetail.originalThickness,
-                                      k.measurementDetail.gaugedS
-                                    )}`,
+                                    text: `${Number.isNaN(Number(this.formService.calculateForPercent(
+                                      k.measurementDetail.originalThickness,k.measurementDetail.gaugedS
+                                    )))?"":Number(this.formService.calculateForPercent(
+                                      k.measurementDetail.originalThickness,k.measurementDetail.gaugedS
+                                    ))}`,
                                     style: ['txt_center'],
                                     border: [true, true, false, true],
                                   },
                                   {
-                                    text:
-                                      this.convertToNumber(
+                                    text:this.convertToNumber(
                                         this.formService.calculateForMm(
-                                          k.measurementDetail.originalThickness,
-                                          k.measurementDetail.gaugedS
+                                          k.measurementDetail.originalThickness,k.measurementDetail.gaugedS
                                         )
-                                      ) >=
-                                        this.convertToNumber(
+                                      ) >=this.convertToNumber(
                                           this.formService.threePartsFourOfMaxAlwbDim(
                                             this.formService.calculateForMaxAlwbDimForString(
-                                              k.measurementDetail
-                                                .originalThickness,
-                                              k.measurementDetail.percent
+                                              k.measurementDetail.originalThickness,k.measurementDetail.percent
                                             )
                                           )
-                                        ) &&
-                                      this.convertToNumber(
+                                        ) &&this.convertToNumber(
                                         this.formService.calculateForMm(
-                                          k.measurementDetail.originalThickness,
-                                          k.measurementDetail.gaugedS
+                                          k.measurementDetail.originalThickness,k.measurementDetail.gaugedS
                                         )
-                                      ) <=
-                                        this.convertToNumber(
+                                      ) <=this.convertToNumber(
                                           this.formService.calculateForMaxAlwbDimForString(
-                                            k.measurementDetail
-                                              .originalThickness,
-                                            k.measurementDetail.percent
+                                            k.measurementDetail.originalThickness,k.measurementDetail.percent
                                           )
                                         )
-                                        ? 'S'
-                                        : this.convertToNumber(
+                                        ? 'S': this.convertToNumber(
                                             this.formService.calculateForMm(
-                                              k.measurementDetail
-                                                .originalThickness,
-                                              k.measurementDetail.gaugedS
+                                              k.measurementDetail.originalThickness,k.measurementDetail.gaugedS
                                             )
-                                          ) >
-                                          this.convertToNumber(
+                                          ) >this.convertToNumber(
                                             this.formService.calculateForMaxAlwbDimForString(
-                                              k.measurementDetail
-                                                .originalThickness,
-                                              k.measurementDetail.percent
+                                              k.measurementDetail.originalThickness,k.measurementDetail.percent
                                             )
                                           )
-                                        ? 'R'
-                                        : '',
+                                        ? 'R': '',
                                     style: ['txt_center'],
                                     border: [false, true, true, true],
                                   },
                                 ]
                               );
                               return [title, ...member];
-                            })
-                            .flat(),
+                            }).flat(),
                         ],
                       },
                       layout: {
@@ -5911,26 +4246,23 @@ export class ReviewComponent implements OnInit {
                         paddingBottom: () => 1,
                       },
                     },
-                  ]
-                : []
+                  ]: []
             ),
             //Form tm6
-            x.formList.map((y: any) =>
-              y.type == 'TM6'
+            x.formList.map((y: any) =>y.type == 'TM6'
                 ? [
                     this.lsSketch.map((a) =>
                       a.map((b: any) =>
                         b.formId === y.id && b.formType == 'form_tm6'
                           ? [
                               {
-                                margin: [-20, -30, -20, -30] as Margins,
+                                margin: [-20, -40, -20, -30] as Margins,
                                 pageBreak: 'before' as PageBreak,
                                 pageOrientation: 'landscape' as PageOrientation,
                                 fit: [pageSizee.width, pageSizee.height],
                                 image: `data:image/png;base64,${b.value}`,
                               },
-                            ]
-                          : []
+                            ]: []
                       )
                     ),
                     {
@@ -5940,19 +4272,7 @@ export class ReviewComponent implements OnInit {
                       table: {
                         headerRows: 10,
                         widths: [
-                          // '5%',
-                          '36%',
-                          '10%',
-                          '10%',
-                          '10%',
-                          '5%',
-                          '5%',
-                          '5%',
-                          '5%',
-                          '5%',
-                          '5%',
-                          '5%',
-                          '5%',
+                          '35.5%','10%','10%','10%','5%','5%','5%','5%','5%','5%','5%','5%',
                         ],
                         body: [
                           //Table header
@@ -5964,17 +4284,7 @@ export class ReviewComponent implements OnInit {
                               alignment: 'right' as Alignment,
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},{},{},{},{},
                           ],
                           [
                             {
@@ -5982,17 +4292,7 @@ export class ReviewComponent implements OnInit {
                               colSpan: 12,
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},{},{},{},{},
                           ],
                           //Table name
 
@@ -6004,20 +4304,9 @@ export class ReviewComponent implements OnInit {
                               decoration: 'underline' as Decoration,
                               bold: true,
                               margin: [0, 0, 0, 5] as Margins,
-
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},{},{},{},{},
                           ],
                           [
                             {
@@ -6025,22 +4314,11 @@ export class ReviewComponent implements OnInit {
                               text: '',
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},{},{},{},{},
                           ],
                           [
                             {
                               text: "Ship's name:",
-
                               alignment: 'center' as Alignment,
                               colSpan: 1,
                               border: [false, false, false, false],
@@ -6051,56 +4329,39 @@ export class ReviewComponent implements OnInit {
                               colSpan: 2,
                               bold: true,
                               border: [false, false, false, false],
-                            },
-                            {},
+                            },{},
                             {
                               text: 'Class Identity No. ',
                               colSpan: 2,
                               border: [false, false, false, false],
-                            },
-                            {},
+                            },{},
                             {
                               decoration: 'underline' as Decoration,
                               text: `${this.inABS}`,
                               colSpan: 2,
                               bold: true,
                               border: [false, false, false, false],
-                            },
-                            {},
+                            },{},
 
                             {
                               text: 'Report No. ',
                               colSpan: 2,
                               border: [false, false, false, false],
-                            },
-                            {},
+                            },{},
                             {
                               decoration: 'underline' as Decoration,
                               text: `${this.generalParticular[0].reportNo}`,
                               colSpan: 3,
                               bold: true,
                               border: [false, false, false, false],
-                            },
-                            {},
-                            {},
+                            },{},{},
                           ],
                           [
                             {
                               text: '',
                               colSpan: 12,
                               border: [false, false, false, false],
-                            },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            },{},{},{},{},{},{},{},{},{},{},{},
                           ],
                           //Table content
                           [
@@ -6115,17 +4376,7 @@ export class ReviewComponent implements OnInit {
                               colSpan: 11,
                               rowSpan: 1,
                               bold: true,
-                            },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            },{},{},{},{},{},{},{},{},{},{},
                           ],
                           [
                             {
@@ -6139,16 +4390,7 @@ export class ReviewComponent implements OnInit {
                               colSpan: 11,
                               bold: true,
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},{},{},{},
                           ],
                           [
                             {
@@ -6157,7 +4399,6 @@ export class ReviewComponent implements OnInit {
                               style: 'txt_center',
                             },
                             { text: 'Item', rowSpan: 2, style: 'txt_center' },
-
                             {
                               text: 'Original Thickness(mm)',
                               rowSpan: 2,
@@ -6168,36 +4409,26 @@ export class ReviewComponent implements OnInit {
                               rowSpan: 2,
                               style: 'txt_center',
                             },
-                            { text: 'Gauged', colSpan: 2, style: 'txt_center' },
-                            {},
+                            { text: 'Gauged', colSpan: 2, style: 'txt_center' },{},
                             {
                               text: 'Diminution P',
                               colSpan: 3,
                               style: 'txt_center',
-                            },
-                            {},
-                            {},
+                            },{},{},
                             {
                               text: 'Diminution S',
                               colSpan: 3,
                               style: 'txt_center',
-                            },
-                            {},
-                            {},
+                            },{},{},
                           ],
                           [
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},
                             { text: 'P', style: 'txt_center' },
                             { text: 'S', style: 'txt_center' },
                             { text: 'mm', style: 'txt_center' },
-                            { text: '%', style: 'txt_center', colSpan: 2 },
-                            {},
+                            { text: '%', style: 'txt_center', colSpan: 2 },{},
                             { text: 'mm', style: 'txt_center' },
-                            { text: '%', style: 'txt_center', colSpan: 2 },
-                            {},
+                            { text: '%', style: 'txt_center', colSpan: 2 },{},
                           ],
 
                           ...y.structuralDescriptionTM6List
@@ -6207,15 +4438,9 @@ export class ReviewComponent implements OnInit {
                                   text: `${z.structuralDescriptionTitle}`,
                                   bold: true,
                                 },
-                                {},
-                                {},
-                                {},
-                                {},
-                                {},
-                                {},
+                                {},{},{},{},{},{},
                                 { text: '', border: [true, true, false, true] },
-                                { text: '', border: [false, true, true, true] },
-                                {},
+                                { text: '', border: [false, true, true, true] },{},
                                 { text: '', border: [true, true, false, true] },
                                 { text: '', border: [false, true, true, true] },
                               ];
@@ -6223,164 +4448,131 @@ export class ReviewComponent implements OnInit {
                               let member = z.measurementTM6DTOList.map(
                                 (k: any) => [
                                   {
-                                    text: `${k.description}`,
+                                    text: `${k.description??""}`,
                                   },
-                                  { text: `${k.item}`, style: ['txt_center'] },
-
+                                  { text: `${k.item??""}`, style: ['txt_center'] },
                                   {
-                                    text: `${k.detailMeasurement.originalThickness}`,
+                                    text: `${k.detailMeasurement.originalThickness??""}`,
                                     style: ['txt_center'],
                                   },
                                   {
                                     text: `${this.formService.calculateForMaxAlwbDimForString(
-                                      k.detailMeasurement.originalThickness,
-                                      k.detailMeasurement.percent
+                                      k.detailMeasurement.originalThickness,k.detailMeasurement.percent
                                     )}`,
                                     style: ['txt_center'],
                                   },
                                   {
-                                    text: `${k.detailMeasurement.gaugedP}`,
+                                    text: `${k.detailMeasurement.gaugedP??""}`,
                                     style: ['txt_center'],
                                   },
                                   {
-                                    text: `${k.detailMeasurement.gaugedS}`,
+                                    text: `${k.detailMeasurement.gaugedS??""}`,
                                     style: ['txt_center'],
                                   },
                                   {
-                                    text: `${this.formService.calculateForMm(
-                                      k.detailMeasurement.originalThickness,
-                                      k.detailMeasurement.gaugedP
+                                    text: `${Number(this.formService.calculateForMm(
+                                      k.detailMeasurement.originalThickness,k.detailMeasurement.gaugedP
+                                    ))== 0.0 ?"":this.formService.calculateForMm(
+                                      k.detailMeasurement.originalThickness,k.detailMeasurement.gaugedP
                                     )}`,
                                     style: ['txt_center'],
                                   },
                                   {
-                                    text: `${this.formService.calculateForPercent(
-                                      k.detailMeasurement.originalThickness,
-                                      k.detailMeasurement.gaugedP
-                                    )}`,
+                                    text: `${Number.isNaN(Number(this.formService.calculateForPercent(
+                                      k.detailMeasurement.originalThickness,k.detailMeasurement.gaugedP
+                                    )))?"":Number(this.formService.calculateForPercent(
+                                      k.detailMeasurement.originalThickness,k.detailMeasurement.gaugedP
+                                    ))}`,
                                     style: ['txt_center'],
                                     border: [true, true, false, true],
                                   },
                                   {
-                                    text:
-                                      this.convertToNumber(
+                                    text:this.convertToNumber(
                                         this.formService.calculateForMm(
-                                          k.detailMeasurement.originalThickness,
-                                          k.detailMeasurement.gaugedP
+                                          k.detailMeasurement.originalThickness,k.detailMeasurement.gaugedP
                                         )
-                                      ) >=
-                                        this.convertToNumber(
+                                      ) >=this.convertToNumber(
                                           this.formService.threePartsFourOfMaxAlwbDim(
                                             this.formService.calculateForMaxAlwbDimForString(
-                                              k.detailMeasurement
-                                                .originalThickness,
-                                              k.detailMeasurement.percent
+                                              k.detailMeasurement.originalThickness,k.detailMeasurement.percent
                                             )
                                           )
-                                        ) &&
-                                      this.convertToNumber(
+                                        ) &&this.convertToNumber(
                                         this.formService.calculateForMm(
-                                          k.detailMeasurement.originalThickness,
-                                          k.detailMeasurement.gaugedP
+                                          k.detailMeasurement.originalThickness,k.detailMeasurement.gaugedP
                                         )
-                                      ) <=
-                                        this.convertToNumber(
+                                      ) <=this.convertToNumber(
                                           this.formService.calculateForMaxAlwbDimForString(
-                                            k.detailMeasurement
-                                              .originalThickness,
-                                            k.detailMeasurement.percent
+                                            k.detailMeasurement.originalThickness,k.detailMeasurement.percent
                                           )
                                         )
-                                        ? 'S'
-                                        : this.convertToNumber(
+                                        ? 'S': this.convertToNumber(
                                             this.formService.calculateForMm(
-                                              k.detailMeasurement
-                                                .originalThickness,
-                                              k.detailMeasurement.gaugedP
+                                              k.detailMeasurement.originalThickness,k.detailMeasurement.gaugedP
                                             )
-                                          ) >
-                                          this.convertToNumber(
+                                          ) >this.convertToNumber(
                                             this.formService.calculateForMaxAlwbDimForString(
-                                              k.detailMeasurement
-                                                .originalThickness,
-                                              k.detailMeasurement.percent
+                                              k.detailMeasurement.originalThickness,k.detailMeasurement.percent
                                             )
                                           )
-                                        ? 'R'
-                                        : '',
+                                        ? 'R': '',
                                     border: [false, true, true, true],
                                     style: ['txt_center'],
                                   },
                                   {
-                                    text: `${this.formService.calculateForMm(
-                                      k.detailMeasurement.originalThickness,
-                                      k.detailMeasurement.gaugedS
+                                    text: `${Number(this.formService.calculateForMm(
+                                      k.detailMeasurement.originalThickness,k.detailMeasurement.gaugedS
+                                    ))== 0.0 ?"":this.formService.calculateForMm(
+                                      k.detailMeasurement.originalThickness,k.detailMeasurement.gaugedS
                                     )}`,
                                     style: ['txt_center'],
                                   },
                                   {
-                                    text: `${this.formService.calculateForPercent(
-                                      k.detailMeasurement.originalThickness,
-                                      k.detailMeasurement.gaugedS
-                                    )}`,
+                                    text: `${Number.isNaN(Number(this.formService.calculateForPercent(
+                                      k.detailMeasurement.originalThickness,k.detailMeasurement.gaugedS
+                                    )))?"":Number(this.formService.calculateForPercent(
+                                      k.detailMeasurement.originalThickness,k.detailMeasurement.gaugedS
+                                    ))}`,
                                     style: ['txt_center'],
                                     border: [true, true, false, true],
                                   },
                                   {
-                                    text:
-                                      this.convertToNumber(
+                                    text:this.convertToNumber(
                                         this.formService.calculateForMm(
-                                          k.detailMeasurement.originalThickness,
-                                          k.detailMeasurement.gaugedS
+                                          k.detailMeasurement.originalThickness,k.detailMeasurement.gaugedS
                                         )
-                                      ) >=
-                                        this.convertToNumber(
+                                      ) >=this.convertToNumber(
                                           this.formService.threePartsFourOfMaxAlwbDim(
                                             this.formService.calculateForMaxAlwbDimForString(
-                                              k.detailMeasurement
-                                                .originalThickness,
-                                              k.detailMeasurement.percent
+                                              k.detailMeasurement.originalThickness,k.detailMeasurement.percent
                                             )
                                           )
-                                        ) &&
-                                      this.convertToNumber(
+                                        ) &&this.convertToNumber(
                                         this.formService.calculateForMm(
-                                          k.detailMeasurement.originalThickness,
-                                          k.detailMeasurement.gaugedS
+                                          k.detailMeasurement.originalThickness,k.detailMeasurement.gaugedS
                                         )
-                                      ) <=
-                                        this.convertToNumber(
+                                      ) <=this.convertToNumber(
                                           this.formService.calculateForMaxAlwbDimForString(
-                                            k.detailMeasurement
-                                              .originalThickness,
-                                            k.detailMeasurement.percent
+                                            k.detailMeasurement.originalThickness,k.detailMeasurement.percent
                                           )
                                         )
-                                        ? 'S'
-                                        : this.convertToNumber(
+                                        ? 'S': this.convertToNumber(
                                             this.formService.calculateForMm(
-                                              k.detailMeasurement
-                                                .originalThickness,
-                                              k.detailMeasurement.gaugedS
+                                              k.detailMeasurement.originalThickness,k.detailMeasurement.gaugedS
                                             )
-                                          ) >
-                                          this.convertToNumber(
+                                          ) >this.convertToNumber(
                                             this.formService.calculateForMaxAlwbDimForString(
-                                              k.detailMeasurement
-                                                .originalThickness,
-                                              k.detailMeasurement.percent
+                                              k.detailMeasurement.originalThickness,k.detailMeasurement.percent
                                             )
                                           )
-                                        ? 'R'
-                                        : '',
+                                        ? 'R': '',
                                     style: ['txt_center'],
                                     border: [false, true, true, true],
                                   },
                                 ]
                               );
                               return [title, ...member];
-                            })
-                            .flat(),
+                            }).flat(),
                         ],
                       },
                       layout: {
@@ -6388,19 +4580,17 @@ export class ReviewComponent implements OnInit {
                         paddingBottom: () => 1,
                       },
                     },
-                  ]
-                : []
+                  ]: []
             ),
             ////Form tm7
-            x.formList.map((y: any) =>
-              y.type == 'TM7'
+            x.formList.map((y: any) =>y.type == 'TM7'
                 ? [
                     this.lsSketch.map((a) =>
                       a.map((b: any) =>
                         b.formId === y.id && b.formType == 'form_tm7'
                           ? [
                               {
-                                margin: [-20, -30, -20, -30] as Margins,
+                                margin: [-20, -40, -20, -30] as Margins,
                                 pageBreak: 'before' as PageBreak,
                                 pageOrientation: 'landscape' as PageOrientation,
                                 fit: [pageSizee.width, pageSizee.height],
@@ -6417,37 +4607,8 @@ export class ReviewComponent implements OnInit {
                       table: {
                         headerRows: 10,
                         widths: [
-                          '22.8%',
-                          '3.2%',
-                          '3.2%',
-                          '3.2%',
-                          '3.2%',
-                          '3.2%',
-                          '3.2%',
-                          '1%',
-                          '3.2%',
-                          '3.2%',
-                          '1%',
-                          '3.2%',
-                          '3.2%',
-                          '3.2%',
-                          '3.2%',
-                          '3.2%',
-                          '3.2%',
-                          '1%',
-                          '3.2%',
-                          '3.2%',
-                          '1%',
-                          '3.2%',
-                          '3.2%',
-                          '3.2%',
-                          '3.2%',
-                          '3.2%',
-                          '3.2%',
-                          '1%',
-                          '3.2%',
-                          '3.2%',
-                          '1%',
+                          '23.8%','3.2%','3.2%','3.2%','3.2%','3.2%','3.2%','1%','3.2%','3.2%','1%','3.2%','3.2%','3.2%',
+                          '3.2%','3.2%','3.2%','1%','3.2%','3.2%','1%','3.2%','3.2%','3.2%','3.2%','3.2%','3.2%','1%','3.2%','3.2%','1%',
                         ],
                         body: [
                           //Table header
@@ -6459,38 +4620,9 @@ export class ReviewComponent implements OnInit {
                               alignment: 'right' as Alignment,
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},{},{},{},
+                            {},{},{},{},{},{},{},{},{},{},
+                            {},{},{},{},{},{},{},{},{},{},
                           ],
                           [
                             {
@@ -6498,38 +4630,9 @@ export class ReviewComponent implements OnInit {
                               colSpan: 31,
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},{},{},{},
+                            {},{},{},{},{},{},{},{},{},{},
+                            {},{},{},{},{},{},{},{},{},{},
                           ],
                           // Table content
                           [
@@ -6542,36 +4645,7 @@ export class ReviewComponent implements OnInit {
                               margin: [0, 0, 0, 5] as Margins,
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},
                           ],
                           [
                             {
@@ -6579,36 +4653,7 @@ export class ReviewComponent implements OnInit {
                               text: '',
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},
                           ],
                           [
                             {
@@ -6616,31 +4661,19 @@ export class ReviewComponent implements OnInit {
                               alignment: 'center' as Alignment,
                               colSpan: 3,
                               border: [false, false, false, false],
-                            },
-                            {},
-                            {},
+                            },{},{},
                             {
                               decoration: 'underline' as Decoration,
                               text: ``,
                               colSpan: 8,
                               bold: true,
                               border: [false, false, false, false],
-                            },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            },{},{},{},{},{},{},{},
                             {
                               text: 'Class Identity No. ',
                               colSpan: 4,
                               border: [false, false, false, false],
-                            },
-                            {},
-                            {},
-                            {},
+                            },{},{},{},
                             {
                               decoration: 'underline' as Decoration,
                               text: ``,
@@ -6648,32 +4681,19 @@ export class ReviewComponent implements OnInit {
                               bold: true,
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-
+                            {},{},{},{},{},{},{},
                             {
                               text: 'Report No. ',
                               colSpan: 3,
                               border: [false, false, false, false],
-                            },
-                            {},
-                            {},
+                            },{},{},
                             {
                               decoration: 'underline' as Decoration,
                               text: ``,
                               colSpan: 5,
                               bold: true,
                               border: [false, false, false, false],
-                            },
-                            {},
-                            {},
-                            {},
-                            {},
+                            },{},{},{},{},
                           ],
                           [
                             {
@@ -6681,36 +4701,7 @@ export class ReviewComponent implements OnInit {
                               text: '',
                               border: [false, false, false, false],
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},
                           ],
                           [
                             {
@@ -6718,36 +4709,7 @@ export class ReviewComponent implements OnInit {
                               text: 'CARGO HOLD NO. 1',
                               colSpan: 31,
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},
                           ],
                           [
                             {
@@ -6760,43 +4722,19 @@ export class ReviewComponent implements OnInit {
                               text: 'UPPER PART',
                               colSpan: 10,
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},{},{},
                             {
                               style: 'txt_center',
                               text: 'MID PART',
                               colSpan: 10,
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},{},{},
                             {
                               style: 'txt_center',
                               text: 'LOWER PART',
                               colSpan: 10,
                             },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
+                            {},{},{},{},{},{},{},{},{},
                           ],
                           [
                             {
@@ -6810,66 +4748,51 @@ export class ReviewComponent implements OnInit {
                               style: 'txt_center',
                               text: 'Gauged mm  ',
                               colSpan: 2,
-                            },
-                            {},
+                            },{},
                             {
                               style: 'txt_center',
                               text: 'Diminution P  ',
                               colSpan: 3,
-                            },
-                            {},
-                            {},
+                            },{},{},
                             {
                               style: 'txt_center',
                               text: '    Diminution S  ',
                               colSpan: 3,
-                            },
-                            {},
-                            {},
+                            },{},{},
                             { style: 'txt_center', text: 'Org.Thk.' },
                             { style: 'txt_center', text: 'Max.Alwb.Dim' },
                             {
                               style: 'txt_center',
                               text: 'Gauged mm',
                               colSpan: 2,
-                            },
-                            {},
+                            },{},
                             {
                               style: 'txt_center',
                               text: 'Diminution P',
                               colSpan: 3,
-                            },
-                            {},
-                            {},
+                            },{},{},
                             {
                               style: 'txt_center',
                               text: 'Diminution S',
                               colSpan: 3,
-                            },
-                            {},
-                            {},
+                            },{},{},
                             { style: 'txt_center', text: 'Org.Thk.' },
                             { style: 'txt_center', text: 'Max.Alwb.Dim' },
                             {
                               style: 'txt_center',
                               text: 'Gauged mm',
                               colSpan: 2,
-                            },
-                            {},
+                            },{},
                             {
                               style: 'txt_center',
                               text: 'Diminution P',
                               colSpan: 3,
-                            },
-                            {},
-                            {},
+                            },{},{},
                             {
                               style: 'txt_center',
                               text: 'Diminution S',
                               colSpan: 3,
-                            },
-                            {},
-                            {},
+                            },{},{},
                           ],
                           [
                             {},
@@ -6878,33 +4801,27 @@ export class ReviewComponent implements OnInit {
                             { style: 'txt_center', text: 'P' },
                             { style: 'txt_center', text: 'S' },
                             { style: 'txt_center', text: 'mm' },
-                            { style: 'txt_center', text: '%', colSpan: 2 },
-                            {},
+                            { style: 'txt_center', text: '%', colSpan: 2 },{},
                             { style: 'txt_center', text: 'mm' },
-                            { style: 'txt_center', text: '%', colSpan: 2 },
-                            {},
+                            { style: 'txt_center', text: '%', colSpan: 2 },{},
 
                             { style: 'txt_center', text: 'mm' },
                             { style: 'txt_center', text: 'mm' },
                             { style: 'txt_center', text: 'P' },
                             { style: 'txt_center', text: 'S' },
                             { style: 'txt_center', text: 'mm' },
-                            { style: 'txt_center', text: '%', colSpan: 2 },
-                            {},
+                            { style: 'txt_center', text: '%', colSpan: 2 },{},
                             { style: 'txt_center', text: 'mm' },
-                            { style: 'txt_center', text: '%', colSpan: 2 },
-                            {},
+                            { style: 'txt_center', text: '%', colSpan: 2 },{},
 
                             { style: 'txt_center', text: 'mm' },
                             { style: 'txt_center', text: 'mm' },
                             { style: 'txt_center', text: 'P' },
                             { style: 'txt_center', text: 'S' },
                             { style: 'txt_center', text: 'mm' },
-                            { style: 'txt_center', text: '%', colSpan: 2 },
-                            {},
+                            { style: 'txt_center', text: '%', colSpan: 2 },{},
                             { style: 'txt_center', text: 'mm' },
-                            { style: 'txt_center', text: '%', colSpan: 2 },
-                            {},
+                            { style: 'txt_center', text: '%', colSpan: 2 },{},
                           ],
                           ...y.frameNumberList
                             .map((z: any) => {
@@ -6912,483 +4829,397 @@ export class ReviewComponent implements OnInit {
                                 {
                                   text: `${z.name}`,
                                   bold: true,
-                                },
-                                {},
-                                {},
-                                {},
-                                {},
-                                {},
+                                },{},{},{},{},{},
                                 { text: '', border: [true, true, false, true] },
-                                { text: '', border: [false, true, true, true] },
-                                {},
+                                { text: '', border: [false, true, true, true] },{},
                                 { text: '', border: [true, true, false, true] },
                                 { text: '', border: [false, true, true, true] },
 
-                                {},
-                                {},
-                                {},
-                                {},
-                                {},
+                                {},{},{},{},{},
                                 { text: '', border: [true, true, false, true] },
-                                { text: '', border: [false, true, true, true] },
-                                {},
+                                { text: '', border: [false, true, true, true] },{},
                                 { text: '', border: [true, true, false, true] },
                                 { text: '', border: [false, true, true, true] },
 
-                                {},
-                                {},
-                                {},
-                                {},
-                                {},
+                                {},{},{},{},{},
                                 { text: '', border: [true, true, false, true] },
-                                { text: '', border: [false, true, true, true] },
-                                {},
+                                { text: '', border: [false, true, true, true] },{},
                                 { text: '', border: [true, true, false, true] },
                                 { text: '', border: [false, true, true, true] },
                               ];
 
                               let member = z.measurementTM7DTOList.map(
                                 (k: any) => [
-                                  { text: `${k.item}` },
-
+                                  { text: `${k.item??""}` },
                                   {
-                                    text: `${k.upperPart.originalThickness}`,
+                                    text: `${k.upperPart.originalThickness??""}`,
                                     style: ['txt_center'],
                                   },
                                   {
                                     text: `${this.formService.calculateForMaxAlwbDimForString(
-                                      k.upperPart.originalThickness,
-                                      k.upperPart.percent
+                                      k.upperPart.originalThickness,k.upperPart.percent
                                     )}`,
                                     style: ['txt_center'],
                                   },
                                   {
-                                    text: `${k.upperPart.gaugedP}`,
+                                    text: `${k.upperPart.gaugedP??""}`,
                                     style: ['txt_center'],
                                   },
                                   {
-                                    text: `${k.upperPart.gaugedS}`,
+                                    text: `${k.upperPart.gaugedS??""}`,
                                     style: ['txt_center'],
                                   },
                                   {
-                                    text: `${this.formService.calculateForMm(
-                                      k.upperPart.originalThickness,
-                                      k.upperPart.gaugedP
+                                    text: `${Number(this.formService.calculateForMm(
+                                      k.upperPart.originalThickness,k.upperPart.gaugedP
+                                    ))== 0.0 ?"":this.formService.calculateForMm(
+                                      k.upperPart.originalThickness,k.upperPart.gaugedP
                                     )}`,
                                     style: ['txt_center'],
                                   },
                                   {
-                                    text: `${this.formService.calculateForPercent(
-                                      k.upperPart.originalThickness,
-                                      k.upperPart.gaugedP
-                                    )}`,
+                                    text: `${Number.isNaN(Number(this.formService.calculateForPercent(
+                                      k.upperPart.originalThickness,k.upperPart.gaugedP
+                                    )))?"":Number(this.formService.calculateForPercent(
+                                      k.upperPart.originalThickness,k.upperPart.gaugedP
+                                    ))}`,
                                     style: ['txt_center'],
                                     border: [true, true, false, true],
                                   },
                                   {
-                                    text:
-                                      this.convertToNumber(
+                                    text:this.convertToNumber(
                                         this.formService.calculateForMm(
-                                          k.upperPart.originalThickness,
-                                          k.upperPart.gaugedP
+                                          k.upperPart.originalThickness,k.upperPart.gaugedP
                                         )
-                                      ) >=
-                                        this.convertToNumber(
+                                      ) >=this.convertToNumber(
                                           this.formService.threePartsFourOfMaxAlwbDim(
                                             this.formService.calculateForMaxAlwbDimForString(
-                                              k.upperPart.originalThickness,
-                                              k.upperPart.percent
+                                              k.upperPart.originalThickness,k.upperPart.percent
                                             )
                                           )
-                                        ) &&
-                                      this.convertToNumber(
+                                        ) &&this.convertToNumber(
                                         this.formService.calculateForMm(
-                                          k.upperPart.originalThickness,
-                                          k.upperPart.gaugedP
+                                          k.upperPart.originalThickness,k.upperPart.gaugedP
                                         )
-                                      ) <=
-                                        this.convertToNumber(
+                                      ) <=this.convertToNumber(
                                           this.formService.calculateForMaxAlwbDimForString(
-                                            k.upperPart.originalThickness,
-                                            k.upperPart.percent
+                                            k.upperPart.originalThickness,k.upperPart.percent
                                           )
                                         )
-                                        ? 'S'
-                                        : this.convertToNumber(
+                                        ? 'S': this.convertToNumber(
                                             this.formService.calculateForMm(
-                                              k.upperPart.originalThickness,
-                                              k.upperPart.gaugedP
+                                              k.upperPart.originalThickness,k.upperPart.gaugedP
                                             )
-                                          ) >
-                                          this.convertToNumber(
+                                          ) >this.convertToNumber(
                                             this.formService.calculateForMaxAlwbDimForString(
-                                              k.upperPart.originalThickness,
-                                              k.upperPart.percent
+                                              k.upperPart.originalThickness,k.upperPart.percent
                                             )
                                           )
-                                        ? 'R'
-                                        : '',
+                                        ? 'R': '',
                                     style: ['txt_center'],
                                     border: [false, true, true, true],
                                   },
                                   {
-                                    text: `${this.formService.calculateForMm(
-                                      k.upperPart.originalThickness,
-                                      k.upperPart.gaugedS
+                                    text: `${Number(this.formService.calculateForMm(
+                                      k.upperPart.originalThickness,k.upperPart.gaugedS
+                                    ))== 0.0 ?"":this.formService.calculateForMm(
+                                      k.upperPart.originalThickness,k.upperPart.gaugedS
                                     )}`,
                                     style: ['txt_center'],
                                   },
                                   {
-                                    text: `${this.formService.calculateForPercent(
-                                      k.upperPart.originalThickness,
-                                      k.upperPart.gaugedS
-                                    )}`,
+                                    text: `${Number.isNaN(Number(this.formService.calculateForPercent(
+                                      k.upperPart.originalThickness,k.upperPart.gaugedS
+                                    )))?"":Number(this.formService.calculateForPercent(
+                                      k.upperPart.originalThickness,k.upperPart.gaugedS
+                                    ))}`,
                                     style: ['txt_center'],
                                     border: [true, true, false, true],
                                   },
                                   {
-                                    text:
-                                      this.convertToNumber(
+                                    text:this.convertToNumber(
                                         this.formService.calculateForMm(
-                                          k.upperPart.originalThickness,
-                                          k.upperPart.gaugedS
+                                          k.upperPart.originalThickness,k.upperPart.gaugedS
                                         )
-                                      ) >=
-                                        this.convertToNumber(
+                                      ) >=this.convertToNumber(
                                           this.formService.threePartsFourOfMaxAlwbDim(
                                             this.formService.calculateForMaxAlwbDimForString(
-                                              k.upperPart.originalThickness,
-                                              k.upperPart.percent
+                                              k.upperPart.originalThickness,k.upperPart.percent
                                             )
                                           )
-                                        ) &&
-                                      this.convertToNumber(
+                                        ) &&this.convertToNumber(
                                         this.formService.calculateForMm(
-                                          k.upperPart.originalThickness,
-                                          k.upperPart.gaugedS
+                                          k.upperPart.originalThickness,k.upperPart.gaugedS
                                         )
-                                      ) <=
-                                        this.convertToNumber(
+                                      ) <=this.convertToNumber(
                                           this.formService.calculateForMaxAlwbDimForString(
-                                            k.upperPart.originalThickness,
-                                            k.upperPart.percent
+                                            k.upperPart.originalThickness,k.upperPart.percent
                                           )
                                         )
-                                        ? 'S'
-                                        : this.convertToNumber(
+                                        ? 'S': this.convertToNumber(
                                             this.formService.calculateForMm(
-                                              k.upperPart.originalThickness,
-                                              k.upperPart.gaugedS
+                                              k.upperPart.originalThickness,k.upperPart.gaugedS
                                             )
-                                          ) >
-                                          this.convertToNumber(
+                                          ) >this.convertToNumber(
                                             this.formService.calculateForMaxAlwbDimForString(
-                                              k.upperPart.originalThickness,
-                                              k.upperPart.percent
+                                              k.upperPart.originalThickness,k.upperPart.percent
                                             )
                                           )
-                                        ? 'R'
-                                        : '',
+                                        ? 'R': '',
                                     style: ['txt_center'],
                                     border: [false, true, true, true],
                                   },
 
                                   {
-                                    text: `${k.midPart.originalThickness}`,
+                                    text: `${k.midPart.originalThickness??""}`,
                                     style: ['txt_center'],
                                   },
                                   {
                                     text: `${this.formService.calculateForMaxAlwbDimForString(
-                                      k.midPart.originalThickness,
-                                      k.midPart.percent
+                                      k.midPart.originalThickness,k.midPart.percent
                                     )}`,
                                     style: ['txt_center'],
                                   },
                                   {
-                                    text: `${k.midPart.gaugedP}`,
+                                    text: `${k.midPart.gaugedP??""}`,
                                     style: ['txt_center'],
                                   },
                                   {
-                                    text: `${k.midPart.gaugedS}`,
+                                    text: `${k.midPart.gaugedS??""}`,
                                     style: ['txt_center'],
                                   },
                                   {
-                                    text: `${this.formService.calculateForMm(
-                                      k.midPart.originalThickness,
-                                      k.midPart.gaugedP
+                                    text: `${Number(this.formService.calculateForMm(
+                                      k.midPart.originalThickness,k.midPart.gaugedP
+                                    ))== 0.0 ?"":this.formService.calculateForMm(
+                                      k.midPart.originalThickness,k.midPart.gaugedP
                                     )}`,
                                     style: ['txt_center'],
                                   },
                                   {
-                                    text: `${this.formService.calculateForPercent(
-                                      k.midPart.originalThickness,
-                                      k.midPart.gaugedP
-                                    )}`,
+                                    text: `${Number.isNaN(Number(this.formService.calculateForPercent(
+                                      k.midPart.originalThickness,k.midPart.gaugedP
+                                    )))?"":Number(this.formService.calculateForPercent(
+                                      k.midPart.originalThickness,k.midPart.gaugedP
+                                    ))}`,
                                     style: ['txt_center'],
                                     border: [true, true, false, true],
                                   },
                                   {
-                                    text:
-                                      this.convertToNumber(
+                                    text:this.convertToNumber(
                                         this.formService.calculateForMm(
-                                          k.midPart.originalThickness,
-                                          k.midPart.gaugedP
+                                          k.midPart.originalThickness,k.midPart.gaugedP
                                         )
-                                      ) >=
-                                        this.convertToNumber(
+                                      ) >=this.convertToNumber(
                                           this.formService.threePartsFourOfMaxAlwbDim(
                                             this.formService.calculateForMaxAlwbDimForString(
-                                              k.midPart.originalThickness,
-                                              k.midPart.percent
+                                              k.midPart.originalThickness,k.midPart.percent
                                             )
                                           )
-                                        ) &&
-                                      this.convertToNumber(
+                                        ) &&this.convertToNumber(
                                         this.formService.calculateForMm(
-                                          k.midPart.originalThickness,
-                                          k.midPart.gaugedP
+                                          k.midPart.originalThickness,k.midPart.gaugedP
                                         )
-                                      ) <=
-                                        this.convertToNumber(
+                                      ) <=this.convertToNumber(
                                           this.formService.calculateForMaxAlwbDimForString(
-                                            k.midPart.originalThickness,
-                                            k.midPart.percent
+                                            k.midPart.originalThickness,k.midPart.percent
                                           )
                                         )
-                                        ? 'S'
-                                        : this.convertToNumber(
+                                        ? 'S': this.convertToNumber(
                                             this.formService.calculateForMm(
-                                              k.midPart.originalThickness,
-                                              k.midPart.gaugedP
+                                              k.midPart.originalThickness,k.midPart.gaugedP
                                             )
-                                          ) >
-                                          this.convertToNumber(
+                                          ) >this.convertToNumber(
                                             this.formService.calculateForMaxAlwbDimForString(
-                                              k.midPart.originalThickness,
-                                              k.midPart.percent
+                                              k.midPart.originalThickness,k.midPart.percent
                                             )
                                           )
-                                        ? 'R'
-                                        : '',
+                                        ? 'R': '',
                                     style: ['txt_center'],
                                     border: [false, true, true, true],
                                   },
                                   {
-                                    text: `${this.formService.calculateForMm(
-                                      k.midPart.originalThickness,
-                                      k.midPart.gaugedS
+                                    text: `${Number(this.formService.calculateForMm(
+                                      k.midPart.originalThickness,k.midPart.gaugedS
+                                    ))== 0.0 ?"":this.formService.calculateForMm(
+                                      k.midPart.originalThickness,k.midPart.gaugedS
                                     )}`,
                                     style: ['txt_center'],
                                   },
                                   {
-                                    text: `${this.formService.calculateForPercent(
-                                      k.midPart.originalThickness,
-                                      k.midPart.gaugedS
-                                    )}`,
+                                    text: `${Number.isNaN(Number(this.formService.calculateForPercent(
+                                      k.midPart.originalThickness,k.midPart.gaugedS
+                                    )))?"":Number(this.formService.calculateForPercent(
+                                      k.midPart.originalThickness,k.midPart.gaugedS
+                                    ))}`,
                                     style: ['txt_center'],
                                     border: [true, true, false, true],
                                   },
                                   {
-                                    text:
-                                      this.convertToNumber(
+                                    text:this.convertToNumber(
                                         this.formService.calculateForMm(
-                                          k.midPart.originalThickness,
-                                          k.midPart.gaugedS
+                                          k.midPart.originalThickness,k.midPart.gaugedS
                                         )
-                                      ) >=
-                                        this.convertToNumber(
+                                      ) >=this.convertToNumber(
                                           this.formService.threePartsFourOfMaxAlwbDim(
                                             this.formService.calculateForMaxAlwbDimForString(
-                                              k.midPart.originalThickness,
-                                              k.midPart.percent
+                                              k.midPart.originalThickness,k.midPart.percent
                                             )
                                           )
-                                        ) &&
-                                      this.convertToNumber(
+                                        ) &&this.convertToNumber(
                                         this.formService.calculateForMm(
-                                          k.midPart.originalThickness,
-                                          k.midPart.gaugedS
+                                          k.midPart.originalThickness,k.midPart.gaugedS
                                         )
-                                      ) <=
-                                        this.convertToNumber(
+                                      ) <=this.convertToNumber(
                                           this.formService.calculateForMaxAlwbDimForString(
-                                            k.midPart.originalThickness,
-                                            k.midPart.percent
+                                            k.midPart.originalThickness,k.midPart.percent
                                           )
                                         )
-                                        ? 'S'
-                                        : this.convertToNumber(
+                                        ? 'S': this.convertToNumber(
                                             this.formService.calculateForMm(
-                                              k.midPart.originalThickness,
-                                              k.midPart.gaugedS
+                                              k.midPart.originalThickness,k.midPart.gaugedS
                                             )
-                                          ) >
-                                          this.convertToNumber(
+                                          ) >this.convertToNumber(
                                             this.formService.calculateForMaxAlwbDimForString(
-                                              k.midPart.originalThickness,
-                                              k.midPart.percent
+                                              k.midPart.originalThickness,k.midPart.percent
                                             )
                                           )
-                                        ? 'R'
-                                        : '',
+                                        ? 'R': '',
                                     style: ['txt_center'],
                                     border: [false, true, true, true],
                                   },
                                   {
-                                    text: `${k.lowerPart.originalThickness}`,
+                                    text: `${k.lowerPart.originalThickness??""}`,
                                     style: ['txt_center'],
                                   },
                                   {
                                     text: `${this.formService.calculateForMaxAlwbDimForString(
-                                      k.lowerPart.originalThickness,
-                                      k.lowerPart.percent
+                                      k.lowerPart.originalThickness,k.lowerPart.percent
                                     )}`,
                                     style: ['txt_center'],
                                   },
                                   {
-                                    text: `${k.lowerPart.gaugedP}`,
+                                    text: `${k.lowerPart.gaugedP??""}`,
                                     style: ['txt_center'],
                                   },
                                   {
-                                    text: `${k.lowerPart.gaugedS}`,
+                                    text: `${k.lowerPart.gaugedS??""}`,
                                     style: ['txt_center'],
                                   },
                                   {
-                                    text: `${this.formService.calculateForMm(
-                                      k.lowerPart.originalThickness,
-                                      k.lowerPart.gaugedP
+                                    text: `${Number(this.formService.calculateForMm(
+                                      k.lowerPart.originalThickness,k.lowerPart.gaugedP
+                                    ))== 0.0 ?"":this.formService.calculateForMm(
+                                      k.lowerPart.originalThickness,k.lowerPart.gaugedP
                                     )}`,
                                     style: ['txt_center'],
                                   },
                                   {
-                                    text: `${this.formService.calculateForPercent(
-                                      k.lowerPart.originalThickness,
-                                      k.lowerPart.gaugedP
-                                    )}`,
+                                    text: `${Number.isNaN(Number(this.formService.calculateForPercent(
+                                      k.lowerPart.originalThickness,k.lowerPart.gaugedP
+                                    )))?"":Number(this.formService.calculateForPercent(
+                                      k.lowerPart.originalThickness,k.lowerPart.gaugedP
+                                    ))}`,
                                     style: ['txt_center'],
                                     border: [true, true, false, true],
                                   },
                                   {
-                                    text:
-                                      this.convertToNumber(
+                                    text:this.convertToNumber(
                                         this.formService.calculateForMm(
-                                          k.lowerPart.originalThickness,
-                                          k.lowerPart.gaugedP
+                                          k.lowerPart.originalThickness,k.lowerPart.gaugedP
                                         )
-                                      ) >=
-                                        this.convertToNumber(
+                                      ) >=this.convertToNumber(
                                           this.formService.threePartsFourOfMaxAlwbDim(
                                             this.formService.calculateForMaxAlwbDimForString(
-                                              k.lowerPart.originalThickness,
-                                              k.lowerPart.percent
+                                              k.lowerPart.originalThickness,k.lowerPart.percent
                                             )
                                           )
-                                        ) &&
-                                      this.convertToNumber(
+                                        ) &&this.convertToNumber(
                                         this.formService.calculateForMm(
-                                          k.lowerPart.originalThickness,
-                                          k.lowerPart.gaugedP
+                                          k.lowerPart.originalThickness,k.lowerPart.gaugedP
                                         )
-                                      ) <=
-                                        this.convertToNumber(
+                                      ) <=this.convertToNumber(
                                           this.formService.calculateForMaxAlwbDimForString(
-                                            k.lowerPart.originalThickness,
-                                            k.lowerPart.percent
+                                            k.lowerPart.originalThickness,k.lowerPart.percent
                                           )
                                         )
-                                        ? 'S'
-                                        : this.convertToNumber(
+                                        ? 'S': this.convertToNumber(
                                             this.formService.calculateForMm(
-                                              k.lowerPart.originalThickness,
-                                              k.lowerPart.gaugedP
+                                              k.lowerPart.originalThickness,k.lowerPart.gaugedP
                                             )
-                                          ) >
-                                          this.convertToNumber(
+                                          ) >this.convertToNumber(
                                             this.formService.calculateForMaxAlwbDimForString(
-                                              k.lowerPart.originalThickness,
-                                              k.lowerPart.percent
+                                              k.lowerPart.originalThickness,k.lowerPart.percent
                                             )
                                           )
-                                        ? 'R'
-                                        : '',
+                                        ? 'R': '',
                                     style: ['txt_center'],
                                     border: [false, true, true, true],
                                   },
                                   {
-                                    text: `${this.formService.calculateForMm(
-                                      k.lowerPart.originalThickness,
-                                      k.lowerPart.gaugedS
+                                    text: `${Number(this.formService.calculateForMm(
+                                      k.lowerPart.originalThickness,k.lowerPart.gaugedS
+                                    ))== 0.0 ?"":this.formService.calculateForMm(
+                                      k.lowerPart.originalThickness,k.lowerPart.gaugedS
                                     )}`,
                                     style: ['txt_center'],
                                   },
                                   {
-                                    text: `${this.formService.calculateForPercent(
-                                      k.lowerPart.originalThickness,
-                                      k.lowerPart.gaugedS
-                                    )}`,
+                                    text: `${Number.isNaN(Number(this.formService.calculateForPercent(
+                                      k.lowerPart.originalThickness,k.lowerPart.gaugedS
+                                    )))?"":Number(this.formService.calculateForPercent(
+                                      k.lowerPart.originalThickness,k.lowerPart.gaugedS
+                                    ))}`,
                                     style: ['txt_center'],
                                     border: [true, true, false, true],
                                   },
                                   {
-                                    text:
-                                      this.convertToNumber(
+                                    text:this.convertToNumber(
                                         this.formService.calculateForMm(
-                                          k.lowerPart.originalThickness,
-                                          k.lowerPart.gaugedS
+                                          k.lowerPart.originalThickness,k.lowerPart.gaugedS
                                         )
-                                      ) >=
-                                        this.convertToNumber(
+                                      ) >=this.convertToNumber(
                                           this.formService.threePartsFourOfMaxAlwbDim(
                                             this.formService.calculateForMaxAlwbDimForString(
-                                              k.lowerPart.originalThickness,
-                                              k.lowerPart.percent
+                                              k.lowerPart.originalThickness,k.lowerPart.percent
                                             )
                                           )
-                                        ) &&
-                                      this.convertToNumber(
+                                        ) &&this.convertToNumber(
                                         this.formService.calculateForMm(
-                                          k.lowerPart.originalThickness,
-                                          k.lowerPart.gaugedS
+                                          k.lowerPart.originalThickness,k.lowerPart.gaugedS
                                         )
-                                      ) <=
-                                        this.convertToNumber(
+                                      ) <=this.convertToNumber(
                                           this.formService.calculateForMaxAlwbDimForString(
-                                            k.lowerPart.originalThickness,
-                                            k.lowerPart.percent
+                                            k.lowerPart.originalThickness,k.lowerPart.percent
                                           )
                                         )
-                                        ? 'S'
-                                        : this.convertToNumber(
+                                        ? 'S': this.convertToNumber(
                                             this.formService.calculateForMm(
-                                              k.lowerPart.originalThickness,
-                                              k.lowerPart.gaugedS
+                                              k.lowerPart.originalThickness,k.lowerPart.gaugedS
                                             )
-                                          ) >
-                                          this.convertToNumber(
+                                          ) >this.convertToNumber(
                                             this.formService.calculateForMaxAlwbDimForString(
-                                              k.lowerPart.originalThickness,
-                                              k.lowerPart.percent
+                                              k.lowerPart.originalThickness,k.lowerPart.percent
                                             )
                                           )
-                                        ? 'R'
-                                        : '',
+                                        ? 'R': '',
                                     style: ['txt_center'],
                                     border: [false, true, true, true],
                                   },
                                 ]
                               );
                               return [title, ...member];
-                            })
-                            .flat(),
+                            }).flat(),
                         ],
                       },
                       layout: {
                         paddingTop: () => 1,
                         paddingBottom: () => 1,
+                        paddingLeft: () => 2,
+                        paddingRight: () => 2,
                       },
                     },
-                  ]
-                : []
+                  ]: []
             ),
           ]),
         ],
@@ -7441,8 +5272,8 @@ export class ReviewComponent implements OnInit {
         columnGap: 20,
       },
     };
-    // pdfMake.createPdf(pdfDocument).open({}, window);
-    pdfMake.createPdf(pdfDocument).download();
+    pdfMake.createPdf(pdfDocument).open({}, window);
+    // pdfMake.createPdf(pdfDocument).download();
   }
 
   ngOnInit() {
@@ -7482,13 +5313,11 @@ export class ReviewComponent implements OnInit {
         this.inSuveyor = this.generalParticular[0].surveyorInfo;
       },
       (err) => {
-        console.log(err);
         alert('Failure to load data from server');
       }
     );
     this.paramService.getParamValueByType(5).subscribe((data) => {
       this.inParam_qualification = data[0].param;
-      console.log('param' + this.inParam_qualification);
     });
 
     this.reportIndexService
@@ -7568,13 +5397,11 @@ export class ReviewComponent implements OnInit {
             if (Array.isArray(data)) {
               this.data_part = data;
             }
-            console.log(this.data_part);
             this.isLoadingSaveButton = false;
           });
         },
         (err) => {
-          console.log(err);
-          console.log('error');
+          alert('Failure to load data from server');
         }
       );
   }
