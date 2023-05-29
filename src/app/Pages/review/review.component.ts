@@ -25,6 +25,7 @@ import { part } from 'src/app/share/models/part.model';
 import { FormTm1Service } from './form-tm1.service';
 import { FormService } from 'src/app/share/services/form/form.service';
 import { SketchService } from './service/sketch.service';
+import { Router } from '@angular/router';
 (<any>pdfMake).vfs = pdfFonts.pdfMake.vfs;
 
 interface formInfo {
@@ -50,7 +51,8 @@ export class ReviewComponent implements OnInit {
     private paramService: ParamValueService,
     private reportIndexService: ReportIndexesService,
     private formService: FormService,
-    private sketchService: SketchService
+    private sketchService: SketchService,
+    private router: Router
   ) {}
   formInfo: formInfo[] = [];
   lsSketch: any[] = [];
@@ -7451,6 +7453,7 @@ export class ReviewComponent implements OnInit {
     this.isLoadingSaveButton = true;
     //lấy đúng dữ liệu đang được sử dụng
     this.mainData = this.localService.getMainData();
+    this.isSurveyorCheck = this.mainData.surveyorSign;
     this.generalParticularervice.getGeneralParticularsFromAPI().subscribe(
       (data) => {
         this.generalParticular = data;
@@ -7573,11 +7576,14 @@ export class ReviewComponent implements OnInit {
               this.data_part = data;
             }
             this.isLoadingSaveButton = false;
+            this.mainData.loading = false;
+            this.exportPdf();
           });
         },
         (err) => {
           console.log(err);
         }
       );
+    this.router.navigateByUrl('history');
   }
 }

@@ -12,6 +12,9 @@ import { NavigationEnd, Router } from '@angular/router';
 import { API_END_POINT } from 'src/environments/environment';
 import { GeneralParticular } from 'src/app/share/models/generalParticulars.model';
 import { Sketch } from 'src/app/share/models/sketches.model';
+import { PartsService } from 'src/app/share/services/parts.service';
+import { main } from 'src/app/share/models/local.model';
+import { LocalService } from 'src/app/share/services/local.service';
 
 @Component({
   selector: 'app-tm1',
@@ -19,11 +22,15 @@ import { Sketch } from 'src/app/share/models/sketches.model';
   styleUrls: ['./tm1.component.css'],
 })
 export class Tm1Component implements OnInit {
+  mainData!: main;
+
   constructor(
     public formService: FormService,
     private message: NzMessageService,
     private paramValueService: ParamValueService,
-    private router: Router
+    private router: Router,
+    private partsService: PartsService,
+    private localService: LocalService
   ) {}
 
   addRowValue: number = 0;
@@ -88,6 +95,7 @@ export class Tm1Component implements OnInit {
   listSaveSketches: FormData = new FormData();
 
   ngOnInit(): void {
+    this.mainData = this.localService.getMainData();
     this.paramValueService.getParamValueByType(11).subscribe((data) => {
       this.listFormCode = data;
     });
@@ -254,6 +262,7 @@ export class Tm1Component implements OnInit {
               result.id,
             ]);
             this.message.create('success', 'Save form success');
+            this.partsService.reloadParts(this.mainData.mainId);
           },
           error: (error) => {
             this.isLoadingSaveButton = false;
@@ -278,6 +287,7 @@ export class Tm1Component implements OnInit {
             this.isLoadingSaveButton = false;
             this.formService.isLoadingData = false;
             this.message.create('success', 'Save form success');
+            this.partsService.reloadParts(this.mainData.mainId);
           },
           error: (error) => {
             this.isLoadingSaveButton = false;
