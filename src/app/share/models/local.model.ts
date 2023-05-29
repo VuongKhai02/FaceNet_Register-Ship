@@ -5,6 +5,7 @@ export interface main {
   reportNumber: string;
   mainId: number;
   loading: boolean;
+  surveyorSign: boolean;
 }
 
 export interface partLocal {

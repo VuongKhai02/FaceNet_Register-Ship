@@ -134,25 +134,7 @@
           >
         </li>
 
-        <li nz-menu-item nzMatchRouter>
-          <a routerLink="review"
-            ><span nz-icon nzType="folder-view" nzTheme="outline"></span
-            ><span>Review</span></a
-          >
-        </li>
-        <li nz-menu-item nzMatchRouter>
-          <a routerLink="managing-default-values"
-            ><span nz-icon nzType="pic-center" nzTheme="outline"></span>
-            <span>Managing default values</span></a
-          >
-        </li>
-        <li nz-menu-item nzMatchRouter>
-          <a routerLink="history"
-            ><span nz-icon nzType="history" nzTheme="outline"></span
-            ><span>History</span></a
-          >
-        </li>
-        <li nz-menu-item nzMatchRouter>
+        <li *ngIf="mainData.editMode === true" nz-menu-item nzMatchRouter>
           <a
             nz-popover
             nzPopoverTitle="Sure to export"
@@ -166,15 +148,28 @@
         </li>
         <ng-template #exportTemplate>
           Surveyor's signature?
-          <input type="checkbox" />
+          <input [(ngModel)]="mainData.surveyorSign" type="checkbox" />
           <br />
           <br />
           <button (click)="closeExport()" nz-button nzType="default">
             Cancel
           </button>
           <nz-divider nzType="vertical"></nz-divider>
-          <button nz-button nzType="primary">Ok</button>
+          <button (click)="okExport()" nz-button nzType="primary">Ok</button>
         </ng-template>
+        <li nz-menu-item nzMatchRouter>
+          <a routerLink="managing-default-values"
+            ><span nz-icon nzType="pic-center" nzTheme="outline"></span>
+            <span>Managing default values</span></a
+          >
+        </li>
+        <li nz-menu-item nzMatchRouter>
+          <a routerLink="history"
+            ><span nz-icon nzType="history" nzTheme="outline"></span
+            ><span>History</span></a
+          >
+        </li>
+
         <li nz-menu-item nzMatchRouter>
           <a
             nz-popconfirm

@@ -247,5 +247,11 @@ export class AppComponent implements OnInit {
     this.exportVisible = false;
   }
 
+  okExport() {
+    this.router.navigateByUrl('review');
+    this.mainData.loading = true;
+    this.exportVisible = false;
+  }
+
   cancel() {}
 }

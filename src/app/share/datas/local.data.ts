@@ -7,6 +7,7 @@ export var mainData: main = {
   reportNumber: '',
   mainId: 0,
   loading: false,
+  surveyorSign: false,
 };
 
 export var partsData: partLocal[] = [];
