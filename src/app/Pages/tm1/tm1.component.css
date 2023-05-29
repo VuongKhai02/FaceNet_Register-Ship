@@ -33,7 +33,7 @@ input {
 }
 .tb {
   position: relative;
-  height: 20px;
+  transition: all 1s ease;
 }
 .tb td {
   text-align: center;
@@ -77,17 +77,112 @@ input::-webkit-inner-spin-button {
   white-space: nowrap;
 }
 
-.tb:hover .plus-icon {
-  display: inline-block;
-}
-
-.tb:active {
-  cursor: pointer;
-  z-index: 99999;
-  position: relative;
-}
-
 input.ng-dirty.ng-invalid {
   color: red;
   border-color: red;
+}
+
+.ant-table-tbody > tr.ant-table-row:hover > td {
+  background: none;
+}
+
+.table-header-right {
+  position: sticky;
+  right: 0;
+  z-index: 2;
+  border-left: 1px solid #f0f0f0;
+}
+
+.table-body-right {
+  position: sticky;
+  right: 0;
+  z-index: 2;
+  background-color: #f0f0f0;
+  border-left: 1px solid #f0f0f0;
+}
+
+.table-body-left {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background-color: #f0f0f0;
+  border-left: 1px solid #f0f0f0;
+  cursor: pointer;
+}
+
+.form-code {
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px;
+}
+
+.import-excel {
+  display: block;
+  background-color: rgb(20, 139, 250);
+  border: 0;
+  cursor: pointer;
+  color: white;
+  width: max-content;
+  padding: 4px 15px;
+}
+
+.preview-container {
+  position: relative;
+  border: 1px #000 solid;
+  border-radius: 5px;
+  padding: 8px;
+  margin-top: 25px;
+}
+
+.preview-title {
+  position: absolute;
+  top: -27px;
+  left: 27px;
+  background-color: #fff;
+}
+
+.preview-sketches {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.preview-image {
+  position: relative;
+  width: 32%;
+  height: 300px;
+  margin-left: 1%;
+  margin-top: 20px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.preview-sketches-overlay {
+  display: none;
+  position: absolute;
+  width: 100%;
+  height: 300px;
+  top: 0;
+  left: 0;
+  background-color: #f0f0f0;
+  transition: all 3s ease-in-out;
+}
+
+.preview-sketches :hover .preview-sketches-overlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.3);
+  transition: all 3s ease-in-out;
+}
+
+.delete-button {
+  font-size: 32px;
+  color: #f0f0f0;
+  transition: all 0.3s ease-in-out;
+}
+
+.delete-button:hover {
+  cursor: pointer;
+  font-size: 38px;
 }

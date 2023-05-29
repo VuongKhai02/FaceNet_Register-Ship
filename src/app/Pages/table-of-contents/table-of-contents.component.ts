@@ -65,6 +65,7 @@ export class TableOfContentsComponent implements OnInit {
               });
             }
             this.parts = this.parts.sort((a, b) => a.partIndex - b.partIndex);
+            this.mainData.loading = false;
           },
           (err) => {
             console.log(err);
@@ -94,10 +95,6 @@ export class TableOfContentsComponent implements OnInit {
     if (num === 0) {
       this.message.create('error', 'This is the first part');
     } else {
-      // let temporaryPart: partLocal = this.parts[num - 1];
-      // this.parts.splice(num - 1, 1, this.parts[num]);
-      // this.parts.splice(num, 1, temporaryPart);
-      // this.message.create('success', 'Move up success');
       let rIUpId: { id: number; name: string; index: number } = {
         id: this.parts[num - 1].id,
         name: this.parts[num - 1].partName,
@@ -131,37 +128,108 @@ export class TableOfContentsComponent implements OnInit {
     }
   }
 
-  moveUpForm(num1: any, num2: any) {
-    // if (num2 === 0) {
-    //   this.message.create('error', 'This is the first form of part');
-    // } else {
-    //   let temporaryForm: string = this.parts[num1].forms[num2 - 1];
-    //   this.parts[num1].forms.splice(num2 - 1, 1, this.parts[num1].forms[num2]);
-    //   this.parts[num1].forms.splice(num2, 1, temporaryForm);
-    //   this.message.create('success', 'Move up success');
-    // }
+  tmName: string = '';
+
+  moveUpForm(i: number, j: number) {
+    this.mainData.loading = true;
+    let changeForm: { type: string; id: number; index: number }[] = [];
+    let type = this.parts[i].forms[j].type.toLowerCase();
+    let type2 = this.parts[i].forms[j - 1].type.toLowerCase();
+    let formType1 = `form_${
+      type === 'tm2(i)' || type === 'tm2(ii)'
+        ? 'tm2'
+        : this.parts[i].forms[j].type.toLowerCase()
+    }`;
+    let formType2 = `form_${
+      type2 === 'tm2(i)' || type2 === 'tm2(ii)'
+        ? 'tm2'
+        : this.parts[i].forms[j - 1].type.toLowerCase()
+    }`;
+    changeForm.push({
+      type: formType1,
+      id: this.parts[i].forms[j].formID,
+      index: this.parts[i].forms[j].index,
+    });
+    changeForm.push({
+      type: formType2,
+      id: this.parts[i].forms[j - 1].formID,
+      index: this.parts[i].forms[j - 1].index,
+    });
+    this.reportIndexService
+      .putForm(changeForm[0].type, changeForm[0].id, changeForm[1].index)
+      .subscribe(
+        (data) => {
+          this.reportIndexService
+            .putForm(changeForm[1].type, changeForm[1].id, changeForm[0].index)
+            .subscribe(
+              (data) => {
+                this.ngOnInit();
+                this.mainData.loading = false;
+              },
+              (err) => {
+                console.log(err);
+                this.mainData.loading = false;
+                this.message.create('error', 'error');
+              }
+            );
+        },
+        (err) => {
+          console.log(err);
+          this.mainData.loading = false;
+          this.message.create('error', 'error');
+        }
+      );
   }
 
-  moveDownPart(num: any) {
-    // if (num === this.parts.length - 1) {
-    //   this.message.create('error', 'This is the last part');
-    // } else {
-    //   let temporaryPart: part = this.parts[num + 1];
-    //   this.parts.splice(num + 1, 1, this.parts[num]);
-    //   this.parts.splice(num, 1, temporaryPart);
-    //   this.message.create('success', 'Move down success');
-    // }
-  }
-
-  moveDownForm(num1: any, num2: any) {
-    // if (num2 === this.parts[num1].forms.length - 1) {
-    //   this.message.create('error', 'This is the last form of part');
-    // } else {
-    //   let temporaryForm: string = this.parts[num1].forms[num2 + 1];
-    //   this.parts[num1].forms.splice(num2 + 1, 1, this.parts[num1].forms[num2]);
-    //   this.parts[num1].forms.splice(num2, 1, temporaryForm);
-    //   this.message.create('success', 'Move down success');
-    // }
+  moveDownForm(i: number, j: number) {
+    this.mainData.loading = true;
+    let changeForm: { type: string; id: number; index: number }[] = [];
+    let type = this.parts[i].forms[j].type.toLowerCase();
+    let type2 = this.parts[i].forms[j + 1].type.toLowerCase();
+    let formType1 = `form_${
+      type === 'tm2(i)' || type === 'tm2(ii)'
+        ? 'tm2'
+        : this.parts[i].forms[j].type.toLowerCase()
+    }`;
+    let formType2 = `form_${
+      type2 === 'tm2(i)' || type2 === 'tm2(ii)'
+        ? 'tm2'
+        : this.parts[i].forms[j + 1].type.toLowerCase()
+    }`;
+    changeForm.push({
+      type: formType1,
+      id: this.parts[i].forms[j].formID,
+      index: this.parts[i].forms[j].index,
+    });
+    changeForm.push({
+      type: formType2,
+      id: this.parts[i].forms[j + 1].formID,
+      index: this.parts[i].forms[j + 1].index,
+    });
+    this.reportIndexService
+      .putForm(changeForm[0].type, changeForm[0].id, changeForm[1].index)
+      .subscribe(
+        (data) => {
+          this.reportIndexService
+            .putForm(changeForm[1].type, changeForm[1].id, changeForm[0].index)
+            .subscribe(
+              (data) => {
+                this.ngOnInit();
+                this.mainData.loading = false;
+              },
+              (err) => {
+                console.log(err);
+                this.mainData.loading = false;
+                this.message.create('error', 'error');
+              }
+            );
+        },
+        (err) => {
+          console.log(err);
+          this.mainData.loading = false;
+          this.message.create('error', 'error');
+        }
+      );
   }
 
   editPart(i: number) {
@@ -178,46 +246,30 @@ export class TableOfContentsComponent implements OnInit {
       .subscribe((data) => {});
   }
 
+  /**
+   * Hàm đệ quy dùng để thay đổi vị trí các parts
+   * @param temporaryParts : biến chứa các part cần thay đổi
+   * @param j : biến đếm
+   */
+  changeLocationPart(
+    temporaryParts: { id: number; name: string; index: number }[],
+    j: number
+  ) {
+    this.reportIndexService
+      .updateReportIndexToAPI(temporaryParts[j].id, {
+        item: temporaryParts[j].name,
+        partIndex: temporaryParts[j].index,
+      })
+      .subscribe((data) => {
+        if (j === temporaryParts.length - 1) {
+          this.ngOnInit();
+        }
+      });
+    this.changeLocationPart(temporaryParts, j + 1);
+  }
+
   drop(event: CdkDragDrop<string[]>) {
-    // moveItemInArray(this.parts, event.previousIndex, event.currentIndex);
-    // let rIUpId: { id: number; name: string; index: number } = {
-    //   id: this.parts[event.previousIndex].id,
-    //   name: this.parts[event.previousIndex].partName,
-    //   index: this.parts[event.previousIndex].partIndex,
-    // };
-    // let rIDownId: { id: number; name: string; index: number } = {
-    //   id: this.parts[event.currentIndex].id,
-    //   name: this.parts[event.currentIndex].partName,
-    //   index: this.parts[event.currentIndex].partIndex,
-    // };
-    // this.reportIndexService
-    //   .updateReportIndexToAPI(rIUpId.id, {
-    //     item: rIUpId.name,
-    //     partIndex: rIDownId.index,
-    //   })
-    //   .subscribe(
-    //     (data) => {
-    //       this.reportIndexService
-    //         .updateReportIndexToAPI(rIDownId.id, {
-    //           item: rIDownId.name,
-    //           partIndex: rIUpId.index,
-    //         })
-    //         .subscribe((data) => {
-    //           console.log(event.previousIndex);
-    //           console.log(event.currentIndex);
-    //           console.log('---------');
-    //           console.log(this.parts[event.previousIndex]);
-    //           console.log(this.parts[event.currentIndex]);
-    //           console.log('---------');
-    //           console.log(rIUpId.index);
-    //           console.log(rIDownId.index);
-    //           this.ngOnInit();
-    //         });
-    //     },
-    //     (err) => {
-    //       console.log(err);
-    //     }
-    //   );
+    this.mainData.loading = true;
     if (event.previousIndex < event.currentIndex) {
       let temporaryParts: { id: number; name: string; index: number }[] = [];
       for (let i: number = event.previousIndex; i <= event.currentIndex; i++) {
@@ -235,16 +287,7 @@ export class TableOfContentsComponent implements OnInit {
           });
         }
       }
-      for (let i: number = 0; i < temporaryParts.length; i++) {
-        this.reportIndexService
-          .updateReportIndexToAPI(temporaryParts[i].id, {
-            item: temporaryParts[i].name,
-            partIndex: temporaryParts[i].index,
-          })
-          .subscribe((data) => {
-            this.ngOnInit();
-          });
-      }
+      this.changeLocationPart(temporaryParts, 0);
     } else {
       let temporaryParts: { id: number; name: string; index: number }[] = [];
       for (let i: number = event.previousIndex; i >= event.currentIndex; i--) {
@@ -262,18 +305,59 @@ export class TableOfContentsComponent implements OnInit {
           });
         }
       }
-      for (let i: number = 0; i < temporaryParts.length; i++) {
-        this.reportIndexService
-          .updateReportIndexToAPI(temporaryParts[i].id, {
-            item: temporaryParts[i].name,
-            partIndex: temporaryParts[i].index,
-          })
-          .subscribe((data) => {
-            this.ngOnInit();
-          });
-      }
+      this.changeLocationPart(temporaryParts, 0);
     }
   }
+
+  deleteTm(i: number, j: number, i2: number, j2: number) {
+    if (j === -1) {
+      this.parts[i2].forms.splice(j2, 1);
+    } else {
+      this.mainData.loading = true;
+      this.reportIndexService.deleteForm(i, j).subscribe(
+        (data) => {
+          this.parts.splice(0, this.parts.length);
+          this.reportIndexService
+            .getReportIndexFromAPI(this.mainData.mainId)
+            .subscribe(
+              (data) => {
+                this.reportIndex = data;
+                for (
+                  let i: number = 0;
+                  i < this.reportIndex.parts.length;
+                  i++
+                ) {
+                  this.parts.push({
+                    id: this.reportIndex.parts[i].id,
+                    partIndex: this.reportIndex.parts[i].partIndex,
+                    partName: this.reportIndex.parts[i].item,
+                    forms: this.reportIndex.parts[i].forms.sort(
+                      (a, b) => a.index - b.index
+                    ),
+                    visible: false,
+                    edit: false,
+                  });
+                  this.parts = this.parts.sort(
+                    (a, b) => a.partIndex - b.partIndex
+                  );
+                  this.mainData.loading = false;
+                }
+              },
+              (err) => {
+                console.log(err);
+                this.mainData.loading = false;
+              }
+            );
+        },
+        (err) => {
+          this.mainData.loading = false;
+          this.message.create('error', 'error');
+        }
+      );
+    }
+  }
+
+  dropForm(event: CdkDragDrop<string[]>) {}
 
   cancel() {}
 }

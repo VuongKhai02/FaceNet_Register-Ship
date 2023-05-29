@@ -1,11 +1,9 @@
-import { measurementTM5 } from './measurementTM5.model';
+import { StructuralTM5List } from './structuralTM5List.model';
 
 export interface formTM5 {
   code: string;
-  description: string;
-  name: string;
   locationOfStructure: string;
   tankHolDescription: string;
   frameNo: string;
-  measurementTM5List: measurementTM5[];
+  structuralTM5List: StructuralTM5List[];
 }

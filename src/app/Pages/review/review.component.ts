@@ -1,23 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { TableTm1_Template } from './tableTemplate/tableTm1_template';
-import { tableTm2i_template } from './tableTemplate/tableTm2i_template';
-import { tableTm2ii_template } from './tableTemplate/tableTm2ii_template';
-import { tableTm3_template } from './tableTemplate/tableTm3_template';
-import { tableTm4_template } from './tableTemplate/tableTm4_template';
-import { tableTm5_template } from './tableTemplate/tableTm5_template';
-import { tableTm6_template } from './tableTemplate/tableTm6_template';
-import { tableTm7_template } from './tableTemplate/tableTm7_template';
-import { tableTm1_template_c } from './tableTemplate/tableTm1_template_c';
-
 import {
   Margins,
   PageOrientation,
   PageSize,
   Alignment,
   Decoration,
-  Column,
   PageBreak,
 } from 'pdfmake/interfaces';
+import { zip } from 'rxjs';
 import * as pdfMake from 'pdfmake/build/pdfmake';
 import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 import { ShipService } from 'src/app/share/services/ships.service';
@@ -31,28 +21,21 @@ import { main } from 'src/app/share/models/local.model';
 import { ParamValueService } from 'src/app/share/services/param-value.service';
 import { ReportIndexesService } from 'src/app/share/services/report-indexes.service';
 import { ReportIndex } from 'src/app/share/models/report-index.model';
-import { formTM1 } from 'src/app/share/models/form/formTM1.model';
 import { part } from 'src/app/share/models/part.model';
+import { FormTm1Service } from './form-tm1.service';
+import { FormService } from 'src/app/share/services/form/form.service';
+import { SketchService } from './service/sketch.service';
+import { Router } from '@angular/router';
 (<any>pdfMake).vfs = pdfFonts.pdfMake.vfs;
 
-interface TM4 {
-  headerr: string;
-  typeForm: string;
-  id: number;
-  structuralMember: string;
-  item: string;
-  originalThickness: number;
-  maximumAllowableDim: number;
-  gaugedP: number;
-  gaugedS: number;
-  diminutionPmm: number;
-  diminutionPpercent: number;
-  diminutionSmm: number;
-  diminutionSpercent: number;
-  isStandardP: boolean;
-  isStandardS: boolean;
+interface formInfo {
+  formType: string;
+  formId: number;
 }
-
+interface id_index_part {
+  id: number;
+  index: number;
+}
 @Component({
   selector: 'app-review',
   templateUrl: './review.component.html',
@@ -60,15 +43,20 @@ interface TM4 {
 })
 export class ReviewComponent implements OnInit {
   constructor(
-    private shipSevice: ShipService,
+    private dataTm1S: FormTm1Service,
     private generalParticularervice: GetDataService,
-    private certificateService: CertificateService,
     private localService: LocalService,
     private paramService: ParamValueService,
-    private reportIndexService: ReportIndexesService
+    private reportIndexService: ReportIndexesService,
+    private formService: FormService,
+    private sketchService: SketchService,
+    private router: Router
   ) {}
-
-  tableTm1_template = new TableTm1_Template().tableTm1_template;
+  formInfo: formInfo[] = [];
+  lsSketch: any[] = [];
+  report_index: any;
+  id_index_part: id_index_part[] = [];
+  data_part: any[] = [];
 
   inShipName: string = '';
   inIMO: string = '';
@@ -96,23 +84,26 @@ export class ReviewComponent implements OnInit {
   reportIndex!: ReportIndex;
   ship: ship[] = [];
   generalParticular: GeneralParticular[] = [];
-  books: any = [];
   certificate: certificate[] = [];
 
   parts: part[] = [];
-  formTm1: formTM1[] = [];
+  partIndex_ToC: number = 1;
+  partIndex_formTm: number = 1;
 
-  imgN: string =
-    'https://scontent.fhan17-1.fna.fbcdn.net/v/t1.6435-9/67246509_111387816859260_2386012619652726784_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=e3f864&_nc_ohc=mq_yiuP1cvEAX8MvYsU&_nc_ht=scontent.fhan17-1.fna&oh=00_AfDw51jhjfX5tfjXBaYXDj8k51y19mb9SGycIt5cqMpoVw&oe=6482AE6A';
+  isLoadingSaveButton: boolean = false;
   isSurveyorCheck: boolean = false;
 
   ckeckSurveyorSignature() {
     this.isSurveyorCheck = !this.isSurveyorCheck;
   }
+
+  convertToNumber(str: string): number {
+    return Number(str);
+  }
   exportPdf() {
     var checkSignature = this.isSurveyorCheck;
     this.ckeckSurveyorSignature();
-    // Defind Table of content
+    // Define Table of content
     var tableOfContent = {
       headerRow: 1,
       widths: ['7%', '78%', '15%'],
@@ -134,31 +125,35 @@ export class ReviewComponent implements OnInit {
             style: 'txt_center',
           },
         ],
-        ...this.books.map((book: any) => [book.id, book.name, book.author]),
+        ...this.reportIndex.parts
+          .sort((a, b) => a.partIndex - b.partIndex)
+          .map((x) => [
+            {
+              text: `${this.partIndex_ToC++}`,
+              style: ['txt_center'],
+            },
+            { text: `${x.item}` },
+            { text: `....` },
+          ]),
       ],
     };
-    // Define tables
-    var tableTm1 = this.tableTm1_template;
-    var tableTm1_c = tableTm1_template_c;
-    var tableTm2i = tableTm2i_template;
-    var tableTm2ii = tableTm2ii_template;
-    var tableTm3 = tableTm3_template;
-    var tableTm4 = tableTm4_template;
-    var tableTm5 = tableTm5_template;
-    var tableTm6 = tableTm6_template;
-    var tableTm7 = tableTm7_template;
+    //Define sizeA4
+    const pageSizee = {
+      width: 800,
+      height: 925,
+    };
 
     // Define pdfDocument
     var pdfDocument = {
       footer: function (currentPage: any, pageCount: any) {
         return {
           columns: [
-            {
-              alignment: 'left' as Alignment,
-              text: "Operator's signature:.................",
-            },
-
-            // this.a==true ? [{ table:  table  }] : [{table:  table1 }],
+            [
+              {
+                alignment: 'left' as Alignment,
+                text: "Operator's signature:.................",
+              },
+            ],
             checkSignature == true
               ? [
                   {
@@ -167,7 +162,6 @@ export class ReviewComponent implements OnInit {
                   },
                 ]
               : [],
-
             [
               {
                 alignment: 'right' as Alignment,
@@ -187,117 +181,9 @@ export class ReviewComponent implements OnInit {
       pageOrientation: 'portrait' as PageOrientation,
       pageSize: 'A4' as PageSize,
       content: [
+        //General Particular
         [
           {
-            style: ['txt_center', 'fontS15', { color: 'blue' }],
-            text: 'VIET NAM MARINE INDUSTRY AND SERVICE JOINT STOCK COMPANY',
-          },
-
-          {
-            table: {
-              widths: ['*'],
-              body: [
-                [
-                  {
-                    border: [false, false, false, true],
-                    text: '',
-                    margin: [0, 1, 0, 0], // Khoảng cách giữa đường kẻ và văn bản
-                  },
-                ],
-              ],
-            },
-          },
-          {
-            table: {
-              widths: ['*'],
-              body: [
-                [
-                  {
-                    border: [false, false, false, true],
-                    text: '',
-                    margin: [0, 0, 0, 5], // Khoảng cách giữa đường kẻ và văn bản
-                  },
-                ],
-              ],
-            },
-          },
-          {
-            text: 'ULTRASONIC THICKNESS MEASUREMENT REPORT',
-            style: ['txt_center', 'mg_t', 'fontS15'],
-          },
-          {
-            text: `${this.generalParticular[0].surveyType}`,
-            style: ['txt_center', 'fontS15', { color: 'blue' }],
-          },
-          {
-            text: `SHIP'S NAME: `,
-            style: ['txt_center', 'mg_25', 'fontS18'],
-          },
-          {
-            text: `${this.inShipName}`,
-            style: ['txt_center', 'fontS30'],
-          },
-          {
-            columns: [
-              {
-                text: 'IMO No.',
-                style: ['mg_25'],
-              },
-              {
-                text: `${this.inIMO}`,
-                decoration: 'underline' as Decoration,
-                style: ['mg_25'],
-                bold: true,
-              },
-            ],
-            style: ['fontS18', 'mg_l_90'],
-          },
-          {
-            style: ['fontS18', 'mg_l_90'],
-            columns: [
-              {
-                text: 'CLASS ID. ',
-              },
-              {
-                text: `${this.inABS}`,
-                decoration: 'underline' as Decoration,
-                bold: true,
-              },
-            ],
-          },
-          {
-            columns: [
-              {
-                text: 'REPORT No. ',
-              },
-              {
-                text: `VMC.UTM/12/12/32 `,
-                decoration: 'underline' as Decoration,
-                bold: true,
-              },
-            ],
-            style: ['fontS18', 'mg_l_90'],
-          },
-          {
-            table: {
-              widths: ['*'],
-              body: [
-                [
-                  {
-                    border: [false, false, false, true],
-                    text: '',
-                    margin: [0, 250, 0, 0], // Khoảng cách giữa đường kẻ và văn bản
-                    style: ['mg_25'],
-                  },
-                ],
-              ],
-            },
-          },
-        ],
-        // this.a==true ? [{ table:  table  }] : [{table:  table1 }],
-        [
-          {
-            pageBreak: 'before' as PageBreak,
             text: 'GENERAL PARTICULAR',
             style: ['header', 'fontS18', 'txt_center'],
             bold: true,
@@ -406,7 +292,7 @@ export class ReviewComponent implements OnInit {
                   {
                     border: [false, false, false, true],
                     text: '',
-                    margin: [0, 5, 0, 5], // Khoảng cách giữa đường kẻ và văn bản
+                    margin: [0, 5, 0, 5],
                   },
                 ],
               ],
@@ -417,7 +303,7 @@ export class ReviewComponent implements OnInit {
             margin: [0, 10, 0, 10] as Margins,
           },
           {
-            text: 'VIET NAM MARINE INDUSTRY AND SERVICE JOINT STOCK COMPANY :',
+            text: 'VIET NAM MARINE INDUSTRY AND SERVICE JOINT STOCK COMPANY ',
             bold: true,
             style: ['txt_center', 'fontS11'],
           },
@@ -554,7 +440,7 @@ export class ReviewComponent implements OnInit {
                 bold: true,
               },
               {
-                text: `consisting of :  Sheets`,
+                text: `consisting of : ... Sheets`,
               },
             ],
             style: ['mg_t'],
@@ -658,7 +544,7 @@ export class ReviewComponent implements OnInit {
             columns: [
               {
                 style: ['mg_l_90', 'fontS11'],
-                text: 'IMO No.',
+                text: 'IMO No.:',
               },
               {
                 text: `${this.inIMO}`,
@@ -672,7 +558,7 @@ export class ReviewComponent implements OnInit {
             columns: [
               {
                 style: ['mg_l_90', 'fontS11'],
-                text: 'CLASS ID. ',
+                text: 'CLASS ID.:',
               },
               {
                 text: `${this.inABS}`,
@@ -685,7 +571,7 @@ export class ReviewComponent implements OnInit {
           {
             columns: [
               {
-                text: 'REPORT No. ',
+                text: 'REPORT No.: ',
                 style: ['mg_l_90', 'fontS11'],
               },
               {
@@ -709,318 +595,7866 @@ export class ReviewComponent implements OnInit {
               },
             ],
             style: ['mg_t_8'],
-            // columnGap: -100,
           },
           { table: tableOfContent, style: ['mg_t_8', 'fontS11'] },
         ],
-        // pageTitle
+        //Content
         [
-          {
-            pageBreak: 'before' as PageBreak,
-            decoration: 'underline' as Decoration,
-            alignment: 'center' as Alignment,
-            style: ['fontS30', 'mg_50'],
-            text: 'PART 1',
-            bold: true,
-          },
-          {
-            decoration: 'underline' as Decoration,
-            text: 'MAIN DECK',
-            alignment: 'center' as Alignment,
-            style: ['fontS30'],
-            bold: true,
-          },
-        ],
+          this.data_part.map((x: any) => [
+            //Part cover
+            [
+              {
+                pageBreak: 'before' as PageBreak,
+                decoration: 'underline' as Decoration,
+                pageOrientation: 'portrait' as PageOrientation,
+                alignment: 'center' as Alignment,
+                style: ['fontS11', 'mg_50'],
+                text: `PART ${this.partIndex_formTm++}`,
+                bold: true,
+              },
+              {
+                text: `${x.item}`,
+                alignment: 'center' as Alignment,
+                style: ['fontS45'],
+                bold: true,
+              },
+            ],
+            //Form tm1
+            x.formList.map((y: any) =>
+              y.type == 'TM1'
+                ? [
+                    /*
+                  - y: form object in formList[]
+                  - a: index of lsSketch
+                  - b: sketch object in lsSketch[i]
+                  - lsSketh: listSketch
+                  */
+                    this.lsSketch.map((a) =>
+                      a.map((b: any) =>
+                        b.formId === y.id && b.formType == 'form_tm1'
+                          ? [
+                              //image
+                              {
+                                margin: [-20, -40, -20, -30] as Margins,
+                                //Trước phần tử này là chuyển sang trang mới, vì vậy trang có image là 1 trang mới
+                                pageBreak: 'before' as PageBreak,
+                                pageOrientation: 'landscape' as PageOrientation,
+                                fit: [pageSizee.width, pageSizee.height],
+                                image: `data:image/png;base64,${b.value}`,
+                              },
+                            ]
+                          : []
+                      )
+                    ),
+                    //form
+                    {
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      style: ['tableStyle', 'fontS8'],
+                      table: {
+                        headerRows: 10,
+                        //23 rows, 106.5%
+                        widths: [
+                          '45%',
+                          '6%',
+                          '4.5%',
+                          '3%',
+                          '3%',
+                          '3%',
+                          '3%',
+                          '1.5%',
+                          '3%',
+                          '3%',
+                          '1.5%',
+                          '3%',
+                          '3%',
+                          '3%',
+                          '3%',
+                          '1.5%',
+                          '3%',
+                          '3%',
+                          '1.5%',
+                          '3%',
+                          '3%',
+                          '3%',
+                        ],
+                        body: [
+                          //Table header
+                          [
+                            {
+                              text: `TM1-${y.code}(1 July 2023)`,
+                              style: ['txt_center'],
+                              colSpan: 22,
+                              alignment: 'right' as Alignment,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: '',
+                              colSpan: 22,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          // table info
+                          [
+                            {
+                              text: 'Report on THICKNESS MEASUREMENT of ALL DECK PLATING, ALL BOTTOM SHELL PLATING or SIDE SHELL PLATING',
+                              style: ['txt_center', 'fontS11'],
+                              colSpan: 22,
+                              decoration: 'underline' as Decoration,
+                              bold: true,
+                              margin: [0, 0, 0, 5] as Margins,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              colSpan: 22,
+                              text: '',
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: "Ship's name:",
+                              alignment: 'center' as Alignment,
+                              border: [false, false, false, false],
+                            },
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: `${this.inShipName}`,
+                              colSpan: 5,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {
+                              text: 'Class Identity No. ',
+                              colSpan: 3,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: `${this.inABS}`,
+                              colSpan: 5,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {
+                              text: 'Report No. ',
+                              colSpan: 3,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: `${this.generalParticular[0].reportNo}`,
+                              colSpan: 5,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              colSpan: 22,
+                              text: '',
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          // table content
+                          [
+                            {
+                              text: 'STRAKE POSITION',
+                              alignment: 'left' as Alignment,
+                              style: 'txt_center',
+                            },
+                            {
+                              text: `${y.strakePosition}`,
+                              colSpan: 21,
+                              rowSpan: 1,
+                              bold: true,
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              style: 'txt_center',
+                              text: 'PLATE POSITION',
+                              rowSpan: 3,
+                            },
+                            {
+                              style: 'txt_center',
+                              text: 'No. or Letter',
+                              rowSpan: 3,
+                            },
+                            {
+                              style: 'txt_center',
+                              text: 'Org.Thk.',
+                              rowSpan: 3,
+                            },
+                            {
+                              style: 'txt_center',
+                              text: 'Forward Reading',
+                              colSpan: 8,
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'Aft Reading',
+                              colSpan: 8,
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'Mean Dimunution (%)',
+                              colSpan: 2,
+                              rowSpan: 2,
+                            },
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'Max Alwb Dim',
+                              rowSpan: 2,
+                            },
+                          ],
+                          [
+                            {},
+                            {},
+                            {},
+                            {
+                              text: 'Gauged mm',
+                              colSpan: 2,
+                              style: 'txt_center',
+                            },
+                            {},
+                            {
+                              text: 'Diminution P',
+                              colSpan: 3,
+                              style: 'txt_center',
+                            },
+                            {},
+                            {},
+                            {
+                              text: 'Diminution S',
+                              colSpan: 3,
+                              style: 'txt_center',
+                            },
+                            {},
+                            {},
 
-        // Form
-        [
-          {
-            pageBreak: 'before' as PageBreak,
-            pageOrientation: 'landscape' as PageOrientation,
-            table: tableTm4,
-            style: ['tableStyle', 'fontS8'],
-          },
-        ],
-        {
-          image: 'snow',
-          pageBreak: 'before' as PageBreak,
-          margin: [-50, -50, 0, 0] as Margins,
-        },
-        // pageTitle
-        [
-          {
-            pageBreak: 'before' as PageBreak,
-            pageOrientation: 'portrait' as PageOrientation,
-            decoration: 'underline' as Decoration,
-            alignment: 'center' as Alignment,
-            style: ['fontS30', 'mg_50'],
-            text: 'PART 2',
-            bold: true,
-          },
-          {
-            decoration: 'underline' as Decoration,
-            text: 'MAIN DECK',
-            alignment: 'center' as Alignment,
-            style: ['fontS30'],
-            bold: true,
-          },
-        ],
-        // form
-        [
-          {
-            pageBreak: 'before' as PageBreak,
-            pageOrientation: 'landscape' as PageOrientation,
-            table: tableTm5,
-            style: ['tableStyle', 'fontS8'],
-          },
-        ],
+                            {
+                              text: 'Gauged (mm)',
+                              colSpan: 2,
+                              style: 'txt_center',
+                            },
+                            {},
+                            {
+                              text: 'Diminution P',
+                              colSpan: 3,
+                              style: 'txt_center',
+                            },
+                            {},
+                            {},
+                            {
+                              text: 'Diminution S',
+                              colSpan: 3,
+                              style: 'txt_center',
+                            },
+                            {},
+                            {},
+                            { text: '', colSpan: 2, style: 'txt_center' },
+                            {},
+                            { text: 'Max Alwb Dim' },
+                          ],
+                          [
+                            {},
+                            {},
+                            {},
+                            { text: 'P', style: 'txt_center' },
+                            { text: 'S', style: 'txt_center' },
+                            { text: 'mm', style: 'txt_center' },
+                            { text: '%', style: 'txt_center', colSpan: 2 },
+                            {},
+                            { text: 'mm', style: 'txt_center' },
+                            { text: '%', style: 'txt_center', colSpan: 2 },
+                            {},
 
-        // pageTitle
-        [
-          {
-            pageBreak: 'before' as PageBreak,
-            decoration: 'underline' as Decoration,
-            pageOrientation: 'portrait' as PageOrientation,
-            alignment: 'center' as Alignment,
-            style: ['fontS30', 'mg_50'],
-            text: 'PART 3',
-            bold: true,
-          },
-          {
-            decoration: 'underline' as Decoration,
-            text: 'MAIN DECK',
-            alignment: 'center' as Alignment,
-            style: ['fontS30'],
-            bold: true,
-          },
-        ],
-        // form
-        [
-          {
-            pageBreak: 'before' as PageBreak,
-            pageOrientation: 'landscape' as PageOrientation,
-            style: ['fontS8', 'tableStyleLarge'],
-            table: tableTm2i,
-          },
-        ],
+                            { text: 'P', style: 'txt_center' },
+                            { text: 'S', style: 'txt_center' },
+                            { text: 'mm', style: 'txt_center' },
+                            { text: '%', style: 'txt_center', colSpan: 2 },
+                            {},
+                            { text: 'mm', style: 'txt_center' },
+                            { text: '%', style: 'txt_center', colSpan: 2 },
+                            {},
 
-        // // pageTitle Tm2ii
-        [
-          {
-            pageBreak: 'before' as PageBreak,
-            decoration: 'underline' as Decoration,
-            pageOrientation: 'portrait' as PageOrientation,
-            alignment: 'center' as Alignment,
-            style: ['fontS30', 'mg_50'],
-            text: 'PART 4',
-            bold: true,
-          },
-          {
-            decoration: 'underline' as Decoration,
-            text: 'MAIN DECK',
-            alignment: 'center' as Alignment,
-            style: ['fontS30'],
-            bold: true,
-          },
-        ],
-        // form
-        [
-          {
-            style: ['fontS8', 'tableStyleLarge'],
-            pageBreak: 'before' as PageBreak,
-            pageOrientation: 'landscape' as PageOrientation,
-            table: tableTm2ii,
-          },
-        ],
+                            { text: 'P', style: 'txt_center' },
+                            { text: 'S', style: 'txt_center' },
+                            { text: 'mm', style: 'txt_center' },
+                          ],
 
-        // // pageTitle Tm3
-        [
-          {
-            pageBreak: 'before' as PageBreak,
-            decoration: 'underline' as Decoration,
-            pageOrientation: 'portrait' as PageOrientation,
-            alignment: 'center' as Alignment,
-            style: ['fontS30', 'mg_50'],
-            text: 'PART 5',
-            bold: true,
-          },
-          {
-            decoration: 'underline' as Decoration,
-            text: 'MAIN DECK',
-            alignment: 'center' as Alignment,
-            style: ['fontS30'],
-            bold: true,
-          },
-        ],
-        // form
-        [
-          {
-            style: ['fontS8', 'tableStyleLarge'],
-            pageBreak: 'before' as PageBreak,
-            pageOrientation: 'landscape' as PageOrientation,
-            table: tableTm3,
-          },
-        ],
+                          ...y.measurementTM1DTOList?.map((z: any) => [
+                            { text: `${z.platePosition ?? ''}` },
+                            {
+                              style: ['txt_center'],
+                              text: `${z.noOrLetter ?? ''}`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              text: `${
+                                z.forwardReadingMeasurementDetail
+                                  .originalThickness ?? ''
+                              }`,
+                            },
 
-        // // pageTitle Tm6
-        [
-          {
-            pageBreak: 'before' as PageBreak,
-            decoration: 'underline' as Decoration,
-            pageOrientation: 'portrait' as PageOrientation,
-            alignment: 'center' as Alignment,
-            style: ['fontS30', 'mg_50'],
-            text: 'PART 6',
-            bold: true,
-          },
-          {
-            decoration: 'underline' as Decoration,
-            text: 'MAIN DECK',
-            alignment: 'center' as Alignment,
-            style: ['fontS30'],
-            bold: true,
-          },
-        ],
-        // form
-        [
-          {
-            style: ['fontS8'],
-            pageBreak: 'before' as PageBreak,
-            pageOrientation: 'landscape' as PageOrientation,
-            table: tableTm6,
-          },
-        ],
+                            {
+                              style: ['txt_center'],
+                              text: `${
+                                z.forwardReadingMeasurementDetail.gaugedP ?? ''
+                              }`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              text: `${
+                                z.forwardReadingMeasurementDetail.gaugedS ?? ''
+                              }`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              text: `${
+                                Number(
+                                  this.formService.calculateForMm(
+                                    z.forwardReadingMeasurementDetail
+                                      .originalThickness,
+                                    z.forwardReadingMeasurementDetail.gaugedP
+                                  )
+                                ) == 0.0
+                                  ? ''
+                                  : this.formService.calculateForMm(
+                                      z.forwardReadingMeasurementDetail
+                                        .originalThickness,
+                                      z.forwardReadingMeasurementDetail.gaugedP
+                                    )
+                              }`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              border: [true, true, false, true],
+                              text: `${
+                                Number.isNaN(
+                                  Number(
+                                    this.formService.calculateForPercent(
+                                      z.forwardReadingMeasurementDetail
+                                        .originalThickness,
+                                      z.forwardReadingMeasurementDetail.gaugedP
+                                    )
+                                  )
+                                )
+                                  ? ''
+                                  : Number(
+                                      this.formService.calculateForPercent(
+                                        z.forwardReadingMeasurementDetail
+                                          .originalThickness,
+                                        z.forwardReadingMeasurementDetail
+                                          .gaugedP
+                                      )
+                                    )
+                              }`,
+                            },
+                            //R
+                            {
+                              style: ['txt_center'],
+                              border: [false, true, true, true],
+                              text:
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.forwardReadingMeasurementDetail
+                                      .originalThickness,
+                                    z.forwardReadingMeasurementDetail.gaugedP
+                                  )
+                                ) >=
+                                  this.convertToNumber(
+                                    this.formService.threePartsFourOfMaxAlwbDim(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z.afterReadingMeasurementDetail
+                                          .originalThickness,
+                                        z.afterReadingMeasurementDetail.percent
+                                      )
+                                    )
+                                  ) &&
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.forwardReadingMeasurementDetail
+                                      .originalThickness,
+                                    z.forwardReadingMeasurementDetail.gaugedP
+                                  )
+                                ) <=
+                                  this.convertToNumber(
+                                    this.formService.calculateForMaxAlwbDimForString(
+                                      z.afterReadingMeasurementDetail
+                                        .originalThickness,
+                                      z.afterReadingMeasurementDetail.percent
+                                    )
+                                  )
+                                  ? 'S'
+                                  : this.convertToNumber(
+                                      this.formService.calculateForMm(
+                                        z.forwardReadingMeasurementDetail
+                                          .originalThickness,
+                                        z.forwardReadingMeasurementDetail
+                                          .gaugedP
+                                      )
+                                    ) >
+                                    this.convertToNumber(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z.afterReadingMeasurementDetail
+                                          .originalThickness,
+                                        z.afterReadingMeasurementDetail.percent
+                                      )
+                                    )
+                                  ? 'R'
+                                  : '',
+                            },
+                            {
+                              style: ['txt_center'],
+                              text: `${
+                                Number(
+                                  this.formService.calculateForMm(
+                                    z.forwardReadingMeasurementDetail
+                                      .originalThickness,
+                                    z.forwardReadingMeasurementDetail.gaugedS
+                                  )
+                                ) == 0.0
+                                  ? ''
+                                  : this.formService.calculateForMm(
+                                      z.forwardReadingMeasurementDetail
+                                        .originalThickness,
+                                      z.forwardReadingMeasurementDetail.gaugedS
+                                    )
+                              }`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              border: [true, true, false, true],
+                              text: `${
+                                Number.isNaN(
+                                  Number(
+                                    this.formService.calculateForPercent(
+                                      z.forwardReadingMeasurementDetail
+                                        .originalThickness,
+                                      z.forwardReadingMeasurementDetail.gaugedS
+                                    )
+                                  )
+                                )
+                                  ? ''
+                                  : Number(
+                                      this.formService.calculateForPercent(
+                                        z.forwardReadingMeasurementDetail
+                                          .originalThickness,
+                                        z.forwardReadingMeasurementDetail
+                                          .gaugedS
+                                      )
+                                    )
+                              }`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              border: [false, true, true, true],
+                              text:
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.forwardReadingMeasurementDetail
+                                      .originalThickness,
+                                    z.forwardReadingMeasurementDetail.gaugedS
+                                  )
+                                ) >=
+                                  this.convertToNumber(
+                                    this.formService.threePartsFourOfMaxAlwbDim(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z.afterReadingMeasurementDetail
+                                          .originalThickness,
+                                        z.afterReadingMeasurementDetail.percent
+                                      )
+                                    )
+                                  ) &&
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.forwardReadingMeasurementDetail
+                                      .originalThickness,
+                                    z.forwardReadingMeasurementDetail.gaugedS
+                                  )
+                                ) <=
+                                  this.convertToNumber(
+                                    this.formService.calculateForMaxAlwbDimForString(
+                                      z.afterReadingMeasurementDetail
+                                        .originalThickness,
+                                      z.afterReadingMeasurementDetail.percent
+                                    )
+                                  )
+                                  ? 'S'
+                                  : this.convertToNumber(
+                                      this.formService.calculateForMm(
+                                        z.forwardReadingMeasurementDetail
+                                          .originalThickness,
+                                        z.forwardReadingMeasurementDetail
+                                          .gaugedS
+                                      )
+                                    ) >
+                                    this.convertToNumber(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z.afterReadingMeasurementDetail
+                                          .originalThickness,
+                                        z.afterReadingMeasurementDetail.percent
+                                      )
+                                    )
+                                  ? 'R'
+                                  : '',
+                            },
 
-        //  pageTitle Tm7
-        [
-          {
-            pageBreak: 'before' as PageBreak,
-            decoration: 'underline' as Decoration,
-            pageOrientation: 'portrait' as PageOrientation,
-            alignment: 'center' as Alignment,
-            style: ['fontS30', 'mg_50'],
-            text: 'PART 7',
-            bold: true,
-          },
-          {
-            decoration: 'underline' as Decoration,
-            text: 'MAIN DECK',
-            alignment: 'center' as Alignment,
-            style: ['fontS30'],
-            bold: true,
-          },
-        ],
+                            //after
+                            {
+                              style: ['txt_center'],
+                              text: `${
+                                z.afterReadingMeasurementDetail.gaugedP ?? ''
+                              }`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              text: `${
+                                z.afterReadingMeasurementDetail.gaugedS ?? ''
+                              }`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              text: `${
+                                Number(
+                                  this.formService.calculateForMm(
+                                    z.afterReadingMeasurementDetail
+                                      .originalThickness,
+                                    z.afterReadingMeasurementDetail.gaugedP
+                                  )
+                                ) == 0.0
+                                  ? ''
+                                  : this.formService.calculateForMm(
+                                      z.afterReadingMeasurementDetail
+                                        .originalThickness,
+                                      z.afterReadingMeasurementDetail.gaugedP
+                                    )
+                              }`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              border: [true, true, false, true],
+                              text: `${
+                                Number.isNaN(
+                                  Number(
+                                    this.formService.calculateForPercent(
+                                      z.afterReadingMeasurementDetail
+                                        .originalThickness,
+                                      z.afterReadingMeasurementDetail.gaugedP
+                                    )
+                                  )
+                                )
+                                  ? ''
+                                  : Number(
+                                      this.formService.calculateForPercent(
+                                        z.afterReadingMeasurementDetail
+                                          .originalThickness,
+                                        z.afterReadingMeasurementDetail.gaugedP
+                                      )
+                                    )
+                              }`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              border: [false, true, true, true],
+                              text:
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.forwardReadingMeasurementDetail
+                                      .originalThickness,
+                                    z.afterReadingMeasurementDetail.gaugedP
+                                  )
+                                ) >=
+                                  this.convertToNumber(
+                                    this.formService.threePartsFourOfMaxAlwbDim(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z.afterReadingMeasurementDetail
+                                          .originalThickness,
+                                        z.afterReadingMeasurementDetail.percent
+                                      )
+                                    )
+                                  ) &&
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.forwardReadingMeasurementDetail
+                                      .originalThickness,
+                                    z.afterReadingMeasurementDetail.gaugedP
+                                  )
+                                ) <=
+                                  this.convertToNumber(
+                                    this.formService.calculateForMaxAlwbDimForString(
+                                      z.afterReadingMeasurementDetail
+                                        .originalThickness,
+                                      z.afterReadingMeasurementDetail.percent
+                                    )
+                                  )
+                                  ? 'S'
+                                  : this.convertToNumber(
+                                      this.formService.calculateForMm(
+                                        z.forwardReadingMeasurementDetail
+                                          .originalThickness,
+                                        z.afterReadingMeasurementDetail.gaugedP
+                                      )
+                                    ) >
+                                    this.convertToNumber(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z.afterReadingMeasurementDetail
+                                          .originalThickness,
+                                        z.afterReadingMeasurementDetail.percent
+                                      )
+                                    )
+                                  ? 'R'
+                                  : '',
+                            },
+                            {
+                              style: ['txt_center'],
+                              text: `${
+                                Number(
+                                  this.formService.calculateForMm(
+                                    z.afterReadingMeasurementDetail
+                                      .originalThickness,
+                                    z.afterReadingMeasurementDetail.gaugedS
+                                  )
+                                ) == 0.0
+                                  ? ''
+                                  : this.formService.calculateForMm(
+                                      z.afterReadingMeasurementDetail
+                                        .originalThickness,
+                                      z.afterReadingMeasurementDetail.gaugedS
+                                    )
+                              }`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              border: [true, true, false, true],
+                              text: `${
+                                Number.isNaN(
+                                  Number(
+                                    this.formService.calculateForPercent(
+                                      z.afterReadingMeasurementDetail
+                                        .originalThickness,
+                                      z.afterReadingMeasurementDetail.gaugedS
+                                    )
+                                  )
+                                )
+                                  ? ''
+                                  : Number(
+                                      this.formService.calculateForPercent(
+                                        z.afterReadingMeasurementDetail
+                                          .originalThickness,
+                                        z.afterReadingMeasurementDetail.gaugedS
+                                      )
+                                    )
+                              }`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              border: [false, true, true, true],
+                              text:
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.forwardReadingMeasurementDetail
+                                      .originalThickness,
+                                    z.afterReadingMeasurementDetail.gaugedP
+                                  )
+                                ) >=
+                                  this.convertToNumber(
+                                    this.formService.threePartsFourOfMaxAlwbDim(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z.afterReadingMeasurementDetail
+                                          .originalThickness,
+                                        z.afterReadingMeasurementDetail.percent
+                                      )
+                                    )
+                                  ) &&
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.forwardReadingMeasurementDetail
+                                      .originalThickness,
+                                    z.afterReadingMeasurementDetail.gaugedP
+                                  )
+                                ) <=
+                                  this.convertToNumber(
+                                    this.formService.calculateForMaxAlwbDimForString(
+                                      z.afterReadingMeasurementDetail
+                                        .originalThickness,
+                                      z.afterReadingMeasurementDetail.percent
+                                    )
+                                  )
+                                  ? 'S'
+                                  : this.convertToNumber(
+                                      this.formService.calculateForMm(
+                                        z.forwardReadingMeasurementDetail
+                                          .originalThickness,
+                                        z.afterReadingMeasurementDetail.gaugedP
+                                      )
+                                    ) >
+                                    this.convertToNumber(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z.afterReadingMeasurementDetail
+                                          .originalThickness,
+                                        z.afterReadingMeasurementDetail.percent
+                                      )
+                                    )
+                                  ? 'R'
+                                  : '',
+                            },
 
-        [
-          {
-            style: ['fontS8', 'tableStyleLarge'],
-            pageBreak: 'before' as PageBreak,
-            pageOrientation: 'landscape' as PageOrientation,
-            table: tableTm7,
-          },
-        ],
-        //  pageTitle Tm1
-        [
-          {
-            pageBreak: 'before' as PageBreak,
-            decoration: 'underline' as Decoration,
-            pageOrientation: 'portrait' as PageOrientation,
-            alignment: 'center' as Alignment,
-            style: ['fontS30', 'mg_50'],
-            text: 'PART 8',
-            bold: true,
-          },
-          {
-            decoration: 'underline' as Decoration,
-            text: 'MAIN DECK',
-            alignment: 'center' as Alignment,
-            style: ['fontS30'],
-            bold: true,
-          },
-        ],
+                            //mean
+                            {
+                              style: ['txt_center'],
+                              text: `${
+                                Number.isNaN(
+                                  Number(
+                                    this.formService.calculateAveragePercent(
+                                      z.forwardReadingMeasurementDetail
+                                        .originalThickness,
+                                      this.formService.calculateForPercent(
+                                        z.forwardReadingMeasurementDetail
+                                          .originalThickness,
+                                        z.forwardReadingMeasurementDetail
+                                          .gaugedP
+                                      ),
+                                      this.formService.calculateForPercent(
+                                        z.afterReadingMeasurementDetail
+                                          .originalThickness,
+                                        z.afterReadingMeasurementDetail.gaugedP
+                                      )
+                                    )
+                                  )
+                                )
+                                  ? ''
+                                  : Number(
+                                      this.formService.calculateAveragePercent(
+                                        z.forwardReadingMeasurementDetail
+                                          .originalThickness,
+                                        this.formService.calculateForPercent(
+                                          z.forwardReadingMeasurementDetail
+                                            .originalThickness,
+                                          z.forwardReadingMeasurementDetail
+                                            .gaugedP
+                                        ),
+                                        this.formService.calculateForPercent(
+                                          z.afterReadingMeasurementDetail
+                                            .originalThickness,
+                                          z.afterReadingMeasurementDetail
+                                            .gaugedP
+                                        )
+                                      )
+                                    )
+                              }`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              text: `${
+                                Number.isNaN(
+                                  Number(
+                                    this.formService.calculateAveragePercent(
+                                      z.forwardReadingMeasurementDetail
+                                        .originalThickness,
+                                      this.formService.calculateForPercent(
+                                        z.forwardReadingMeasurementDetail
+                                          .originalThickness,
+                                        z.forwardReadingMeasurementDetail
+                                          .gaugedS
+                                      ),
+                                      this.formService.calculateForPercent(
+                                        z.forwardReadingMeasurementDetail
+                                          .originalThickness,
+                                        z.afterReadingMeasurementDetail.gaugedS
+                                      )
+                                    )
+                                  )
+                                )
+                                  ? ''
+                                  : Number(
+                                      this.formService.calculateAveragePercent(
+                                        z.forwardReadingMeasurementDetail
+                                          .originalThickness,
+                                        this.formService.calculateForPercent(
+                                          z.forwardReadingMeasurementDetail
+                                            .originalThickness,
+                                          z.forwardReadingMeasurementDetail
+                                            .gaugedS
+                                        ),
+                                        this.formService.calculateForPercent(
+                                          z.forwardReadingMeasurementDetail
+                                            .originalThickness,
+                                          z.afterReadingMeasurementDetail
+                                            .gaugedS
+                                        )
+                                      )
+                                    )
+                              }`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              text: `${this.formService.calculateForMaxAlwbDimForString(
+                                z.afterReadingMeasurementDetail
+                                  .originalThickness,
+                                z.afterReadingMeasurementDetail.percent
+                              )}`,
+                            },
+                          ]),
+                        ],
+                      },
+                      layout: {
+                        paddingTop: () => 1,
+                        paddingBottom: () => 1,
+                      },
+                    },
+                  ]
+                : []
+            ),
+            //Form tm2i
+            x.formList.map((y: any) =>
+              y.type == 'TM2(I)'
+                ? [
+                    this.lsSketch.map((a) =>
+                      a.map((b: any) =>
+                        b.formId === y.id && b.formType == 'form_tm2'
+                          ? [
+                              {
+                                margin: [-20, -40, -20, -30] as Margins,
+                                pageBreak: 'before' as PageBreak,
+                                pageOrientation: 'landscape' as PageOrientation,
+                                fit: [pageSizee.width, pageSizee.height],
+                                image: `data:image/png;base64,${b.value}`,
+                              },
+                            ]
+                          : []
+                      )
+                    ),
+                    {
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      style: ['tableStyle', 'fontS8'],
+                      table: {
+                        headerRows: 10,
+                        widths: [
+                          '19.6%',
+                          '3.3%',
+                          '2.9%',
+                          '3.0%',
+                          '3.0%',
+                          '3.0%',
+                          '3.0%',
+                          '3.0%',
+                          '0.8%',
+                          '3.0%',
+                          '3.0%',
+                          '0.8%',
+                          '3.3%',
+                          '2.9%',
+                          '3.0%',
+                          '3.0%',
+                          '3.0%',
+                          '3.0%',
+                          '3.0%',
+                          '0.8%',
+                          '3.0%',
+                          '3.0%',
+                          '0.8%',
+                          '3.3%',
+                          '2.9%',
+                          '3.0%',
+                          '3.0%',
+                          '3.0%',
+                          '3.0%',
+                          '3.0%',
+                          '0.8%',
+                          '3.0%',
+                          '3.0%',
+                          '0.8%',
+                        ],
+                        body: [
+                          //Table header
+                          [
+                            {
+                              text: `TM2i-${y.code}(1 July 2023)`,
+                              style: ['txt_center'],
+                              colSpan: 34,
+                              alignment: 'right' as Alignment,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: '',
+                              colSpan: 34,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          // Table content
+                          [
+                            {
+                              text: 'Report on THICKNESS MEASUREMENT OF SHELL AND DECK PLATING (one, two or three transverse sections)',
+                              style: ['txt_center', 'fontS11'],
+                              colSpan: 34,
+                              decoration: 'underline' as Decoration,
+                              bold: true,
+                              margin: [0, 0, 0, 5] as Margins,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              colSpan: 34,
+                              text: '',
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: "Ship's name:",
 
-        [
-          {
-            style: ['fontS8', 'tableStyleLarge'],
-            pageBreak: 'before' as PageBreak,
-            pageOrientation: 'landscape' as PageOrientation,
-            table: tableTm1,
-          },
-        ],
-        [
-          {
-            style: ['fontS8', 'tableStyleLarge'],
-            pageBreak: 'before' as PageBreak,
-            pageOrientation: 'landscape' as PageOrientation,
-            table: tableTm1_c,
-          },
-        ],
+                              alignment: 'center' as Alignment,
 
-        //  pageTitle new
-        [
-          {
-            pageBreak: 'before' as PageBreak,
-            decoration: 'underline' as Decoration,
-            alignment: 'center' as Alignment,
-            style: ['fontS30'],
-            text: 'PART new',
-            bold: true,
-          },
-          {
-            decoration: 'underline' as Decoration,
-            text: 'MAIN DECK',
-            alignment: 'center' as Alignment,
-            style: ['fontS30'],
-            bold: true,
-          },
-        ],
+                              colSpan: 3,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: `${this.inShipName}`,
+                              colSpan: 8,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {
+                              text: 'Class Identity No. ',
+                              colSpan: 4,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: `${this.inABS}`,
+                              colSpan: 8,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {
+                              text: 'Report No. ',
+                              colSpan: 3,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: `${this.generalParticular[0].reportNo}`,
+                              colSpan: 8,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              colSpan: 34,
+                              text: '',
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              style: 'txt_center',
+                              text: 'SHELL PLATING',
+                              colSpan: 34,
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: '1st TRANSVERSE SECTION at Fr.No: ',
+                              colSpan: 8,
+                              border: [true, true, false, true],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {
+                              text: `${y.firstFrameNoTM2}`,
+                              border: [false, true, true, true],
+                              colSpan: 3,
+                              bold: true,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: '2nd TRANSVERSE SECTION at Fr.No: ',
+                              colSpan: 8,
+                              border: [true, true, false, true],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {
+                              text: `${y.secondFrameNoTM2}`,
+                              border: [false, true, true, true],
+                              colSpan: 3,
+                              bold: true,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: '3rd TRANSVERSE SECTION at Fr.No: ',
+                              colSpan: 8,
+                              border: [true, true, false, true],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {
+                              text: `${y.thirdFrameNoTM2}`,
+                              border: [false, true, true, true],
+                              colSpan: 3,
+                              bold: true,
+                            },
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              style: 'txt_center',
+                              text: 'STRAKE POSITION',
+                              rowSpan: 2,
+                            },
+                            {
+                              style: 'txt_center',
+                              text: 'No. or Letter',
+                              rowSpan: 2,
+                            },
+                            { style: 'txt_center', text: 'Org.Thk.' },
+                            { style: 'txt_center', text: 'Max.Alwb.Dim' },
+                            {
+                              style: 'txt_center',
+                              text: 'Gauged mm  ',
+                              colSpan: 2,
+                            },
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'Diminution P  ',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: '    Diminution S  ',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'No. or Letter',
+                              rowSpan: 2,
+                            },
+                            { style: 'txt_center', text: 'Org.Thk.' },
+                            { style: 'txt_center', text: 'Max.Alwb.Dim' },
+                            {
+                              style: 'txt_center',
+                              text: 'Gauged mm',
+                              colSpan: 2,
+                            },
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'Diminution P',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'Diminution S',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'No. or Letter',
+                              rowSpan: 2,
+                            },
+                            { style: 'txt_center', text: 'Org.Thk.' },
+                            { style: 'txt_center', text: 'Max.Alwb.Dim' },
+                            {
+                              style: 'txt_center',
+                              text: 'Gauged mm',
+                              colSpan: 2,
+                            },
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'Diminution P',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'Diminution S',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                          ],
+                          [
+                            {},
+                            {},
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'P' },
+                            { style: 'txt_center', text: 'S' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+                            {},
 
-        // ...this.tm4.map((x) => [
-        //   { text: `${x.id}`, style: 'txt_center' },
-        //   { text: `${x.structuralMember}` },
-        //   { text: `${x.item}`, style: 'txt_center' },
-        //   { text: `${x.originalThickness}`, style: 'txt_center' },
-        //   { text: `${x.maximumAllowableDim}`, style: 'txt_center' },
-        //   { text: `${x.gaugedP}`, style: 'txt_center' },
-        //   { text: `${x.gaugedS}`, style: 'txt_center' },
-        //   { text: `${x.diminutionPmm}`, style: 'txt_center' },
-        //   { text: `${x.diminutionPpercent}`, style: 'txt_center' },
-        //   { text: `${x.isStandardP}`, style: 'txt_center' },
-        //   { text: `${x.diminutionSmm}`, style: 'txt_center' },
-        //   { text: `${x.diminutionSpercent}`, style: 'txt_center' },
-        //   { text: `${x.isStandardS}`, style: 'txt_center' },
-        // ]),
-        // this.arr.map((x, y) => [
-        //   ...(x.typeForm == 'tm4'
-        //     ? [
-        //         {
-        //           style: ['fontS8', 'tableStyleLarge'],
-        //           pageBreak: 'before' as PageBreak,
-        //           pageOrientation: 'landscape' as PageOrientation,
-        //           table: tableTm4,
-        //         },
-        //       ]
-        //     : []),
-        // ]),
-        // this.arr.map((x, y) => [
-        //   ...(x.typeForm == 'tm5'
-        //     ? [
-        //         {
-        //           style: ['fontS8', 'tableStyleLarge'],
-        //           pageBreak: 'before' as PageBreak,
-        //           pageOrientation: 'landscape' as PageOrientation,
-        //           table: tableTm5,
-        //         },
-        //       ]
-        //     : []),
-        // ]),
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'P' },
+                            { style: 'txt_center', text: 'S' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+                            {},
+
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'P' },
+                            { style: 'txt_center', text: 'S' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+                          ],
+                          ...y.measurementTM2DTOList?.map((z: any) => [
+                            { text: `${z.strakePosition ?? ''}` },
+                            //fr 1
+                            {
+                              text: `${z.noOrLetter ?? ''}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${
+                                z.firstTransverseSectionMeasurementDetailTM2
+                                  .originalThickness ?? ''
+                              }`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${this.formService.calculateForMaxAlwbDimForString(
+                                z.firstTransverseSectionMeasurementDetailTM2
+                                  .originalThickness,
+                                z.firstTransverseSectionMeasurementDetailTM2
+                                  .percent
+                              )}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${
+                                z.firstTransverseSectionMeasurementDetailTM2
+                                  .gaugedP ?? ''
+                              }`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${
+                                z.firstTransverseSectionMeasurementDetailTM2
+                                  .gaugedS ?? ''
+                              }`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${
+                                Number(
+                                  this.formService.calculateForMm(
+                                    z.firstTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z.firstTransverseSectionMeasurementDetailTM2
+                                      .gaugedP
+                                  )
+                                ) == 0.0
+                                  ? ''
+                                  : this.formService.calculateForMm(
+                                      z
+                                        .firstTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .firstTransverseSectionMeasurementDetailTM2
+                                        .gaugedP
+                                    )
+                              }`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${
+                                Number.isNaN(
+                                  Number(
+                                    this.formService.calculateForPercent(
+                                      z
+                                        .firstTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .firstTransverseSectionMeasurementDetailTM2
+                                        .gaugedP
+                                    )
+                                  )
+                                )
+                                  ? ''
+                                  : Number(
+                                      this.formService.calculateForPercent(
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .gaugedP
+                                      )
+                                    )
+                              }`,
+
+                              style: ['txt_center'],
+                              border: [true, true, false, true],
+                            },
+                            {
+                              text:
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.firstTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z.firstTransverseSectionMeasurementDetailTM2
+                                      .gaugedP
+                                  )
+                                ) >=
+                                  this.convertToNumber(
+                                    this.formService.threePartsFourOfMaxAlwbDim(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ) &&
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.firstTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z.firstTransverseSectionMeasurementDetailTM2
+                                      .gaugedP
+                                  )
+                                ) <=
+                                  this.convertToNumber(
+                                    this.formService.calculateForMaxAlwbDimForString(
+                                      z
+                                        .firstTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .firstTransverseSectionMeasurementDetailTM2
+                                        .percent
+                                    )
+                                  )
+                                  ? 'S'
+                                  : this.convertToNumber(
+                                      this.formService.calculateForMm(
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .gaugedP
+                                      )
+                                    ) >
+                                    this.convertToNumber(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ? 'R'
+                                  : '',
+                              style: ['txt_center'],
+                              border: [false, true, true, true],
+                            },
+                            {
+                              text: `${
+                                Number(
+                                  this.formService.calculateForMm(
+                                    z.firstTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z.firstTransverseSectionMeasurementDetailTM2
+                                      .gaugedS
+                                  )
+                                ) == 0.0
+                                  ? ''
+                                  : this.formService.calculateForMm(
+                                      z
+                                        .firstTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .firstTransverseSectionMeasurementDetailTM2
+                                        .gaugedS
+                                    )
+                              }`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${
+                                Number.isNaN(
+                                  Number(
+                                    this.formService.calculateForPercent(
+                                      z
+                                        .firstTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .firstTransverseSectionMeasurementDetailTM2
+                                        .gaugedS
+                                    )
+                                  )
+                                )
+                                  ? ''
+                                  : this.formService.calculateForPercent(
+                                      z
+                                        .firstTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .firstTransverseSectionMeasurementDetailTM2
+                                        .gaugedS
+                                    )
+                              }`,
+                              style: ['txt_center'],
+                              border: [true, true, false, true],
+                            },
+                            {
+                              text:
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.firstTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z.firstTransverseSectionMeasurementDetailTM2
+                                      .gaugedS
+                                  )
+                                ) >=
+                                  this.convertToNumber(
+                                    this.formService.threePartsFourOfMaxAlwbDim(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ) &&
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.firstTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z.firstTransverseSectionMeasurementDetailTM2
+                                      .gaugedS
+                                  )
+                                ) <=
+                                  this.convertToNumber(
+                                    this.formService.calculateForMaxAlwbDimForString(
+                                      z
+                                        .firstTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .firstTransverseSectionMeasurementDetailTM2
+                                        .percent
+                                    )
+                                  )
+                                  ? 'S'
+                                  : this.convertToNumber(
+                                      this.formService.calculateForMm(
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .gaugedS
+                                      )
+                                    ) >
+                                    this.convertToNumber(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ? 'R'
+                                  : '',
+                              style: ['txt_center'],
+                              border: [false, true, true, true],
+                            },
+
+                            //fr 2
+
+                            {
+                              text: `${z.noOrLetter ?? ''}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${
+                                z.secondTransverseSectionMeasurementDetailTM2
+                                  .originalThickness ?? ''
+                              }`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${this.formService.calculateForMaxAlwbDimForString(
+                                z.secondTransverseSectionMeasurementDetailTM2
+                                  .originalThickness,
+                                z.secondTransverseSectionMeasurementDetailTM2
+                                  .percent
+                              )}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${
+                                z.secondTransverseSectionMeasurementDetailTM2
+                                  .gaugedP ?? ''
+                              }`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${
+                                z.secondTransverseSectionMeasurementDetailTM2
+                                  .gaugedS ?? ''
+                              }`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${
+                                Number(
+                                  this.formService.calculateForMm(
+                                    z
+                                      .secondTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z
+                                      .secondTransverseSectionMeasurementDetailTM2
+                                      .gaugedP
+                                  )
+                                ) == 0.0
+                                  ? ''
+                                  : this.formService.calculateForMm(
+                                      z
+                                        .secondTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .secondTransverseSectionMeasurementDetailTM2
+                                        .gaugedP
+                                    )
+                              }`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${
+                                Number.isNaN(
+                                  Number(
+                                    this.formService.calculateForPercent(
+                                      z
+                                        .secondTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .secondTransverseSectionMeasurementDetailTM2
+                                        .gaugedP
+                                    )
+                                  )
+                                )
+                                  ? ''
+                                  : Number(
+                                      this.formService.calculateForPercent(
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .gaugedP
+                                      )
+                                    )
+                              }`,
+
+                              style: ['txt_center'],
+                              border: [true, true, false, true],
+                            },
+                            {
+                              text:
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z
+                                      .secondTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z
+                                      .secondTransverseSectionMeasurementDetailTM2
+                                      .gaugedP
+                                  )
+                                ) >=
+                                  this.convertToNumber(
+                                    this.formService.threePartsFourOfMaxAlwbDim(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ) &&
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z
+                                      .secondTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z
+                                      .secondTransverseSectionMeasurementDetailTM2
+                                      .gaugedP
+                                  )
+                                ) <=
+                                  this.convertToNumber(
+                                    this.formService.calculateForMaxAlwbDimForString(
+                                      z
+                                        .secondTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .secondTransverseSectionMeasurementDetailTM2
+                                        .percent
+                                    )
+                                  )
+                                  ? 'S'
+                                  : this.convertToNumber(
+                                      this.formService.calculateForMm(
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .gaugedP
+                                      )
+                                    ) >
+                                    this.convertToNumber(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ? 'R'
+                                  : '',
+                              style: ['txt_center'],
+                              border: [false, true, true, true],
+                            },
+                            {
+                              text: `${
+                                Number(
+                                  this.formService.calculateForMm(
+                                    z
+                                      .secondTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z
+                                      .secondTransverseSectionMeasurementDetailTM2
+                                      .gaugedS
+                                  )
+                                ) == 0.0
+                                  ? ''
+                                  : this.formService.calculateForMm(
+                                      z
+                                        .secondTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .secondTransverseSectionMeasurementDetailTM2
+                                        .gaugedS
+                                    )
+                              }`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${
+                                Number.isNaN(
+                                  Number(
+                                    this.formService.calculateForPercent(
+                                      z
+                                        .secondTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .secondTransverseSectionMeasurementDetailTM2
+                                        .gaugedS
+                                    )
+                                  )
+                                )
+                                  ? ''
+                                  : Number(
+                                      this.formService.calculateForPercent(
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .gaugedS
+                                      )
+                                    )
+                              }`,
+                              style: ['txt_center'],
+                              border: [true, true, false, true],
+                            },
+                            {
+                              text:
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z
+                                      .secondTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z
+                                      .secondTransverseSectionMeasurementDetailTM2
+                                      .gaugedS
+                                  )
+                                ) >=
+                                  this.convertToNumber(
+                                    this.formService.threePartsFourOfMaxAlwbDim(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ) &&
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z
+                                      .secondTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z
+                                      .secondTransverseSectionMeasurementDetailTM2
+                                      .gaugedS
+                                  )
+                                ) <=
+                                  this.convertToNumber(
+                                    this.formService.calculateForMaxAlwbDimForString(
+                                      z
+                                        .secondTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .secondTransverseSectionMeasurementDetailTM2
+                                        .percent
+                                    )
+                                  )
+                                  ? 'S'
+                                  : this.convertToNumber(
+                                      this.formService.calculateForMm(
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .gaugedS
+                                      )
+                                    ) >
+                                    this.convertToNumber(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ? 'R'
+                                  : '',
+
+                              style: ['txt_center'],
+                              border: [false, true, true, true],
+                            },
+                            //fr3
+
+                            {
+                              text: `${z.noOrLetter ?? ''}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${
+                                z.thirdTransverseSectionMeasurementDetailTM2
+                                  .originalThickness ?? ''
+                              }`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${this.formService.calculateForMaxAlwbDimForString(
+                                z.thirdTransverseSectionMeasurementDetailTM2
+                                  .originalThickness,
+                                z.thirdTransverseSectionMeasurementDetailTM2
+                                  .percent
+                              )}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${
+                                z.thirdTransverseSectionMeasurementDetailTM2
+                                  .gaugedP ?? ''
+                              }`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${
+                                z.thirdTransverseSectionMeasurementDetailTM2
+                                  .gaugedS ?? ''
+                              }`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${
+                                Number(
+                                  this.formService.calculateForMm(
+                                    z.thirdTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z.thirdTransverseSectionMeasurementDetailTM2
+                                      .gaugedP
+                                  )
+                                ) == 0.0
+                                  ? ''
+                                  : this.formService.calculateForMm(
+                                      z
+                                        .thirdTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .thirdTransverseSectionMeasurementDetailTM2
+                                        .gaugedP
+                                    )
+                              }`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${
+                                Number.isNaN(
+                                  Number(
+                                    this.formService.calculateForPercent(
+                                      z
+                                        .thirdTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .thirdTransverseSectionMeasurementDetailTM2
+                                        .gaugedP
+                                    )
+                                  )
+                                )
+                                  ? ''
+                                  : Number(
+                                      this.formService.calculateForPercent(
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .gaugedP
+                                      )
+                                    )
+                              }`,
+
+                              style: ['txt_center'],
+                              border: [true, true, false, true],
+                            },
+                            {
+                              text:
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.thirdTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z.thirdTransverseSectionMeasurementDetailTM2
+                                      .gaugedP
+                                  )
+                                ) >=
+                                  this.convertToNumber(
+                                    this.formService.threePartsFourOfMaxAlwbDim(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ) &&
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.thirdTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z.thirdTransverseSectionMeasurementDetailTM2
+                                      .gaugedP
+                                  )
+                                ) <=
+                                  this.convertToNumber(
+                                    this.formService.calculateForMaxAlwbDimForString(
+                                      z
+                                        .thirdTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .thirdTransverseSectionMeasurementDetailTM2
+                                        .percent
+                                    )
+                                  )
+                                  ? 'S'
+                                  : this.convertToNumber(
+                                      this.formService.calculateForMm(
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .gaugedP
+                                      )
+                                    ) >
+                                    this.convertToNumber(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ? 'R'
+                                  : '',
+
+                              style: ['txt_center'],
+                              border: [false, true, true, true],
+                            },
+                            {
+                              text: `${
+                                Number(
+                                  this.formService.calculateForMm(
+                                    z.thirdTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z.thirdTransverseSectionMeasurementDetailTM2
+                                      .gaugedS
+                                  )
+                                ) == 0.0
+                                  ? ''
+                                  : this.formService.calculateForMm(
+                                      z
+                                        .thirdTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .thirdTransverseSectionMeasurementDetailTM2
+                                        .gaugedS
+                                    )
+                              }`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${
+                                Number.isNaN(
+                                  Number(
+                                    this.formService.calculateForPercent(
+                                      z
+                                        .thirdTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .thirdTransverseSectionMeasurementDetailTM2
+                                        .gaugedS
+                                    )
+                                  )
+                                )
+                                  ? ''
+                                  : Number(
+                                      this.formService.calculateForPercent(
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .gaugedS
+                                      )
+                                    )
+                              }`,
+                              style: ['txt_center'],
+                              border: [true, true, false, true],
+                            },
+                            {
+                              text:
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.thirdTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z.thirdTransverseSectionMeasurementDetailTM2
+                                      .gaugedS
+                                  )
+                                ) >=
+                                  this.convertToNumber(
+                                    this.formService.threePartsFourOfMaxAlwbDim(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ) &&
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.thirdTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z.thirdTransverseSectionMeasurementDetailTM2
+                                      .gaugedS
+                                  )
+                                ) <=
+                                  this.convertToNumber(
+                                    this.formService.calculateForMaxAlwbDimForString(
+                                      z
+                                        .thirdTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .thirdTransverseSectionMeasurementDetailTM2
+                                        .percent
+                                    )
+                                  )
+                                  ? 'S'
+                                  : this.convertToNumber(
+                                      this.formService.calculateForMm(
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .gaugedS
+                                      )
+                                    ) >
+                                    this.convertToNumber(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ? 'R'
+                                  : '',
+                              style: ['txt_center'],
+                              border: [false, true, true, true],
+                            },
+                          ]),
+                        ],
+                      },
+                      layout: {
+                        paddingLeft: () => 2,
+                        paddingRight: () => 2,
+                        paddingTop: () => 1,
+                        paddingBottom: () => 1,
+                      },
+                    },
+                  ]
+                : []
+            ),
+            //Form tm2ii
+            x.formList.map((y: any) =>
+              y.type == 'TM2(II)'
+                ? [
+                    this.lsSketch.map((a) =>
+                      a.map((b: any) =>
+                        b.formId === y.id && b.formType == 'form_tm2'
+                          ? [
+                              {
+                                margin: [-20, -40, -20, -30] as Margins,
+                                pageBreak: 'before' as PageBreak,
+                                pageOrientation: 'landscape' as PageOrientation,
+                                fit: [pageSizee.width, pageSizee.height],
+                                image: `data:image/png;base64,${b.value}`,
+                              },
+                            ]
+                          : []
+                      )
+                    ),
+                    {
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      style: ['tableStyle', 'fontS8'],
+                      table: {
+                        headerRows: 10,
+                        widths: [
+                          '19.6%',
+                          '3.3%',
+                          '2.9%',
+                          '3.0%',
+                          '3.0%',
+                          '3.0%',
+                          '3.0%',
+                          '3.0%',
+                          '0.8%',
+                          '3.0%',
+                          '3.0%',
+                          '0.8%',
+                          '3.3%',
+                          '2.9%',
+                          '3.0%',
+                          '3.0%',
+                          '3.0%',
+                          '3.0%',
+                          '3.0%',
+                          '0.8%',
+                          '3.0%',
+                          '3.0%',
+                          '0.8%',
+                          '3.3%',
+                          '2.9%',
+                          '3.0%',
+                          '3.0%',
+                          '3.0%',
+                          '3.0%',
+                          '3.0%',
+                          '0.8%',
+                          '3.0%',
+                          '3.0%',
+                          '0.8%',
+                        ],
+                        body: [
+                          //Table header
+                          [
+                            {
+                              text: `TM2ii-${y.code}(1 July 2023)`,
+                              style: ['txt_center'],
+                              colSpan: 34,
+                              alignment: 'right' as Alignment,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: '',
+                              colSpan: 34,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          // Table content
+                          [
+                            {
+                              text: 'Report on THICKNESS MEASUREMENT OF SHELL AND DECK PLATING (one, two or three transverse sections)',
+                              style: ['txt_center', 'fontS11'],
+                              colSpan: 34,
+                              decoration: 'underline' as Decoration,
+                              bold: true,
+                              margin: [0, 0, 0, 5] as Margins,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              colSpan: 34,
+                              text: '',
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: "Ship's name:",
+
+                              alignment: 'center' as Alignment,
+
+                              colSpan: 3,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: `${this.inShipName}`,
+                              colSpan: 8,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {
+                              text: 'Class Identity No. ',
+                              colSpan: 4,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: `${this.inABS}`,
+                              colSpan: 8,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {
+                              text: 'Report No. ',
+                              colSpan: 3,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: `${this.generalParticular[0].reportNo}`,
+                              colSpan: 8,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              colSpan: 34,
+                              text: '',
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              style: 'txt_center',
+                              text: 'SHELL PLATING',
+                              colSpan: 34,
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: '1st TRANSVERSE SECTION at Fr.No: ',
+                              colSpan: 8,
+                              border: [true, true, false, true],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {
+                              text: `${y.firstFrameNoTM2}`,
+                              border: [false, true, true, true],
+                              colSpan: 3,
+                              bold: true,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: '2nd TRANSVERSE SECTION at Fr.No: ',
+                              colSpan: 8,
+                              border: [true, true, false, true],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {
+                              text: `${y.secondFrameNoTM2}`,
+                              border: [false, true, true, true],
+                              colSpan: 3,
+                              bold: true,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: '3rd TRANSVERSE SECTION at Fr.No: ',
+                              colSpan: 8,
+                              border: [true, true, false, true],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {
+                              text: `${y.thirdFrameNoTM2}`,
+                              border: [false, true, true, true],
+                              colSpan: 3,
+                              bold: true,
+                            },
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              style: 'txt_center',
+                              text: 'STRAKE POSITION',
+                              rowSpan: 2,
+                            },
+                            {
+                              style: 'txt_center',
+                              text: 'No. or Letter',
+                              rowSpan: 2,
+                            },
+                            { style: 'txt_center', text: 'Org.Thk.' },
+                            { style: 'txt_center', text: 'Max.Alwb.Dim' },
+                            {
+                              style: 'txt_center',
+                              text: 'Gauged mm  ',
+                              colSpan: 2,
+                            },
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'Diminution P  ',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: '    Diminution S  ',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'No. or Letter',
+                              rowSpan: 2,
+                            },
+                            { style: 'txt_center', text: 'Org.Thk.' },
+                            { style: 'txt_center', text: 'Max.Alwb.Dim' },
+                            {
+                              style: 'txt_center',
+                              text: 'Gauged mm',
+                              colSpan: 2,
+                            },
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'Diminution P',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'Diminution S',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'No. or Letter',
+                              rowSpan: 2,
+                            },
+                            { style: 'txt_center', text: 'Org.Thk.' },
+                            { style: 'txt_center', text: 'Max.Alwb.Dim' },
+                            {
+                              style: 'txt_center',
+                              text: 'Gauged mm',
+                              colSpan: 2,
+                            },
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'Diminution P',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'Diminution S',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                          ],
+                          [
+                            {},
+                            {},
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'P' },
+                            { style: 'txt_center', text: 'S' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+                            {},
+
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'P' },
+                            { style: 'txt_center', text: 'S' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+                            {},
+
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'P' },
+                            { style: 'txt_center', text: 'S' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+                          ],
+                          ...y.measurementTM2DTOList?.map((z: any) => [
+                            { text: `${z.strakePosition ?? ''}` },
+                            //fr 1
+                            {
+                              text: `${z.noOrLetter ?? ''}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${
+                                z.firstTransverseSectionMeasurementDetailTM2
+                                  .originalThickness ?? ''
+                              }`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${this.formService.calculateForMaxAlwbDimForString(
+                                z.firstTransverseSectionMeasurementDetailTM2
+                                  .originalThickness,
+                                z.firstTransverseSectionMeasurementDetailTM2
+                                  .percent
+                              )}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${
+                                z.firstTransverseSectionMeasurementDetailTM2
+                                  .gaugedP ?? ''
+                              }`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${
+                                z.firstTransverseSectionMeasurementDetailTM2
+                                  .gaugedS ?? ''
+                              }`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${
+                                Number(
+                                  this.formService.calculateForMm(
+                                    z.firstTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z.firstTransverseSectionMeasurementDetailTM2
+                                      .gaugedP
+                                  )
+                                ) == 0.0
+                                  ? ''
+                                  : this.formService.calculateForMm(
+                                      z
+                                        .firstTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .firstTransverseSectionMeasurementDetailTM2
+                                        .gaugedP
+                                    )
+                              }`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${
+                                Number.isNaN(
+                                  Number(
+                                    this.formService.calculateForPercent(
+                                      z
+                                        .firstTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .firstTransverseSectionMeasurementDetailTM2
+                                        .gaugedP
+                                    )
+                                  )
+                                )
+                                  ? ''
+                                  : Number(
+                                      this.formService.calculateForPercent(
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .gaugedP
+                                      )
+                                    )
+                              }`,
+
+                              style: ['txt_center'],
+                              border: [true, true, false, true],
+                            },
+                            {
+                              text:
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.firstTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z.firstTransverseSectionMeasurementDetailTM2
+                                      .gaugedP
+                                  )
+                                ) >=
+                                  this.convertToNumber(
+                                    this.formService.threePartsFourOfMaxAlwbDim(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ) &&
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.firstTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z.firstTransverseSectionMeasurementDetailTM2
+                                      .gaugedP
+                                  )
+                                ) <=
+                                  this.convertToNumber(
+                                    this.formService.calculateForMaxAlwbDimForString(
+                                      z
+                                        .firstTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .firstTransverseSectionMeasurementDetailTM2
+                                        .percent
+                                    )
+                                  )
+                                  ? 'S'
+                                  : this.convertToNumber(
+                                      this.formService.calculateForMm(
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .gaugedP
+                                      )
+                                    ) >
+                                    this.convertToNumber(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ? 'R'
+                                  : '',
+                              style: ['txt_center'],
+                              border: [false, true, true, true],
+                            },
+                            {
+                              text: `${
+                                Number(
+                                  this.formService.calculateForMm(
+                                    z.firstTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z.firstTransverseSectionMeasurementDetailTM2
+                                      .gaugedS
+                                  )
+                                ) == 0.0
+                                  ? ''
+                                  : this.formService.calculateForMm(
+                                      z
+                                        .firstTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .firstTransverseSectionMeasurementDetailTM2
+                                        .gaugedS
+                                    )
+                              }`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${
+                                Number.isNaN(
+                                  Number(
+                                    this.formService.calculateForPercent(
+                                      z
+                                        .firstTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .firstTransverseSectionMeasurementDetailTM2
+                                        .gaugedS
+                                    )
+                                  )
+                                )
+                                  ? ''
+                                  : this.formService.calculateForPercent(
+                                      z
+                                        .firstTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .firstTransverseSectionMeasurementDetailTM2
+                                        .gaugedS
+                                    )
+                              }`,
+                              style: ['txt_center'],
+                              border: [true, true, false, true],
+                            },
+                            {
+                              text:
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.firstTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z.firstTransverseSectionMeasurementDetailTM2
+                                      .gaugedS
+                                  )
+                                ) >=
+                                  this.convertToNumber(
+                                    this.formService.threePartsFourOfMaxAlwbDim(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ) &&
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.firstTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z.firstTransverseSectionMeasurementDetailTM2
+                                      .gaugedS
+                                  )
+                                ) <=
+                                  this.convertToNumber(
+                                    this.formService.calculateForMaxAlwbDimForString(
+                                      z
+                                        .firstTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .firstTransverseSectionMeasurementDetailTM2
+                                        .percent
+                                    )
+                                  )
+                                  ? 'S'
+                                  : this.convertToNumber(
+                                      this.formService.calculateForMm(
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .gaugedS
+                                      )
+                                    ) >
+                                    this.convertToNumber(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .firstTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ? 'R'
+                                  : '',
+                              style: ['txt_center'],
+                              border: [false, true, true, true],
+                            },
+
+                            //fr 2
+
+                            {
+                              text: `${z.noOrLetter ?? ''}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${
+                                z.secondTransverseSectionMeasurementDetailTM2
+                                  .originalThickness ?? ''
+                              }`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${this.formService.calculateForMaxAlwbDimForString(
+                                z.secondTransverseSectionMeasurementDetailTM2
+                                  .originalThickness,
+                                z.secondTransverseSectionMeasurementDetailTM2
+                                  .percent
+                              )}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${
+                                z.secondTransverseSectionMeasurementDetailTM2
+                                  .gaugedP ?? ''
+                              }`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${
+                                z.secondTransverseSectionMeasurementDetailTM2
+                                  .gaugedS ?? ''
+                              }`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${
+                                Number(
+                                  this.formService.calculateForMm(
+                                    z
+                                      .secondTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z
+                                      .secondTransverseSectionMeasurementDetailTM2
+                                      .gaugedP
+                                  )
+                                ) == 0.0
+                                  ? ''
+                                  : this.formService.calculateForMm(
+                                      z
+                                        .secondTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .secondTransverseSectionMeasurementDetailTM2
+                                        .gaugedP
+                                    )
+                              }`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${
+                                Number.isNaN(
+                                  Number(
+                                    this.formService.calculateForPercent(
+                                      z
+                                        .secondTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .secondTransverseSectionMeasurementDetailTM2
+                                        .gaugedP
+                                    )
+                                  )
+                                )
+                                  ? ''
+                                  : Number(
+                                      this.formService.calculateForPercent(
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .gaugedP
+                                      )
+                                    )
+                              }`,
+
+                              style: ['txt_center'],
+                              border: [true, true, false, true],
+                            },
+                            {
+                              text:
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z
+                                      .secondTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z
+                                      .secondTransverseSectionMeasurementDetailTM2
+                                      .gaugedP
+                                  )
+                                ) >=
+                                  this.convertToNumber(
+                                    this.formService.threePartsFourOfMaxAlwbDim(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ) &&
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z
+                                      .secondTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z
+                                      .secondTransverseSectionMeasurementDetailTM2
+                                      .gaugedP
+                                  )
+                                ) <=
+                                  this.convertToNumber(
+                                    this.formService.calculateForMaxAlwbDimForString(
+                                      z
+                                        .secondTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .secondTransverseSectionMeasurementDetailTM2
+                                        .percent
+                                    )
+                                  )
+                                  ? 'S'
+                                  : this.convertToNumber(
+                                      this.formService.calculateForMm(
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .gaugedP
+                                      )
+                                    ) >
+                                    this.convertToNumber(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ? 'R'
+                                  : '',
+                              style: ['txt_center'],
+                              border: [false, true, true, true],
+                            },
+                            {
+                              text: `${
+                                Number(
+                                  this.formService.calculateForMm(
+                                    z
+                                      .secondTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z
+                                      .secondTransverseSectionMeasurementDetailTM2
+                                      .gaugedS
+                                  )
+                                ) == 0.0
+                                  ? ''
+                                  : this.formService.calculateForMm(
+                                      z
+                                        .secondTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .secondTransverseSectionMeasurementDetailTM2
+                                        .gaugedS
+                                    )
+                              }`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${
+                                Number.isNaN(
+                                  Number(
+                                    this.formService.calculateForPercent(
+                                      z
+                                        .secondTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .secondTransverseSectionMeasurementDetailTM2
+                                        .gaugedS
+                                    )
+                                  )
+                                )
+                                  ? ''
+                                  : Number(
+                                      this.formService.calculateForPercent(
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .gaugedS
+                                      )
+                                    )
+                              }`,
+                              style: ['txt_center'],
+                              border: [true, true, false, true],
+                            },
+                            {
+                              text:
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z
+                                      .secondTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z
+                                      .secondTransverseSectionMeasurementDetailTM2
+                                      .gaugedS
+                                  )
+                                ) >=
+                                  this.convertToNumber(
+                                    this.formService.threePartsFourOfMaxAlwbDim(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ) &&
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z
+                                      .secondTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z
+                                      .secondTransverseSectionMeasurementDetailTM2
+                                      .gaugedS
+                                  )
+                                ) <=
+                                  this.convertToNumber(
+                                    this.formService.calculateForMaxAlwbDimForString(
+                                      z
+                                        .secondTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .secondTransverseSectionMeasurementDetailTM2
+                                        .percent
+                                    )
+                                  )
+                                  ? 'S'
+                                  : this.convertToNumber(
+                                      this.formService.calculateForMm(
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .gaugedS
+                                      )
+                                    ) >
+                                    this.convertToNumber(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .secondTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ? 'R'
+                                  : '',
+
+                              style: ['txt_center'],
+                              border: [false, true, true, true],
+                            },
+                            //fr3
+
+                            {
+                              text: `${z.noOrLetter ?? ''}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${
+                                z.thirdTransverseSectionMeasurementDetailTM2
+                                  .originalThickness ?? ''
+                              }`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${this.formService.calculateForMaxAlwbDimForString(
+                                z.thirdTransverseSectionMeasurementDetailTM2
+                                  .originalThickness,
+                                z.thirdTransverseSectionMeasurementDetailTM2
+                                  .percent
+                              )}`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${
+                                z.thirdTransverseSectionMeasurementDetailTM2
+                                  .gaugedP ?? ''
+                              }`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${
+                                z.thirdTransverseSectionMeasurementDetailTM2
+                                  .gaugedS ?? ''
+                              }`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${
+                                Number(
+                                  this.formService.calculateForMm(
+                                    z.thirdTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z.thirdTransverseSectionMeasurementDetailTM2
+                                      .gaugedP
+                                  )
+                                ) == 0.0
+                                  ? ''
+                                  : this.formService.calculateForMm(
+                                      z
+                                        .thirdTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .thirdTransverseSectionMeasurementDetailTM2
+                                        .gaugedP
+                                    )
+                              }`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${
+                                Number.isNaN(
+                                  Number(
+                                    this.formService.calculateForPercent(
+                                      z
+                                        .thirdTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .thirdTransverseSectionMeasurementDetailTM2
+                                        .gaugedP
+                                    )
+                                  )
+                                )
+                                  ? ''
+                                  : Number(
+                                      this.formService.calculateForPercent(
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .gaugedP
+                                      )
+                                    )
+                              }`,
+
+                              style: ['txt_center'],
+                              border: [true, true, false, true],
+                            },
+                            {
+                              text:
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.thirdTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z.thirdTransverseSectionMeasurementDetailTM2
+                                      .gaugedP
+                                  )
+                                ) >=
+                                  this.convertToNumber(
+                                    this.formService.threePartsFourOfMaxAlwbDim(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ) &&
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.thirdTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z.thirdTransverseSectionMeasurementDetailTM2
+                                      .gaugedP
+                                  )
+                                ) <=
+                                  this.convertToNumber(
+                                    this.formService.calculateForMaxAlwbDimForString(
+                                      z
+                                        .thirdTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .thirdTransverseSectionMeasurementDetailTM2
+                                        .percent
+                                    )
+                                  )
+                                  ? 'S'
+                                  : this.convertToNumber(
+                                      this.formService.calculateForMm(
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .gaugedP
+                                      )
+                                    ) >
+                                    this.convertToNumber(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ? 'R'
+                                  : '',
+
+                              style: ['txt_center'],
+                              border: [false, true, true, true],
+                            },
+                            {
+                              text: `${
+                                Number(
+                                  this.formService.calculateForMm(
+                                    z.thirdTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z.thirdTransverseSectionMeasurementDetailTM2
+                                      .gaugedS
+                                  )
+                                ) == 0.0
+                                  ? ''
+                                  : this.formService.calculateForMm(
+                                      z
+                                        .thirdTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .thirdTransverseSectionMeasurementDetailTM2
+                                        .gaugedS
+                                    )
+                              }`,
+                              style: ['txt_center'],
+                            },
+                            {
+                              text: `${
+                                Number.isNaN(
+                                  Number(
+                                    this.formService.calculateForPercent(
+                                      z
+                                        .thirdTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .thirdTransverseSectionMeasurementDetailTM2
+                                        .gaugedS
+                                    )
+                                  )
+                                )
+                                  ? ''
+                                  : Number(
+                                      this.formService.calculateForPercent(
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .gaugedS
+                                      )
+                                    )
+                              }`,
+                              style: ['txt_center'],
+                              border: [true, true, false, true],
+                            },
+                            {
+                              text:
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.thirdTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z.thirdTransverseSectionMeasurementDetailTM2
+                                      .gaugedS
+                                  )
+                                ) >=
+                                  this.convertToNumber(
+                                    this.formService.threePartsFourOfMaxAlwbDim(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ) &&
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.thirdTransverseSectionMeasurementDetailTM2
+                                      .originalThickness,
+                                    z.thirdTransverseSectionMeasurementDetailTM2
+                                      .gaugedS
+                                  )
+                                ) <=
+                                  this.convertToNumber(
+                                    this.formService.calculateForMaxAlwbDimForString(
+                                      z
+                                        .thirdTransverseSectionMeasurementDetailTM2
+                                        .originalThickness,
+                                      z
+                                        .thirdTransverseSectionMeasurementDetailTM2
+                                        .percent
+                                    )
+                                  )
+                                  ? 'S'
+                                  : this.convertToNumber(
+                                      this.formService.calculateForMm(
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .gaugedS
+                                      )
+                                    ) >
+                                    this.convertToNumber(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .originalThickness,
+                                        z
+                                          .thirdTransverseSectionMeasurementDetailTM2
+                                          .percent
+                                      )
+                                    )
+                                  ? 'R'
+                                  : '',
+                              style: ['txt_center'],
+                              border: [false, true, true, true],
+                            },
+                          ]),
+                        ],
+                      },
+                      layout: {
+                        paddingLeft: () => 2,
+                        paddingRight: () => 2,
+                        paddingTop: () => 1,
+                        paddingBottom: () => 1,
+                      },
+                    },
+                  ]
+                : []
+            ),
+            //Form tm3
+            x.formList.map((y: any) =>
+              y.type == 'TM3'
+                ? [
+                    this.lsSketch.map((a) =>
+                      a.map((b: any) =>
+                        b.formId === y.id && b.formType == 'form_tm3'
+                          ? [
+                              {
+                                margin: [-20, -40, -20, -30] as Margins,
+                                pageBreak: 'before' as PageBreak,
+                                pageOrientation: 'landscape' as PageOrientation,
+                                fit: [pageSizee.width, pageSizee.height],
+                                image: `data:image/png;base64,${b.value}`,
+                              },
+                            ]
+                          : []
+                      )
+                    ),
+                    {
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      style: ['tableStyle', 'fontS8'],
+                      table: {
+                        headerRows: 10,
+                        widths: [
+                          '18.1%',
+                          '4.15%',
+                          '2.9%',
+                          '2.95%',
+                          '2.95%',
+                          '2.95%',
+                          '2.95%',
+                          '2.95%',
+                          '0.8%',
+                          '2.95%',
+                          '2.95%',
+                          '0.8%',
+                          '4.155%',
+                          '2.9%',
+                          '2.95%',
+                          '2.95%',
+                          '2.95%',
+                          '2.95%',
+                          '2.95%',
+                          '0.8%',
+                          '2.95%',
+                          '2.95%',
+                          '0.8%',
+                          '4.15%',
+                          '2.9%',
+                          '2.95%',
+                          '2.95%',
+                          '2.95%',
+                          '2.95%',
+                          '2.95%',
+                          '0.8%',
+                          '2.95%',
+                          '2.95%',
+                          '0.8%',
+                        ],
+                        body: [
+                          //Table header
+                          [
+                            {
+                              text: `TM3-${y.code}(1 July 2023)`,
+                              style: ['txt_center'],
+                              colSpan: 34,
+                              alignment: 'right' as Alignment,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: '',
+                              colSpan: 34,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          // Table content
+                          [
+                            {
+                              text: 'Report on THICKNESS MEASUREMENT OF SHELL AND DECK PLATING (one, two or three transverse sections)',
+                              style: ['txt_center', 'fontS11'],
+                              colSpan: 34,
+                              decoration: 'underline' as Decoration,
+                              bold: true,
+                              margin: [0, 0, 0, 5] as Margins,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              colSpan: 34,
+                              text: '',
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: "Ship's name:",
+                              alignment: 'center' as Alignment,
+                              colSpan: 3,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: `${this.inShipName}`,
+                              colSpan: 8,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {
+                              text: 'Class Identity No. ',
+                              colSpan: 4,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: `${this.inABS}`,
+                              colSpan: 8,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {
+                              text: 'Report No. ',
+                              colSpan: 3,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: `${this.generalParticular[0].reportNo}`,
+
+                              colSpan: 8,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              colSpan: 34,
+                              text: '',
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              style: 'txt_center',
+                              text: '',
+                            },
+                            {
+                              style: 'txt_center',
+                              text: `1st TRANSVERSE SECTION at Fr.No:`,
+                              colSpan: 8,
+                              border: [true, true, false, true],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {
+                              text: ` ${y.firstFrameNo}`,
+                              border: [false, true, true, true],
+                              colSpan: 3,
+                              bold: true,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: `2nd TRANSVERSE SECTION at Fr.No: `,
+                              colSpan: 8,
+                              border: [true, true, false, true],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {
+                              text: `${y.secondFrameNo}`,
+                              border: [false, true, true, true],
+                              colSpan: 3,
+                              bold: true,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: `1st TRANSVERSE SECTION at Fr.No: `,
+                              colSpan: 8,
+                              border: [true, true, false, true],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {
+                              text: `${y.thirdFrameNo}`,
+                              border: [false, true, true, true],
+                              colSpan: 3,
+                              bold: true,
+                            },
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              style: 'txt_center',
+                              text: 'STRAKE POSITION',
+                              rowSpan: 2,
+                            },
+                            {
+                              style: 'txt_center',
+                              text: 'No. or Letter',
+                              rowSpan: 2,
+                            },
+                            { style: 'txt_center', text: 'Org.Thk.' },
+                            { style: 'txt_center', text: 'Max.Alwb.Dim' },
+                            {
+                              style: 'txt_center',
+                              text: 'Gauged mm  ',
+                              colSpan: 2,
+                            },
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'Diminution P  ',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: '    Diminution S  ',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'No. or Letter',
+                              rowSpan: 2,
+                            },
+                            { style: 'txt_center', text: 'Org.Thk.' },
+                            { style: 'txt_center', text: 'Max.Alwb.Dim' },
+                            {
+                              style: 'txt_center',
+                              text: 'Gauged mm',
+                              colSpan: 2,
+                            },
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'Diminution P',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'Diminution S',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'No. or Letter',
+                              rowSpan: 2,
+                            },
+                            { style: 'txt_center', text: 'Org.Thk.' },
+                            { style: 'txt_center', text: 'Max.Alwb.Dim' },
+                            {
+                              style: 'txt_center',
+                              text: 'Gauged mm',
+                              colSpan: 2,
+                            },
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'Diminution P',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'Diminution S',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                          ],
+                          [
+                            {},
+                            {},
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'P' },
+                            { style: 'txt_center', text: 'S' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+                            {},
+
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'P' },
+                            { style: 'txt_center', text: 'S' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+                            {},
+
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'P' },
+                            { style: 'txt_center', text: 'S' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+                          ],
+                          ...y.measurementTM3DTOList?.map((z: any) => [
+                            { text: `${z.structuralMember ?? ''}` },
+                            {
+                              style: ['txt_center'],
+                              text: `${z.noOrLetter ?? ''}`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              text: `${
+                                z.firstTransverseSectionMeasurementDetail
+                                  .originalThickness ?? ''
+                              }`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              text: `${this.formService.calculateForMaxAlwbDimForString(
+                                z.firstTransverseSectionMeasurementDetail
+                                  .originalThickness,
+                                z.firstTransverseSectionMeasurementDetail
+                                  .percent
+                              )}`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              text: `${
+                                z.firstTransverseSectionMeasurementDetail
+                                  .gaugedP ?? ''
+                              }`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              text: `${
+                                z.firstTransverseSectionMeasurementDetail
+                                  .gaugedS ?? ''
+                              }`,
+                            },
+
+                            {
+                              style: ['txt_center'],
+                              text: `${
+                                Number(
+                                  this.formService.calculateForMm(
+                                    z.firstTransverseSectionMeasurementDetail
+                                      .originalThickness,
+                                    z.firstTransverseSectionMeasurementDetail
+                                      .gaugedP
+                                  )
+                                ) == 0.0
+                                  ? ''
+                                  : Number(
+                                      this.formService.calculateForMm(
+                                        z
+                                          .firstTransverseSectionMeasurementDetail
+                                          .originalThickness,
+                                        z
+                                          .firstTransverseSectionMeasurementDetail
+                                          .gaugedP
+                                      )
+                                    )
+                              }`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              border: [true, true, false, true],
+                              text: `${
+                                Number.isNaN(
+                                  Number(
+                                    this.formService.calculateForPercent(
+                                      z.firstTransverseSectionMeasurementDetail
+                                        .originalThickness,
+                                      z.firstTransverseSectionMeasurementDetail
+                                        .gaugedP
+                                    )
+                                  )
+                                )
+                                  ? ''
+                                  : this.formService.calculateForPercent(
+                                      z.firstTransverseSectionMeasurementDetail
+                                        .originalThickness,
+                                      z.firstTransverseSectionMeasurementDetail
+                                        .gaugedP
+                                    )
+                              }`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              border: [false, true, true, true],
+                              text:
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.firstTransverseSectionMeasurementDetail
+                                      .originalThickness,
+                                    z.firstTransverseSectionMeasurementDetail
+                                      .gaugedP
+                                  )
+                                ) >=
+                                  this.convertToNumber(
+                                    this.formService.threePartsFourOfMaxAlwbDim(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .firstTransverseSectionMeasurementDetail
+                                          .originalThickness,
+                                        z
+                                          .firstTransverseSectionMeasurementDetail
+                                          .percent
+                                      )
+                                    )
+                                  ) &&
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.firstTransverseSectionMeasurementDetail
+                                      .originalThickness,
+                                    z.firstTransverseSectionMeasurementDetail
+                                      .gaugedP
+                                  )
+                                ) <=
+                                  this.convertToNumber(
+                                    this.formService.calculateForMaxAlwbDimForString(
+                                      z.firstTransverseSectionMeasurementDetail
+                                        .originalThickness,
+                                      z.firstTransverseSectionMeasurementDetail
+                                        .percent
+                                    )
+                                  )
+                                  ? 'S'
+                                  : this.convertToNumber(
+                                      this.formService.calculateForMm(
+                                        z
+                                          .firstTransverseSectionMeasurementDetail
+                                          .originalThickness,
+                                        z
+                                          .firstTransverseSectionMeasurementDetail
+                                          .gaugedP
+                                      )
+                                    ) >
+                                    this.convertToNumber(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .firstTransverseSectionMeasurementDetail
+                                          .originalThickness,
+                                        z
+                                          .firstTransverseSectionMeasurementDetail
+                                          .percent
+                                      )
+                                    )
+                                  ? 'R'
+                                  : '',
+                            },
+                            {
+                              style: ['txt_center'],
+                              text: `${
+                                Number(
+                                  this.formService.calculateForMm(
+                                    z.firstTransverseSectionMeasurementDetail
+                                      .originalThickness,
+                                    z.firstTransverseSectionMeasurementDetail
+                                      .gaugedS
+                                  )
+                                ) == 0.0
+                                  ? ''
+                                  : Number(
+                                      this.formService.calculateForMm(
+                                        z
+                                          .firstTransverseSectionMeasurementDetail
+                                          .originalThickness,
+                                        z
+                                          .firstTransverseSectionMeasurementDetail
+                                          .gaugedS
+                                      )
+                                    )
+                              }`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              border: [true, true, false, true],
+                              text: `${
+                                Number.isNaN(
+                                  Number(
+                                    this.formService.calculateForPercent(
+                                      z.firstTransverseSectionMeasurementDetail
+                                        .originalThickness,
+                                      z.firstTransverseSectionMeasurementDetail
+                                        .gaugedS
+                                    )
+                                  )
+                                )
+                                  ? ''
+                                  : this.formService.calculateForPercent(
+                                      z.firstTransverseSectionMeasurementDetail
+                                        .originalThickness,
+                                      z.firstTransverseSectionMeasurementDetail
+                                        .gaugedS
+                                    )
+                              }`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              border: [false, true, true, true],
+                              text:
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.firstTransverseSectionMeasurementDetail
+                                      .originalThickness,
+                                    z.firstTransverseSectionMeasurementDetail
+                                      .gaugedS
+                                  )
+                                ) >=
+                                  this.convertToNumber(
+                                    this.formService.threePartsFourOfMaxAlwbDim(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .firstTransverseSectionMeasurementDetail
+                                          .originalThickness,
+                                        z
+                                          .firstTransverseSectionMeasurementDetail
+                                          .percent
+                                      )
+                                    )
+                                  ) &&
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.firstTransverseSectionMeasurementDetail
+                                      .originalThickness,
+                                    z.firstTransverseSectionMeasurementDetail
+                                      .gaugedS
+                                  )
+                                ) <=
+                                  this.convertToNumber(
+                                    this.formService.calculateForMaxAlwbDimForString(
+                                      z.firstTransverseSectionMeasurementDetail
+                                        .originalThickness,
+                                      z.firstTransverseSectionMeasurementDetail
+                                        .percent
+                                    )
+                                  )
+                                  ? 'S'
+                                  : this.convertToNumber(
+                                      this.formService.calculateForMm(
+                                        z
+                                          .firstTransverseSectionMeasurementDetail
+                                          .originalThickness,
+                                        z
+                                          .firstTransverseSectionMeasurementDetail
+                                          .gaugedS
+                                      )
+                                    ) >
+                                    this.convertToNumber(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .firstTransverseSectionMeasurementDetail
+                                          .originalThickness,
+                                        z
+                                          .firstTransverseSectionMeasurementDetail
+                                          .percent
+                                      )
+                                    )
+                                  ? 'R'
+                                  : '',
+                            },
+                            //fr2
+                            {
+                              style: ['txt_center'],
+                              text: `${z.noOrLetter ?? ''}`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              text: `${
+                                z.secondTransverseSectionMeasurementDetail
+                                  .originalThickness ?? ''
+                              }`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              text: `${this.formService.calculateForMaxAlwbDimForString(
+                                z.secondTransverseSectionMeasurementDetail
+                                  .originalThickness,
+                                z.secondTransverseSectionMeasurementDetail
+                                  .percent
+                              )}`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              text: `${
+                                z.secondTransverseSectionMeasurementDetail
+                                  .gaugedP ?? ''
+                              }`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              text: `${
+                                z.secondTransverseSectionMeasurementDetail
+                                  .gaugedS ?? ''
+                              }`,
+                            },
+
+                            {
+                              style: ['txt_center'],
+                              text: `${
+                                Number(
+                                  this.formService.calculateForMm(
+                                    z.secondTransverseSectionMeasurementDetail
+                                      .originalThickness,
+                                    z.secondTransverseSectionMeasurementDetail
+                                      .gaugedP
+                                  )
+                                ) == 0.0
+                                  ? ''
+                                  : Number(
+                                      this.formService.calculateForMm(
+                                        z
+                                          .secondTransverseSectionMeasurementDetail
+                                          .originalThickness,
+                                        z
+                                          .secondTransverseSectionMeasurementDetail
+                                          .gaugedP
+                                      )
+                                    )
+                              }`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              border: [true, true, false, true],
+                              text: `${this.formService.calculateForPercent(
+                                z.secondTransverseSectionMeasurementDetail
+                                  .originalThickness,
+                                z.secondTransverseSectionMeasurementDetail
+                                  .gaugedP
+                              )}`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              border: [false, true, true, true],
+                              text:
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.secondTransverseSectionMeasurementDetail
+                                      .originalThickness,
+                                    z.secondTransverseSectionMeasurementDetail
+                                      .gaugedP
+                                  )
+                                ) >=
+                                  this.convertToNumber(
+                                    this.formService.threePartsFourOfMaxAlwbDim(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .secondTransverseSectionMeasurementDetail
+                                          .originalThickness,
+                                        z
+                                          .secondTransverseSectionMeasurementDetail
+                                          .percent
+                                      )
+                                    )
+                                  ) &&
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.secondTransverseSectionMeasurementDetail
+                                      .originalThickness,
+                                    z.secondTransverseSectionMeasurementDetail
+                                      .gaugedP
+                                  )
+                                ) <=
+                                  this.convertToNumber(
+                                    this.formService.calculateForMaxAlwbDimForString(
+                                      z.secondTransverseSectionMeasurementDetail
+                                        .originalThickness,
+                                      z.secondTransverseSectionMeasurementDetail
+                                        .percent
+                                    )
+                                  )
+                                  ? 'S'
+                                  : this.convertToNumber(
+                                      this.formService.calculateForMm(
+                                        z
+                                          .secondTransverseSectionMeasurementDetail
+                                          .originalThickness,
+                                        z
+                                          .secondTransverseSectionMeasurementDetail
+                                          .gaugedP
+                                      )
+                                    ) >
+                                    this.convertToNumber(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .secondTransverseSectionMeasurementDetail
+                                          .originalThickness,
+                                        z
+                                          .secondTransverseSectionMeasurementDetail
+                                          .percent
+                                      )
+                                    )
+                                  ? 'R'
+                                  : '',
+                            },
+                            {
+                              style: ['txt_center'],
+                              text: `${
+                                Number(
+                                  this.formService.calculateForMm(
+                                    z.secondTransverseSectionMeasurementDetail
+                                      .originalThickness,
+                                    z.secondTransverseSectionMeasurementDetail
+                                      .gaugedS
+                                  )
+                                ) == 0.0
+                                  ? ''
+                                  : Number(
+                                      this.formService.calculateForMm(
+                                        z
+                                          .secondTransverseSectionMeasurementDetail
+                                          .originalThickness,
+                                        z
+                                          .secondTransverseSectionMeasurementDetail
+                                          .gaugedS
+                                      )
+                                    )
+                              }`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              border: [true, true, false, true],
+                              text: `${
+                                Number.isNaN(
+                                  Number(
+                                    this.formService.calculateForPercent(
+                                      z.secondTransverseSectionMeasurementDetail
+                                        .originalThickness,
+                                      z.secondTransverseSectionMeasurementDetail
+                                        .gaugedS
+                                    )
+                                  )
+                                )
+                                  ? ''
+                                  : Number(
+                                      this.formService.calculateForPercent(
+                                        z
+                                          .secondTransverseSectionMeasurementDetail
+                                          .originalThickness,
+                                        z
+                                          .secondTransverseSectionMeasurementDetail
+                                          .gaugedS
+                                      )
+                                    )
+                              }`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              border: [false, true, true, true],
+                              text:
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.secondTransverseSectionMeasurementDetail
+                                      .originalThickness,
+                                    z.secondTransverseSectionMeasurementDetail
+                                      .gaugedS
+                                  )
+                                ) >=
+                                  this.convertToNumber(
+                                    this.formService.threePartsFourOfMaxAlwbDim(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .secondTransverseSectionMeasurementDetail
+                                          .originalThickness,
+                                        z
+                                          .secondTransverseSectionMeasurementDetail
+                                          .percent
+                                      )
+                                    )
+                                  ) &&
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.secondTransverseSectionMeasurementDetail
+                                      .originalThickness,
+                                    z.secondTransverseSectionMeasurementDetail
+                                      .gaugedS
+                                  )
+                                ) <=
+                                  this.convertToNumber(
+                                    this.formService.calculateForMaxAlwbDimForString(
+                                      z.secondTransverseSectionMeasurementDetail
+                                        .originalThickness,
+                                      z.secondTransverseSectionMeasurementDetail
+                                        .percent
+                                    )
+                                  )
+                                  ? 'S'
+                                  : this.convertToNumber(
+                                      this.formService.calculateForMm(
+                                        z
+                                          .secondTransverseSectionMeasurementDetail
+                                          .originalThickness,
+                                        z
+                                          .secondTransverseSectionMeasurementDetail
+                                          .gaugedS
+                                      )
+                                    ) >
+                                    this.convertToNumber(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .secondTransverseSectionMeasurementDetail
+                                          .originalThickness,
+                                        z
+                                          .secondTransverseSectionMeasurementDetail
+                                          .percent
+                                      )
+                                    )
+                                  ? 'R'
+                                  : '',
+                            },
+
+                            //fr3
+                            {
+                              style: ['txt_center'],
+                              text: `${z.noOrLetter ?? ''}`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              text: `${
+                                z.thirdTransverseSectionMeasurementDetail
+                                  .originalThickness ?? ''
+                              }`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              text: `${this.formService.calculateForMaxAlwbDimForString(
+                                z.thirdTransverseSectionMeasurementDetail
+                                  .originalThickness,
+                                z.thirdTransverseSectionMeasurementDetail
+                                  .percent
+                              )}`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              text: `${
+                                z.thirdTransverseSectionMeasurementDetail
+                                  .gaugedP ?? ''
+                              }`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              text: `${
+                                z.thirdTransverseSectionMeasurementDetail
+                                  .gaugedS ?? ''
+                              }`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              text: `${
+                                Number(
+                                  this.formService.calculateForMm(
+                                    z.thirdTransverseSectionMeasurementDetail
+                                      .originalThickness,
+                                    z.thirdTransverseSectionMeasurementDetail
+                                      .gaugedP
+                                  )
+                                ) == 0.0
+                                  ? ''
+                                  : Number(
+                                      this.formService.calculateForMm(
+                                        z
+                                          .thirdTransverseSectionMeasurementDetail
+                                          .originalThickness,
+                                        z
+                                          .thirdTransverseSectionMeasurementDetail
+                                          .gaugedP
+                                      )
+                                    )
+                              }`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              border: [true, true, false, true],
+                              text: `${
+                                Number.isNaN(
+                                  Number(
+                                    this.formService.calculateForPercent(
+                                      z.thirdTransverseSectionMeasurementDetail
+                                        .originalThickness,
+                                      z.thirdTransverseSectionMeasurementDetail
+                                        .gaugedP
+                                    )
+                                  )
+                                )
+                                  ? ''
+                                  : Number(
+                                      this.formService.calculateForPercent(
+                                        z
+                                          .thirdTransverseSectionMeasurementDetail
+                                          .originalThickness,
+                                        z
+                                          .thirdTransverseSectionMeasurementDetail
+                                          .gaugedP
+                                      )
+                                    )
+                              }`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              border: [false, true, true, true],
+                              text:
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.thirdTransverseSectionMeasurementDetail
+                                      .originalThickness,
+                                    z.thirdTransverseSectionMeasurementDetail
+                                      .gaugedP
+                                  )
+                                ) >=
+                                  this.convertToNumber(
+                                    this.formService.threePartsFourOfMaxAlwbDim(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .thirdTransverseSectionMeasurementDetail
+                                          .originalThickness,
+                                        z
+                                          .thirdTransverseSectionMeasurementDetail
+                                          .percent
+                                      )
+                                    )
+                                  ) &&
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.thirdTransverseSectionMeasurementDetail
+                                      .originalThickness,
+                                    z.thirdTransverseSectionMeasurementDetail
+                                      .gaugedP
+                                  )
+                                ) <=
+                                  this.convertToNumber(
+                                    this.formService.calculateForMaxAlwbDimForString(
+                                      z.thirdTransverseSectionMeasurementDetail
+                                        .originalThickness,
+                                      z.thirdTransverseSectionMeasurementDetail
+                                        .percent
+                                    )
+                                  )
+                                  ? 'S'
+                                  : this.convertToNumber(
+                                      this.formService.calculateForMm(
+                                        z
+                                          .thirdTransverseSectionMeasurementDetail
+                                          .originalThickness,
+                                        z
+                                          .thirdTransverseSectionMeasurementDetail
+                                          .gaugedP
+                                      )
+                                    ) >
+                                    this.convertToNumber(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .thirdTransverseSectionMeasurementDetail
+                                          .originalThickness,
+                                        z
+                                          .thirdTransverseSectionMeasurementDetail
+                                          .percent
+                                      )
+                                    )
+                                  ? 'R'
+                                  : '',
+                            },
+                            {
+                              style: ['txt_center'],
+                              text: `${
+                                Number(
+                                  this.formService.calculateForMm(
+                                    z.thirdTransverseSectionMeasurementDetail
+                                      .originalThickness,
+                                    z.thirdTransverseSectionMeasurementDetail
+                                      .gaugedS
+                                  )
+                                ) == 0.0
+                                  ? ''
+                                  : Number(
+                                      this.formService.calculateForMm(
+                                        z
+                                          .thirdTransverseSectionMeasurementDetail
+                                          .originalThickness,
+                                        z
+                                          .thirdTransverseSectionMeasurementDetail
+                                          .gaugedS
+                                      )
+                                    )
+                              }`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              border: [true, true, false, true],
+                              text: `${
+                                Number.isNaN(
+                                  Number(
+                                    this.formService.calculateForPercent(
+                                      z.thirdTransverseSectionMeasurementDetail
+                                        .originalThickness,
+                                      z.thirdTransverseSectionMeasurementDetail
+                                        .gaugedS
+                                    )
+                                  )
+                                )
+                                  ? ''
+                                  : Number(
+                                      this.formService.calculateForPercent(
+                                        z
+                                          .thirdTransverseSectionMeasurementDetail
+                                          .originalThickness,
+                                        z
+                                          .thirdTransverseSectionMeasurementDetail
+                                          .gaugedS
+                                      )
+                                    )
+                              }`,
+                            },
+                            {
+                              style: ['txt_center'],
+                              border: [false, true, true, true],
+                              text:
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.thirdTransverseSectionMeasurementDetail
+                                      .originalThickness,
+                                    z.thirdTransverseSectionMeasurementDetail
+                                      .gaugedS
+                                  )
+                                ) >=
+                                  this.convertToNumber(
+                                    this.formService.threePartsFourOfMaxAlwbDim(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .thirdTransverseSectionMeasurementDetail
+                                          .originalThickness,
+                                        z
+                                          .thirdTransverseSectionMeasurementDetail
+                                          .percent
+                                      )
+                                    )
+                                  ) &&
+                                this.convertToNumber(
+                                  this.formService.calculateForMm(
+                                    z.thirdTransverseSectionMeasurementDetail
+                                      .originalThickness,
+                                    z.thirdTransverseSectionMeasurementDetail
+                                      .gaugedS
+                                  )
+                                ) <=
+                                  this.convertToNumber(
+                                    this.formService.calculateForMaxAlwbDimForString(
+                                      z.thirdTransverseSectionMeasurementDetail
+                                        .originalThickness,
+                                      z.thirdTransverseSectionMeasurementDetail
+                                        .percent
+                                    )
+                                  )
+                                  ? 'S'
+                                  : this.convertToNumber(
+                                      this.formService.calculateForMm(
+                                        z
+                                          .thirdTransverseSectionMeasurementDetail
+                                          .originalThickness,
+                                        z
+                                          .thirdTransverseSectionMeasurementDetail
+                                          .gaugedS
+                                      )
+                                    ) >
+                                    this.convertToNumber(
+                                      this.formService.calculateForMaxAlwbDimForString(
+                                        z
+                                          .thirdTransverseSectionMeasurementDetail
+                                          .originalThickness,
+                                        z
+                                          .thirdTransverseSectionMeasurementDetail
+                                          .percent
+                                      )
+                                    )
+                                  ? 'R'
+                                  : '',
+                            },
+                          ]),
+                        ],
+                      },
+                      layout: {
+                        paddingLeft: () => 2,
+                        paddingRight: () => 2,
+                        paddingTop: () => 1,
+                        paddingBottom: () => 1,
+                      },
+                    },
+                  ]
+                : []
+            ),
+            //Form tm4
+            x.formList.map((y: any) =>
+              y.type == 'TM4'
+                ? [
+                    this.lsSketch.map((a) =>
+                      a.map((b: any) =>
+                        b.formId === y.id && b.formType == 'form_tm4'
+                          ? [
+                              {
+                                margin: [-20, -40, -20, -30] as Margins,
+                                pageBreak: 'before' as PageBreak,
+                                pageOrientation: 'landscape' as PageOrientation,
+                                fit: [pageSizee.width, pageSizee.height],
+                                image: `data:image/png;base64,${b.value}`,
+                              },
+                            ]
+                          : []
+                      )
+                    ),
+                    {
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      style: ['tableStyle', 'fontS8'],
+                      table: {
+                        headerRows: 10,
+                        widths: [
+                          '35.5%',
+                          '7%',
+                          '10%',
+                          '13%',
+                          '5%',
+                          '5%',
+                          '5%',
+                          '5%',
+                          '5%',
+                          '5%',
+                          '5%',
+                          '5%',
+                        ],
+                        body: [
+                          //Table header
+                          [
+                            {
+                              text: `TM4-${y.code}(1 July 2023)`,
+                              style: ['txt_center'],
+                              colSpan: 12,
+                              alignment: 'right' as Alignment,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: '',
+                              colSpan: 12,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          // Table content
+                          [
+                            {
+                              text: 'Report on THICKNESS MEASUREMENT OF TRANSVERSE STRUCTURAL MEMBERS in the cargo oil and water ballast tanks within the cargo tank length',
+                              style: ['txt_center', 'fontS11'],
+                              colSpan: 12,
+                              decoration: 'underline' as Decoration,
+                              bold: true,
+                              margin: [0, 0, 0, 5] as Margins,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              colSpan: 12,
+                              text: '',
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: "Ship's name:",
+                              alignment: 'center' as Alignment,
+                              colSpan: 1,
+                              border: [false, false, false, false],
+                            },
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: `${this.inShipName}`,
+                              colSpan: 2,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {
+                              text: 'Class Identity No. ',
+                              colSpan: 2,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: `${this.inABS}`,
+                              colSpan: 2,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+
+                            {
+                              text: 'Report No. ',
+                              colSpan: 2,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: `${this.generalParticular[0].reportNo}`,
+                              colSpan: 3,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: '',
+                              colSpan: 12,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          //Table content
+                          [
+                            {
+                              text: 'TANK DESCRIPTION:',
+                              alignment: 'left' as Alignment,
+                              colSpan: 1,
+                              style: 'txt_center',
+                            },
+                            {
+                              text: `${y.tankHolDescription}`,
+                              colSpan: 11,
+                              rowSpan: 1,
+                              bold: true,
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: 'LOCATION OF STRUCTURE:',
+                              alignment: 'left' as Alignment,
+                              colSpan: 1,
+                              style: ['txt_center', 'txt_center'],
+                            },
+                            {
+                              text: `${y.locationOfStructure}`,
+                              colSpan: 11,
+                              bold: true,
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: 'STRUCTURAL MEMBER',
+                              rowSpan: 2,
+                              style: 'txt_center',
+                            },
+                            { text: 'Item', rowSpan: 2, style: 'txt_center' },
+
+                            {
+                              text: 'Original Thickness(mm)',
+                              rowSpan: 2,
+                              style: 'txt_center',
+                            },
+                            {
+                              text: 'Maximum Allowable Dim(mm)',
+                              rowSpan: 2,
+                              style: ['txt_center'],
+                            },
+                            { text: 'Gauged', colSpan: 2, style: 'txt_center' },
+                            {},
+                            {
+                              text: 'Diminution P',
+                              colSpan: 3,
+                              style: 'txt_center',
+                            },
+                            {},
+                            {},
+                            {
+                              text: 'Diminution S',
+                              colSpan: 3,
+                              style: 'txt_center',
+                            },
+                            {},
+                            {},
+                          ],
+                          [
+                            {},
+                            {},
+                            {},
+                            {},
+                            { text: 'P', style: 'txt_center' },
+                            { text: 'S', style: 'txt_center' },
+                            { text: 'mm', style: 'txt_center' },
+                            { text: '%', style: 'txt_center', colSpan: 2 },
+                            {},
+                            { text: 'mm', style: 'txt_center' },
+                            { text: '%', style: 'txt_center', colSpan: 2 },
+                            {},
+                          ],
+
+                          ...y.structuralMemberTM4List
+                            .map((z: any) => {
+                              let title = [
+                                {
+                                  text: `${z.structuralMemberTitle}`,
+                                  bold: true,
+                                },
+                                {},
+                                {},
+                                {},
+                                {},
+                                {},
+                                {},
+                                {
+                                  text: ``,
+                                  border: [true, true, false, true],
+                                },
+                                { text: ``, border: [false, true, true, true] },
+                                {},
+                                { text: ``, border: [true, true, false, true] },
+                                { text: ``, border: [false, true, true, true] },
+                              ];
+
+                              let member = z.measurementTM4DTOList.map(
+                                (k: any) => [
+                                  { text: `${k.structuralMember ?? ''}` },
+                                  {
+                                    text: `${k.item ?? ''}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${
+                                      k.detailMeasurement.originalThickness ??
+                                      ''
+                                    }`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${this.formService.calculateForMaxAlwbDimForString(
+                                      k.detailMeasurement.originalThickness,
+                                      k.detailMeasurement.percent
+                                    )}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${
+                                      k.detailMeasurement.gaugedP ?? ''
+                                    }`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${
+                                      k.detailMeasurement.gaugedS ?? ''
+                                    }`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${
+                                      Number(
+                                        this.formService.calculateForMm(
+                                          k.detailMeasurement.originalThickness,
+                                          k.detailMeasurement.gaugedP
+                                        )
+                                      ) == 0.0
+                                        ? ''
+                                        : this.formService.calculateForMm(
+                                            k.detailMeasurement
+                                              .originalThickness,
+                                            k.detailMeasurement.gaugedP
+                                          )
+                                    }`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${
+                                      Number.isNaN(
+                                        Number(
+                                          this.formService.calculateForPercent(
+                                            k.detailMeasurement
+                                              .originalThickness,
+                                            k.detailMeasurement.gaugedP
+                                          )
+                                        )
+                                      )
+                                        ? ''
+                                        : Number(
+                                            this.formService.calculateForPercent(
+                                              k.detailMeasurement
+                                                .originalThickness,
+                                              k.detailMeasurement.gaugedP
+                                            )
+                                          )
+                                    }`,
+                                    border: [true, true, false, true],
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text:
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.detailMeasurement.originalThickness,
+                                          k.detailMeasurement.gaugedP
+                                        )
+                                      ) >=
+                                        this.convertToNumber(
+                                          this.formService.threePartsFourOfMaxAlwbDim(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.detailMeasurement
+                                                .originalThickness,
+                                              k.detailMeasurement.percent
+                                            )
+                                          )
+                                        ) &&
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.detailMeasurement.originalThickness,
+                                          k.detailMeasurement.gaugedP
+                                        )
+                                      ) <=
+                                        this.convertToNumber(
+                                          this.formService.calculateForMaxAlwbDimForString(
+                                            k.detailMeasurement
+                                              .originalThickness,
+                                            k.detailMeasurement.percent
+                                          )
+                                        )
+                                        ? 'S'
+                                        : this.convertToNumber(
+                                            this.formService.calculateForMm(
+                                              k.detailMeasurement
+                                                .originalThickness,
+                                              k.detailMeasurement.gaugedP
+                                            )
+                                          ) >
+                                          this.convertToNumber(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.detailMeasurement
+                                                .originalThickness,
+                                              k.detailMeasurement.percent
+                                            )
+                                          )
+                                        ? 'R'
+                                        : '',
+                                    border: [false, true, true, true],
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${
+                                      Number(
+                                        this.formService.calculateForMm(
+                                          k.detailMeasurement.originalThickness,
+                                          k.detailMeasurement.gaugedS
+                                        )
+                                      ) == 0.0
+                                        ? ''
+                                        : this.formService.calculateForMm(
+                                            k.detailMeasurement
+                                              .originalThickness,
+                                            k.detailMeasurement.gaugedS
+                                          )
+                                    }`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${
+                                      Number.isNaN(
+                                        Number(
+                                          this.formService.calculateForPercent(
+                                            k.detailMeasurement
+                                              .originalThickness,
+                                            k.detailMeasurement.gaugedS
+                                          )
+                                        )
+                                      )
+                                        ? ''
+                                        : Number(
+                                            this.formService.calculateForPercent(
+                                              k.detailMeasurement
+                                                .originalThickness,
+                                              k.detailMeasurement.gaugedS
+                                            )
+                                          )
+                                    }`,
+                                    style: ['txt_center'],
+                                    border: [true, true, false, true],
+                                  },
+                                  {
+                                    text:
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.detailMeasurement.originalThickness,
+                                          k.detailMeasurement.gauged
+                                        )
+                                      ) >=
+                                        this.convertToNumber(
+                                          this.formService.threePartsFourOfMaxAlwbDim(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.detailMeasurement
+                                                .originalThickness,
+                                              k.detailMeasurement.percent
+                                            )
+                                          )
+                                        ) &&
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.detailMeasurement.originalThickness,
+                                          k.detailMeasurement.gauged
+                                        )
+                                      ) <=
+                                        this.convertToNumber(
+                                          this.formService.calculateForMaxAlwbDimForString(
+                                            k.detailMeasurement
+                                              .originalThickness,
+                                            k.detailMeasurement.percent
+                                          )
+                                        )
+                                        ? 'S'
+                                        : this.convertToNumber(
+                                            this.formService.calculateForMm(
+                                              k.detailMeasurement
+                                                .originalThickness,
+                                              k.detailMeasurement.gauged
+                                            )
+                                          ) >
+                                          this.convertToNumber(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.detailMeasurement
+                                                .originalThickness,
+                                              k.detailMeasurement.percent
+                                            )
+                                          )
+                                        ? 'R'
+                                        : '',
+
+                                    style: ['txt_center'],
+                                    border: [false, true, true, true],
+                                  },
+                                ]
+                              );
+                              return [title, ...member];
+                            })
+                            .flat(),
+                        ],
+                      },
+                      layout: {
+                        paddingTop: () => 1,
+                        paddingBottom: () => 1,
+                      },
+                    },
+                  ]
+                : []
+            ),
+            //Form tm5
+            x.formList.map((y: any) =>
+              y.type == 'TM5'
+                ? [
+                    this.lsSketch.map((a) =>
+                      a.map((b: any) =>
+                        b.formId === y.id && b.formType == 'form_tm5'
+                          ? [
+                              {
+                                margin: [-20, -40, -20, -30] as Margins,
+                                pageBreak: 'before' as PageBreak,
+                                pageOrientation: 'landscape' as PageOrientation,
+                                fit: [pageSizee.width, pageSizee.height],
+                                image: `data:image/png;base64,${b.value}`,
+                              },
+                            ]
+                          : []
+                      )
+                    ),
+                    {
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      style: ['tableStyle', 'fontS8'],
+                      table: {
+                        headerRows: 10,
+                        //12 rows :105.5
+                        widths: [
+                          '35.5%',
+                          '5%',
+                          '7%',
+                          '10%',
+                          '13%',
+                          '5%',
+                          '5%',
+                          '5%',
+                          '5%',
+                          '5%',
+                          '5%',
+                          '5%',
+                        ],
+                        body: [
+                          //Table header
+                          [
+                            {
+                              text: `TM5-${y.code}(1 July 2023)`,
+                              style: ['txt_center'],
+                              colSpan: 12,
+                              alignment: 'right' as Alignment,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: '',
+                              colSpan: 12,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          // Table content
+                          [
+                            {
+                              text: 'Report on THICKNESS MEASUREMENT OF W.T./O.T. TRANSVERSE BULKHEADS within the cargo tank or cargo hold spaces',
+                              style: ['txt_center', 'fontS11'],
+                              colSpan: 12,
+                              decoration: 'underline' as Decoration,
+                              bold: true,
+                              margin: [0, 0, 0, 5] as Margins,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              colSpan: 12,
+                              text: '',
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: "Ship's name:",
+                              alignment: 'center' as Alignment,
+                              colSpan: 1,
+                              border: [false, false, false, false],
+                            },
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: `${this.inShipName}`,
+                              colSpan: 2,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {
+                              text: 'Class Identity No. ',
+                              colSpan: 2,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: `${this.inABS}`,
+                              colSpan: 2,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {
+                              text: 'Report No. ',
+                              colSpan: 2,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: `${this.generalParticular[0].reportNo}`,
+                              colSpan: 3,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: '',
+                              colSpan: 12,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              alignment: 'left' as Alignment,
+                              text: 'TANK/HOLD DESCRIPTION:',
+                              colSpan: 1,
+                              style: 'txt_center',
+                            },
+                            {
+                              text: `${y.tankHolDescription}`,
+                              colSpan: 11,
+                              rowSpan: 1,
+                              bold: true,
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: 'LOCATION OF STRUCTURE:',
+                              alignment: 'left' as Alignment,
+                              colSpan: 1,
+                              style: ['txt_center', 'txt_center'],
+                            },
+                            {
+                              text: `${y.locationOfStructure}`,
+                              colSpan: 6,
+                              bold: true,
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {
+                              text: 'Frame No. :',
+                              alignment: 'center' as Alignment,
+                              border: [false, false, false, false],
+                              colSpan: 2,
+                            },
+                            {},
+                            {
+                              text: '42',
+                              border: [false, false, true, false],
+                              colSpan: 3,
+                              bold: true,
+                            },
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: 'STRUCTURAL COMPONENT (PLATING/STIFFENER)',
+                              rowSpan: 2,
+                              style: 'txt_center',
+                            },
+                            { text: 'Item', rowSpan: 2, style: 'txt_center' },
+
+                            {
+                              text: 'Original Thickness(mm)',
+                              rowSpan: 2,
+                              style: 'txt_center',
+                            },
+                            {
+                              text: 'Maximum Allowable Dim(mm)',
+                              rowSpan: 2,
+                              style: 'txt_center',
+                            },
+                            { text: 'Gauged', colSpan: 2, style: 'txt_center' },
+                            {},
+                            {
+                              text: 'Diminution P',
+                              colSpan: 3,
+                              style: 'txt_center',
+                            },
+                            {},
+                            {},
+                            {
+                              text: 'Diminution S',
+                              colSpan: 3,
+                              style: 'txt_center',
+                            },
+                            {},
+                            {},
+                          ],
+                          [
+                            {},
+                            {},
+                            {},
+                            {},
+                            { text: 'P', style: 'txt_center' },
+                            { text: 'S', style: 'txt_center' },
+                            { text: 'mm', style: 'txt_center' },
+                            { text: '%', style: 'txt_center', colSpan: 2 },
+                            {},
+                            { text: 'mm', style: 'txt_center' },
+                            { text: '%', style: 'txt_center', colSpan: 2 },
+                            {},
+                          ],
+
+                          ...y.structuralTM5List
+                            .map((z: any) => {
+                              let title = [
+                                {
+                                  text: `${z.name}`,
+                                  bold: true,
+                                },
+                                {},
+                                {},
+                                {},
+                                {},
+                                {},
+                                {},
+                                { text: '', border: [true, true, false, true] },
+                                { text: '', border: [false, true, true, true] },
+                                {},
+                                { text: '', border: [true, true, false, true] },
+                                { text: '', border: [false, true, true, true] },
+                              ];
+
+                              let member = z.measurementTM5List.map(
+                                (k: any) => [
+                                  {
+                                    text: `${k.structuralComponentType ?? ''}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${k.item ?? ''}`,
+                                    style: ['txt_center'],
+                                  },
+
+                                  {
+                                    text: `${
+                                      k.measurementDetail.originalThickness ??
+                                      ''
+                                    }`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${this.formService.calculateForMaxAlwbDimForString(
+                                      k.measurementDetail.originalThickness,
+                                      k.measurementDetail.percent
+                                    )}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${
+                                      k.measurementDetail.gaugedP ?? ''
+                                    }`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${
+                                      k.measurementDetail.gaugedS ?? ''
+                                    }`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${
+                                      Number(
+                                        this.formService.calculateForMm(
+                                          k.measurementDetail.originalThickness,
+                                          k.measurementDetail.gaugedP
+                                        )
+                                      ) == 0.0
+                                        ? ''
+                                        : this.formService.calculateForMm(
+                                            k.measurementDetail
+                                              .originalThickness,
+                                            k.measurementDetail.gaugedP
+                                          )
+                                    }`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${
+                                      Number.isNaN(
+                                        Number(
+                                          this.formService.calculateForPercent(
+                                            k.measurementDetail
+                                              .originalThickness,
+                                            k.measurementDetail.gaugedP
+                                          )
+                                        )
+                                      )
+                                        ? ''
+                                        : Number(
+                                            this.formService.calculateForPercent(
+                                              k.measurementDetail
+                                                .originalThickness,
+                                              k.measurementDetail.gaugedP
+                                            )
+                                          )
+                                    }`,
+                                    style: ['txt_center'],
+                                    border: [true, true, false, true],
+                                  },
+                                  {
+                                    text:
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.measurementDetail.originalThickness,
+                                          k.measurementDetail.gaugedP
+                                        )
+                                      ) >=
+                                        this.convertToNumber(
+                                          this.formService.threePartsFourOfMaxAlwbDim(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.measurementDetail
+                                                .originalThickness,
+                                              k.measurementDetail.percent
+                                            )
+                                          )
+                                        ) &&
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.measurementDetail.originalThickness,
+                                          k.measurementDetail.gaugedP
+                                        )
+                                      ) <=
+                                        this.convertToNumber(
+                                          this.formService.calculateForMaxAlwbDimForString(
+                                            k.measurementDetail
+                                              .originalThickness,
+                                            k.measurementDetail.percent
+                                          )
+                                        )
+                                        ? 'S'
+                                        : this.convertToNumber(
+                                            this.formService.calculateForMm(
+                                              k.measurementDetail
+                                                .originalThickness,
+                                              k.measurementDetail.gaugedP
+                                            )
+                                          ) >
+                                          this.convertToNumber(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.measurementDetail
+                                                .originalThickness,
+                                              k.measurementDetail.percent
+                                            )
+                                          )
+                                        ? 'R'
+                                        : '',
+                                    style: ['txt_center'],
+                                    border: [false, true, true, true],
+                                  },
+                                  {
+                                    text: `${
+                                      Number(
+                                        this.formService.calculateForMm(
+                                          k.measurementDetail.originalThickness,
+                                          k.measurementDetail.gaugedS
+                                        )
+                                      ) == 0.0
+                                        ? ''
+                                        : this.formService.calculateForMm(
+                                            k.measurementDetail
+                                              .originalThickness,
+                                            k.measurementDetail.gaugedS
+                                          )
+                                    }`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${
+                                      Number.isNaN(
+                                        Number(
+                                          this.formService.calculateForPercent(
+                                            k.measurementDetail
+                                              .originalThickness,
+                                            k.measurementDetail.gaugedS
+                                          )
+                                        )
+                                      )
+                                        ? ''
+                                        : Number(
+                                            this.formService.calculateForPercent(
+                                              k.measurementDetail
+                                                .originalThickness,
+                                              k.measurementDetail.gaugedS
+                                            )
+                                          )
+                                    }`,
+                                    style: ['txt_center'],
+                                    border: [true, true, false, true],
+                                  },
+                                  {
+                                    text:
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.measurementDetail.originalThickness,
+                                          k.measurementDetail.gaugedS
+                                        )
+                                      ) >=
+                                        this.convertToNumber(
+                                          this.formService.threePartsFourOfMaxAlwbDim(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.measurementDetail
+                                                .originalThickness,
+                                              k.measurementDetail.percent
+                                            )
+                                          )
+                                        ) &&
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.measurementDetail.originalThickness,
+                                          k.measurementDetail.gaugedS
+                                        )
+                                      ) <=
+                                        this.convertToNumber(
+                                          this.formService.calculateForMaxAlwbDimForString(
+                                            k.measurementDetail
+                                              .originalThickness,
+                                            k.measurementDetail.percent
+                                          )
+                                        )
+                                        ? 'S'
+                                        : this.convertToNumber(
+                                            this.formService.calculateForMm(
+                                              k.measurementDetail
+                                                .originalThickness,
+                                              k.measurementDetail.gaugedS
+                                            )
+                                          ) >
+                                          this.convertToNumber(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.measurementDetail
+                                                .originalThickness,
+                                              k.measurementDetail.percent
+                                            )
+                                          )
+                                        ? 'R'
+                                        : '',
+                                    style: ['txt_center'],
+                                    border: [false, true, true, true],
+                                  },
+                                ]
+                              );
+                              return [title, ...member];
+                            })
+                            .flat(),
+                        ],
+                      },
+                      layout: {
+                        paddingTop: () => 1,
+                        paddingBottom: () => 1,
+                      },
+                    },
+                  ]
+                : []
+            ),
+            //Form tm6
+            x.formList.map((y: any) =>
+              y.type == 'TM6'
+                ? [
+                    this.lsSketch.map((a) =>
+                      a.map((b: any) =>
+                        b.formId === y.id && b.formType == 'form_tm6'
+                          ? [
+                              {
+                                margin: [-20, -40, -20, -30] as Margins,
+                                pageBreak: 'before' as PageBreak,
+                                pageOrientation: 'landscape' as PageOrientation,
+                                fit: [pageSizee.width, pageSizee.height],
+                                image: `data:image/png;base64,${b.value}`,
+                              },
+                            ]
+                          : []
+                      )
+                    ),
+                    {
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      style: ['tableStyle', 'fontS8'],
+                      table: {
+                        headerRows: 10,
+                        widths: [
+                          '35.5%',
+                          '10%',
+                          '10%',
+                          '10%',
+                          '5%',
+                          '5%',
+                          '5%',
+                          '5%',
+                          '5%',
+                          '5%',
+                          '5%',
+                          '5%',
+                        ],
+                        body: [
+                          //Table header
+                          [
+                            {
+                              text: `TM6-${y.code}(1 July 2023)`,
+                              style: ['txt_center'],
+                              colSpan: 12,
+                              alignment: 'right' as Alignment,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: '',
+                              colSpan: 12,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          //Table name
+
+                          [
+                            {
+                              text: 'Report on THICKNESS MEASUREMENT OF MISCELLANEOUS STRUCTURAL MEMBERS',
+                              style: ['txt_center', 'fontS11'],
+                              colSpan: 12,
+                              decoration: 'underline' as Decoration,
+                              bold: true,
+                              margin: [0, 0, 0, 5] as Margins,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              colSpan: 12,
+                              text: '',
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: "Ship's name:",
+                              alignment: 'center' as Alignment,
+                              colSpan: 1,
+                              border: [false, false, false, false],
+                            },
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: `${this.inShipName}`,
+                              colSpan: 2,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {
+                              text: 'Class Identity No. ',
+                              colSpan: 2,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: `${this.inABS}`,
+                              colSpan: 2,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+
+                            {
+                              text: 'Report No. ',
+                              colSpan: 2,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: `${this.generalParticular[0].reportNo}`,
+                              colSpan: 3,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: '',
+                              colSpan: 12,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          //Table content
+                          [
+                            {
+                              text: 'STRUCTURAL MEMBERS :',
+                              alignment: 'left' as Alignment,
+                              colSpan: 1,
+                              style: 'txt_center',
+                            },
+                            {
+                              text: `${y.structuralMembers}`,
+                              colSpan: 11,
+                              rowSpan: 1,
+                              bold: true,
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: 'LOCATION OF STRUCTURE:',
+                              alignment: 'left' as Alignment,
+                              colSpan: 1,
+                              style: ['txt_center', 'txt_center'],
+                            },
+                            {
+                              text: `${y.locationOfStructure}`,
+                              colSpan: 11,
+                              bold: true,
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: 'Description',
+                              rowSpan: 2,
+                              style: 'txt_center',
+                            },
+                            { text: 'Item', rowSpan: 2, style: 'txt_center' },
+                            {
+                              text: 'Original Thickness(mm)',
+                              rowSpan: 2,
+                              style: 'txt_center',
+                            },
+                            {
+                              text: 'Maximum Allowable Dim(mm)',
+                              rowSpan: 2,
+                              style: 'txt_center',
+                            },
+                            { text: 'Gauged', colSpan: 2, style: 'txt_center' },
+                            {},
+                            {
+                              text: 'Diminution P',
+                              colSpan: 3,
+                              style: 'txt_center',
+                            },
+                            {},
+                            {},
+                            {
+                              text: 'Diminution S',
+                              colSpan: 3,
+                              style: 'txt_center',
+                            },
+                            {},
+                            {},
+                          ],
+                          [
+                            {},
+                            {},
+                            {},
+                            {},
+                            { text: 'P', style: 'txt_center' },
+                            { text: 'S', style: 'txt_center' },
+                            { text: 'mm', style: 'txt_center' },
+                            { text: '%', style: 'txt_center', colSpan: 2 },
+                            {},
+                            { text: 'mm', style: 'txt_center' },
+                            { text: '%', style: 'txt_center', colSpan: 2 },
+                            {},
+                          ],
+
+                          ...y.structuralDescriptionTM6List
+                            .map((z: any) => {
+                              let title = [
+                                {
+                                  text: `${z.structuralDescriptionTitle}`,
+                                  bold: true,
+                                },
+                                {},
+                                {},
+                                {},
+                                {},
+                                {},
+                                {},
+                                { text: '', border: [true, true, false, true] },
+                                { text: '', border: [false, true, true, true] },
+                                {},
+                                { text: '', border: [true, true, false, true] },
+                                { text: '', border: [false, true, true, true] },
+                              ];
+
+                              let member = z.measurementTM6DTOList.map(
+                                (k: any) => [
+                                  {
+                                    text: `${k.description ?? ''}`,
+                                  },
+                                  {
+                                    text: `${k.item ?? ''}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${
+                                      k.detailMeasurement.originalThickness ??
+                                      ''
+                                    }`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${this.formService.calculateForMaxAlwbDimForString(
+                                      k.detailMeasurement.originalThickness,
+                                      k.detailMeasurement.percent
+                                    )}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${
+                                      k.detailMeasurement.gaugedP ?? ''
+                                    }`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${
+                                      k.detailMeasurement.gaugedS ?? ''
+                                    }`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${
+                                      Number(
+                                        this.formService.calculateForMm(
+                                          k.detailMeasurement.originalThickness,
+                                          k.detailMeasurement.gaugedP
+                                        )
+                                      ) == 0.0
+                                        ? ''
+                                        : this.formService.calculateForMm(
+                                            k.detailMeasurement
+                                              .originalThickness,
+                                            k.detailMeasurement.gaugedP
+                                          )
+                                    }`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${
+                                      Number.isNaN(
+                                        Number(
+                                          this.formService.calculateForPercent(
+                                            k.detailMeasurement
+                                              .originalThickness,
+                                            k.detailMeasurement.gaugedP
+                                          )
+                                        )
+                                      )
+                                        ? ''
+                                        : Number(
+                                            this.formService.calculateForPercent(
+                                              k.detailMeasurement
+                                                .originalThickness,
+                                              k.detailMeasurement.gaugedP
+                                            )
+                                          )
+                                    }`,
+                                    style: ['txt_center'],
+                                    border: [true, true, false, true],
+                                  },
+                                  {
+                                    text:
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.detailMeasurement.originalThickness,
+                                          k.detailMeasurement.gaugedP
+                                        )
+                                      ) >=
+                                        this.convertToNumber(
+                                          this.formService.threePartsFourOfMaxAlwbDim(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.detailMeasurement
+                                                .originalThickness,
+                                              k.detailMeasurement.percent
+                                            )
+                                          )
+                                        ) &&
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.detailMeasurement.originalThickness,
+                                          k.detailMeasurement.gaugedP
+                                        )
+                                      ) <=
+                                        this.convertToNumber(
+                                          this.formService.calculateForMaxAlwbDimForString(
+                                            k.detailMeasurement
+                                              .originalThickness,
+                                            k.detailMeasurement.percent
+                                          )
+                                        )
+                                        ? 'S'
+                                        : this.convertToNumber(
+                                            this.formService.calculateForMm(
+                                              k.detailMeasurement
+                                                .originalThickness,
+                                              k.detailMeasurement.gaugedP
+                                            )
+                                          ) >
+                                          this.convertToNumber(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.detailMeasurement
+                                                .originalThickness,
+                                              k.detailMeasurement.percent
+                                            )
+                                          )
+                                        ? 'R'
+                                        : '',
+                                    border: [false, true, true, true],
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${
+                                      Number(
+                                        this.formService.calculateForMm(
+                                          k.detailMeasurement.originalThickness,
+                                          k.detailMeasurement.gaugedS
+                                        )
+                                      ) == 0.0
+                                        ? ''
+                                        : this.formService.calculateForMm(
+                                            k.detailMeasurement
+                                              .originalThickness,
+                                            k.detailMeasurement.gaugedS
+                                          )
+                                    }`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${
+                                      Number.isNaN(
+                                        Number(
+                                          this.formService.calculateForPercent(
+                                            k.detailMeasurement
+                                              .originalThickness,
+                                            k.detailMeasurement.gaugedS
+                                          )
+                                        )
+                                      )
+                                        ? ''
+                                        : Number(
+                                            this.formService.calculateForPercent(
+                                              k.detailMeasurement
+                                                .originalThickness,
+                                              k.detailMeasurement.gaugedS
+                                            )
+                                          )
+                                    }`,
+                                    style: ['txt_center'],
+                                    border: [true, true, false, true],
+                                  },
+                                  {
+                                    text:
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.detailMeasurement.originalThickness,
+                                          k.detailMeasurement.gaugedS
+                                        )
+                                      ) >=
+                                        this.convertToNumber(
+                                          this.formService.threePartsFourOfMaxAlwbDim(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.detailMeasurement
+                                                .originalThickness,
+                                              k.detailMeasurement.percent
+                                            )
+                                          )
+                                        ) &&
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.detailMeasurement.originalThickness,
+                                          k.detailMeasurement.gaugedS
+                                        )
+                                      ) <=
+                                        this.convertToNumber(
+                                          this.formService.calculateForMaxAlwbDimForString(
+                                            k.detailMeasurement
+                                              .originalThickness,
+                                            k.detailMeasurement.percent
+                                          )
+                                        )
+                                        ? 'S'
+                                        : this.convertToNumber(
+                                            this.formService.calculateForMm(
+                                              k.detailMeasurement
+                                                .originalThickness,
+                                              k.detailMeasurement.gaugedS
+                                            )
+                                          ) >
+                                          this.convertToNumber(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.detailMeasurement
+                                                .originalThickness,
+                                              k.detailMeasurement.percent
+                                            )
+                                          )
+                                        ? 'R'
+                                        : '',
+                                    style: ['txt_center'],
+                                    border: [false, true, true, true],
+                                  },
+                                ]
+                              );
+                              return [title, ...member];
+                            })
+                            .flat(),
+                        ],
+                      },
+                      layout: {
+                        paddingTop: () => 1,
+                        paddingBottom: () => 1,
+                      },
+                    },
+                  ]
+                : []
+            ),
+            ////Form tm7
+            x.formList.map((y: any) =>
+              y.type == 'TM7'
+                ? [
+                    this.lsSketch.map((a) =>
+                      a.map((b: any) =>
+                        b.formId === y.id && b.formType == 'form_tm7'
+                          ? [
+                              {
+                                margin: [-20, -40, -20, -30] as Margins,
+                                pageBreak: 'before' as PageBreak,
+                                pageOrientation: 'landscape' as PageOrientation,
+                                fit: [pageSizee.width, pageSizee.height],
+                                image: `data:image/png;base64,${b.value}`,
+                              },
+                            ]
+                          : []
+                      )
+                    ),
+                    {
+                      pageBreak: 'before' as PageBreak,
+                      pageOrientation: 'landscape' as PageOrientation,
+                      style: ['tableStyle', 'fontS8'],
+                      table: {
+                        headerRows: 10,
+                        widths: [
+                          '23.8%',
+                          '3.2%',
+                          '3.2%',
+                          '3.2%',
+                          '3.2%',
+                          '3.2%',
+                          '3.2%',
+                          '1%',
+                          '3.2%',
+                          '3.2%',
+                          '1%',
+                          '3.2%',
+                          '3.2%',
+                          '3.2%',
+                          '3.2%',
+                          '3.2%',
+                          '3.2%',
+                          '1%',
+                          '3.2%',
+                          '3.2%',
+                          '1%',
+                          '3.2%',
+                          '3.2%',
+                          '3.2%',
+                          '3.2%',
+                          '3.2%',
+                          '3.2%',
+                          '1%',
+                          '3.2%',
+                          '3.2%',
+                          '1%',
+                        ],
+                        body: [
+                          //Table header
+                          [
+                            {
+                              text: `TM7-${y.code}(1 July 2023)`,
+                              style: ['txt_center'],
+                              colSpan: 31,
+                              alignment: 'right' as Alignment,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: '',
+                              colSpan: 31,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          // Table content
+                          [
+                            {
+                              text: 'Report on THICKNESS MEASUREMENT OF SHELL AND DECK PLATING (one, two or three transverse sections)',
+                              style: ['txt_center', 'fontS11'],
+                              colSpan: 31,
+                              decoration: 'underline' as Decoration,
+                              bold: true,
+                              margin: [0, 0, 0, 5] as Margins,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              colSpan: 31,
+                              text: '',
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              text: "Ship's name:",
+                              alignment: 'center' as Alignment,
+                              colSpan: 3,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: ``,
+                              colSpan: 8,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {
+                              text: 'Class Identity No. ',
+                              colSpan: 4,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: ``,
+                              colSpan: 8,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {
+                              text: 'Report No. ',
+                              colSpan: 3,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {
+                              decoration: 'underline' as Decoration,
+                              text: ``,
+                              colSpan: 5,
+                              bold: true,
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              colSpan: 31,
+                              text: '',
+                              border: [false, false, false, false],
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              style: 'txt_center',
+                              text: 'CARGO HOLD NO. 1',
+                              colSpan: 31,
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              style: 'txt_center',
+                              text: '',
+                              colSpan: 1,
+                            },
+                            {
+                              style: 'txt_center',
+                              text: 'UPPER PART',
+                              colSpan: 10,
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'MID PART',
+                              colSpan: 10,
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'LOWER PART',
+                              colSpan: 10,
+                            },
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                            {},
+                          ],
+                          [
+                            {
+                              style: 'txt_center',
+                              text: 'FRAME NUMBER',
+                              rowSpan: 2,
+                            },
+                            { style: 'txt_center', text: 'Org.Thk.' },
+                            { style: 'txt_center', text: 'Max.Alwb.Dim' },
+                            {
+                              style: 'txt_center',
+                              text: 'Gauged mm  ',
+                              colSpan: 2,
+                            },
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'Diminution P  ',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: '    Diminution S  ',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                            { style: 'txt_center', text: 'Org.Thk.' },
+                            { style: 'txt_center', text: 'Max.Alwb.Dim' },
+                            {
+                              style: 'txt_center',
+                              text: 'Gauged mm',
+                              colSpan: 2,
+                            },
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'Diminution P',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'Diminution S',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                            { style: 'txt_center', text: 'Org.Thk.' },
+                            { style: 'txt_center', text: 'Max.Alwb.Dim' },
+                            {
+                              style: 'txt_center',
+                              text: 'Gauged mm',
+                              colSpan: 2,
+                            },
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'Diminution P',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                            {
+                              style: 'txt_center',
+                              text: 'Diminution S',
+                              colSpan: 3,
+                            },
+                            {},
+                            {},
+                          ],
+                          [
+                            {},
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'P' },
+                            { style: 'txt_center', text: 'S' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'P' },
+                            { style: 'txt_center', text: 'S' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: 'P' },
+                            { style: 'txt_center', text: 'S' },
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+                            { style: 'txt_center', text: 'mm' },
+                            { style: 'txt_center', text: '%', colSpan: 2 },
+                            {},
+                          ],
+                          ...y.frameNumberList
+                            .map((z: any) => {
+                              let title = [
+                                {
+                                  text: `${z.name}`,
+                                  bold: true,
+                                },
+                                {},
+                                {},
+                                {},
+                                {},
+                                {},
+                                { text: '', border: [true, true, false, true] },
+                                { text: '', border: [false, true, true, true] },
+                                {},
+                                { text: '', border: [true, true, false, true] },
+                                { text: '', border: [false, true, true, true] },
+
+                                {},
+                                {},
+                                {},
+                                {},
+                                {},
+                                { text: '', border: [true, true, false, true] },
+                                { text: '', border: [false, true, true, true] },
+                                {},
+                                { text: '', border: [true, true, false, true] },
+                                { text: '', border: [false, true, true, true] },
+
+                                {},
+                                {},
+                                {},
+                                {},
+                                {},
+                                { text: '', border: [true, true, false, true] },
+                                { text: '', border: [false, true, true, true] },
+                                {},
+                                { text: '', border: [true, true, false, true] },
+                                { text: '', border: [false, true, true, true] },
+                              ];
+
+                              let member = z.measurementTM7DTOList.map(
+                                (k: any) => [
+                                  { text: `${k.item ?? ''}` },
+                                  {
+                                    text: `${
+                                      k.upperPart.originalThickness ?? ''
+                                    }`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${this.formService.calculateForMaxAlwbDimForString(
+                                      k.upperPart.originalThickness,
+                                      k.upperPart.percent
+                                    )}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${k.upperPart.gaugedP ?? ''}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${k.upperPart.gaugedS ?? ''}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${
+                                      Number(
+                                        this.formService.calculateForMm(
+                                          k.upperPart.originalThickness,
+                                          k.upperPart.gaugedP
+                                        )
+                                      ) == 0.0
+                                        ? ''
+                                        : this.formService.calculateForMm(
+                                            k.upperPart.originalThickness,
+                                            k.upperPart.gaugedP
+                                          )
+                                    }`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${
+                                      Number.isNaN(
+                                        Number(
+                                          this.formService.calculateForPercent(
+                                            k.upperPart.originalThickness,
+                                            k.upperPart.gaugedP
+                                          )
+                                        )
+                                      )
+                                        ? ''
+                                        : Number(
+                                            this.formService.calculateForPercent(
+                                              k.upperPart.originalThickness,
+                                              k.upperPart.gaugedP
+                                            )
+                                          )
+                                    }`,
+                                    style: ['txt_center'],
+                                    border: [true, true, false, true],
+                                  },
+                                  {
+                                    text:
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.upperPart.originalThickness,
+                                          k.upperPart.gaugedP
+                                        )
+                                      ) >=
+                                        this.convertToNumber(
+                                          this.formService.threePartsFourOfMaxAlwbDim(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.upperPart.originalThickness,
+                                              k.upperPart.percent
+                                            )
+                                          )
+                                        ) &&
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.upperPart.originalThickness,
+                                          k.upperPart.gaugedP
+                                        )
+                                      ) <=
+                                        this.convertToNumber(
+                                          this.formService.calculateForMaxAlwbDimForString(
+                                            k.upperPart.originalThickness,
+                                            k.upperPart.percent
+                                          )
+                                        )
+                                        ? 'S'
+                                        : this.convertToNumber(
+                                            this.formService.calculateForMm(
+                                              k.upperPart.originalThickness,
+                                              k.upperPart.gaugedP
+                                            )
+                                          ) >
+                                          this.convertToNumber(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.upperPart.originalThickness,
+                                              k.upperPart.percent
+                                            )
+                                          )
+                                        ? 'R'
+                                        : '',
+                                    style: ['txt_center'],
+                                    border: [false, true, true, true],
+                                  },
+                                  {
+                                    text: `${
+                                      Number(
+                                        this.formService.calculateForMm(
+                                          k.upperPart.originalThickness,
+                                          k.upperPart.gaugedS
+                                        )
+                                      ) == 0.0
+                                        ? ''
+                                        : this.formService.calculateForMm(
+                                            k.upperPart.originalThickness,
+                                            k.upperPart.gaugedS
+                                          )
+                                    }`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${
+                                      Number.isNaN(
+                                        Number(
+                                          this.formService.calculateForPercent(
+                                            k.upperPart.originalThickness,
+                                            k.upperPart.gaugedS
+                                          )
+                                        )
+                                      )
+                                        ? ''
+                                        : Number(
+                                            this.formService.calculateForPercent(
+                                              k.upperPart.originalThickness,
+                                              k.upperPart.gaugedS
+                                            )
+                                          )
+                                    }`,
+                                    style: ['txt_center'],
+                                    border: [true, true, false, true],
+                                  },
+                                  {
+                                    text:
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.upperPart.originalThickness,
+                                          k.upperPart.gaugedS
+                                        )
+                                      ) >=
+                                        this.convertToNumber(
+                                          this.formService.threePartsFourOfMaxAlwbDim(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.upperPart.originalThickness,
+                                              k.upperPart.percent
+                                            )
+                                          )
+                                        ) &&
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.upperPart.originalThickness,
+                                          k.upperPart.gaugedS
+                                        )
+                                      ) <=
+                                        this.convertToNumber(
+                                          this.formService.calculateForMaxAlwbDimForString(
+                                            k.upperPart.originalThickness,
+                                            k.upperPart.percent
+                                          )
+                                        )
+                                        ? 'S'
+                                        : this.convertToNumber(
+                                            this.formService.calculateForMm(
+                                              k.upperPart.originalThickness,
+                                              k.upperPart.gaugedS
+                                            )
+                                          ) >
+                                          this.convertToNumber(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.upperPart.originalThickness,
+                                              k.upperPart.percent
+                                            )
+                                          )
+                                        ? 'R'
+                                        : '',
+                                    style: ['txt_center'],
+                                    border: [false, true, true, true],
+                                  },
+
+                                  {
+                                    text: `${
+                                      k.midPart.originalThickness ?? ''
+                                    }`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${this.formService.calculateForMaxAlwbDimForString(
+                                      k.midPart.originalThickness,
+                                      k.midPart.percent
+                                    )}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${k.midPart.gaugedP ?? ''}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${k.midPart.gaugedS ?? ''}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${
+                                      Number(
+                                        this.formService.calculateForMm(
+                                          k.midPart.originalThickness,
+                                          k.midPart.gaugedP
+                                        )
+                                      ) == 0.0
+                                        ? ''
+                                        : this.formService.calculateForMm(
+                                            k.midPart.originalThickness,
+                                            k.midPart.gaugedP
+                                          )
+                                    }`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${
+                                      Number.isNaN(
+                                        Number(
+                                          this.formService.calculateForPercent(
+                                            k.midPart.originalThickness,
+                                            k.midPart.gaugedP
+                                          )
+                                        )
+                                      )
+                                        ? ''
+                                        : Number(
+                                            this.formService.calculateForPercent(
+                                              k.midPart.originalThickness,
+                                              k.midPart.gaugedP
+                                            )
+                                          )
+                                    }`,
+                                    style: ['txt_center'],
+                                    border: [true, true, false, true],
+                                  },
+                                  {
+                                    text:
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.midPart.originalThickness,
+                                          k.midPart.gaugedP
+                                        )
+                                      ) >=
+                                        this.convertToNumber(
+                                          this.formService.threePartsFourOfMaxAlwbDim(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.midPart.originalThickness,
+                                              k.midPart.percent
+                                            )
+                                          )
+                                        ) &&
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.midPart.originalThickness,
+                                          k.midPart.gaugedP
+                                        )
+                                      ) <=
+                                        this.convertToNumber(
+                                          this.formService.calculateForMaxAlwbDimForString(
+                                            k.midPart.originalThickness,
+                                            k.midPart.percent
+                                          )
+                                        )
+                                        ? 'S'
+                                        : this.convertToNumber(
+                                            this.formService.calculateForMm(
+                                              k.midPart.originalThickness,
+                                              k.midPart.gaugedP
+                                            )
+                                          ) >
+                                          this.convertToNumber(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.midPart.originalThickness,
+                                              k.midPart.percent
+                                            )
+                                          )
+                                        ? 'R'
+                                        : '',
+                                    style: ['txt_center'],
+                                    border: [false, true, true, true],
+                                  },
+                                  {
+                                    text: `${
+                                      Number(
+                                        this.formService.calculateForMm(
+                                          k.midPart.originalThickness,
+                                          k.midPart.gaugedS
+                                        )
+                                      ) == 0.0
+                                        ? ''
+                                        : this.formService.calculateForMm(
+                                            k.midPart.originalThickness,
+                                            k.midPart.gaugedS
+                                          )
+                                    }`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${
+                                      Number.isNaN(
+                                        Number(
+                                          this.formService.calculateForPercent(
+                                            k.midPart.originalThickness,
+                                            k.midPart.gaugedS
+                                          )
+                                        )
+                                      )
+                                        ? ''
+                                        : Number(
+                                            this.formService.calculateForPercent(
+                                              k.midPart.originalThickness,
+                                              k.midPart.gaugedS
+                                            )
+                                          )
+                                    }`,
+                                    style: ['txt_center'],
+                                    border: [true, true, false, true],
+                                  },
+                                  {
+                                    text:
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.midPart.originalThickness,
+                                          k.midPart.gaugedS
+                                        )
+                                      ) >=
+                                        this.convertToNumber(
+                                          this.formService.threePartsFourOfMaxAlwbDim(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.midPart.originalThickness,
+                                              k.midPart.percent
+                                            )
+                                          )
+                                        ) &&
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.midPart.originalThickness,
+                                          k.midPart.gaugedS
+                                        )
+                                      ) <=
+                                        this.convertToNumber(
+                                          this.formService.calculateForMaxAlwbDimForString(
+                                            k.midPart.originalThickness,
+                                            k.midPart.percent
+                                          )
+                                        )
+                                        ? 'S'
+                                        : this.convertToNumber(
+                                            this.formService.calculateForMm(
+                                              k.midPart.originalThickness,
+                                              k.midPart.gaugedS
+                                            )
+                                          ) >
+                                          this.convertToNumber(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.midPart.originalThickness,
+                                              k.midPart.percent
+                                            )
+                                          )
+                                        ? 'R'
+                                        : '',
+                                    style: ['txt_center'],
+                                    border: [false, true, true, true],
+                                  },
+                                  {
+                                    text: `${
+                                      k.lowerPart.originalThickness ?? ''
+                                    }`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${this.formService.calculateForMaxAlwbDimForString(
+                                      k.lowerPart.originalThickness,
+                                      k.lowerPart.percent
+                                    )}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${k.lowerPart.gaugedP ?? ''}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${k.lowerPart.gaugedS ?? ''}`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${
+                                      Number(
+                                        this.formService.calculateForMm(
+                                          k.lowerPart.originalThickness,
+                                          k.lowerPart.gaugedP
+                                        )
+                                      ) == 0.0
+                                        ? ''
+                                        : this.formService.calculateForMm(
+                                            k.lowerPart.originalThickness,
+                                            k.lowerPart.gaugedP
+                                          )
+                                    }`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${
+                                      Number.isNaN(
+                                        Number(
+                                          this.formService.calculateForPercent(
+                                            k.lowerPart.originalThickness,
+                                            k.lowerPart.gaugedP
+                                          )
+                                        )
+                                      )
+                                        ? ''
+                                        : Number(
+                                            this.formService.calculateForPercent(
+                                              k.lowerPart.originalThickness,
+                                              k.lowerPart.gaugedP
+                                            )
+                                          )
+                                    }`,
+                                    style: ['txt_center'],
+                                    border: [true, true, false, true],
+                                  },
+                                  {
+                                    text:
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.lowerPart.originalThickness,
+                                          k.lowerPart.gaugedP
+                                        )
+                                      ) >=
+                                        this.convertToNumber(
+                                          this.formService.threePartsFourOfMaxAlwbDim(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.lowerPart.originalThickness,
+                                              k.lowerPart.percent
+                                            )
+                                          )
+                                        ) &&
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.lowerPart.originalThickness,
+                                          k.lowerPart.gaugedP
+                                        )
+                                      ) <=
+                                        this.convertToNumber(
+                                          this.formService.calculateForMaxAlwbDimForString(
+                                            k.lowerPart.originalThickness,
+                                            k.lowerPart.percent
+                                          )
+                                        )
+                                        ? 'S'
+                                        : this.convertToNumber(
+                                            this.formService.calculateForMm(
+                                              k.lowerPart.originalThickness,
+                                              k.lowerPart.gaugedP
+                                            )
+                                          ) >
+                                          this.convertToNumber(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.lowerPart.originalThickness,
+                                              k.lowerPart.percent
+                                            )
+                                          )
+                                        ? 'R'
+                                        : '',
+                                    style: ['txt_center'],
+                                    border: [false, true, true, true],
+                                  },
+                                  {
+                                    text: `${
+                                      Number(
+                                        this.formService.calculateForMm(
+                                          k.lowerPart.originalThickness,
+                                          k.lowerPart.gaugedS
+                                        )
+                                      ) == 0.0
+                                        ? ''
+                                        : this.formService.calculateForMm(
+                                            k.lowerPart.originalThickness,
+                                            k.lowerPart.gaugedS
+                                          )
+                                    }`,
+                                    style: ['txt_center'],
+                                  },
+                                  {
+                                    text: `${
+                                      Number.isNaN(
+                                        Number(
+                                          this.formService.calculateForPercent(
+                                            k.lowerPart.originalThickness,
+                                            k.lowerPart.gaugedS
+                                          )
+                                        )
+                                      )
+                                        ? ''
+                                        : Number(
+                                            this.formService.calculateForPercent(
+                                              k.lowerPart.originalThickness,
+                                              k.lowerPart.gaugedS
+                                            )
+                                          )
+                                    }`,
+                                    style: ['txt_center'],
+                                    border: [true, true, false, true],
+                                  },
+                                  {
+                                    text:
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.lowerPart.originalThickness,
+                                          k.lowerPart.gaugedS
+                                        )
+                                      ) >=
+                                        this.convertToNumber(
+                                          this.formService.threePartsFourOfMaxAlwbDim(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.lowerPart.originalThickness,
+                                              k.lowerPart.percent
+                                            )
+                                          )
+                                        ) &&
+                                      this.convertToNumber(
+                                        this.formService.calculateForMm(
+                                          k.lowerPart.originalThickness,
+                                          k.lowerPart.gaugedS
+                                        )
+                                      ) <=
+                                        this.convertToNumber(
+                                          this.formService.calculateForMaxAlwbDimForString(
+                                            k.lowerPart.originalThickness,
+                                            k.lowerPart.percent
+                                          )
+                                        )
+                                        ? 'S'
+                                        : this.convertToNumber(
+                                            this.formService.calculateForMm(
+                                              k.lowerPart.originalThickness,
+                                              k.lowerPart.gaugedS
+                                            )
+                                          ) >
+                                          this.convertToNumber(
+                                            this.formService.calculateForMaxAlwbDimForString(
+                                              k.lowerPart.originalThickness,
+                                              k.lowerPart.percent
+                                            )
+                                          )
+                                        ? 'R'
+                                        : '',
+                                    style: ['txt_center'],
+                                    border: [false, true, true, true],
+                                  },
+                                ]
+                              );
+                              return [title, ...member];
+                            })
+                            .flat(),
+                        ],
+                      },
+                      layout: {
+                        paddingTop: () => 1,
+                        paddingBottom: () => 1,
+                        paddingLeft: () => 2,
+                        paddingRight: () => 2,
+                      },
+                    },
+                  ]
+                : []
+            ),
+          ]),
+        ],
       ],
-
-      images: {
-        // in browser is supported loading images via url (https or http protocol) (minimal verion: 0.1.67)
-        snow: `${this.imgN}`,
-      },
-
+      //Define stye common
       styles: {
         header: {
           fontSize: 14,
@@ -1030,29 +8464,12 @@ export class ReviewComponent implements OnInit {
         mg_50: {
           margin: [0, 300, 0, 10] as Margins,
         },
-        mg_25: {
-          margin: [0, 150, 0, 0] as Margins,
-        },
         txt_center: {
           alignment: 'center' as Alignment,
         },
         tableStyle: {
-          margin: [-20, 0, -20, 0] as Margins,
+          margin: [-20, 0, 20, 0] as Margins,
         },
-
-        tableStyleLarge: {
-          margin: [-30, 0, -20, 0] as Margins,
-        },
-        table_name: {
-          margin: [20, 0, 20, 0] as Margins,
-        },
-        info_ship: {
-          margin: [80, 10, 15, 10] as Margins,
-        },
-        footerAndHeader: {
-          margin: [0, 0, 0, 0] as Margins,
-        },
-
         footer: {
           margin: [20, 10, 20, 30] as Margins,
         },
@@ -1060,16 +8477,9 @@ export class ReviewComponent implements OnInit {
           margin: [0, 15, 0, 0] as Margins,
           fontSize: 11,
         },
-        mg_b: {
-          margin: [0, 0, 0, 30] as Margins,
-        },
         mg_t_8: {
           margin: [0, 8, 0, 0] as Margins,
         },
-        mg_l_20: {
-          margin: [20, 0, 0, 0] as Margins,
-        },
-
         mg_l_90: {
           margin: [90, 0, 0, 0] as Margins,
         },
@@ -1079,43 +8489,28 @@ export class ReviewComponent implements OnInit {
         fontS11: {
           fontSize: 11,
         },
-        fontS15: {
-          fontSize: 15,
-        },
         fontS18: {
           fontSize: 18,
         },
-        fontS30: {
-          fontSize: 30,
+        fontS45: {
+          fontSize: 45,
         },
       },
+      //if not styles is applied
       defaultStyle: {
         fontSize: 9,
         columnGap: 20,
       },
     };
-
     pdfMake.createPdf(pdfDocument).open({}, window);
-  }
-
-  exportTestPdf() {
-    var pdfTest = {
-      content: [
-        {
-          image: 'snow',
-        },
-      ],
-      images: {
-        // in browser is supported loading images via url (https or http protocol) (minimal verion: 0.1.67)
-        snow: 'https://scontent.fhan17-1.fna.fbcdn.net/v/t1.6435-9/67246509_111387816859260_2386012619652726784_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=e3f864&_nc_ohc=mq_yiuP1cvEAX8MvYsU&_nc_ht=scontent.fhan17-1.fna&oh=00_AfDw51jhjfX5tfjXBaYXDj8k51y19mb9SGycIt5cqMpoVw&oe=6482AE6A',
-      },
-    };
-    pdfMake.createPdf(pdfTest).open({}, window);
+    // pdfMake.createPdf(pdfDocument).download();
   }
 
   ngOnInit() {
+    this.isLoadingSaveButton = true;
+    //lấy đúng dữ liệu đang được sử dụng
     this.mainData = this.localService.getMainData();
-
+    this.isSurveyorCheck = this.mainData.surveyorSign;
     this.generalParticularervice.getGeneralParticularsFromAPI().subscribe(
       (data) => {
         this.generalParticular = data;
@@ -1149,15 +8544,11 @@ export class ReviewComponent implements OnInit {
         this.inSuveyor = this.generalParticular[0].surveyorInfo;
       },
       (err) => {
-        console.log(err);
         alert('Failure to load data from server');
       }
     );
-    this.shipSevice.getShipsFromAPI().subscribe((data) => {});
-
     this.paramService.getParamValueByType(5).subscribe((data) => {
       this.inParam_qualification = data[0].param;
-      console.log('param' + this.inParam_qualification);
     });
 
     this.reportIndexService
@@ -1165,13 +8556,91 @@ export class ReviewComponent implements OnInit {
       .subscribe(
         (data) => {
           this.reportIndex = data;
-          console.log('Data:', data);
-          console.log('Report Index:', this.reportIndex);
+          this.parts = this.reportIndex.parts;
+          this.formInfo = this.parts.flatMap((part) =>
+            part.forms.map((form) => ({
+              formType: form.name,
+              formId: form.formID,
+            }))
+          );
+          for (let i = 0; i < this.formInfo.length; i++) {
+            if (this.formInfo[i].formType.includes('TM1')) {
+              this.sketchService
+                .getSketchFromApi('form_tm1', this.formInfo[i].formId)
+                .subscribe((data) => {
+                  this.lsSketch.push(data);
+                });
+            }
+            if (this.formInfo[i].formType.includes('TM2')) {
+              this.sketchService
+                .getSketchFromApi('form_tm2', this.formInfo[i].formId)
+                .subscribe((data) => {
+                  this.lsSketch.push(data);
+                });
+            }
+            if (this.formInfo[i].formType.includes('TM3')) {
+              this.sketchService
+                .getSketchFromApi('form_tm3', this.formInfo[i].formId)
+                .subscribe((data) => {
+                  this.lsSketch.push(data);
+                });
+            }
+            if (this.formInfo[i].formType.includes('TM4')) {
+              this.sketchService
+                .getSketchFromApi('form_tm4', this.formInfo[i].formId)
+                .subscribe((data) => {
+                  this.lsSketch.push(data);
+                });
+            }
+            if (this.formInfo[i].formType.includes('TM5')) {
+              this.sketchService
+                .getSketchFromApi('form_tm5', this.formInfo[i].formId)
+                .subscribe((data) => {
+                  this.lsSketch.push(data);
+                });
+            }
+            if (this.formInfo[i].formType.includes('TM6')) {
+              this.sketchService
+                .getSketchFromApi('form_tm6', this.formInfo[i].formId)
+                .subscribe((data) => {
+                  this.lsSketch.push(data);
+                });
+            }
+            if (this.formInfo[i].formType.includes('TM7')) {
+              this.sketchService
+                .getSketchFromApi('form_tm7', this.formInfo[i].formId)
+                .subscribe((data) => {
+                  this.lsSketch.push(data);
+                });
+            }
+          }
+          this.id_index_part = this.parts
+            .map((x) => ({
+              id: x.id,
+              index: x.partIndex,
+            }))
+            .sort((a, b) => a.index - b.index);
+
+          let listPro = [];
+          for (let i = 0; i < this.id_index_part.length; i++) {
+            listPro.push(
+              this.dataTm1S.getReport_index(this.id_index_part[i].id)
+            );
+          }
+
+          zip(...listPro).subscribe((data: {}) => {
+            if (Array.isArray(data)) {
+              this.data_part = data;
+            }
+            this.isLoadingSaveButton = false;
+            this.mainData.loading = false;
+            this.exportPdf();
+          });
         },
         (err) => {
-          console.log(err);
-          console.log('error');
+          alert('Failure to load data from server');
         }
       );
+    this.router.navigateByUrl('history');
   }
 }

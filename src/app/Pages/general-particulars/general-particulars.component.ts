@@ -71,15 +71,17 @@ export class GeneralParticularsComponent implements OnInit {
    * Hàm này dùng để gộp giá trị startTime và endTime của certificate vào một mảng
    */
   seclectChange() {
-    let nowCertificate = this.certificates.filter(
-      (x) => x.certificateOrganization === this.inCertificateName
-    );
+    if (this.certificates.length !== 0) {
+      let nowCertificate = this.certificates.filter(
+        (x) => x.certificateOrganization === this.inCertificateName
+      );
 
-    this.inCertificateDate = [
-      nowCertificate[0].validStartDate,
-      nowCertificate[0].validEndDate,
-    ];
-    this.inCertificateNo = nowCertificate[0].certificateNo;
+      this.inCertificateDate = [
+        nowCertificate[0].validStartDate,
+        nowCertificate[0].validEndDate,
+      ];
+      this.inCertificateNo = nowCertificate[0].certificateNo;
+    }
   }
 
   /**
@@ -380,8 +382,6 @@ export class GeneralParticularsComponent implements OnInit {
         .addGeneralParticularsToAPI(newGeneralParticulars)
         .subscribe(
           (data) => {
-            console.log('data post: ', data);
-
             this.getDataService.getGeneralParticularsFromAPI().subscribe(
               (data) => {
                 this.generalParticulars = data;
@@ -393,18 +393,17 @@ export class GeneralParticularsComponent implements OnInit {
                 this.mainData.mainId = newGeneral[0].id;
                 this.mainData.reportNumber = newGeneral[0].reportNo;
                 this.mainData.editMode = true;
-                console.log(this.mainData);
-                this.message.create('success', 'Save success');
                 this.router.navigateByUrl('selectForm');
               },
               (err) => {
                 console.log(err);
               }
             );
+            this.message.create('success', 'Save success');
           },
           (err) => {
             console.log(err);
-            console.log(this.mainData);
+            this.message.create('error', 'save failure');
           }
         );
     } else {
@@ -414,6 +413,9 @@ export class GeneralParticularsComponent implements OnInit {
 
   searchShip() {}
 
+  /**
+   * Hàm dùng để cập nhật lại dữ liệu của general paticular
+   */
   update(): void {
     if (
       this.inShipName !== '' &&
@@ -465,9 +467,6 @@ export class GeneralParticularsComponent implements OnInit {
         nameOfOperator: this.generalParticularsForm.value.nameOfOperator,
         surveyorInfo: this.generalParticularsForm.value.nameOfSurveyor,
       };
-      console.log('Id:', this.mainData.mainId);
-
-      console.log('New general:', generalParticularsput);
 
       this.getDataService
         .updateGeneralParticularsToAPI(
@@ -476,7 +475,6 @@ export class GeneralParticularsComponent implements OnInit {
         )
         .subscribe(
           (data) => {
-            console.log('data:', data);
             this.message.create('success', 'Save success');
             this.ngOnInit();
           },

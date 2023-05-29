@@ -1,6 +1,6 @@
 export interface measurementTM5 {
   structuralComponentType: string;
-  structuralComponent: string;
+  item: string;
   measurementDetail: {
     originalThickness: string;
     maxAlwbDim: string;

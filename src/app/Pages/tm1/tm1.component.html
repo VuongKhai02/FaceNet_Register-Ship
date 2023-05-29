@@ -1,13 +1,45 @@
 <section>
+  <div class="form-code">
+    <div style="float: right">
+      <nz-input-group nzAddOnBefore="TM1">
+        <nz-select
+          nzShowSearch
+          nzAllowClear
+          nzPlaceHolder="Select a code"
+          [(ngModel)]="formTM1.code"
+          style="min-width: 150px"
+        >
+          <nz-option
+            *ngFor="let option of listFormCode"
+            nzLabel="{{ option.param }}"
+            nzValue="{{ option.param }}"
+          ></nz-option>
+        </nz-select>
+      </nz-input-group>
+    </div>
+  </div>
+
   <div class="header">
     <h1 class="title">
       Report on THICKNESS MEASUREMENT of ALL DECK PLATING, ALL BOTTOM SHELL
       PLATING or SIDE SHELL PLATING
     </h1>
     <div class="infor">
-      <p>Ship's name<span>M/V "AFRICAN EAGLE"</span></p>
-      <p>Class Identity No.<span>03112356</span></p>
-      <p>Report No.<span>VMC.UTM.22.046/5255939</span></p>
+      <p>
+        Ship's name<span>{{
+          generalParticular ? generalParticular.shipInfo.name : ""
+        }}</span>
+      </p>
+      <p>
+        Class Identity No.<span>{{
+          generalParticular ? generalParticular.shipInfo.absIdentification : ""
+        }}</span>
+      </p>
+      <p>
+        Report No.<span>{{
+          generalParticular ? generalParticular.reportNo : ""
+        }}</span>
+      </p>
     </div>
   </div>
 
@@ -16,13 +48,14 @@
     <nz-input-group nzAddOnAfter="%">
       <nz-select
         nzPlaceHolder="Choose percent"
-        [(ngModel)]="percentSelected"
+        [(ngModel)]="percentValue"
         (ngModelChange)="onChangePercent()"
+        style="min-width: 100px"
       >
         <nz-option
           *ngFor="let option of listPercentOption"
           nzLabel="{{ option.label }}"
-          nzValue="{{ option.value }}"
+          nzValue="{{ option.label }}"
         ></nz-option>
       </nz-select>
     </nz-input-group>
@@ -51,6 +84,140 @@
       </div>
     </nz-modal>
 
+    <button class="btn-add-row" nz-button (click)="showAddSketches()">
+      <span nz-icon nzType="folder-add" nzTheme="outline"></span> Add sketches
+    </button>
+    <nz-modal
+      [nzStyle]="{ top: '10%' }"
+      [(nzVisible)]="isVisibleAddSketches"
+      nzTitle="Add sketches"
+      [nzFooter]="modalFooter"
+      (nzOnCancel)="handleCancelAddSketches()"
+      (nzOnOk)="handleOkAddSketches()"
+      nzWidth="70%"
+    >
+      <div *nzModalContent>
+        <div *ngIf="isLoadingSketches; else showSketches">
+          <nz-spin
+            nzSimple
+            [nzSpinning]="isLoadingSketches"
+            [nzSize]="'large'"
+            style="display: flex; justify-content: center; margin-top: 30px"
+          >
+          </nz-spin>
+        </div>
+        <ng-template #showSketches>
+          <input
+            nz-input
+            type="file"
+            accept="image/*"
+            (change)="onChangeImage($event)"
+            multiple
+          />
+          <div
+            *ngIf="listPreviewSketches.length > 0 && !isLoadingSketches"
+            class="preview-container"
+          >
+            <div class="preview-title">
+              <h1
+                style="margin-bottom: 0; padding: 0 5px; line-height: initial"
+              >
+                Preview
+              </h1>
+            </div>
+            <div class="preview-sketches">
+              <div
+                *ngFor="let sketch of listPreviewSketches; index as index"
+                class="preview-image"
+                [style.background-image]="'url(' + sketch + ')'"
+              >
+                <div class="preview-sketches-overlay">
+                  <span
+                    nz-icon
+                    class="delete-button"
+                    nzType="delete"
+                    nzTheme="outline"
+                    nz-popconfirm
+                    nzPopconfirmTitle="Sure to delete?"
+                    (nzOnConfirm)="deletePreviewSketches(index)"
+                  ></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            *ngIf="listSketches.length > 0 && !isLoadingSketches"
+            class="preview-container"
+          >
+            <div class="preview-title">
+              <h1
+                style="margin-bottom: 0; padding: 0 5px; line-height: initial"
+              >
+                Saved
+              </h1>
+            </div>
+            <div class="preview-sketches">
+              <div
+                *ngFor="let sketch of listSketches; index as index"
+                class="preview-image"
+                [style.background-image]="
+                  'url(' +
+                  'data:' +
+                  sketch.type +
+                  ';base64,' +
+                  sketch.value +
+                  ')'
+                "
+              >
+                <div class="preview-sketches-overlay">
+                  <span
+                    nz-icon
+                    class="delete-button"
+                    nzType="delete"
+                    nzTheme="outline"
+                    nz-popconfirm
+                    nzPopconfirmTitle="Sure to delete?"
+                    (nzOnConfirm)="deleteSavedSketches(sketch.id)"
+                  ></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </div>
+      <ng-template #modalFooter>
+        <button nz-button nzType="default" (click)="handleCancelAddSketches()">
+          Cancel
+        </button>
+        <button
+          nz-button
+          nzType="primary"
+          [disabled]="isLoadingSketches"
+          (click)="handleOkAddSketches()"
+          [nzLoading]="isConfirmLoadingSketches"
+        >
+          Save
+        </button>
+      </ng-template>
+    </nz-modal>
+
+    <button style="width: fit-content; padding: 0">
+      <label for="import-excel">
+        <div class="import-excel">
+          <span nz-icon nzType="upload" nzTheme="outline"></span
+          ><span style="margin-left: 8px">Import excel</span>
+        </div>
+      </label>
+      <input
+        type="file"
+        accept=".xls"
+        style="display: none"
+        id="import-excel"
+        [(ngModel)]="selectedFile"
+        (change)="onImportExcel($event)"
+      />
+    </button>
+
     <button
       nz-button
       nzType="primary"
@@ -65,25 +232,26 @@
   <!-- Start table -->
   <nz-table
     cdkDropList
+    [nzData]="listRow"
+    [nzFrontPagination]="false"
     [cdkDropListData]="listRow"
     (cdkDropListDropped)="onDrop($event)"
     [nzScroll]="{ x: '1900px', y: '500px' }"
     [nzPageSize]="5"
     nzBordered
-    class="table"
-    nzTemplateMode=""
     nzSize="small"
   >
     <!-- Start table header -->
     <thead>
       <tr class="th">
+        <th rowSpan="4" nzLeft>No.</th>
         <th colspan="3">STRAKE POSITION :</th>
-        <th colspan="21">
+        <th colspan="20">
           <input nz-input type="text" [(ngModel)]="formTM1.strakePosition" />
         </th>
+        <th class="table-header-right" colSpan="2" rowspan="4">Action</th>
       </tr>
       <tr class="th">
-        <th rowSpan="3" nzLeft>No.</th>
         <th rowspan="3" colspan="2">PLATE POSITION</th>
         <th rowspan="3">No. or Letter</th>
         <th rowspan="3">Original Thickness (mm)</th>
@@ -129,9 +297,35 @@
         cdkDragBoundary="table"
         (cdkDragEnded)="onDragEnded($event)"
         cdkDrag
-        (mousedown)="selectRow(index)"
+        [cdkDragDisabled]="selectedRow.includes(index) === false"
+        [style.background]="
+          selectedRow.includes(index)
+            ? '#FFE6C1 !important'
+            : formService.checkBeforeSave(
+                row.forwardReadingMeasurementDetail.originalThickness,
+                row.forwardReadingMeasurementDetail.gaugedP
+              ) &&
+              formService.checkBeforeSave(
+                row.forwardReadingMeasurementDetail.originalThickness,
+                row.forwardReadingMeasurementDetail.gaugedS
+              ) &&
+              formService.checkBeforeSave(
+                row.afterReadingMeasurementDetail.originalThickness,
+                row.afterReadingMeasurementDetail.gaugedP
+              ) &&
+              formService.checkBeforeSave(
+                row.afterReadingMeasurementDetail.originalThickness,
+                row.afterReadingMeasurementDetail.gaugedS
+              )
+            ? ''
+            : '#FF3333 !important'
+        "
       >
-        <td nzLeft>
+        <td
+          class="table-body-left"
+          style="background-color: white"
+          (click)="selectRow(index)"
+        >
           {{ index + 1 }}
         </td>
         <td colspan="2">
@@ -883,6 +1077,31 @@
           }}
         </td>
         <!-- End calculator for Mean Diminution -->
+        <td
+          class="table-body-right"
+          style="background-color: white"
+          colSpan="2"
+        >
+          <nz-button-group>
+            <button
+              class="ant-btn-icon-only"
+              nz-button
+              nz-popconfirm
+              nzPopconfirmTitle="Sure to clear?"
+              (nzOnConfirm)="clearRow(index)"
+            >
+              <span nz-icon nzType="clear" nzTheme="outline"></span>
+            </button>
+            <button
+              nz-button
+              nz-popconfirm
+              nzPopconfirmTitle="Sure to delete?"
+              (nzOnConfirm)="deleteRow(index)"
+            >
+              <span nz-icon nzType="delete" nzTheme="outline"></span>
+            </button>
+          </nz-button-group>
+        </td>
       </tr>
     </tbody>
     <!-- End table body -->

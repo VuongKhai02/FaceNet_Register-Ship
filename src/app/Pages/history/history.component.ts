@@ -20,6 +20,7 @@ import { Form } from 'src/app/share/models/form.model';
   styleUrls: ['./history.component.css'],
 })
 export class HistoryComponent implements OnInit {
+  loading: boolean = false;
   link: string = '/history';
   mainData!: main;
   generalParticulars: GeneralParticular[] = [];
@@ -52,6 +53,7 @@ export class HistoryComponent implements OnInit {
     this.inReportNumber = '';
     this.inFirstDate = '';
     this.inEndDate = '';
+    this.ngOnInit();
   }
 
   constructor(
@@ -76,6 +78,7 @@ export class HistoryComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loading = this.localService.getLoading();
     this.getdataService.getGeneralParticularsFromAPI().subscribe(
       (data) => {
         this.generalParticulars = data;
@@ -97,6 +100,7 @@ export class HistoryComponent implements OnInit {
   editItem(id: number, report: string): void {
     this.link = '/generalParticulars';
     this.mainData.editMode = true;
+    this.mainData.loading = true;
     this.mainData.reportNumber = report;
     this.mainData.mainId = id;
     this.reportIndexService
@@ -111,6 +115,7 @@ export class HistoryComponent implements OnInit {
                 formID: data.parts[i].forms[j].formID,
                 index: data.parts[i].forms[j].index,
                 name: data.parts[i].forms[j].name,
+                type: data.parts[i].forms[j].type,
               });
             }
             this.parts.push({
@@ -121,7 +126,9 @@ export class HistoryComponent implements OnInit {
               visible: false,
               edit: false,
             });
+            newForm = [];
             this.parts = this.parts.sort((a, b) => a.partIndex - b.partIndex);
+            this.mainData.loading = false;
           }
         },
         (err) => {
@@ -131,76 +138,102 @@ export class HistoryComponent implements OnInit {
     this.router.navigateByUrl('/generalParticulars');
   }
 
+  /**
+   * Hàm dùng để tìm kiếm general paticular theo các trường đã chọn
+   */
   search(): void {
     if (
       this.formSearch.value.name === '' &&
       this.formSearch.value.imo === '' &&
       this.formSearch.value.report === '' &&
-      this.formSearch.value.dateOfBuild === '' &&
-      this.formSearch.value.firstDate === '' &&
-      this.formSearch.value.endDate === ''
+      (this.formSearch.value.dateOfBuild === '' ||
+        this.formSearch.value.dateOfBuild === null) &&
+      (this.formSearch.value.firstDate === '' ||
+        this.formSearch.value.firstDate === null) &&
+      (this.formSearch.value.endDate === '' ||
+        this.formSearch.value.endDate === null)
     ) {
-      this.getGeneralParticulars();
+      this.ngOnInit();
+      return;
     }
-    if (this.formSearch.value.name !== '') {
-      this.generalParticulars = this.generalParticulars.filter((x) =>
-        x.shipInfo.name
-          .toLowerCase()
-          .normalize('NFD')
-          .replace(/[\u0300-\u036f]/g, '')
-          .includes(
-            this.formSearch.value.name
+    this.getdataService.getGeneralParticularsFromAPI().subscribe(
+      (data) => {
+        this.generalParticulars = data;
+        if (this.formSearch.value.name !== '') {
+          this.generalParticulars = this.generalParticulars.filter((x) =>
+            x.shipInfo.name
               .toLowerCase()
               .normalize('NFD')
               .replace(/[\u0300-\u036f]/g, '')
-          )
-      );
-    }
-    if (this.formSearch.value.imo !== '') {
-      this.generalParticulars = this.generalParticulars.filter((x) =>
-        x.shipInfo.imoNumber
-          .toLowerCase()
-          .normalize('NFD')
-          .replace(/[\u0300-\u036f]/g, '')
-          .includes(
-            this.formSearch.value.imo
+              .includes(
+                this.formSearch.value.name
+                  .toLowerCase()
+                  .normalize('NFD')
+                  .replace(/[\u0300-\u036f]/g, '')
+              )
+          );
+        }
+        if (this.formSearch.value.imo !== '') {
+          this.generalParticulars = this.generalParticulars.filter((x) =>
+            x.shipInfo.imoNumber
               .toLowerCase()
               .normalize('NFD')
               .replace(/[\u0300-\u036f]/g, '')
-          )
-      );
-    }
-    if (this.formSearch.value.report !== '') {
-      this.generalParticulars = this.generalParticulars.filter((x) =>
-        x.reportNo
-          .toLowerCase()
-          .normalize('NFD')
-          .replace(/[\u0300-\u036f]/g, '')
-          .includes(
-            this.formSearch.value.report
+              .includes(
+                this.formSearch.value.imo
+                  .toLowerCase()
+                  .normalize('NFD')
+                  .replace(/[\u0300-\u036f]/g, '')
+              )
+          );
+        }
+        if (this.formSearch.value.report !== '') {
+          this.generalParticulars = this.generalParticulars.filter((x) =>
+            x.reportNo
               .toLowerCase()
               .normalize('NFD')
               .replace(/[\u0300-\u036f]/g, '')
-          )
-      );
-    }
-    if (this.formSearch.value.dateOfBuild !== '') {
-      this.generalParticulars = this.generalParticulars.filter(
-        (x) => x.shipInfo.dateOfBuild === this.inDateOfBuild
-      );
-    }
-    if (this.formSearch.value.firstDate !== '') {
-      this.generalParticulars = this.generalParticulars.filter(
-        (x) => x.firstDateOfMeasurement === this.inFirstDate
-      );
-    }
-    if (this.formSearch.value.lastDate !== '') {
-      this.generalParticulars = this.generalParticulars.filter(
-        (x) => x.lastDateOfMeasurement
-      );
-    }
+              .includes(
+                this.formSearch.value.report
+                  .toLowerCase()
+                  .normalize('NFD')
+                  .replace(/[\u0300-\u036f]/g, '')
+              )
+          );
+        }
+        if (this.formSearch.value.dateOfBuild !== '') {
+          this.generalParticulars = this.generalParticulars.filter((x) =>
+            String(new Date(x.shipInfo.dateOfBuild))
+              .slice(0, 15)
+              .includes(String(this.formSearch.value.dateOfBuild).slice(0, 15))
+          );
+        }
+        if (this.formSearch.value.firstDate !== '') {
+          this.generalParticulars = this.generalParticulars.filter(
+            (x) =>
+              String(new Date(x.firstDateOfMeasurement)).slice(0, 15) ==
+              String(this.formSearch.value.firstDate).slice(0, 15)
+          );
+        }
+        if (this.formSearch.value.endDate !== '') {
+          this.generalParticulars = this.generalParticulars.filter(
+            (x) =>
+              String(new Date(x.lastDateOfMeasurement)).slice(0, 15) ==
+              String(this.formSearch.value.endDate).slice(0, 15)
+          );
+        }
+      },
+      (err) => {
+        console.log(err);
+        this.message.create('error', 'connection to data failed');
+      }
+    );
   }
 
+  /**
+   * Hàm dùng để xóa một phần tử trong mảng general paticular
+   * @param id : id của phần tử
+   */
   deleteItem(id: number) {
     this.getdataService.deleteGeneralParticularsFormAPI(id).subscribe(
       (data) => {
