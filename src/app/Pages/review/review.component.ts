@@ -8502,8 +8502,7 @@ export class ReviewComponent implements OnInit {
         columnGap: 20,
       },
     };
-    pdfMake.createPdf(pdfDocument).open({}, window);
-    // pdfMake.createPdf(pdfDocument).download();
+    pdfMake.createPdf(pdfDocument).download();
   }
 
   ngOnInit() {
