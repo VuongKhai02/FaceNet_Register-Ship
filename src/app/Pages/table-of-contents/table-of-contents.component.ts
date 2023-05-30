@@ -255,12 +255,14 @@ export class TableOfContentsComponent implements OnInit {
     temporaryParts: { id: number; name: string; index: number }[],
     j: number
   ) {
+    this.mainData.loading = true;
     this.reportIndexService
       .updateReportIndexToAPI(temporaryParts[j].id, {
         item: temporaryParts[j].name,
         partIndex: temporaryParts[j].index,
       })
       .subscribe((data) => {
+        this.mainData.loading = true;
         if (j === temporaryParts.length - 1) {
           this.ngOnInit();
         }
