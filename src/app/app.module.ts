@@ -56,6 +56,7 @@ import { AuthInterceptorProvider } from './share/services/auth.service';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { RouterModule } from '@angular/router';
+import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 
 registerLocaleData(en);
 
@@ -116,6 +117,7 @@ registerLocaleData(en);
     NzSpinModule,
     NgxSpinnerModule,
     RouterModule,
+    NzCheckboxModule,
   ],
   providers: [
     { provide: NZ_I18N, useValue: en_US },
