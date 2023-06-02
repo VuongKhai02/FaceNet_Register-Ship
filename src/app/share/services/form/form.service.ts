@@ -166,4 +166,11 @@ export class FormService {
   deleteSketches(sketchesId: number): Observable<any> {
     return this.httpClient.delete(`${API_END_POINT}/sketches/${sketchesId}`);
   }
+
+  downloadTemplateForm(formName: string): Observable<any> {
+    return this.httpClient.get(`${API_END_POINT}/sheet/${formName}`, {
+      observe: 'response',
+      responseType: 'blob',
+    });
+  }
 }
