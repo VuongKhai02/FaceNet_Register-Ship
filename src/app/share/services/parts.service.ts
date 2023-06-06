@@ -17,6 +17,7 @@ export class PartsService {
   reloadParts(id: number) {
     this.reportIndexService.getReportIndexFromAPI(id).subscribe(
       (data) => {
+        this.Parts = [];
         for (let i: number = 0; i < data.parts.length; i++) {
           this.Parts.push({
             id: data.parts[i].id,
