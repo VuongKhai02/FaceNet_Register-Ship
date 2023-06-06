@@ -235,11 +235,13 @@ export class HistoryComponent implements OnInit {
    * @param id : id của phần tử
    */
   deleteItem(id: number) {
+    this.mainData.loading = true;
     this.getdataService.deleteGeneralParticularsFormAPI(id).subscribe(
       (data) => {
         this.getdataService.getGeneralParticularsFromAPI().subscribe(
           (data) => {
             this.generalParticulars = data;
+            this.mainData.loading = false;
           },
           (err) => {
             console.log(err);
