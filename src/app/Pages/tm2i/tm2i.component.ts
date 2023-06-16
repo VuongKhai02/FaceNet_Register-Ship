@@ -495,7 +495,7 @@ export class Tm2iComponent {
     this.isLoadingSketches = true;
 
     this.formService
-      .getListSketches('form_tm1', this.router.url.split('/')[4])
+      .getListSketches('form_tm2', this.router.url.split('/')[4])
       .subscribe({
         next: (data) => {
           this.listSketches = data;
@@ -522,7 +522,7 @@ export class Tm2iComponent {
       this.isConfirmLoadingSketches = true;
       this.formService
         .saveListSketches(
-          'form_tm1',
+          'form_tm2',
           this.router.url.split('/')[4],
           this.listSaveSketches
         )
