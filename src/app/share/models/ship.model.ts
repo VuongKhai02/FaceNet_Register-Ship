@@ -3,8 +3,8 @@ export interface ship {
   imoNumber: string;
   absIdentification: string;
   postOfRegistry: string;
-  grossTons: number;
-  deadweight: number;
+  grossTons: string;
+  deadweight: string;
   dateOfBuild: Date;
   classificationSociety: string;
 }
