@@ -218,7 +218,7 @@ export class ReviewComponent implements OnInit {
                 text: 'ABS identification number: ',
               },
               {
-                text: `${this.inCertificateNo}`,
+                text: `${this.inABS}`,
                 bold: true,
               },
             ],
@@ -682,7 +682,7 @@ export class ReviewComponent implements OnInit {
                           //Table header
                           [
                             {
-                              text: `TM1-${y.code}(1 July 2023)`,
+                              text: `TM1-${y.code}`,
                               style: ['txt_center'],
                               colSpan: 22,
                               alignment: 'right' as Alignment,
@@ -1633,7 +1633,7 @@ export class ReviewComponent implements OnInit {
                           //Table header
                           [
                             {
-                              text: `TM2i-${y.code}(1 July 2023)`,
+                              text: `TM2i-${y.code}`,
                               style: ['txt_center'],
                               colSpan: 34,
                               alignment: 'right' as Alignment,
@@ -3044,7 +3044,7 @@ export class ReviewComponent implements OnInit {
                           //Table header
                           [
                             {
-                              text: `TM2ii-${y.code}(1 July 2023)`,
+                              text: `TM2ii-${y.code}`,
                               style: ['txt_center'],
                               colSpan: 34,
                               alignment: 'right' as Alignment,
@@ -4455,7 +4455,7 @@ export class ReviewComponent implements OnInit {
                           //Table header
                           [
                             {
-                              text: `TM3-${y.code}(1 July 2023)`,
+                              text: `TM3-${y.code}`,
                               style: ['txt_center'],
                               colSpan: 34,
                               alignment: 'right' as Alignment,
@@ -5753,7 +5753,7 @@ export class ReviewComponent implements OnInit {
                           //Table header
                           [
                             {
-                              text: `TM4-${y.code}(1 July 2023)`,
+                              text: `TM4-${y.code}`,
                               style: ['txt_center'],
                               colSpan: 12,
                               alignment: 'right' as Alignment,
@@ -5903,7 +5903,7 @@ export class ReviewComponent implements OnInit {
                               style: 'txt_center',
                             },
                             {
-                              text: `${y.tankHolDescription}`,
+                              text: `${y.tankDescription}`,
                               colSpan: 11,
                               rowSpan: 1,
                               bold: true,
@@ -6288,7 +6288,7 @@ export class ReviewComponent implements OnInit {
                           //Table header
                           [
                             {
-                              text: `TM5-${y.code}(1 July 2023)`,
+                              text: `TM5-${y.code}`,
                               style: ['txt_center'],
                               colSpan: 12,
                               alignment: 'right' as Alignment,
@@ -6476,7 +6476,7 @@ export class ReviewComponent implements OnInit {
                             },
                             {},
                             {
-                              text: '42',
+                              text: `${y.frameNo}`,
                               border: [false, false, true, false],
                               colSpan: 3,
                               bold: true,
@@ -6558,7 +6558,6 @@ export class ReviewComponent implements OnInit {
                                 (k: any) => [
                                   {
                                     text: `${k.structuralComponentType ?? ''}`,
-                                    style: ['txt_center'],
                                   },
                                   {
                                     text: `${k.item ?? ''}`,
@@ -6829,7 +6828,7 @@ export class ReviewComponent implements OnInit {
                           //Table header
                           [
                             {
-                              text: `TM6-${y.code}(1 July 2023)`,
+                              text: `TM6-${y.code}`,
                               style: ['txt_center'],
                               colSpan: 12,
                               alignment: 'right' as Alignment,
@@ -7380,7 +7379,7 @@ export class ReviewComponent implements OnInit {
                           //Table header
                           [
                             {
-                              text: `TM7-${y.code}(1 July 2023)`,
+                              text: `TM7-${y.code}`,
                               style: ['txt_center'],
                               colSpan: 31,
                               alignment: 'right' as Alignment,
@@ -7544,7 +7543,7 @@ export class ReviewComponent implements OnInit {
                             {},
                             {
                               decoration: 'underline' as Decoration,
-                              text: ``,
+                              text: `${this.inShipName}`,
                               colSpan: 8,
                               bold: true,
                               border: [false, false, false, false],
@@ -7566,7 +7565,7 @@ export class ReviewComponent implements OnInit {
                             {},
                             {
                               decoration: 'underline' as Decoration,
-                              text: ``,
+                              text: `${this.inABS}`,
                               colSpan: 8,
                               bold: true,
                               border: [false, false, false, false],
@@ -7587,7 +7586,7 @@ export class ReviewComponent implements OnInit {
                             {},
                             {
                               decoration: 'underline' as Decoration,
-                              text: ``,
+                              text: `${this.generalParticular[0].reportNo}`,
                               colSpan: 5,
                               bold: true,
                               border: [false, false, false, false],
@@ -8599,10 +8598,14 @@ export class ReviewComponent implements OnInit {
                 });
             }
             if (this.formInfo[i].formType.includes('TM6')) {
+              console.log("id 6" ,this.formInfo[i].formId);
+
               this.sketchService
-                .getSketchFromApi('form_tm6', this.formInfo[i].formId)
+              .getSketchFromApi('form_tm6', this.formInfo[i].formId)
                 .subscribe((data) => {
                   this.lsSketch.push(data);
+                  console.log("ls sk7", this.lsSketch)
+
                 });
             }
             if (this.formInfo[i].formType.includes('TM7')) {

@@ -91,14 +91,14 @@ export class FormService {
     originalThickness: string,
     percent: string
   ): string {
-    switch (percent) {
-      case '20%':
+    switch (Number(percent)) {
+      case 1:
         return (Number(originalThickness) * 0.2).toFixed(1);
-      case '20% + 1':
+      case 2:
         return (Number(originalThickness) * 0.2 + 1).toFixed(1);
-      case '25%':
+      case 3:
         return (Number(originalThickness) * 0.25).toFixed(1);
-      case '30%':
+      case 4:
         return (Number(originalThickness) * 0.3).toFixed(1);
       default:
         return '';
