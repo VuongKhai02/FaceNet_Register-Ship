@@ -682,7 +682,7 @@ export class ReviewComponent implements OnInit {
                           //Table header
                           [
                             {
-                              text: `TM1-${y.code}`,
+                              text: `TM1${y.code}`,
                               style: ['txt_center'],
                               colSpan: 22,
                               alignment: 'right' as Alignment,
@@ -1633,7 +1633,7 @@ export class ReviewComponent implements OnInit {
                           //Table header
                           [
                             {
-                              text: `TM2i-${y.code}`,
+                              text: `TM2i${y.code}`,
                               style: ['txt_center'],
                               colSpan: 34,
                               alignment: 'right' as Alignment,
@@ -3044,7 +3044,7 @@ export class ReviewComponent implements OnInit {
                           //Table header
                           [
                             {
-                              text: `TM2ii-${y.code}`,
+                              text: `TM2ii${y.code}`,
                               style: ['txt_center'],
                               colSpan: 34,
                               alignment: 'right' as Alignment,
@@ -4455,7 +4455,7 @@ export class ReviewComponent implements OnInit {
                           //Table header
                           [
                             {
-                              text: `TM3-${y.code}`,
+                              text: `TM3${y.code}`,
                               style: ['txt_center'],
                               colSpan: 34,
                               alignment: 'right' as Alignment,
@@ -5753,7 +5753,7 @@ export class ReviewComponent implements OnInit {
                           //Table header
                           [
                             {
-                              text: `TM4-${y.code}`,
+                              text: `TM4${y.code}`,
                               style: ['txt_center'],
                               colSpan: 12,
                               alignment: 'right' as Alignment,
@@ -6288,7 +6288,7 @@ export class ReviewComponent implements OnInit {
                           //Table header
                           [
                             {
-                              text: `TM5-${y.code}`,
+                              text: `TM5${y.code}`,
                               style: ['txt_center'],
                               colSpan: 12,
                               alignment: 'right' as Alignment,
@@ -6828,7 +6828,7 @@ export class ReviewComponent implements OnInit {
                           //Table header
                           [
                             {
-                              text: `TM6-${y.code}`,
+                              text: `TM6${y.code}`,
                               style: ['txt_center'],
                               colSpan: 12,
                               alignment: 'right' as Alignment,
@@ -7379,7 +7379,7 @@ export class ReviewComponent implements OnInit {
                           //Table header
                           [
                             {
-                              text: `TM7-${y.code}`,
+                              text: `TM7${y.code}`,
                               style: ['txt_center'],
                               colSpan: 31,
                               alignment: 'right' as Alignment,
