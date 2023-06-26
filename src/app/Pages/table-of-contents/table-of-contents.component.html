@@ -84,11 +84,15 @@
               align-items: center;
             "
           >
-            <a (click)="editPart(i)">Edit</a>
+            <a (click)="editPart(i)"
+              ><span nz-icon nzType="edit" nzTheme="outline"></span
+            ></a>
           </td>
           <ng-template #savepart>
             <td style="text-align: center; background-color: #f5f5f5">
-              <a (click)="savePart(i)">Save</a>
+              <a (click)="savePart(i)"
+                ><span nz-icon nzType="save" nzTheme="outline"></span
+              ></a>
             </td>
           </ng-template>
         </tr>
@@ -123,7 +127,7 @@
                 (nzOnConfirm)="deleteTm(part.id, form.index, i, j)"
                 (nzOnCancel)="cancel()"
                 nzPopconfirmPlacement="top"
-                >Delete</a
+                ><span nz-icon nzType="delete" nzTheme="outline"></span></a
               ><nz-divider nzType="vertical"></nz-divider>
               <div style="display: flex; flex-direction: column">
                 <a *ngIf="j !== 0" (click)="moveUpForm(i, j)">
