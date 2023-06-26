@@ -41,7 +41,7 @@ export class FormService {
       (originalThickness === null && gauged === null)
     )
       return true;
-    if (Number(originalThickness) > Number(gauged)) return true;
+    if (Number(originalThickness) >= Number(gauged)) return true;
     return false;
   }
 
@@ -133,13 +133,13 @@ export class FormService {
       .get<GeneralParticular[]>(`${API_END_POINT}/generals_particulars`)
       .subscribe((data) => {
         this.generalParticular = data;
+        if (this.localService.getId()) {
+          return this.generalParticular.filter(
+            (element) => element.id === this.localService.getId()
+          )[0];
+        } else return this.generalParticular[0];
       });
-
-    if (this.localService.getId())
-      return this.generalParticular.filter(
-        (element) => element.id === this.localService.getId()
-      )[0];
-    else return this.generalParticular[0];
+    return this.generalParticular[0];
   }
 
   getListSketches(formType: string, formId: string): Observable<any> {
