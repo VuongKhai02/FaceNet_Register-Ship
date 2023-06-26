@@ -49,14 +49,14 @@ import { ManagingDefaultValuesComponent } from './Pages/managing-default-values/
 import { Tm2iComponent } from './Pages/tm2i/tm2i.component';
 import { Tm2iiComponent } from './Pages/tm2ii/tm2ii.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
-import { APP_INITIALIZER } from '@angular/core';
 import { KeycloakAngularModule, KeycloakService } from 'keycloak-angular';
-import { initializeKeycloak } from './utility/app.init';
 import { ExportPdfComponent } from './Pages/export-pdf/export-pdf.component';
 import { NzUploadModule } from 'ng-zorro-antd/upload';
 import { AuthInterceptorProvider } from './share/services/auth.service';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NgxSpinnerModule } from 'ngx-spinner';
+import { RouterModule } from '@angular/router';
+import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 
 registerLocaleData(en);
 
@@ -116,6 +116,8 @@ registerLocaleData(en);
     NzUploadModule,
     NzSpinModule,
     NgxSpinnerModule,
+    RouterModule,
+    NzCheckboxModule,
   ],
   providers: [
     { provide: NZ_I18N, useValue: en_US },

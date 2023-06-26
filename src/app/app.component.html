@@ -164,6 +164,50 @@
           >
         </li>
         <li nz-menu-item nzMatchRouter>
+          <a (click)="openDownload()"
+            ><span nz-icon nzType="download" nzTheme="outline"></span
+            ><span>Download form template</span></a
+          >
+        </li>
+        <nz-modal
+          [nzStyle]="{ top: '20%' }"
+          [(nzVisible)]="isOpenDownload"
+          nzTitle="Download form template"
+          (nzOnCancel)="onCancelDownloadTemplate()"
+          (nzOnOk)="onDownloadTemplate()"
+        >
+          <ng-container *nzModalContent>
+            <nz-checkbox-wrapper
+              style="width: 100%"
+              (nzOnChange)="onChangeSelectedFormDownload($event)"
+            >
+              <div nz-row>
+                <div nz-col nzSpan="8">
+                  <label nz-checkbox nzValue="tm1">Form TM1</label>
+                </div>
+                <div nz-col nzSpan="8">
+                  <label nz-checkbox nzValue="tm2">Form TM2</label>
+                </div>
+                <div nz-col nzSpan="8">
+                  <label nz-checkbox nzValue="tm3">Form TM3</label>
+                </div>
+                <div nz-col nzSpan="8">
+                  <label nz-checkbox nzValue="tm4">Form TM4</label>
+                </div>
+                <div nz-col nzSpan="8">
+                  <label nz-checkbox nzValue="tm5">Form TM5</label>
+                </div>
+                <div nz-col nzSpan="8">
+                  <label nz-checkbox nzValue="tm6">Form TM6</label>
+                </div>
+                <div nz-col nzSpan="8">
+                  <label nz-checkbox nzValue="tm7">Form TM7</label>
+                </div>
+              </div>
+            </nz-checkbox-wrapper>
+          </ng-container>
+        </nz-modal>
+        <li nz-menu-item nzMatchRouter>
           <a routerLink="history"
             ><span nz-icon nzType="history" nzTheme="outline"></span
             ><span>History</span></a

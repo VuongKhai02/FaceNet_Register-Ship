@@ -46,6 +46,8 @@ export class AppComponent implements OnInit {
     Islogin: !this.tokenIsValid(),
     nameUser: localStorage.getItem('username'),
   };
+  isOpenDownload: boolean = false;
+  listFormDownload: string[] = [];
   constructor(
     private accountSevice: AccountService,
     private message: NzMessageService,
@@ -254,4 +256,36 @@ export class AppComponent implements OnInit {
   }
 
   cancel() {}
+
+  onCancelDownloadTemplate() {
+    this.listFormDownload = [];
+    this.isOpenDownload = false;
+  }
+
+  onChangeSelectedFormDownload(value: string[]) {
+    this.listFormDownload = value;
+  }
+
+  openDownload() {
+    this.isOpenDownload = true;
+  }
+
+  onDownloadTemplate() {
+    this.listFormDownload.forEach((form) => {
+      this.formService.downloadTemplateForm(form).subscribe({
+        next: (result) => {
+          let a = document.createElement('a');
+          a.download = `${form}.xls`;
+          a.href = window.URL.createObjectURL(result.body as Blob);
+          a.click();
+        },
+        error: (error) => {
+          this.message.create(
+            'error',
+            'Something went wrong, please try later'
+          );
+        },
+      });
+    });
+  }
 }

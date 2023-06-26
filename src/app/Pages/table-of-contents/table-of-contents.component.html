@@ -54,7 +54,7 @@
         cdkDrag
         *ngFor="let part of parts; let i = index"
       >
-        <tr>
+        <tr cdkDragHandle>
           <td style="text-align: center; background-color: #f5f5f5">
             <b>{{ part.partIndex }}</b>
           </td>

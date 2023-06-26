@@ -41,7 +41,7 @@ export class FormService {
       (originalThickness === null && gauged === null)
     )
       return true;
-    if (Number(originalThickness) > Number(gauged)) return true;
+    if (Number(originalThickness) >= Number(gauged)) return true;
     return false;
   }
 
@@ -133,13 +133,13 @@ export class FormService {
       .get<GeneralParticular[]>(`${API_END_POINT}/generals_particulars`)
       .subscribe((data) => {
         this.generalParticular = data;
+        if (this.localService.getId()) {
+          return this.generalParticular.filter(
+            (element) => element.id === this.localService.getId()
+          )[0];
+        } else return this.generalParticular[0];
       });
-
-    if (this.localService.getId())
-      return this.generalParticular.filter(
-        (element) => element.id === this.localService.getId()
-      )[0];
-    else return this.generalParticular[0];
+    return this.generalParticular[0];
   }
 
   getListSketches(formType: string, formId: string): Observable<any> {
@@ -165,5 +165,12 @@ export class FormService {
 
   deleteSketches(sketchesId: number): Observable<any> {
     return this.httpClient.delete(`${API_END_POINT}/sketches/${sketchesId}`);
+  }
+
+  downloadTemplateForm(formName: string): Observable<any> {
+    return this.httpClient.get(`${API_END_POINT}/sheet/${formName}`, {
+      observe: 'response',
+      responseType: 'blob',
+    });
   }
 }

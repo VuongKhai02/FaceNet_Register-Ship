@@ -498,7 +498,7 @@ export class Tm7Component implements OnInit {
     this.isLoadingSketches = true;
 
     this.formService
-      .getListSketches('form_tm1', this.router.url.split('/')[4])
+      .getListSketches('form_tm7', this.router.url.split('/')[4])
       .subscribe({
         next: (data) => {
           this.listSketches = data;
@@ -525,7 +525,7 @@ export class Tm7Component implements OnInit {
       this.isConfirmLoadingSketches = true;
       this.formService
         .saveListSketches(
-          'form_tm1',
+          'form_tm7',
           this.router.url.split('/')[4],
           this.listSaveSketches
         )
