@@ -218,7 +218,7 @@ export class ReviewComponent implements OnInit {
                 text: 'ABS identification number: ',
               },
               {
-                text: `${this.inCertificateNo}`,
+                text: `${this.inABS}`,
                 bold: true,
               },
             ],
@@ -682,7 +682,7 @@ export class ReviewComponent implements OnInit {
                           //Table header
                           [
                             {
-                              text: `TM1-${y.code}(1 July 2023)`,
+                              text: `TM1${y.code}`,
                               style: ['txt_center'],
                               colSpan: 22,
                               alignment: 'right' as Alignment,
@@ -1079,7 +1079,7 @@ export class ReviewComponent implements OnInit {
                                       .originalThickness,
                                     z.forwardReadingMeasurementDetail.gaugedP
                                   )
-                                ) == 0.0
+                                ) == 0.0 ||z.forwardReadingMeasurementDetail.gaugedP==null
                                   ? ''
                                   : this.formService.calculateForMm(
                                       z.forwardReadingMeasurementDetail
@@ -1101,7 +1101,7 @@ export class ReviewComponent implements OnInit {
                                     )
                                   )
                                 )
-                                  ? ''
+                                   || z.forwardReadingMeasurementDetail.gaugedP == null ? ''
                                   : Number(
                                       this.formService.calculateForPercent(
                                         z.forwardReadingMeasurementDetail
@@ -1116,55 +1116,57 @@ export class ReviewComponent implements OnInit {
                             {
                               style: ['txt_center'],
                               border: [false, true, true, true],
-                              text:
-                                this.convertToNumber(
-                                  this.formService.calculateForMm(
-                                    z.forwardReadingMeasurementDetail
-                                      .originalThickness,
-                                    z.forwardReadingMeasurementDetail.gaugedP
-                                  )
-                                ) >=
-                                  this.convertToNumber(
-                                    this.formService.threePartsFourOfMaxAlwbDim(
-                                      this.formService.calculateForMaxAlwbDimForString(
-                                        z.afterReadingMeasurementDetail
-                                          .originalThickness,
-                                        z.afterReadingMeasurementDetail.percent
-                                      )
-                                    )
-                                  ) &&
-                                this.convertToNumber(
-                                  this.formService.calculateForMm(
-                                    z.forwardReadingMeasurementDetail
-                                      .originalThickness,
-                                    z.forwardReadingMeasurementDetail.gaugedP
-                                  )
-                                ) <=
-                                  this.convertToNumber(
-                                    this.formService.calculateForMaxAlwbDimForString(
-                                      z.afterReadingMeasurementDetail
-                                        .originalThickness,
-                                      z.afterReadingMeasurementDetail.percent
-                                    )
-                                  )
-                                  ? 'S'
-                                  : this.convertToNumber(
-                                      this.formService.calculateForMm(
-                                        z.forwardReadingMeasurementDetail
-                                          .originalThickness,
-                                        z.forwardReadingMeasurementDetail
-                                          .gaugedP
-                                      )
-                                    ) >
-                                    this.convertToNumber(
-                                      this.formService.calculateForMaxAlwbDimForString(
-                                        z.afterReadingMeasurementDetail
-                                          .originalThickness,
-                                        z.afterReadingMeasurementDetail.percent
-                                      )
-                                    )
-                                  ? 'R'
-                                  : '',
+                              text: `${
+                                 z.forwardReadingMeasurementDetail.gaugedP==null ?"":
+                                 Number(
+                                   this.formService.calculateForMm(
+                                     z.forwardReadingMeasurementDetail
+                                       .originalThickness,
+                                     z.forwardReadingMeasurementDetail.gaugedP
+                                   )
+                                 ) >=
+                                   Number(
+                                     this.formService.threePartsFourOfMaxAlwbDim(
+                                       this.formService.calculateForMaxAlwbDimForString(
+                                         z.afterReadingMeasurementDetail
+                                           .originalThickness,
+                                         z.afterReadingMeasurementDetail.percent
+                                       )
+                                     )
+                                   ) &&
+                                 Number(
+                                   this.formService.calculateForMm(
+                                     z.forwardReadingMeasurementDetail
+                                       .originalThickness,
+                                     z.forwardReadingMeasurementDetail.gaugedP
+                                   )
+                                 ) <=
+                                   Number(
+                                     this.formService.calculateForMaxAlwbDimForString(
+                                       z.afterReadingMeasurementDetail
+                                         .originalThickness,
+                                       z.afterReadingMeasurementDetail.percent
+                                     )
+                                   )
+                                   ? 'S'
+                                   : Number(
+                                       this.formService.calculateForMm(
+                                         z.forwardReadingMeasurementDetail
+                                           .originalThickness,
+                                         z.forwardReadingMeasurementDetail
+                                           .gaugedP
+                                       )
+                                     ) >
+                                     Number(
+                                       this.formService.calculateForMaxAlwbDimForString(
+                                         z.afterReadingMeasurementDetail
+                                           .originalThickness,
+                                         z.afterReadingMeasurementDetail.percent
+                                       )
+                                     )
+                                   ? 'R'
+                                   : ''
+                              }`
                             },
                             {
                               style: ['txt_center'],
@@ -1175,7 +1177,7 @@ export class ReviewComponent implements OnInit {
                                       .originalThickness,
                                     z.forwardReadingMeasurementDetail.gaugedS
                                   )
-                                ) == 0.0
+                                ) == 0.0  ||z.forwardReadingMeasurementDetail.gaugedS==null
                                   ? ''
                                   : this.formService.calculateForMm(
                                       z.forwardReadingMeasurementDetail
@@ -1197,7 +1199,7 @@ export class ReviewComponent implements OnInit {
                                     )
                                   )
                                 )
-                                  ? ''
+                                  || z.forwardReadingMeasurementDetail.gaugedS == null ? ''
                                   : Number(
                                       this.formService.calculateForPercent(
                                         z.forwardReadingMeasurementDetail
@@ -1211,15 +1213,15 @@ export class ReviewComponent implements OnInit {
                             {
                               style: ['txt_center'],
                               border: [false, true, true, true],
-                              text:
-                                this.convertToNumber(
+                              text: z.forwardReadingMeasurementDetail.gaugedS==null ? "":
+                                Number(
                                   this.formService.calculateForMm(
                                     z.forwardReadingMeasurementDetail
                                       .originalThickness,
                                     z.forwardReadingMeasurementDetail.gaugedS
                                   )
                                 ) >=
-                                  this.convertToNumber(
+                                  Number(
                                     this.formService.threePartsFourOfMaxAlwbDim(
                                       this.formService.calculateForMaxAlwbDimForString(
                                         z.afterReadingMeasurementDetail
@@ -1228,14 +1230,14 @@ export class ReviewComponent implements OnInit {
                                       )
                                     )
                                   ) &&
-                                this.convertToNumber(
+                                Number(
                                   this.formService.calculateForMm(
                                     z.forwardReadingMeasurementDetail
                                       .originalThickness,
                                     z.forwardReadingMeasurementDetail.gaugedS
                                   )
                                 ) <=
-                                  this.convertToNumber(
+                                  Number(
                                     this.formService.calculateForMaxAlwbDimForString(
                                       z.afterReadingMeasurementDetail
                                         .originalThickness,
@@ -1243,7 +1245,7 @@ export class ReviewComponent implements OnInit {
                                     )
                                   )
                                   ? 'S'
-                                  : this.convertToNumber(
+                                  : Number(
                                       this.formService.calculateForMm(
                                         z.forwardReadingMeasurementDetail
                                           .originalThickness,
@@ -1251,7 +1253,7 @@ export class ReviewComponent implements OnInit {
                                           .gaugedS
                                       )
                                     ) >
-                                    this.convertToNumber(
+                                    Number(
                                       this.formService.calculateForMaxAlwbDimForString(
                                         z.afterReadingMeasurementDetail
                                           .originalThickness,
@@ -1284,7 +1286,7 @@ export class ReviewComponent implements OnInit {
                                       .originalThickness,
                                     z.afterReadingMeasurementDetail.gaugedP
                                   )
-                                ) == 0.0
+                                ) == 0.0||z.afterReadingMeasurementDetail.gaugedP==null
                                   ? ''
                                   : this.formService.calculateForMm(
                                       z.afterReadingMeasurementDetail
@@ -1305,7 +1307,7 @@ export class ReviewComponent implements OnInit {
                                       z.afterReadingMeasurementDetail.gaugedP
                                     )
                                   )
-                                )
+                                ) || z.afterReadingMeasurementDetail.gaugedP ==null
                                   ? ''
                                   : Number(
                                       this.formService.calculateForPercent(
@@ -1319,15 +1321,15 @@ export class ReviewComponent implements OnInit {
                             {
                               style: ['txt_center'],
                               border: [false, true, true, true],
-                              text:
-                                this.convertToNumber(
+                              text: z.afterReadingMeasurementDetail.gaugedP==null?"":
+                                Number(
                                   this.formService.calculateForMm(
                                     z.forwardReadingMeasurementDetail
                                       .originalThickness,
                                     z.afterReadingMeasurementDetail.gaugedP
                                   )
                                 ) >=
-                                  this.convertToNumber(
+                                  Number(
                                     this.formService.threePartsFourOfMaxAlwbDim(
                                       this.formService.calculateForMaxAlwbDimForString(
                                         z.afterReadingMeasurementDetail
@@ -1336,14 +1338,14 @@ export class ReviewComponent implements OnInit {
                                       )
                                     )
                                   ) &&
-                                this.convertToNumber(
+                                Number(
                                   this.formService.calculateForMm(
                                     z.forwardReadingMeasurementDetail
                                       .originalThickness,
                                     z.afterReadingMeasurementDetail.gaugedP
                                   )
                                 ) <=
-                                  this.convertToNumber(
+                                  Number(
                                     this.formService.calculateForMaxAlwbDimForString(
                                       z.afterReadingMeasurementDetail
                                         .originalThickness,
@@ -1351,14 +1353,14 @@ export class ReviewComponent implements OnInit {
                                     )
                                   )
                                   ? 'S'
-                                  : this.convertToNumber(
+                                  : Number(
                                       this.formService.calculateForMm(
                                         z.forwardReadingMeasurementDetail
                                           .originalThickness,
                                         z.afterReadingMeasurementDetail.gaugedP
                                       )
                                     ) >
-                                    this.convertToNumber(
+                                    Number(
                                       this.formService.calculateForMaxAlwbDimForString(
                                         z.afterReadingMeasurementDetail
                                           .originalThickness,
@@ -1377,7 +1379,7 @@ export class ReviewComponent implements OnInit {
                                       .originalThickness,
                                     z.afterReadingMeasurementDetail.gaugedS
                                   )
-                                ) == 0.0
+                                ) == 0.0||z.afterReadingMeasurementDetail.gaugedS==null
                                   ? ''
                                   : this.formService.calculateForMm(
                                       z.afterReadingMeasurementDetail
@@ -1398,7 +1400,7 @@ export class ReviewComponent implements OnInit {
                                       z.afterReadingMeasurementDetail.gaugedS
                                     )
                                   )
-                                )
+                                ) ||z.afterReadingMeasurementDetail.gaugedS==null
                                   ? ''
                                   : Number(
                                       this.formService.calculateForPercent(
@@ -1412,15 +1414,15 @@ export class ReviewComponent implements OnInit {
                             {
                               style: ['txt_center'],
                               border: [false, true, true, true],
-                              text:
-                                this.convertToNumber(
+                              text:z.afterReadingMeasurementDetail.gaugedS==null?"":
+                                Number(
                                   this.formService.calculateForMm(
                                     z.forwardReadingMeasurementDetail
                                       .originalThickness,
                                     z.afterReadingMeasurementDetail.gaugedP
                                   )
                                 ) >=
-                                  this.convertToNumber(
+                                  Number(
                                     this.formService.threePartsFourOfMaxAlwbDim(
                                       this.formService.calculateForMaxAlwbDimForString(
                                         z.afterReadingMeasurementDetail
@@ -1429,14 +1431,14 @@ export class ReviewComponent implements OnInit {
                                       )
                                     )
                                   ) &&
-                                this.convertToNumber(
+                                Number(
                                   this.formService.calculateForMm(
                                     z.forwardReadingMeasurementDetail
                                       .originalThickness,
                                     z.afterReadingMeasurementDetail.gaugedP
                                   )
                                 ) <=
-                                  this.convertToNumber(
+                                  Number(
                                     this.formService.calculateForMaxAlwbDimForString(
                                       z.afterReadingMeasurementDetail
                                         .originalThickness,
@@ -1444,14 +1446,14 @@ export class ReviewComponent implements OnInit {
                                     )
                                   )
                                   ? 'S'
-                                  : this.convertToNumber(
+                                  : Number(
                                       this.formService.calculateForMm(
                                         z.forwardReadingMeasurementDetail
                                           .originalThickness,
                                         z.afterReadingMeasurementDetail.gaugedP
                                       )
                                     ) >
-                                    this.convertToNumber(
+                                    Number(
                                       this.formService.calculateForMaxAlwbDimForString(
                                         z.afterReadingMeasurementDetail
                                           .originalThickness,
@@ -1484,7 +1486,7 @@ export class ReviewComponent implements OnInit {
                                       )
                                     )
                                   )
-                                )
+                                ) || z.afterReadingMeasurementDetail.gaugedP ==null
                                   ? ''
                                   : Number(
                                       this.formService.calculateAveragePercent(
@@ -1527,7 +1529,7 @@ export class ReviewComponent implements OnInit {
                                       )
                                     )
                                   )
-                                )
+                                ) ||z.afterReadingMeasurementDetail.gaugedS==null
                                   ? ''
                                   : Number(
                                       this.formService.calculateAveragePercent(
@@ -1551,11 +1553,15 @@ export class ReviewComponent implements OnInit {
                             },
                             {
                               style: ['txt_center'],
-                              text: `${this.formService.calculateForMaxAlwbDimForString(
+                              text: `${Number(this.formService.calculateForMaxAlwbDimForString(
                                 z.afterReadingMeasurementDetail
                                   .originalThickness,
                                 z.afterReadingMeasurementDetail.percent
-                              )}`,
+                              ))!= 0.0 ?Number(this.formService.calculateForMaxAlwbDimForString(
+                                z.afterReadingMeasurementDetail
+                                  .originalThickness,
+                                z.afterReadingMeasurementDetail.percent
+                              )):""}`,
                             },
                           ]),
                         ],
@@ -1633,7 +1639,7 @@ export class ReviewComponent implements OnInit {
                           //Table header
                           [
                             {
-                              text: `TM2i-${y.code}(1 July 2023)`,
+                              text: `TM2i${y.code}`,
                               style: ['txt_center'],
                               colSpan: 34,
                               alignment: 'right' as Alignment,
@@ -2143,7 +2149,9 @@ export class ReviewComponent implements OnInit {
                             { text: `${z.strakePosition ?? ''}` },
                             //fr 1
                             {
-                              text: `${z.noOrLetter ?? ''}`,
+                              text: `${z.firstTransverseSectionMeasurementDetailTM2
+                                .originalThickness !== null ?
+                              z.noOrLetter : ''}`,
                               style: ['txt_center'],
                             },
                             {
@@ -2154,12 +2162,17 @@ export class ReviewComponent implements OnInit {
                               style: ['txt_center'],
                             },
                             {
-                              text: `${this.formService.calculateForMaxAlwbDimForString(
+                              text: `${Number(this.formService.calculateForMaxAlwbDimForString(
                                 z.firstTransverseSectionMeasurementDetailTM2
                                   .originalThickness,
                                 z.firstTransverseSectionMeasurementDetailTM2
                                   .percent
-                              )}`,
+                              )) != 0.0 ? Number(this.formService.calculateForMaxAlwbDimForString(
+                                z.firstTransverseSectionMeasurementDetailTM2
+                                  .originalThickness,
+                                z.firstTransverseSectionMeasurementDetailTM2
+                                  .percent
+                              )) : "" }`,
                               style: ['txt_center'],
                             },
                             {
@@ -2185,7 +2198,7 @@ export class ReviewComponent implements OnInit {
                                     z.firstTransverseSectionMeasurementDetailTM2
                                       .gaugedP
                                   )
-                                ) == 0.0
+                                ) == 0.0||z.firstTransverseSectionMeasurementDetailTM2.gaugedP==null
                                   ? ''
                                   : this.formService.calculateForMm(
                                       z
@@ -2211,7 +2224,9 @@ export class ReviewComponent implements OnInit {
                                         .gaugedP
                                     )
                                   )
-                                )
+                                ) ||z
+                                .firstTransverseSectionMeasurementDetailTM2
+                                .gaugedP ==null
                                   ? ''
                                   : Number(
                                       this.formService.calculateForPercent(
@@ -2229,8 +2244,8 @@ export class ReviewComponent implements OnInit {
                               border: [true, true, false, true],
                             },
                             {
-                              text:
-                                this.convertToNumber(
+                              text:z.firstTransverseSectionMeasurementDetailTM2.gaugedP==null?"":
+                                Number(
                                   this.formService.calculateForMm(
                                     z.firstTransverseSectionMeasurementDetailTM2
                                       .originalThickness,
@@ -2238,7 +2253,7 @@ export class ReviewComponent implements OnInit {
                                       .gaugedP
                                   )
                                 ) >=
-                                  this.convertToNumber(
+                                  Number(
                                     this.formService.threePartsFourOfMaxAlwbDim(
                                       this.formService.calculateForMaxAlwbDimForString(
                                         z
@@ -2250,7 +2265,7 @@ export class ReviewComponent implements OnInit {
                                       )
                                     )
                                   ) &&
-                                this.convertToNumber(
+                                Number(
                                   this.formService.calculateForMm(
                                     z.firstTransverseSectionMeasurementDetailTM2
                                       .originalThickness,
@@ -2258,7 +2273,7 @@ export class ReviewComponent implements OnInit {
                                       .gaugedP
                                   )
                                 ) <=
-                                  this.convertToNumber(
+                                  Number(
                                     this.formService.calculateForMaxAlwbDimForString(
                                       z
                                         .firstTransverseSectionMeasurementDetailTM2
@@ -2269,7 +2284,7 @@ export class ReviewComponent implements OnInit {
                                     )
                                   )
                                   ? 'S'
-                                  : this.convertToNumber(
+                                  : Number(
                                       this.formService.calculateForMm(
                                         z
                                           .firstTransverseSectionMeasurementDetailTM2
@@ -2279,7 +2294,7 @@ export class ReviewComponent implements OnInit {
                                           .gaugedP
                                       )
                                     ) >
-                                    this.convertToNumber(
+                                    Number(
                                       this.formService.calculateForMaxAlwbDimForString(
                                         z
                                           .firstTransverseSectionMeasurementDetailTM2
@@ -2303,7 +2318,7 @@ export class ReviewComponent implements OnInit {
                                     z.firstTransverseSectionMeasurementDetailTM2
                                       .gaugedS
                                   )
-                                ) == 0.0
+                                ) == 0.0||z.firstTransverseSectionMeasurementDetailTM2.gaugedS==null
                                   ? ''
                                   : this.formService.calculateForMm(
                                       z
@@ -2329,7 +2344,9 @@ export class ReviewComponent implements OnInit {
                                         .gaugedS
                                     )
                                   )
-                                )
+                                ) ||z
+                                .firstTransverseSectionMeasurementDetailTM2
+                                .gaugedS==null
                                   ? ''
                                   : this.formService.calculateForPercent(
                                       z
@@ -2344,8 +2361,9 @@ export class ReviewComponent implements OnInit {
                               border: [true, true, false, true],
                             },
                             {
-                              text:
-                                this.convertToNumber(
+                              text:z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedS==null?"":
+                                Number(
                                   this.formService.calculateForMm(
                                     z.firstTransverseSectionMeasurementDetailTM2
                                       .originalThickness,
@@ -2353,7 +2371,7 @@ export class ReviewComponent implements OnInit {
                                       .gaugedS
                                   )
                                 ) >=
-                                  this.convertToNumber(
+                                  Number(
                                     this.formService.threePartsFourOfMaxAlwbDim(
                                       this.formService.calculateForMaxAlwbDimForString(
                                         z
@@ -2365,7 +2383,7 @@ export class ReviewComponent implements OnInit {
                                       )
                                     )
                                   ) &&
-                                this.convertToNumber(
+                                Number(
                                   this.formService.calculateForMm(
                                     z.firstTransverseSectionMeasurementDetailTM2
                                       .originalThickness,
@@ -2373,7 +2391,7 @@ export class ReviewComponent implements OnInit {
                                       .gaugedS
                                   )
                                 ) <=
-                                  this.convertToNumber(
+                                  Number(
                                     this.formService.calculateForMaxAlwbDimForString(
                                       z
                                         .firstTransverseSectionMeasurementDetailTM2
@@ -2384,7 +2402,7 @@ export class ReviewComponent implements OnInit {
                                     )
                                   )
                                   ? 'S'
-                                  : this.convertToNumber(
+                                  : Number(
                                       this.formService.calculateForMm(
                                         z
                                           .firstTransverseSectionMeasurementDetailTM2
@@ -2394,7 +2412,7 @@ export class ReviewComponent implements OnInit {
                                           .gaugedS
                                       )
                                     ) >
-                                    this.convertToNumber(
+                                    Number(
                                       this.formService.calculateForMaxAlwbDimForString(
                                         z
                                           .firstTransverseSectionMeasurementDetailTM2
@@ -2413,7 +2431,9 @@ export class ReviewComponent implements OnInit {
                             //fr 2
 
                             {
-                              text: `${z.noOrLetter ?? ''}`,
+                              text: `${z.secondTransverseSectionMeasurementDetailTM2
+                                .originalThickness !== null ?
+                              z.noOrLetter : ''}`,
                               style: ['txt_center'],
                             },
                             {
@@ -2424,12 +2444,18 @@ export class ReviewComponent implements OnInit {
                               style: ['txt_center'],
                             },
                             {
-                              text: `${this.formService.calculateForMaxAlwbDimForString(
+                              text: `${Number(this.formService.calculateForMaxAlwbDimForString(
                                 z.secondTransverseSectionMeasurementDetailTM2
                                   .originalThickness,
                                 z.secondTransverseSectionMeasurementDetailTM2
                                   .percent
-                              )}`,
+                              )) != 0.0 ? Number(this.formService.calculateForMaxAlwbDimForString(
+                                z.secondTransverseSectionMeasurementDetailTM2
+                                  .originalThickness,
+                                z.secondTransverseSectionMeasurementDetailTM2
+                                  .percent
+                              )) : "" }`,
+                              
                               style: ['txt_center'],
                             },
                             {
@@ -2457,7 +2483,7 @@ export class ReviewComponent implements OnInit {
                                       .secondTransverseSectionMeasurementDetailTM2
                                       .gaugedP
                                   )
-                                ) == 0.0
+                                ) == 0.0||z.secondTransverseSectionMeasurementDetailTM2.gaugedP==null
                                   ? ''
                                   : this.formService.calculateForMm(
                                       z
@@ -2483,7 +2509,9 @@ export class ReviewComponent implements OnInit {
                                         .gaugedP
                                     )
                                   )
-                                )
+                                ) ||z
+                                .secondTransverseSectionMeasurementDetailTM2
+                                .gaugedP ==null
                                   ? ''
                                   : Number(
                                       this.formService.calculateForPercent(
@@ -2501,8 +2529,9 @@ export class ReviewComponent implements OnInit {
                               border: [true, true, false, true],
                             },
                             {
-                              text:
-                                this.convertToNumber(
+                              text:z.secondTransverseSectionMeasurementDetailTM2
+                              .gaugedP==null?"":
+                                Number(
                                   this.formService.calculateForMm(
                                     z
                                       .secondTransverseSectionMeasurementDetailTM2
@@ -2512,7 +2541,7 @@ export class ReviewComponent implements OnInit {
                                       .gaugedP
                                   )
                                 ) >=
-                                  this.convertToNumber(
+                                  Number(
                                     this.formService.threePartsFourOfMaxAlwbDim(
                                       this.formService.calculateForMaxAlwbDimForString(
                                         z
@@ -2524,7 +2553,7 @@ export class ReviewComponent implements OnInit {
                                       )
                                     )
                                   ) &&
-                                this.convertToNumber(
+                                Number(
                                   this.formService.calculateForMm(
                                     z
                                       .secondTransverseSectionMeasurementDetailTM2
@@ -2534,7 +2563,7 @@ export class ReviewComponent implements OnInit {
                                       .gaugedP
                                   )
                                 ) <=
-                                  this.convertToNumber(
+                                  Number(
                                     this.formService.calculateForMaxAlwbDimForString(
                                       z
                                         .secondTransverseSectionMeasurementDetailTM2
@@ -2545,7 +2574,7 @@ export class ReviewComponent implements OnInit {
                                     )
                                   )
                                   ? 'S'
-                                  : this.convertToNumber(
+                                  : Number(
                                       this.formService.calculateForMm(
                                         z
                                           .secondTransverseSectionMeasurementDetailTM2
@@ -2555,7 +2584,7 @@ export class ReviewComponent implements OnInit {
                                           .gaugedP
                                       )
                                     ) >
-                                    this.convertToNumber(
+                                    Number(
                                       this.formService.calculateForMaxAlwbDimForString(
                                         z
                                           .secondTransverseSectionMeasurementDetailTM2
@@ -2581,7 +2610,7 @@ export class ReviewComponent implements OnInit {
                                       .secondTransverseSectionMeasurementDetailTM2
                                       .gaugedS
                                   )
-                                ) == 0.0
+                                ) == 0.0||z.secondTransverseSectionMeasurementDetailTM2.gaugedS==null
                                   ? ''
                                   : this.formService.calculateForMm(
                                       z
@@ -2607,7 +2636,9 @@ export class ReviewComponent implements OnInit {
                                         .gaugedS
                                     )
                                   )
-                                )
+                                ) ||z
+                                .secondTransverseSectionMeasurementDetailTM2
+                                .gaugedS ==null
                                   ? ''
                                   : Number(
                                       this.formService.calculateForPercent(
@@ -2624,8 +2655,9 @@ export class ReviewComponent implements OnInit {
                               border: [true, true, false, true],
                             },
                             {
-                              text:
-                                this.convertToNumber(
+                              text:z.secondTransverseSectionMeasurementDetailTM2
+                              .gaugedS==null?"":
+                                Number(
                                   this.formService.calculateForMm(
                                     z
                                       .secondTransverseSectionMeasurementDetailTM2
@@ -2635,7 +2667,7 @@ export class ReviewComponent implements OnInit {
                                       .gaugedS
                                   )
                                 ) >=
-                                  this.convertToNumber(
+                                  Number(
                                     this.formService.threePartsFourOfMaxAlwbDim(
                                       this.formService.calculateForMaxAlwbDimForString(
                                         z
@@ -2647,7 +2679,7 @@ export class ReviewComponent implements OnInit {
                                       )
                                     )
                                   ) &&
-                                this.convertToNumber(
+                                Number(
                                   this.formService.calculateForMm(
                                     z
                                       .secondTransverseSectionMeasurementDetailTM2
@@ -2657,7 +2689,7 @@ export class ReviewComponent implements OnInit {
                                       .gaugedS
                                   )
                                 ) <=
-                                  this.convertToNumber(
+                                  Number(
                                     this.formService.calculateForMaxAlwbDimForString(
                                       z
                                         .secondTransverseSectionMeasurementDetailTM2
@@ -2668,7 +2700,7 @@ export class ReviewComponent implements OnInit {
                                     )
                                   )
                                   ? 'S'
-                                  : this.convertToNumber(
+                                  : Number(
                                       this.formService.calculateForMm(
                                         z
                                           .secondTransverseSectionMeasurementDetailTM2
@@ -2678,7 +2710,7 @@ export class ReviewComponent implements OnInit {
                                           .gaugedS
                                       )
                                     ) >
-                                    this.convertToNumber(
+                                    Number(
                                       this.formService.calculateForMaxAlwbDimForString(
                                         z
                                           .secondTransverseSectionMeasurementDetailTM2
@@ -2697,7 +2729,9 @@ export class ReviewComponent implements OnInit {
                             //fr3
 
                             {
-                              text: `${z.noOrLetter ?? ''}`,
+                              text: `${z.thirdTransverseSectionMeasurementDetailTM2
+                                .originalThickness !== null ?
+                              z.noOrLetter : ''}`,
                               style: ['txt_center'],
                             },
                             {
@@ -2708,12 +2742,17 @@ export class ReviewComponent implements OnInit {
                               style: ['txt_center'],
                             },
                             {
-                              text: `${this.formService.calculateForMaxAlwbDimForString(
+                              text: `${Number(this.formService.calculateForMaxAlwbDimForString(
                                 z.thirdTransverseSectionMeasurementDetailTM2
                                   .originalThickness,
                                 z.thirdTransverseSectionMeasurementDetailTM2
                                   .percent
-                              )}`,
+                              )) != 0.0 ? Number(this.formService.calculateForMaxAlwbDimForString(
+                                z.thirdTransverseSectionMeasurementDetailTM2
+                                  .originalThickness,
+                                z.thirdTransverseSectionMeasurementDetailTM2
+                                  .percent
+                              )) : "" }`,
                               style: ['txt_center'],
                             },
                             {
@@ -2739,7 +2778,7 @@ export class ReviewComponent implements OnInit {
                                     z.thirdTransverseSectionMeasurementDetailTM2
                                       .gaugedP
                                   )
-                                ) == 0.0
+                                ) == 0.0||z.thirdTransverseSectionMeasurementDetailTM2.gaugedP==null
                                   ? ''
                                   : this.formService.calculateForMm(
                                       z
@@ -2765,7 +2804,9 @@ export class ReviewComponent implements OnInit {
                                         .gaugedP
                                     )
                                   )
-                                )
+                                )||z
+                                .thirdTransverseSectionMeasurementDetailTM2
+                                .gaugedP==null
                                   ? ''
                                   : Number(
                                       this.formService.calculateForPercent(
@@ -2783,8 +2824,9 @@ export class ReviewComponent implements OnInit {
                               border: [true, true, false, true],
                             },
                             {
-                              text:
-                                this.convertToNumber(
+                              text:z.thirdTransverseSectionMeasurementDetailTM2
+                              .gaugedP==null?"":
+                                Number(
                                   this.formService.calculateForMm(
                                     z.thirdTransverseSectionMeasurementDetailTM2
                                       .originalThickness,
@@ -2792,7 +2834,7 @@ export class ReviewComponent implements OnInit {
                                       .gaugedP
                                   )
                                 ) >=
-                                  this.convertToNumber(
+                                  Number(
                                     this.formService.threePartsFourOfMaxAlwbDim(
                                       this.formService.calculateForMaxAlwbDimForString(
                                         z
@@ -2804,7 +2846,7 @@ export class ReviewComponent implements OnInit {
                                       )
                                     )
                                   ) &&
-                                this.convertToNumber(
+                                Number(
                                   this.formService.calculateForMm(
                                     z.thirdTransverseSectionMeasurementDetailTM2
                                       .originalThickness,
@@ -2812,7 +2854,7 @@ export class ReviewComponent implements OnInit {
                                       .gaugedP
                                   )
                                 ) <=
-                                  this.convertToNumber(
+                                  Number(
                                     this.formService.calculateForMaxAlwbDimForString(
                                       z
                                         .thirdTransverseSectionMeasurementDetailTM2
@@ -2823,7 +2865,7 @@ export class ReviewComponent implements OnInit {
                                     )
                                   )
                                   ? 'S'
-                                  : this.convertToNumber(
+                                  : Number(
                                       this.formService.calculateForMm(
                                         z
                                           .thirdTransverseSectionMeasurementDetailTM2
@@ -2833,7 +2875,7 @@ export class ReviewComponent implements OnInit {
                                           .gaugedP
                                       )
                                     ) >
-                                    this.convertToNumber(
+                                    Number(
                                       this.formService.calculateForMaxAlwbDimForString(
                                         z
                                           .thirdTransverseSectionMeasurementDetailTM2
@@ -2858,7 +2900,7 @@ export class ReviewComponent implements OnInit {
                                     z.thirdTransverseSectionMeasurementDetailTM2
                                       .gaugedS
                                   )
-                                ) == 0.0
+                                ) == 0.0||z.thirdTransverseSectionMeasurementDetailTM2.gaugedS==null
                                   ? ''
                                   : this.formService.calculateForMm(
                                       z
@@ -2884,7 +2926,9 @@ export class ReviewComponent implements OnInit {
                                         .gaugedS
                                     )
                                   )
-                                )
+                                ) || z
+                                .thirdTransverseSectionMeasurementDetailTM2
+                                .gaugedS==null
                                   ? ''
                                   : Number(
                                       this.formService.calculateForPercent(
@@ -2901,8 +2945,9 @@ export class ReviewComponent implements OnInit {
                               border: [true, true, false, true],
                             },
                             {
-                              text:
-                                this.convertToNumber(
+                              text:z.thirdTransverseSectionMeasurementDetailTM2
+                              .gaugedS==null?"":
+                                Number(
                                   this.formService.calculateForMm(
                                     z.thirdTransverseSectionMeasurementDetailTM2
                                       .originalThickness,
@@ -2910,7 +2955,7 @@ export class ReviewComponent implements OnInit {
                                       .gaugedS
                                   )
                                 ) >=
-                                  this.convertToNumber(
+                                  Number(
                                     this.formService.threePartsFourOfMaxAlwbDim(
                                       this.formService.calculateForMaxAlwbDimForString(
                                         z
@@ -2922,7 +2967,7 @@ export class ReviewComponent implements OnInit {
                                       )
                                     )
                                   ) &&
-                                this.convertToNumber(
+                                Number(
                                   this.formService.calculateForMm(
                                     z.thirdTransverseSectionMeasurementDetailTM2
                                       .originalThickness,
@@ -2930,7 +2975,7 @@ export class ReviewComponent implements OnInit {
                                       .gaugedS
                                   )
                                 ) <=
-                                  this.convertToNumber(
+                                  Number(
                                     this.formService.calculateForMaxAlwbDimForString(
                                       z
                                         .thirdTransverseSectionMeasurementDetailTM2
@@ -2941,7 +2986,7 @@ export class ReviewComponent implements OnInit {
                                     )
                                   )
                                   ? 'S'
-                                  : this.convertToNumber(
+                                  : Number(
                                       this.formService.calculateForMm(
                                         z
                                           .thirdTransverseSectionMeasurementDetailTM2
@@ -2951,7 +2996,7 @@ export class ReviewComponent implements OnInit {
                                           .gaugedS
                                       )
                                     ) >
-                                    this.convertToNumber(
+                                    Number(
                                       this.formService.calculateForMaxAlwbDimForString(
                                         z
                                           .thirdTransverseSectionMeasurementDetailTM2
@@ -3044,7 +3089,7 @@ export class ReviewComponent implements OnInit {
                           //Table header
                           [
                             {
-                              text: `TM2ii-${y.code}(1 July 2023)`,
+                              text: `TM2ii${y.code}`,
                               style: ['txt_center'],
                               colSpan: 34,
                               alignment: 'right' as Alignment,
@@ -3554,7 +3599,9 @@ export class ReviewComponent implements OnInit {
                             { text: `${z.strakePosition ?? ''}` },
                             //fr 1
                             {
-                              text: `${z.noOrLetter ?? ''}`,
+                              text: `${z.firstTransverseSectionMeasurementDetailTM2
+                                .originalThickness !== null ?
+                              z.noOrLetter : ''}`,
                               style: ['txt_center'],
                             },
                             {
@@ -3565,12 +3612,17 @@ export class ReviewComponent implements OnInit {
                               style: ['txt_center'],
                             },
                             {
-                              text: `${this.formService.calculateForMaxAlwbDimForString(
+                              text: `${Number(this.formService.calculateForMaxAlwbDimForString(
                                 z.firstTransverseSectionMeasurementDetailTM2
                                   .originalThickness,
                                 z.firstTransverseSectionMeasurementDetailTM2
                                   .percent
-                              )}`,
+                              )) != 0.0 ? Number(this.formService.calculateForMaxAlwbDimForString(
+                                z.firstTransverseSectionMeasurementDetailTM2
+                                  .originalThickness,
+                                z.firstTransverseSectionMeasurementDetailTM2
+                                  .percent
+                              )) : "" }`,
                               style: ['txt_center'],
                             },
                             {
@@ -3596,7 +3648,7 @@ export class ReviewComponent implements OnInit {
                                     z.firstTransverseSectionMeasurementDetailTM2
                                       .gaugedP
                                   )
-                                ) == 0.0
+                                ) == 0.0||z.firstTransverseSectionMeasurementDetailTM2.gaugedP==null
                                   ? ''
                                   : this.formService.calculateForMm(
                                       z
@@ -3622,7 +3674,9 @@ export class ReviewComponent implements OnInit {
                                         .gaugedP
                                     )
                                   )
-                                )
+                                ) ||z
+                                .firstTransverseSectionMeasurementDetailTM2
+                                .gaugedP ==null
                                   ? ''
                                   : Number(
                                       this.formService.calculateForPercent(
@@ -3640,8 +3694,8 @@ export class ReviewComponent implements OnInit {
                               border: [true, true, false, true],
                             },
                             {
-                              text:
-                                this.convertToNumber(
+                              text:z.firstTransverseSectionMeasurementDetailTM2.gaugedP==null?"":
+                                Number(
                                   this.formService.calculateForMm(
                                     z.firstTransverseSectionMeasurementDetailTM2
                                       .originalThickness,
@@ -3649,7 +3703,7 @@ export class ReviewComponent implements OnInit {
                                       .gaugedP
                                   )
                                 ) >=
-                                  this.convertToNumber(
+                                  Number(
                                     this.formService.threePartsFourOfMaxAlwbDim(
                                       this.formService.calculateForMaxAlwbDimForString(
                                         z
@@ -3661,7 +3715,7 @@ export class ReviewComponent implements OnInit {
                                       )
                                     )
                                   ) &&
-                                this.convertToNumber(
+                                Number(
                                   this.formService.calculateForMm(
                                     z.firstTransverseSectionMeasurementDetailTM2
                                       .originalThickness,
@@ -3669,7 +3723,7 @@ export class ReviewComponent implements OnInit {
                                       .gaugedP
                                   )
                                 ) <=
-                                  this.convertToNumber(
+                                  Number(
                                     this.formService.calculateForMaxAlwbDimForString(
                                       z
                                         .firstTransverseSectionMeasurementDetailTM2
@@ -3680,7 +3734,7 @@ export class ReviewComponent implements OnInit {
                                     )
                                   )
                                   ? 'S'
-                                  : this.convertToNumber(
+                                  : Number(
                                       this.formService.calculateForMm(
                                         z
                                           .firstTransverseSectionMeasurementDetailTM2
@@ -3690,7 +3744,7 @@ export class ReviewComponent implements OnInit {
                                           .gaugedP
                                       )
                                     ) >
-                                    this.convertToNumber(
+                                    Number(
                                       this.formService.calculateForMaxAlwbDimForString(
                                         z
                                           .firstTransverseSectionMeasurementDetailTM2
@@ -3714,7 +3768,7 @@ export class ReviewComponent implements OnInit {
                                     z.firstTransverseSectionMeasurementDetailTM2
                                       .gaugedS
                                   )
-                                ) == 0.0
+                                ) == 0.0||z.firstTransverseSectionMeasurementDetailTM2.gaugedS==null
                                   ? ''
                                   : this.formService.calculateForMm(
                                       z
@@ -3740,7 +3794,9 @@ export class ReviewComponent implements OnInit {
                                         .gaugedS
                                     )
                                   )
-                                )
+                                ) ||z
+                                .firstTransverseSectionMeasurementDetailTM2
+                                .gaugedS==null
                                   ? ''
                                   : this.formService.calculateForPercent(
                                       z
@@ -3755,8 +3811,9 @@ export class ReviewComponent implements OnInit {
                               border: [true, true, false, true],
                             },
                             {
-                              text:
-                                this.convertToNumber(
+                              text:z.firstTransverseSectionMeasurementDetailTM2
+                              .gaugedS==null?"":
+                                Number(
                                   this.formService.calculateForMm(
                                     z.firstTransverseSectionMeasurementDetailTM2
                                       .originalThickness,
@@ -3764,7 +3821,7 @@ export class ReviewComponent implements OnInit {
                                       .gaugedS
                                   )
                                 ) >=
-                                  this.convertToNumber(
+                                  Number(
                                     this.formService.threePartsFourOfMaxAlwbDim(
                                       this.formService.calculateForMaxAlwbDimForString(
                                         z
@@ -3776,7 +3833,7 @@ export class ReviewComponent implements OnInit {
                                       )
                                     )
                                   ) &&
-                                this.convertToNumber(
+                                Number(
                                   this.formService.calculateForMm(
                                     z.firstTransverseSectionMeasurementDetailTM2
                                       .originalThickness,
@@ -3784,7 +3841,7 @@ export class ReviewComponent implements OnInit {
                                       .gaugedS
                                   )
                                 ) <=
-                                  this.convertToNumber(
+                                  Number(
                                     this.formService.calculateForMaxAlwbDimForString(
                                       z
                                         .firstTransverseSectionMeasurementDetailTM2
@@ -3795,7 +3852,7 @@ export class ReviewComponent implements OnInit {
                                     )
                                   )
                                   ? 'S'
-                                  : this.convertToNumber(
+                                  : Number(
                                       this.formService.calculateForMm(
                                         z
                                           .firstTransverseSectionMeasurementDetailTM2
@@ -3805,7 +3862,7 @@ export class ReviewComponent implements OnInit {
                                           .gaugedS
                                       )
                                     ) >
-                                    this.convertToNumber(
+                                    Number(
                                       this.formService.calculateForMaxAlwbDimForString(
                                         z
                                           .firstTransverseSectionMeasurementDetailTM2
@@ -3824,7 +3881,9 @@ export class ReviewComponent implements OnInit {
                             //fr 2
 
                             {
-                              text: `${z.noOrLetter ?? ''}`,
+                              text: `${z.secondTransverseSectionMeasurementDetailTM2
+                                .originalThickness !== null ?
+                              z.noOrLetter : ''}`,
                               style: ['txt_center'],
                             },
                             {
@@ -3835,12 +3894,18 @@ export class ReviewComponent implements OnInit {
                               style: ['txt_center'],
                             },
                             {
-                              text: `${this.formService.calculateForMaxAlwbDimForString(
+                              text: `${Number(this.formService.calculateForMaxAlwbDimForString(
                                 z.secondTransverseSectionMeasurementDetailTM2
                                   .originalThickness,
                                 z.secondTransverseSectionMeasurementDetailTM2
                                   .percent
-                              )}`,
+                              )) != 0.0 ? Number(this.formService.calculateForMaxAlwbDimForString(
+                                z.secondTransverseSectionMeasurementDetailTM2
+                                  .originalThickness,
+                                z.secondTransverseSectionMeasurementDetailTM2
+                                  .percent
+                              )) : "" }`,
+                              
                               style: ['txt_center'],
                             },
                             {
@@ -3868,7 +3933,7 @@ export class ReviewComponent implements OnInit {
                                       .secondTransverseSectionMeasurementDetailTM2
                                       .gaugedP
                                   )
-                                ) == 0.0
+                                ) == 0.0||z.secondTransverseSectionMeasurementDetailTM2.gaugedP==null
                                   ? ''
                                   : this.formService.calculateForMm(
                                       z
@@ -3894,7 +3959,9 @@ export class ReviewComponent implements OnInit {
                                         .gaugedP
                                     )
                                   )
-                                )
+                                ) ||z
+                                .secondTransverseSectionMeasurementDetailTM2
+                                .gaugedP ==null
                                   ? ''
                                   : Number(
                                       this.formService.calculateForPercent(
@@ -3912,8 +3979,9 @@ export class ReviewComponent implements OnInit {
                               border: [true, true, false, true],
                             },
                             {
-                              text:
-                                this.convertToNumber(
+                              text:z.secondTransverseSectionMeasurementDetailTM2
+                              .gaugedP==null?"":
+                                Number(
                                   this.formService.calculateForMm(
                                     z
                                       .secondTransverseSectionMeasurementDetailTM2
@@ -3923,7 +3991,7 @@ export class ReviewComponent implements OnInit {
                                       .gaugedP
                                   )
                                 ) >=
-                                  this.convertToNumber(
+                                  Number(
                                     this.formService.threePartsFourOfMaxAlwbDim(
                                       this.formService.calculateForMaxAlwbDimForString(
                                         z
@@ -3935,7 +4003,7 @@ export class ReviewComponent implements OnInit {
                                       )
                                     )
                                   ) &&
-                                this.convertToNumber(
+                                Number(
                                   this.formService.calculateForMm(
                                     z
                                       .secondTransverseSectionMeasurementDetailTM2
@@ -3945,7 +4013,7 @@ export class ReviewComponent implements OnInit {
                                       .gaugedP
                                   )
                                 ) <=
-                                  this.convertToNumber(
+                                  Number(
                                     this.formService.calculateForMaxAlwbDimForString(
                                       z
                                         .secondTransverseSectionMeasurementDetailTM2
@@ -3956,7 +4024,7 @@ export class ReviewComponent implements OnInit {
                                     )
                                   )
                                   ? 'S'
-                                  : this.convertToNumber(
+                                  : Number(
                                       this.formService.calculateForMm(
                                         z
                                           .secondTransverseSectionMeasurementDetailTM2
@@ -3966,7 +4034,7 @@ export class ReviewComponent implements OnInit {
                                           .gaugedP
                                       )
                                     ) >
-                                    this.convertToNumber(
+                                    Number(
                                       this.formService.calculateForMaxAlwbDimForString(
                                         z
                                           .secondTransverseSectionMeasurementDetailTM2
@@ -3992,7 +4060,7 @@ export class ReviewComponent implements OnInit {
                                       .secondTransverseSectionMeasurementDetailTM2
                                       .gaugedS
                                   )
-                                ) == 0.0
+                                ) == 0.0||z.secondTransverseSectionMeasurementDetailTM2.gaugedS==null
                                   ? ''
                                   : this.formService.calculateForMm(
                                       z
@@ -4018,7 +4086,9 @@ export class ReviewComponent implements OnInit {
                                         .gaugedS
                                     )
                                   )
-                                )
+                                ) ||z
+                                .secondTransverseSectionMeasurementDetailTM2
+                                .gaugedS ==null
                                   ? ''
                                   : Number(
                                       this.formService.calculateForPercent(
@@ -4035,8 +4105,9 @@ export class ReviewComponent implements OnInit {
                               border: [true, true, false, true],
                             },
                             {
-                              text:
-                                this.convertToNumber(
+                              text:z.secondTransverseSectionMeasurementDetailTM2
+                              .gaugedS==null?"":
+                                Number(
                                   this.formService.calculateForMm(
                                     z
                                       .secondTransverseSectionMeasurementDetailTM2
@@ -4046,7 +4117,7 @@ export class ReviewComponent implements OnInit {
                                       .gaugedS
                                   )
                                 ) >=
-                                  this.convertToNumber(
+                                  Number(
                                     this.formService.threePartsFourOfMaxAlwbDim(
                                       this.formService.calculateForMaxAlwbDimForString(
                                         z
@@ -4058,7 +4129,7 @@ export class ReviewComponent implements OnInit {
                                       )
                                     )
                                   ) &&
-                                this.convertToNumber(
+                                Number(
                                   this.formService.calculateForMm(
                                     z
                                       .secondTransverseSectionMeasurementDetailTM2
@@ -4068,7 +4139,7 @@ export class ReviewComponent implements OnInit {
                                       .gaugedS
                                   )
                                 ) <=
-                                  this.convertToNumber(
+                                  Number(
                                     this.formService.calculateForMaxAlwbDimForString(
                                       z
                                         .secondTransverseSectionMeasurementDetailTM2
@@ -4079,7 +4150,7 @@ export class ReviewComponent implements OnInit {
                                     )
                                   )
                                   ? 'S'
-                                  : this.convertToNumber(
+                                  : Number(
                                       this.formService.calculateForMm(
                                         z
                                           .secondTransverseSectionMeasurementDetailTM2
@@ -4089,7 +4160,7 @@ export class ReviewComponent implements OnInit {
                                           .gaugedS
                                       )
                                     ) >
-                                    this.convertToNumber(
+                                    Number(
                                       this.formService.calculateForMaxAlwbDimForString(
                                         z
                                           .secondTransverseSectionMeasurementDetailTM2
@@ -4108,7 +4179,9 @@ export class ReviewComponent implements OnInit {
                             //fr3
 
                             {
-                              text: `${z.noOrLetter ?? ''}`,
+                              text: `${z.thirdTransverseSectionMeasurementDetailTM2
+                                .originalThickness !== null ?
+                              z.noOrLetter : ''}`,
                               style: ['txt_center'],
                             },
                             {
@@ -4119,12 +4192,17 @@ export class ReviewComponent implements OnInit {
                               style: ['txt_center'],
                             },
                             {
-                              text: `${this.formService.calculateForMaxAlwbDimForString(
+                              text: `${Number(this.formService.calculateForMaxAlwbDimForString(
                                 z.thirdTransverseSectionMeasurementDetailTM2
                                   .originalThickness,
                                 z.thirdTransverseSectionMeasurementDetailTM2
                                   .percent
-                              )}`,
+                              )) != 0.0 ? Number(this.formService.calculateForMaxAlwbDimForString(
+                                z.thirdTransverseSectionMeasurementDetailTM2
+                                  .originalThickness,
+                                z.thirdTransverseSectionMeasurementDetailTM2
+                                  .percent
+                              )) : "" }`,
                               style: ['txt_center'],
                             },
                             {
@@ -4150,7 +4228,7 @@ export class ReviewComponent implements OnInit {
                                     z.thirdTransverseSectionMeasurementDetailTM2
                                       .gaugedP
                                   )
-                                ) == 0.0
+                                ) == 0.0||z.thirdTransverseSectionMeasurementDetailTM2.gaugedP==null
                                   ? ''
                                   : this.formService.calculateForMm(
                                       z
@@ -4176,7 +4254,9 @@ export class ReviewComponent implements OnInit {
                                         .gaugedP
                                     )
                                   )
-                                )
+                                )||z
+                                .thirdTransverseSectionMeasurementDetailTM2
+                                .gaugedP==null
                                   ? ''
                                   : Number(
                                       this.formService.calculateForPercent(
@@ -4194,8 +4274,9 @@ export class ReviewComponent implements OnInit {
                               border: [true, true, false, true],
                             },
                             {
-                              text:
-                                this.convertToNumber(
+                              text:z.thirdTransverseSectionMeasurementDetailTM2
+                              .gaugedP==null?"":
+                                Number(
                                   this.formService.calculateForMm(
                                     z.thirdTransverseSectionMeasurementDetailTM2
                                       .originalThickness,
@@ -4203,7 +4284,7 @@ export class ReviewComponent implements OnInit {
                                       .gaugedP
                                   )
                                 ) >=
-                                  this.convertToNumber(
+                                  Number(
                                     this.formService.threePartsFourOfMaxAlwbDim(
                                       this.formService.calculateForMaxAlwbDimForString(
                                         z
@@ -4215,7 +4296,7 @@ export class ReviewComponent implements OnInit {
                                       )
                                     )
                                   ) &&
-                                this.convertToNumber(
+                                Number(
                                   this.formService.calculateForMm(
                                     z.thirdTransverseSectionMeasurementDetailTM2
                                       .originalThickness,
@@ -4223,7 +4304,7 @@ export class ReviewComponent implements OnInit {
                                       .gaugedP
                                   )
                                 ) <=
-                                  this.convertToNumber(
+                                  Number(
                                     this.formService.calculateForMaxAlwbDimForString(
                                       z
                                         .thirdTransverseSectionMeasurementDetailTM2
@@ -4234,7 +4315,7 @@ export class ReviewComponent implements OnInit {
                                     )
                                   )
                                   ? 'S'
-                                  : this.convertToNumber(
+                                  : Number(
                                       this.formService.calculateForMm(
                                         z
                                           .thirdTransverseSectionMeasurementDetailTM2
@@ -4244,7 +4325,7 @@ export class ReviewComponent implements OnInit {
                                           .gaugedP
                                       )
                                     ) >
-                                    this.convertToNumber(
+                                    Number(
                                       this.formService.calculateForMaxAlwbDimForString(
                                         z
                                           .thirdTransverseSectionMeasurementDetailTM2
@@ -4269,7 +4350,7 @@ export class ReviewComponent implements OnInit {
                                     z.thirdTransverseSectionMeasurementDetailTM2
                                       .gaugedS
                                   )
-                                ) == 0.0
+                                ) == 0.0||z.thirdTransverseSectionMeasurementDetailTM2.gaugedS==null
                                   ? ''
                                   : this.formService.calculateForMm(
                                       z
@@ -4295,7 +4376,9 @@ export class ReviewComponent implements OnInit {
                                         .gaugedS
                                     )
                                   )
-                                )
+                                ) || z
+                                .thirdTransverseSectionMeasurementDetailTM2
+                                .gaugedS==null
                                   ? ''
                                   : Number(
                                       this.formService.calculateForPercent(
@@ -4312,8 +4395,9 @@ export class ReviewComponent implements OnInit {
                               border: [true, true, false, true],
                             },
                             {
-                              text:
-                                this.convertToNumber(
+                              text:z.thirdTransverseSectionMeasurementDetailTM2
+                              .gaugedS==null?"":
+                                Number(
                                   this.formService.calculateForMm(
                                     z.thirdTransverseSectionMeasurementDetailTM2
                                       .originalThickness,
@@ -4321,7 +4405,7 @@ export class ReviewComponent implements OnInit {
                                       .gaugedS
                                   )
                                 ) >=
-                                  this.convertToNumber(
+                                  Number(
                                     this.formService.threePartsFourOfMaxAlwbDim(
                                       this.formService.calculateForMaxAlwbDimForString(
                                         z
@@ -4333,7 +4417,7 @@ export class ReviewComponent implements OnInit {
                                       )
                                     )
                                   ) &&
-                                this.convertToNumber(
+                                Number(
                                   this.formService.calculateForMm(
                                     z.thirdTransverseSectionMeasurementDetailTM2
                                       .originalThickness,
@@ -4341,7 +4425,7 @@ export class ReviewComponent implements OnInit {
                                       .gaugedS
                                   )
                                 ) <=
-                                  this.convertToNumber(
+                                  Number(
                                     this.formService.calculateForMaxAlwbDimForString(
                                       z
                                         .thirdTransverseSectionMeasurementDetailTM2
@@ -4352,7 +4436,7 @@ export class ReviewComponent implements OnInit {
                                     )
                                   )
                                   ? 'S'
-                                  : this.convertToNumber(
+                                  : Number(
                                       this.formService.calculateForMm(
                                         z
                                           .thirdTransverseSectionMeasurementDetailTM2
@@ -4362,7 +4446,7 @@ export class ReviewComponent implements OnInit {
                                           .gaugedS
                                       )
                                     ) >
-                                    this.convertToNumber(
+                                    Number(
                                       this.formService.calculateForMaxAlwbDimForString(
                                         z
                                           .thirdTransverseSectionMeasurementDetailTM2
@@ -4455,7 +4539,7 @@ export class ReviewComponent implements OnInit {
                           //Table header
                           [
                             {
-                              text: `TM3-${y.code}(1 July 2023)`,
+                              text: `TM3${y.code}`,
                               style: ['txt_center'],
                               colSpan: 34,
                               alignment: 'right' as Alignment,
@@ -4927,7 +5011,9 @@ export class ReviewComponent implements OnInit {
                             { text: `${z.structuralMember ?? ''}` },
                             {
                               style: ['txt_center'],
-                              text: `${z.noOrLetter ?? ''}`,
+                              text: `${z.firstTransverseSectionMeasurementDetail
+                                .originalThickness !== null ?
+                              z.noOrLetter : ''}`,
                             },
                             {
                               style: ['txt_center'],
@@ -4938,7 +5024,7 @@ export class ReviewComponent implements OnInit {
                             },
                             {
                               style: ['txt_center'],
-                              text: `${this.formService.calculateForMaxAlwbDimForString(
+                              text: `${this.formService.calculateForMaxAlwbDim(
                                 z.firstTransverseSectionMeasurementDetail
                                   .originalThickness,
                                 z.firstTransverseSectionMeasurementDetail
@@ -4970,7 +5056,8 @@ export class ReviewComponent implements OnInit {
                                     z.firstTransverseSectionMeasurementDetail
                                       .gaugedP
                                   )
-                                ) == 0.0
+                                ) == 0.0 || z.firstTransverseSectionMeasurementDetail
+                                .gaugedP == null
                                   ? ''
                                   : Number(
                                       this.formService.calculateForMm(
@@ -4997,7 +5084,8 @@ export class ReviewComponent implements OnInit {
                                         .gaugedP
                                     )
                                   )
-                                )
+                                )||z.firstTransverseSectionMeasurementDetail
+                                .gaugedP==null
                                   ? ''
                                   : this.formService.calculateForPercent(
                                       z.firstTransverseSectionMeasurementDetail
@@ -5010,8 +5098,10 @@ export class ReviewComponent implements OnInit {
                             {
                               style: ['txt_center'],
                               border: [false, true, true, true],
-                              text:
-                                this.convertToNumber(
+                              text: `${
+                                z.firstTransverseSectionMeasurementDetail
+                                .gaugedP ==null ? '':
+                                Number(
                                   this.formService.calculateForMm(
                                     z.firstTransverseSectionMeasurementDetail
                                       .originalThickness,
@@ -5019,9 +5109,9 @@ export class ReviewComponent implements OnInit {
                                       .gaugedP
                                   )
                                 ) >=
-                                  this.convertToNumber(
+                                  Number(
                                     this.formService.threePartsFourOfMaxAlwbDim(
-                                      this.formService.calculateForMaxAlwbDimForString(
+                                      this.formService.calculateForMaxAlwbDim(
                                         z
                                           .firstTransverseSectionMeasurementDetail
                                           .originalThickness,
@@ -5031,7 +5121,7 @@ export class ReviewComponent implements OnInit {
                                       )
                                     )
                                   ) &&
-                                this.convertToNumber(
+                                Number(
                                   this.formService.calculateForMm(
                                     z.firstTransverseSectionMeasurementDetail
                                       .originalThickness,
@@ -5039,8 +5129,8 @@ export class ReviewComponent implements OnInit {
                                       .gaugedP
                                   )
                                 ) <=
-                                  this.convertToNumber(
-                                    this.formService.calculateForMaxAlwbDimForString(
+                                  Number(
+                                    this.formService.calculateForMaxAlwbDim(
                                       z.firstTransverseSectionMeasurementDetail
                                         .originalThickness,
                                       z.firstTransverseSectionMeasurementDetail
@@ -5048,7 +5138,7 @@ export class ReviewComponent implements OnInit {
                                     )
                                   )
                                   ? 'S'
-                                  : this.convertToNumber(
+                                  : Number(
                                       this.formService.calculateForMm(
                                         z
                                           .firstTransverseSectionMeasurementDetail
@@ -5058,8 +5148,8 @@ export class ReviewComponent implements OnInit {
                                           .gaugedP
                                       )
                                     ) >
-                                    this.convertToNumber(
-                                      this.formService.calculateForMaxAlwbDimForString(
+                                    Number(
+                                      this.formService.calculateForMaxAlwbDim(
                                         z
                                           .firstTransverseSectionMeasurementDetail
                                           .originalThickness,
@@ -5068,8 +5158,9 @@ export class ReviewComponent implements OnInit {
                                           .percent
                                       )
                                     )
-                                  ? 'R'
-                                  : '',
+                                  ? 'R' 
+                                  : ''
+                              }`
                             },
                             {
                               style: ['txt_center'],
@@ -5081,7 +5172,8 @@ export class ReviewComponent implements OnInit {
                                     z.firstTransverseSectionMeasurementDetail
                                       .gaugedS
                                   )
-                                ) == 0.0
+                                ) == 0.0 || z.firstTransverseSectionMeasurementDetail
+                                .gaugedS == null
                                   ? ''
                                   : Number(
                                       this.formService.calculateForMm(
@@ -5108,7 +5200,8 @@ export class ReviewComponent implements OnInit {
                                         .gaugedS
                                     )
                                   )
-                                )
+                                ) || z.firstTransverseSectionMeasurementDetail
+                                .gaugedS == null
                                   ? ''
                                   : this.formService.calculateForPercent(
                                       z.firstTransverseSectionMeasurementDetail
@@ -5121,8 +5214,10 @@ export class ReviewComponent implements OnInit {
                             {
                               style: ['txt_center'],
                               border: [false, true, true, true],
-                              text:
-                                this.convertToNumber(
+                              text:`${
+                                z.firstTransverseSectionMeasurementDetail
+                                      .gaugedS==null ?  "":
+                                Number(
                                   this.formService.calculateForMm(
                                     z.firstTransverseSectionMeasurementDetail
                                       .originalThickness,
@@ -5130,9 +5225,9 @@ export class ReviewComponent implements OnInit {
                                       .gaugedS
                                   )
                                 ) >=
-                                  this.convertToNumber(
+                                  Number(
                                     this.formService.threePartsFourOfMaxAlwbDim(
-                                      this.formService.calculateForMaxAlwbDimForString(
+                                      this.formService.calculateForMaxAlwbDim(
                                         z
                                           .firstTransverseSectionMeasurementDetail
                                           .originalThickness,
@@ -5142,7 +5237,7 @@ export class ReviewComponent implements OnInit {
                                       )
                                     )
                                   ) &&
-                                this.convertToNumber(
+                                Number(
                                   this.formService.calculateForMm(
                                     z.firstTransverseSectionMeasurementDetail
                                       .originalThickness,
@@ -5150,8 +5245,8 @@ export class ReviewComponent implements OnInit {
                                       .gaugedS
                                   )
                                 ) <=
-                                  this.convertToNumber(
-                                    this.formService.calculateForMaxAlwbDimForString(
+                                  Number(
+                                    this.formService.calculateForMaxAlwbDim(
                                       z.firstTransverseSectionMeasurementDetail
                                         .originalThickness,
                                       z.firstTransverseSectionMeasurementDetail
@@ -5159,7 +5254,7 @@ export class ReviewComponent implements OnInit {
                                     )
                                   )
                                   ? 'S'
-                                  : this.convertToNumber(
+                                  : Number(
                                       this.formService.calculateForMm(
                                         z
                                           .firstTransverseSectionMeasurementDetail
@@ -5169,8 +5264,8 @@ export class ReviewComponent implements OnInit {
                                           .gaugedS
                                       )
                                     ) >
-                                    this.convertToNumber(
-                                      this.formService.calculateForMaxAlwbDimForString(
+                                    Number(
+                                      this.formService.calculateForMaxAlwbDim(
                                         z
                                           .firstTransverseSectionMeasurementDetail
                                           .originalThickness,
@@ -5180,12 +5275,16 @@ export class ReviewComponent implements OnInit {
                                       )
                                     )
                                   ? 'R'
-                                  : '',
+                                  : ''
+                              }`
                             },
                             //fr2
                             {
                               style: ['txt_center'],
-                              text: `${z.noOrLetter ?? ''}`,
+                              text: `${
+                                z.secondTransverseSectionMeasurementDetail
+                                  .originalThickness !== null ?
+                                z.noOrLetter : ''}`,
                             },
                             {
                               style: ['txt_center'],
@@ -5196,12 +5295,17 @@ export class ReviewComponent implements OnInit {
                             },
                             {
                               style: ['txt_center'],
-                              text: `${this.formService.calculateForMaxAlwbDimForString(
+                              text: `${Number(this.formService.calculateForMaxAlwbDim(
                                 z.secondTransverseSectionMeasurementDetail
                                   .originalThickness,
                                 z.secondTransverseSectionMeasurementDetail
                                   .percent
-                              )}`,
+                              )) != 0.0 ? Number(this.formService.calculateForMaxAlwbDim(
+                                z.secondTransverseSectionMeasurementDetail
+                                  .originalThickness,
+                                z.secondTransverseSectionMeasurementDetail
+                                  .percent
+                              )) : "" }`,
                             },
                             {
                               style: ['txt_center'],
@@ -5228,7 +5332,8 @@ export class ReviewComponent implements OnInit {
                                     z.secondTransverseSectionMeasurementDetail
                                       .gaugedP
                                   )
-                                ) == 0.0
+                                ) == 0.0 ||z.secondTransverseSectionMeasurementDetail
+                                .gaugedP==null
                                   ? ''
                                   : Number(
                                       this.formService.calculateForMm(
@@ -5245,76 +5350,87 @@ export class ReviewComponent implements OnInit {
                             {
                               style: ['txt_center'],
                               border: [true, true, false, true],
-                              text: `${this.formService.calculateForPercent(
+                              text: `${
+                                Number.isNaN(
+                                  Number(this.formService.calculateForPercent(
                                 z.secondTransverseSectionMeasurementDetail
                                   .originalThickness,
                                 z.secondTransverseSectionMeasurementDetail
                                   .gaugedP
-                              )}`,
+                              )))||z.secondTransverseSectionMeasurementDetail
+                              .gaugedP==null?'':Number(this.formService.calculateForPercent(
+                                z.secondTransverseSectionMeasurementDetail
+                                  .originalThickness,
+                                z.secondTransverseSectionMeasurementDetail
+                                  .gaugedP
+                              ))}`,
                             },
                             {
                               style: ['txt_center'],
                               border: [false, true, true, true],
-                              text:
-                                this.convertToNumber(
-                                  this.formService.calculateForMm(
-                                    z.secondTransverseSectionMeasurementDetail
-                                      .originalThickness,
-                                    z.secondTransverseSectionMeasurementDetail
-                                      .gaugedP
-                                  )
-                                ) >=
-                                  this.convertToNumber(
-                                    this.formService.threePartsFourOfMaxAlwbDim(
-                                      this.formService.calculateForMaxAlwbDimForString(
-                                        z
-                                          .secondTransverseSectionMeasurementDetail
-                                          .originalThickness,
-                                        z
-                                          .secondTransverseSectionMeasurementDetail
-                                          .percent
-                                      )
-                                    )
-                                  ) &&
-                                this.convertToNumber(
-                                  this.formService.calculateForMm(
-                                    z.secondTransverseSectionMeasurementDetail
-                                      .originalThickness,
-                                    z.secondTransverseSectionMeasurementDetail
-                                      .gaugedP
-                                  )
-                                ) <=
-                                  this.convertToNumber(
-                                    this.formService.calculateForMaxAlwbDimForString(
-                                      z.secondTransverseSectionMeasurementDetail
-                                        .originalThickness,
-                                      z.secondTransverseSectionMeasurementDetail
-                                        .percent
-                                    )
-                                  )
-                                  ? 'S'
-                                  : this.convertToNumber(
-                                      this.formService.calculateForMm(
-                                        z
-                                          .secondTransverseSectionMeasurementDetail
-                                          .originalThickness,
-                                        z
-                                          .secondTransverseSectionMeasurementDetail
-                                          .gaugedP
-                                      )
-                                    ) >
-                                    this.convertToNumber(
-                                      this.formService.calculateForMaxAlwbDimForString(
-                                        z
-                                          .secondTransverseSectionMeasurementDetail
-                                          .originalThickness,
-                                        z
-                                          .secondTransverseSectionMeasurementDetail
-                                          .percent
-                                      )
-                                    )
-                                  ? 'R'
-                                  : '',
+                              text:`${
+                                z.secondTransverseSectionMeasurementDetail
+                                      .gaugedP == null ?"":
+                                      Number(
+                                        this.formService.calculateForMm(
+                                          z.secondTransverseSectionMeasurementDetail
+                                            .originalThickness,
+                                          z.secondTransverseSectionMeasurementDetail
+                                            .gaugedP
+                                        )
+                                      ) >=
+                                        Number(
+                                          this.formService.threePartsFourOfMaxAlwbDim(
+                                            this.formService.calculateForMaxAlwbDim(
+                                              z
+                                                .secondTransverseSectionMeasurementDetail
+                                                .originalThickness,
+                                              z
+                                                .secondTransverseSectionMeasurementDetail
+                                                .percent
+                                            )
+                                          )
+                                        ) &&
+                                      Number(
+                                        this.formService.calculateForMm(
+                                          z.secondTransverseSectionMeasurementDetail
+                                            .originalThickness,
+                                          z.secondTransverseSectionMeasurementDetail
+                                            .gaugedP
+                                        )
+                                      ) <=
+                                        Number(
+                                          this.formService.calculateForMaxAlwbDim(
+                                            z.secondTransverseSectionMeasurementDetail
+                                              .originalThickness,
+                                            z.secondTransverseSectionMeasurementDetail
+                                              .percent
+                                          )
+                                        )
+                                        ? 'S'
+                                        : Number(
+                                            this.formService.calculateForMm(
+                                              z
+                                                .secondTransverseSectionMeasurementDetail
+                                                .originalThickness,
+                                              z
+                                                .secondTransverseSectionMeasurementDetail
+                                                .gaugedP
+                                            )
+                                          ) >
+                                          Number(
+                                            this.formService.calculateForMaxAlwbDim(
+                                              z
+                                                .secondTransverseSectionMeasurementDetail
+                                                .originalThickness,
+                                              z
+                                                .secondTransverseSectionMeasurementDetail
+                                                .percent
+                                            )
+                                          )
+                                        ? 'R'
+                                        : ''
+                              }`
                             },
                             {
                               style: ['txt_center'],
@@ -5326,7 +5442,8 @@ export class ReviewComponent implements OnInit {
                                     z.secondTransverseSectionMeasurementDetail
                                       .gaugedS
                                   )
-                                ) == 0.0
+                                ) == 0.0 ||z.secondTransverseSectionMeasurementDetail
+                                .gaugedS==null
                                   ? ''
                                   : Number(
                                       this.formService.calculateForMm(
@@ -5353,7 +5470,8 @@ export class ReviewComponent implements OnInit {
                                         .gaugedS
                                     )
                                   )
-                                )
+                                )||z.secondTransverseSectionMeasurementDetail
+                                .gaugedS==null
                                   ? ''
                                   : Number(
                                       this.formService.calculateForPercent(
@@ -5370,72 +5488,77 @@ export class ReviewComponent implements OnInit {
                             {
                               style: ['txt_center'],
                               border: [false, true, true, true],
-                              text:
-                                this.convertToNumber(
-                                  this.formService.calculateForMm(
-                                    z.secondTransverseSectionMeasurementDetail
-                                      .originalThickness,
-                                    z.secondTransverseSectionMeasurementDetail
-                                      .gaugedS
-                                  )
-                                ) >=
-                                  this.convertToNumber(
-                                    this.formService.threePartsFourOfMaxAlwbDim(
-                                      this.formService.calculateForMaxAlwbDimForString(
-                                        z
-                                          .secondTransverseSectionMeasurementDetail
-                                          .originalThickness,
-                                        z
-                                          .secondTransverseSectionMeasurementDetail
-                                          .percent
-                                      )
-                                    )
-                                  ) &&
-                                this.convertToNumber(
-                                  this.formService.calculateForMm(
-                                    z.secondTransverseSectionMeasurementDetail
-                                      .originalThickness,
-                                    z.secondTransverseSectionMeasurementDetail
-                                      .gaugedS
-                                  )
-                                ) <=
-                                  this.convertToNumber(
-                                    this.formService.calculateForMaxAlwbDimForString(
-                                      z.secondTransverseSectionMeasurementDetail
-                                        .originalThickness,
-                                      z.secondTransverseSectionMeasurementDetail
-                                        .percent
-                                    )
-                                  )
-                                  ? 'S'
-                                  : this.convertToNumber(
-                                      this.formService.calculateForMm(
-                                        z
-                                          .secondTransverseSectionMeasurementDetail
-                                          .originalThickness,
-                                        z
-                                          .secondTransverseSectionMeasurementDetail
-                                          .gaugedS
-                                      )
-                                    ) >
-                                    this.convertToNumber(
-                                      this.formService.calculateForMaxAlwbDimForString(
-                                        z
-                                          .secondTransverseSectionMeasurementDetail
-                                          .originalThickness,
-                                        z
-                                          .secondTransverseSectionMeasurementDetail
-                                          .percent
-                                      )
-                                    )
-                                  ? 'R'
-                                  : '',
+                              text: `${
+                                z.secondTransverseSectionMeasurementDetail
+                                      .gaugedS == null ? "":
+                                      Number(
+                                        this.formService.calculateForMm(
+                                          z.secondTransverseSectionMeasurementDetail
+                                            .originalThickness,
+                                          z.secondTransverseSectionMeasurementDetail
+                                            .gaugedS
+                                        )
+                                      ) >=
+                                        Number(
+                                          this.formService.threePartsFourOfMaxAlwbDim(
+                                            this.formService.calculateForMaxAlwbDim(
+                                              z
+                                                .secondTransverseSectionMeasurementDetail
+                                                .originalThickness,
+                                              z
+                                                .secondTransverseSectionMeasurementDetail
+                                                .percent
+                                            )
+                                          )
+                                        ) &&
+                                      Number(
+                                        this.formService.calculateForMm(
+                                          z.secondTransverseSectionMeasurementDetail
+                                            .originalThickness,
+                                          z.secondTransverseSectionMeasurementDetail
+                                            .gaugedS
+                                        )
+                                      ) <=
+                                        Number(
+                                          this.formService.calculateForMaxAlwbDim(
+                                            z.secondTransverseSectionMeasurementDetail
+                                              .originalThickness,
+                                            z.secondTransverseSectionMeasurementDetail
+                                              .percent
+                                          )
+                                        )
+                                        ? 'S'
+                                        : Number(
+                                            this.formService.calculateForMm(
+                                              z
+                                                .secondTransverseSectionMeasurementDetail
+                                                .originalThickness,
+                                              z
+                                                .secondTransverseSectionMeasurementDetail
+                                                .gaugedS
+                                            )
+                                          ) >
+                                          Number(
+                                            this.formService.calculateForMaxAlwbDim(
+                                              z
+                                                .secondTransverseSectionMeasurementDetail
+                                                .originalThickness,
+                                              z
+                                                .secondTransverseSectionMeasurementDetail
+                                                .percent
+                                            )
+                                          )
+                                        ? 'R'
+                                        : ''
+                              }`
                             },
 
                             //fr3
                             {
                               style: ['txt_center'],
-                              text: `${z.noOrLetter ?? ''}`,
+                              text: `${z.thirdTransverseSectionMeasurementDetail
+                                .originalThickness !== null ?
+                              z.noOrLetter : ''}`,
                             },
                             {
                               style: ['txt_center'],
@@ -5446,12 +5569,19 @@ export class ReviewComponent implements OnInit {
                             },
                             {
                               style: ['txt_center'],
-                              text: `${this.formService.calculateForMaxAlwbDimForString(
-                                z.thirdTransverseSectionMeasurementDetail
-                                  .originalThickness,
-                                z.thirdTransverseSectionMeasurementDetail
-                                  .percent
-                              )}`,
+                              text: `${
+                                Number(this.formService.calculateForMaxAlwbDim(
+                                  z.thirdTransverseSectionMeasurementDetail
+                                    .originalThickness,
+                                  z.thirdTransverseSectionMeasurementDetail
+                                    .percent
+                                )) != 0.0 ? Number(this.formService.calculateForMaxAlwbDim(
+                                  z.thirdTransverseSectionMeasurementDetail
+                                    .originalThickness,
+                                  z.thirdTransverseSectionMeasurementDetail
+                                    .percent
+                                )) : "" 
+                              }`,
                             },
                             {
                               style: ['txt_center'],
@@ -5477,7 +5607,8 @@ export class ReviewComponent implements OnInit {
                                     z.thirdTransverseSectionMeasurementDetail
                                       .gaugedP
                                   )
-                                ) == 0.0
+                                ) == 0.0 || z.thirdTransverseSectionMeasurementDetail
+                                .gaugedP == null
                                   ? ''
                                   : Number(
                                       this.formService.calculateForMm(
@@ -5504,7 +5635,8 @@ export class ReviewComponent implements OnInit {
                                         .gaugedP
                                     )
                                   )
-                                )
+                                ) ||z.thirdTransverseSectionMeasurementDetail
+                                .gaugedP==null
                                   ? ''
                                   : Number(
                                       this.formService.calculateForPercent(
@@ -5521,66 +5653,70 @@ export class ReviewComponent implements OnInit {
                             {
                               style: ['txt_center'],
                               border: [false, true, true, true],
-                              text:
-                                this.convertToNumber(
-                                  this.formService.calculateForMm(
-                                    z.thirdTransverseSectionMeasurementDetail
-                                      .originalThickness,
-                                    z.thirdTransverseSectionMeasurementDetail
-                                      .gaugedP
-                                  )
-                                ) >=
-                                  this.convertToNumber(
-                                    this.formService.threePartsFourOfMaxAlwbDim(
-                                      this.formService.calculateForMaxAlwbDimForString(
-                                        z
-                                          .thirdTransverseSectionMeasurementDetail
-                                          .originalThickness,
-                                        z
-                                          .thirdTransverseSectionMeasurementDetail
-                                          .percent
-                                      )
-                                    )
-                                  ) &&
-                                this.convertToNumber(
-                                  this.formService.calculateForMm(
-                                    z.thirdTransverseSectionMeasurementDetail
-                                      .originalThickness,
-                                    z.thirdTransverseSectionMeasurementDetail
-                                      .gaugedP
-                                  )
-                                ) <=
-                                  this.convertToNumber(
-                                    this.formService.calculateForMaxAlwbDimForString(
-                                      z.thirdTransverseSectionMeasurementDetail
-                                        .originalThickness,
-                                      z.thirdTransverseSectionMeasurementDetail
-                                        .percent
-                                    )
-                                  )
-                                  ? 'S'
-                                  : this.convertToNumber(
-                                      this.formService.calculateForMm(
-                                        z
-                                          .thirdTransverseSectionMeasurementDetail
-                                          .originalThickness,
-                                        z
-                                          .thirdTransverseSectionMeasurementDetail
-                                          .gaugedP
-                                      )
-                                    ) >
-                                    this.convertToNumber(
-                                      this.formService.calculateForMaxAlwbDimForString(
-                                        z
-                                          .thirdTransverseSectionMeasurementDetail
-                                          .originalThickness,
-                                        z
-                                          .thirdTransverseSectionMeasurementDetail
-                                          .percent
-                                      )
-                                    )
-                                  ? 'R'
-                                  : '',
+                              text: `${
+                                z.thirdTransverseSectionMeasurementDetail
+                                      .gaugedP == null || z.thirdTransverseSectionMeasurementDetail
+                                      .gaugedS == null ? "" : 
+                                      Number(
+                                        this.formService.calculateForMm(
+                                          z.thirdTransverseSectionMeasurementDetail
+                                            .originalThickness,
+                                          z.thirdTransverseSectionMeasurementDetail
+                                            .gaugedP
+                                        )
+                                      ) >=
+                                        Number(
+                                          this.formService.threePartsFourOfMaxAlwbDim(
+                                            this.formService.calculateForMaxAlwbDim(
+                                              z
+                                                .thirdTransverseSectionMeasurementDetail
+                                                .originalThickness,
+                                              z
+                                                .thirdTransverseSectionMeasurementDetail
+                                                .percent
+                                            )
+                                          )
+                                        ) &&
+                                      Number(
+                                        this.formService.calculateForMm(
+                                          z.thirdTransverseSectionMeasurementDetail
+                                            .originalThickness,
+                                          z.thirdTransverseSectionMeasurementDetail
+                                            .gaugedP
+                                        )
+                                      ) <=
+                                        Number(
+                                          this.formService.calculateForMaxAlwbDim(
+                                            z.thirdTransverseSectionMeasurementDetail
+                                              .originalThickness,
+                                            z.thirdTransverseSectionMeasurementDetail
+                                              .percent
+                                          )
+                                        )
+                                        ? 'S'
+                                        : Number(
+                                            this.formService.calculateForMm(
+                                              z
+                                                .thirdTransverseSectionMeasurementDetail
+                                                .originalThickness,
+                                              z
+                                                .thirdTransverseSectionMeasurementDetail
+                                                .gaugedP
+                                            )
+                                          ) >
+                                          Number(
+                                            this.formService.calculateForMaxAlwbDim(
+                                              z
+                                                .thirdTransverseSectionMeasurementDetail
+                                                .originalThickness,
+                                              z
+                                                .thirdTransverseSectionMeasurementDetail
+                                                .percent
+                                            )
+                                          )
+                                        ? 'R'
+                                        : ''
+                              }`
                             },
                             {
                               style: ['txt_center'],
@@ -5592,7 +5728,8 @@ export class ReviewComponent implements OnInit {
                                     z.thirdTransverseSectionMeasurementDetail
                                       .gaugedS
                                   )
-                                ) == 0.0
+                                ) == 0.0 || z.thirdTransverseSectionMeasurementDetail
+                                .gaugedS == null
                                   ? ''
                                   : Number(
                                       this.formService.calculateForMm(
@@ -5619,7 +5756,8 @@ export class ReviewComponent implements OnInit {
                                         .gaugedS
                                     )
                                   )
-                                )
+                                )||z.thirdTransverseSectionMeasurementDetail
+                                .gaugedS==null
                                   ? ''
                                   : Number(
                                       this.formService.calculateForPercent(
@@ -5636,66 +5774,69 @@ export class ReviewComponent implements OnInit {
                             {
                               style: ['txt_center'],
                               border: [false, true, true, true],
-                              text:
-                                this.convertToNumber(
-                                  this.formService.calculateForMm(
-                                    z.thirdTransverseSectionMeasurementDetail
-                                      .originalThickness,
-                                    z.thirdTransverseSectionMeasurementDetail
-                                      .gaugedS
-                                  )
-                                ) >=
-                                  this.convertToNumber(
-                                    this.formService.threePartsFourOfMaxAlwbDim(
-                                      this.formService.calculateForMaxAlwbDimForString(
-                                        z
-                                          .thirdTransverseSectionMeasurementDetail
-                                          .originalThickness,
-                                        z
-                                          .thirdTransverseSectionMeasurementDetail
-                                          .percent
-                                      )
-                                    )
-                                  ) &&
-                                this.convertToNumber(
-                                  this.formService.calculateForMm(
-                                    z.thirdTransverseSectionMeasurementDetail
-                                      .originalThickness,
-                                    z.thirdTransverseSectionMeasurementDetail
-                                      .gaugedS
-                                  )
-                                ) <=
-                                  this.convertToNumber(
-                                    this.formService.calculateForMaxAlwbDimForString(
-                                      z.thirdTransverseSectionMeasurementDetail
-                                        .originalThickness,
-                                      z.thirdTransverseSectionMeasurementDetail
-                                        .percent
-                                    )
-                                  )
-                                  ? 'S'
-                                  : this.convertToNumber(
-                                      this.formService.calculateForMm(
-                                        z
-                                          .thirdTransverseSectionMeasurementDetail
-                                          .originalThickness,
-                                        z
-                                          .thirdTransverseSectionMeasurementDetail
-                                          .gaugedS
-                                      )
-                                    ) >
-                                    this.convertToNumber(
-                                      this.formService.calculateForMaxAlwbDimForString(
-                                        z
-                                          .thirdTransverseSectionMeasurementDetail
-                                          .originalThickness,
-                                        z
-                                          .thirdTransverseSectionMeasurementDetail
-                                          .percent
-                                      )
-                                    )
-                                  ? 'R'
-                                  : '',
+                              text: `${
+                                z.thirdTransverseSectionMeasurementDetail
+                                      .gaugedS == null ? "" :
+                                      Number(
+                                        this.formService.calculateForMm(
+                                          z.thirdTransverseSectionMeasurementDetail
+                                            .originalThickness,
+                                          z.thirdTransverseSectionMeasurementDetail
+                                            .gaugedS
+                                        )
+                                      ) >=
+                                        Number(
+                                          this.formService.threePartsFourOfMaxAlwbDim(
+                                            this.formService.calculateForMaxAlwbDim(
+                                              z
+                                                .thirdTransverseSectionMeasurementDetail
+                                                .originalThickness,
+                                              z
+                                                .thirdTransverseSectionMeasurementDetail
+                                                .percent
+                                            )
+                                          )
+                                        ) &&
+                                      Number(
+                                        this.formService.calculateForMm(
+                                          z.thirdTransverseSectionMeasurementDetail
+                                            .originalThickness,
+                                          z.thirdTransverseSectionMeasurementDetail
+                                            .gaugedS
+                                        )
+                                      ) <=
+                                        Number(
+                                          this.formService.calculateForMaxAlwbDim(
+                                            z.thirdTransverseSectionMeasurementDetail
+                                              .originalThickness,
+                                            z.thirdTransverseSectionMeasurementDetail
+                                              .percent
+                                          )
+                                        )
+                                        ? 'S'
+                                        : Number(
+                                            this.formService.calculateForMm(
+                                              z
+                                                .thirdTransverseSectionMeasurementDetail
+                                                .originalThickness,
+                                              z
+                                                .thirdTransverseSectionMeasurementDetail
+                                                .gaugedS
+                                            )
+                                          ) >
+                                          Number(
+                                            this.formService.calculateForMaxAlwbDim(
+                                              z
+                                                .thirdTransverseSectionMeasurementDetail
+                                                .originalThickness,
+                                              z
+                                                .thirdTransverseSectionMeasurementDetail
+                                                .percent
+                                            )
+                                          )
+                                        ? 'R'
+                                        : ''
+                              }`
                             },
                           ]),
                         ],
@@ -5753,7 +5894,7 @@ export class ReviewComponent implements OnInit {
                           //Table header
                           [
                             {
-                              text: `TM4-${y.code}(1 July 2023)`,
+                              text: `TM4${y.code}`,
                               style: ['txt_center'],
                               colSpan: 12,
                               alignment: 'right' as Alignment,
@@ -5903,7 +6044,7 @@ export class ReviewComponent implements OnInit {
                               style: 'txt_center',
                             },
                             {
-                              text: `${y.tankHolDescription}`,
+                              text: `${y.tankDescription}`,
                               colSpan: 11,
                               rowSpan: 1,
                               bold: true,
@@ -6030,7 +6171,7 @@ export class ReviewComponent implements OnInit {
                                     style: ['txt_center'],
                                   },
                                   {
-                                    text: `${this.formService.calculateForMaxAlwbDimForString(
+                                    text: `${this.formService.calculateForMaxAlwbDim(
                                       k.detailMeasurement.originalThickness,
                                       k.detailMeasurement.percent
                                     )}`,
@@ -6055,7 +6196,7 @@ export class ReviewComponent implements OnInit {
                                           k.detailMeasurement.originalThickness,
                                           k.detailMeasurement.gaugedP
                                         )
-                                      ) == 0.0
+                                      ) == 0.0||k.detailMeasurement.gaugedP==null
                                         ? ''
                                         : this.formService.calculateForMm(
                                             k.detailMeasurement
@@ -6075,7 +6216,7 @@ export class ReviewComponent implements OnInit {
                                             k.detailMeasurement.gaugedP
                                           )
                                         )
-                                      )
+                                      )||k.detailMeasurement.gaugedP==null
                                         ? ''
                                         : Number(
                                             this.formService.calculateForPercent(
@@ -6089,45 +6230,45 @@ export class ReviewComponent implements OnInit {
                                     style: ['txt_center'],
                                   },
                                   {
-                                    text:
-                                      this.convertToNumber(
+                                    text:k.detailMeasurement.gaugedP==null?"":
+                                      Number(
                                         this.formService.calculateForMm(
                                           k.detailMeasurement.originalThickness,
                                           k.detailMeasurement.gaugedP
                                         )
                                       ) >=
-                                        this.convertToNumber(
+                                        Number(
                                           this.formService.threePartsFourOfMaxAlwbDim(
-                                            this.formService.calculateForMaxAlwbDimForString(
+                                            this.formService.calculateForMaxAlwbDim(
                                               k.detailMeasurement
                                                 .originalThickness,
                                               k.detailMeasurement.percent
                                             )
                                           )
                                         ) &&
-                                      this.convertToNumber(
+                                      Number(
                                         this.formService.calculateForMm(
                                           k.detailMeasurement.originalThickness,
                                           k.detailMeasurement.gaugedP
                                         )
                                       ) <=
-                                        this.convertToNumber(
-                                          this.formService.calculateForMaxAlwbDimForString(
+                                        Number(
+                                          this.formService.calculateForMaxAlwbDim(
                                             k.detailMeasurement
                                               .originalThickness,
                                             k.detailMeasurement.percent
                                           )
                                         )
                                         ? 'S'
-                                        : this.convertToNumber(
+                                        : Number(
                                             this.formService.calculateForMm(
                                               k.detailMeasurement
                                                 .originalThickness,
                                               k.detailMeasurement.gaugedP
                                             )
                                           ) >
-                                          this.convertToNumber(
-                                            this.formService.calculateForMaxAlwbDimForString(
+                                          Number(
+                                            this.formService.calculateForMaxAlwbDim(
                                               k.detailMeasurement
                                                 .originalThickness,
                                               k.detailMeasurement.percent
@@ -6145,7 +6286,7 @@ export class ReviewComponent implements OnInit {
                                           k.detailMeasurement.originalThickness,
                                           k.detailMeasurement.gaugedS
                                         )
-                                      ) == 0.0
+                                      ) == 0.0||k.detailMeasurement.gaugedS==null
                                         ? ''
                                         : this.formService.calculateForMm(
                                             k.detailMeasurement
@@ -6165,7 +6306,7 @@ export class ReviewComponent implements OnInit {
                                             k.detailMeasurement.gaugedS
                                           )
                                         )
-                                      )
+                                      )||k.detailMeasurement.gaugedS==null
                                         ? ''
                                         : Number(
                                             this.formService.calculateForPercent(
@@ -6179,52 +6320,56 @@ export class ReviewComponent implements OnInit {
                                     border: [true, true, false, true],
                                   },
                                   {
-                                    text:
-                                      this.convertToNumber(
-                                        this.formService.calculateForMm(
-                                          k.detailMeasurement.originalThickness,
-                                          k.detailMeasurement.gauged
-                                        )
-                                      ) >=
-                                        this.convertToNumber(
-                                          this.formService.threePartsFourOfMaxAlwbDim(
-                                            this.formService.calculateForMaxAlwbDimForString(
+                                    text:`${
+
+
+                                      k.detailMeasurement.gaugedS==null?"":
+                                        Number(
+                                          this.formService.calculateForMm(
+                                            k.detailMeasurement.originalThickness,
+                                            k.detailMeasurement.gaugedS
+                                          )
+                                        ) >=
+                                          Number(
+                                            this.formService.threePartsFourOfMaxAlwbDim(
+                                              this.formService.calculateForMaxAlwbDim(
+                                                k.detailMeasurement
+                                                  .originalThickness,
+                                                k.detailMeasurement.percent
+                                              )
+                                            )
+                                          ) &&
+                                        Number(
+                                          this.formService.calculateForMm(
+                                            k.detailMeasurement.originalThickness,
+                                            k.detailMeasurement.gaugedS
+                                          )
+                                        ) <=
+                                          Number(
+                                            this.formService.calculateForMaxAlwbDim(
                                               k.detailMeasurement
                                                 .originalThickness,
                                               k.detailMeasurement.percent
                                             )
                                           )
-                                        ) &&
-                                      this.convertToNumber(
-                                        this.formService.calculateForMm(
-                                          k.detailMeasurement.originalThickness,
-                                          k.detailMeasurement.gauged
-                                        )
-                                      ) <=
-                                        this.convertToNumber(
-                                          this.formService.calculateForMaxAlwbDimForString(
-                                            k.detailMeasurement
-                                              .originalThickness,
-                                            k.detailMeasurement.percent
-                                          )
-                                        )
-                                        ? 'S'
-                                        : this.convertToNumber(
-                                            this.formService.calculateForMm(
-                                              k.detailMeasurement
-                                                .originalThickness,
-                                              k.detailMeasurement.gauged
+                                          ? 'S'
+                                          : Number(
+                                              this.formService.calculateForMm(
+                                                k.detailMeasurement
+                                                  .originalThickness,
+                                                k.detailMeasurement.gaugedS
+                                              )
+                                            ) >
+                                            Number(
+                                              this.formService.calculateForMaxAlwbDim(
+                                                k.detailMeasurement
+                                                  .originalThickness,
+                                                k.detailMeasurement.percent
+                                              )
                                             )
-                                          ) >
-                                          this.convertToNumber(
-                                            this.formService.calculateForMaxAlwbDimForString(
-                                              k.detailMeasurement
-                                                .originalThickness,
-                                              k.detailMeasurement.percent
-                                            )
-                                          )
-                                        ? 'R'
-                                        : '',
+                                          ? 'R'
+                                          : ''
+                                    }`,
 
                                     style: ['txt_center'],
                                     border: [false, true, true, true],
@@ -6288,7 +6433,7 @@ export class ReviewComponent implements OnInit {
                           //Table header
                           [
                             {
-                              text: `TM5-${y.code}(1 July 2023)`,
+                              text: `TM5${y.code}`,
                               style: ['txt_center'],
                               colSpan: 12,
                               alignment: 'right' as Alignment,
@@ -6476,7 +6621,7 @@ export class ReviewComponent implements OnInit {
                             },
                             {},
                             {
-                              text: '42',
+                              text: `${y.frameNo}`,
                               border: [false, false, true, false],
                               colSpan: 3,
                               bold: true,
@@ -6558,7 +6703,6 @@ export class ReviewComponent implements OnInit {
                                 (k: any) => [
                                   {
                                     text: `${k.structuralComponentType ?? ''}`,
-                                    style: ['txt_center'],
                                   },
                                   {
                                     text: `${k.item ?? ''}`,
@@ -6573,7 +6717,7 @@ export class ReviewComponent implements OnInit {
                                     style: ['txt_center'],
                                   },
                                   {
-                                    text: `${this.formService.calculateForMaxAlwbDimForString(
+                                    text: `${this.formService.calculateForMaxAlwbDim(
                                       k.measurementDetail.originalThickness,
                                       k.measurementDetail.percent
                                     )}`,
@@ -6598,7 +6742,7 @@ export class ReviewComponent implements OnInit {
                                           k.measurementDetail.originalThickness,
                                           k.measurementDetail.gaugedP
                                         )
-                                      ) == 0.0
+                                      ) == 0.0||k.measurementDetail.gaugedP==null
                                         ? ''
                                         : this.formService.calculateForMm(
                                             k.measurementDetail
@@ -6618,7 +6762,7 @@ export class ReviewComponent implements OnInit {
                                             k.measurementDetail.gaugedP
                                           )
                                         )
-                                      )
+                                      )||k.measurementDetail.gaugedP==null
                                         ? ''
                                         : Number(
                                             this.formService.calculateForPercent(
@@ -6632,45 +6776,45 @@ export class ReviewComponent implements OnInit {
                                     border: [true, true, false, true],
                                   },
                                   {
-                                    text:
-                                      this.convertToNumber(
+                                    text:k.measurementDetail.gaugedP==null?"":
+                                      Number(
                                         this.formService.calculateForMm(
                                           k.measurementDetail.originalThickness,
                                           k.measurementDetail.gaugedP
                                         )
                                       ) >=
-                                        this.convertToNumber(
+                                        Number(
                                           this.formService.threePartsFourOfMaxAlwbDim(
-                                            this.formService.calculateForMaxAlwbDimForString(
+                                            this.formService.calculateForMaxAlwbDim(
                                               k.measurementDetail
                                                 .originalThickness,
                                               k.measurementDetail.percent
                                             )
                                           )
                                         ) &&
-                                      this.convertToNumber(
+                                      Number(
                                         this.formService.calculateForMm(
                                           k.measurementDetail.originalThickness,
                                           k.measurementDetail.gaugedP
                                         )
                                       ) <=
-                                        this.convertToNumber(
-                                          this.formService.calculateForMaxAlwbDimForString(
+                                        Number(
+                                          this.formService.calculateForMaxAlwbDim(
                                             k.measurementDetail
                                               .originalThickness,
                                             k.measurementDetail.percent
                                           )
                                         )
                                         ? 'S'
-                                        : this.convertToNumber(
+                                        : Number(
                                             this.formService.calculateForMm(
                                               k.measurementDetail
                                                 .originalThickness,
                                               k.measurementDetail.gaugedP
                                             )
                                           ) >
-                                          this.convertToNumber(
-                                            this.formService.calculateForMaxAlwbDimForString(
+                                          Number(
+                                            this.formService.calculateForMaxAlwbDim(
                                               k.measurementDetail
                                                 .originalThickness,
                                               k.measurementDetail.percent
@@ -6688,7 +6832,7 @@ export class ReviewComponent implements OnInit {
                                           k.measurementDetail.originalThickness,
                                           k.measurementDetail.gaugedS
                                         )
-                                      ) == 0.0
+                                      ) == 0.0||k.measurementDetail.gaugedS==null
                                         ? ''
                                         : this.formService.calculateForMm(
                                             k.measurementDetail
@@ -6708,7 +6852,7 @@ export class ReviewComponent implements OnInit {
                                             k.measurementDetail.gaugedS
                                           )
                                         )
-                                      )
+                                      )|| k.measurementDetail.gaugedS==null
                                         ? ''
                                         : Number(
                                             this.formService.calculateForPercent(
@@ -6722,45 +6866,45 @@ export class ReviewComponent implements OnInit {
                                     border: [true, true, false, true],
                                   },
                                   {
-                                    text:
-                                      this.convertToNumber(
+                                    text:k.measurementDetail.gaugedS==null?"":
+                                      Number(
                                         this.formService.calculateForMm(
                                           k.measurementDetail.originalThickness,
                                           k.measurementDetail.gaugedS
                                         )
                                       ) >=
-                                        this.convertToNumber(
+                                        Number(
                                           this.formService.threePartsFourOfMaxAlwbDim(
-                                            this.formService.calculateForMaxAlwbDimForString(
+                                            this.formService.calculateForMaxAlwbDim(
                                               k.measurementDetail
                                                 .originalThickness,
                                               k.measurementDetail.percent
                                             )
                                           )
                                         ) &&
-                                      this.convertToNumber(
+                                      Number(
                                         this.formService.calculateForMm(
                                           k.measurementDetail.originalThickness,
                                           k.measurementDetail.gaugedS
                                         )
                                       ) <=
-                                        this.convertToNumber(
-                                          this.formService.calculateForMaxAlwbDimForString(
+                                        Number(
+                                          this.formService.calculateForMaxAlwbDim(
                                             k.measurementDetail
                                               .originalThickness,
                                             k.measurementDetail.percent
                                           )
                                         )
                                         ? 'S'
-                                        : this.convertToNumber(
+                                        : Number(
                                             this.formService.calculateForMm(
                                               k.measurementDetail
                                                 .originalThickness,
                                               k.measurementDetail.gaugedS
                                             )
                                           ) >
-                                          this.convertToNumber(
-                                            this.formService.calculateForMaxAlwbDimForString(
+                                          Number(
+                                            this.formService.calculateForMaxAlwbDim(
                                               k.measurementDetail
                                                 .originalThickness,
                                               k.measurementDetail.percent
@@ -6829,7 +6973,7 @@ export class ReviewComponent implements OnInit {
                           //Table header
                           [
                             {
-                              text: `TM6-${y.code}(1 July 2023)`,
+                              text: `TM6${y.code}`,
                               style: ['txt_center'],
                               colSpan: 12,
                               alignment: 'right' as Alignment,
@@ -7105,7 +7249,7 @@ export class ReviewComponent implements OnInit {
                                     style: ['txt_center'],
                                   },
                                   {
-                                    text: `${this.formService.calculateForMaxAlwbDimForString(
+                                    text: `${this.formService.calculateForMaxAlwbDim(
                                       k.detailMeasurement.originalThickness,
                                       k.detailMeasurement.percent
                                     )}`,
@@ -7130,7 +7274,7 @@ export class ReviewComponent implements OnInit {
                                           k.detailMeasurement.originalThickness,
                                           k.detailMeasurement.gaugedP
                                         )
-                                      ) == 0.0
+                                      ) == 0.0||k.detailMeasurement.gaugedP==null
                                         ? ''
                                         : this.formService.calculateForMm(
                                             k.detailMeasurement
@@ -7150,7 +7294,7 @@ export class ReviewComponent implements OnInit {
                                             k.detailMeasurement.gaugedP
                                           )
                                         )
-                                      )
+                                      )||k.detailMeasurement.gaugedP==null
                                         ? ''
                                         : Number(
                                             this.formService.calculateForPercent(
@@ -7164,45 +7308,45 @@ export class ReviewComponent implements OnInit {
                                     border: [true, true, false, true],
                                   },
                                   {
-                                    text:
-                                      this.convertToNumber(
+                                    text:k.detailMeasurement.gaugedP==null?"":
+                                      Number(
                                         this.formService.calculateForMm(
                                           k.detailMeasurement.originalThickness,
                                           k.detailMeasurement.gaugedP
                                         )
                                       ) >=
-                                        this.convertToNumber(
+                                        Number(
                                           this.formService.threePartsFourOfMaxAlwbDim(
-                                            this.formService.calculateForMaxAlwbDimForString(
+                                            this.formService.calculateForMaxAlwbDim(
                                               k.detailMeasurement
                                                 .originalThickness,
                                               k.detailMeasurement.percent
                                             )
                                           )
                                         ) &&
-                                      this.convertToNumber(
+                                      Number(
                                         this.formService.calculateForMm(
                                           k.detailMeasurement.originalThickness,
                                           k.detailMeasurement.gaugedP
                                         )
                                       ) <=
-                                        this.convertToNumber(
-                                          this.formService.calculateForMaxAlwbDimForString(
+                                        Number(
+                                          this.formService.calculateForMaxAlwbDim(
                                             k.detailMeasurement
                                               .originalThickness,
                                             k.detailMeasurement.percent
                                           )
                                         )
                                         ? 'S'
-                                        : this.convertToNumber(
+                                        : Number(
                                             this.formService.calculateForMm(
                                               k.detailMeasurement
                                                 .originalThickness,
                                               k.detailMeasurement.gaugedP
                                             )
                                           ) >
-                                          this.convertToNumber(
-                                            this.formService.calculateForMaxAlwbDimForString(
+                                          Number(
+                                            this.formService.calculateForMaxAlwbDim(
                                               k.detailMeasurement
                                                 .originalThickness,
                                               k.detailMeasurement.percent
@@ -7220,7 +7364,7 @@ export class ReviewComponent implements OnInit {
                                           k.detailMeasurement.originalThickness,
                                           k.detailMeasurement.gaugedS
                                         )
-                                      ) == 0.0
+                                      ) == 0.0||k.detailMeasurement.gaugedS==null
                                         ? ''
                                         : this.formService.calculateForMm(
                                             k.detailMeasurement
@@ -7240,7 +7384,7 @@ export class ReviewComponent implements OnInit {
                                             k.detailMeasurement.gaugedS
                                           )
                                         )
-                                      )
+                                      )||k.detailMeasurement.gaugedS==null
                                         ? ''
                                         : Number(
                                             this.formService.calculateForPercent(
@@ -7254,45 +7398,45 @@ export class ReviewComponent implements OnInit {
                                     border: [true, true, false, true],
                                   },
                                   {
-                                    text:
-                                      this.convertToNumber(
+                                    text:k.detailMeasurement.gaugedS==null?"":
+                                      Number(
                                         this.formService.calculateForMm(
                                           k.detailMeasurement.originalThickness,
                                           k.detailMeasurement.gaugedS
                                         )
                                       ) >=
-                                        this.convertToNumber(
+                                        Number(
                                           this.formService.threePartsFourOfMaxAlwbDim(
-                                            this.formService.calculateForMaxAlwbDimForString(
+                                            this.formService.calculateForMaxAlwbDim(
                                               k.detailMeasurement
                                                 .originalThickness,
                                               k.detailMeasurement.percent
                                             )
                                           )
                                         ) &&
-                                      this.convertToNumber(
+                                      Number(
                                         this.formService.calculateForMm(
                                           k.detailMeasurement.originalThickness,
                                           k.detailMeasurement.gaugedS
                                         )
                                       ) <=
-                                        this.convertToNumber(
-                                          this.formService.calculateForMaxAlwbDimForString(
+                                        Number(
+                                          this.formService.calculateForMaxAlwbDim(
                                             k.detailMeasurement
                                               .originalThickness,
                                             k.detailMeasurement.percent
                                           )
                                         )
                                         ? 'S'
-                                        : this.convertToNumber(
+                                        : Number(
                                             this.formService.calculateForMm(
                                               k.detailMeasurement
                                                 .originalThickness,
                                               k.detailMeasurement.gaugedS
                                             )
                                           ) >
-                                          this.convertToNumber(
-                                            this.formService.calculateForMaxAlwbDimForString(
+                                          Number(
+                                            this.formService.calculateForMaxAlwbDim(
                                               k.detailMeasurement
                                                 .originalThickness,
                                               k.detailMeasurement.percent
@@ -7380,7 +7524,7 @@ export class ReviewComponent implements OnInit {
                           //Table header
                           [
                             {
-                              text: `TM7-${y.code}(1 July 2023)`,
+                              text: `TM7${y.code}`,
                               style: ['txt_center'],
                               colSpan: 31,
                               alignment: 'right' as Alignment,
@@ -7544,7 +7688,7 @@ export class ReviewComponent implements OnInit {
                             {},
                             {
                               decoration: 'underline' as Decoration,
-                              text: ``,
+                              text: `${this.inShipName}`,
                               colSpan: 8,
                               bold: true,
                               border: [false, false, false, false],
@@ -7566,7 +7710,7 @@ export class ReviewComponent implements OnInit {
                             {},
                             {
                               decoration: 'underline' as Decoration,
-                              text: ``,
+                              text: `${this.inABS}`,
                               colSpan: 8,
                               bold: true,
                               border: [false, false, false, false],
@@ -7587,7 +7731,7 @@ export class ReviewComponent implements OnInit {
                             {},
                             {
                               decoration: 'underline' as Decoration,
-                              text: ``,
+                              text: `${this.generalParticular[0].reportNo}`,
                               colSpan: 5,
                               bold: true,
                               border: [false, false, false, false],
@@ -7879,10 +8023,13 @@ export class ReviewComponent implements OnInit {
                                     style: ['txt_center'],
                                   },
                                   {
-                                    text: `${this.formService.calculateForMaxAlwbDimForString(
+                                    text: `${Number(this.formService.calculateForMaxAlwbDim(
                                       k.upperPart.originalThickness,
                                       k.upperPart.percent
-                                    )}`,
+                              )) != 0.0 ? Number(this.formService.calculateForMaxAlwbDim(
+                                k.upperPart.originalThickness,
+                                k.upperPart.percent
+                              )) : "" }`,
                                     style: ['txt_center'],
                                   },
                                   {
@@ -7900,7 +8047,7 @@ export class ReviewComponent implements OnInit {
                                           k.upperPart.originalThickness,
                                           k.upperPart.gaugedP
                                         )
-                                      ) == 0.0
+                                      ) == 0.0||k.upperPart.gaugedP==null
                                         ? ''
                                         : this.formService.calculateForMm(
                                             k.upperPart.originalThickness,
@@ -7918,7 +8065,7 @@ export class ReviewComponent implements OnInit {
                                             k.upperPart.gaugedP
                                           )
                                         )
-                                      )
+                                      )||k.upperPart.gaugedP==null
                                         ? ''
                                         : Number(
                                             this.formService.calculateForPercent(
@@ -7931,42 +8078,42 @@ export class ReviewComponent implements OnInit {
                                     border: [true, true, false, true],
                                   },
                                   {
-                                    text:
-                                      this.convertToNumber(
+                                    text:k.upperPart.gaugedP==null?"":
+                                      Number(
                                         this.formService.calculateForMm(
                                           k.upperPart.originalThickness,
                                           k.upperPart.gaugedP
                                         )
                                       ) >=
-                                        this.convertToNumber(
+                                        Number(
                                           this.formService.threePartsFourOfMaxAlwbDim(
-                                            this.formService.calculateForMaxAlwbDimForString(
+                                            this.formService.calculateForMaxAlwbDim(
                                               k.upperPart.originalThickness,
                                               k.upperPart.percent
                                             )
                                           )
                                         ) &&
-                                      this.convertToNumber(
+                                      Number(
                                         this.formService.calculateForMm(
                                           k.upperPart.originalThickness,
                                           k.upperPart.gaugedP
                                         )
                                       ) <=
-                                        this.convertToNumber(
-                                          this.formService.calculateForMaxAlwbDimForString(
+                                        Number(
+                                          this.formService.calculateForMaxAlwbDim(
                                             k.upperPart.originalThickness,
                                             k.upperPart.percent
                                           )
                                         )
                                         ? 'S'
-                                        : this.convertToNumber(
+                                        : Number(
                                             this.formService.calculateForMm(
                                               k.upperPart.originalThickness,
                                               k.upperPart.gaugedP
                                             )
                                           ) >
-                                          this.convertToNumber(
-                                            this.formService.calculateForMaxAlwbDimForString(
+                                          Number(
+                                            this.formService.calculateForMaxAlwbDim(
                                               k.upperPart.originalThickness,
                                               k.upperPart.percent
                                             )
@@ -7983,7 +8130,7 @@ export class ReviewComponent implements OnInit {
                                           k.upperPart.originalThickness,
                                           k.upperPart.gaugedS
                                         )
-                                      ) == 0.0
+                                      ) == 0.0||k.upperPart.gaugedS==null
                                         ? ''
                                         : this.formService.calculateForMm(
                                             k.upperPart.originalThickness,
@@ -8001,7 +8148,7 @@ export class ReviewComponent implements OnInit {
                                             k.upperPart.gaugedS
                                           )
                                         )
-                                      )
+                                      )|| k.upperPart.gaugedS==null
                                         ? ''
                                         : Number(
                                             this.formService.calculateForPercent(
@@ -8014,42 +8161,42 @@ export class ReviewComponent implements OnInit {
                                     border: [true, true, false, true],
                                   },
                                   {
-                                    text:
-                                      this.convertToNumber(
+                                    text:k.upperPart.gaugedS==null?"":
+                                      Number(
                                         this.formService.calculateForMm(
                                           k.upperPart.originalThickness,
                                           k.upperPart.gaugedS
                                         )
                                       ) >=
-                                        this.convertToNumber(
+                                        Number(
                                           this.formService.threePartsFourOfMaxAlwbDim(
-                                            this.formService.calculateForMaxAlwbDimForString(
+                                            this.formService.calculateForMaxAlwbDim(
                                               k.upperPart.originalThickness,
                                               k.upperPart.percent
                                             )
                                           )
                                         ) &&
-                                      this.convertToNumber(
+                                      Number(
                                         this.formService.calculateForMm(
                                           k.upperPart.originalThickness,
                                           k.upperPart.gaugedS
                                         )
                                       ) <=
-                                        this.convertToNumber(
-                                          this.formService.calculateForMaxAlwbDimForString(
+                                        Number(
+                                          this.formService.calculateForMaxAlwbDim(
                                             k.upperPart.originalThickness,
                                             k.upperPart.percent
                                           )
                                         )
                                         ? 'S'
-                                        : this.convertToNumber(
+                                        : Number(
                                             this.formService.calculateForMm(
                                               k.upperPart.originalThickness,
                                               k.upperPart.gaugedS
                                             )
                                           ) >
-                                          this.convertToNumber(
-                                            this.formService.calculateForMaxAlwbDimForString(
+                                          Number(
+                                            this.formService.calculateForMaxAlwbDim(
                                               k.upperPart.originalThickness,
                                               k.upperPart.percent
                                             )
@@ -8067,10 +8214,13 @@ export class ReviewComponent implements OnInit {
                                     style: ['txt_center'],
                                   },
                                   {
-                                    text: `${this.formService.calculateForMaxAlwbDimForString(
+                                    text: `${Number(this.formService.calculateForMaxAlwbDim(
                                       k.midPart.originalThickness,
                                       k.midPart.percent
-                                    )}`,
+                              )) != 0.0 ? Number(this.formService.calculateForMaxAlwbDim(
+                                k.midPart.originalThickness,
+                                k.midPart.percent
+                              )) : "" }`,
                                     style: ['txt_center'],
                                   },
                                   {
@@ -8088,7 +8238,7 @@ export class ReviewComponent implements OnInit {
                                           k.midPart.originalThickness,
                                           k.midPart.gaugedP
                                         )
-                                      ) == 0.0
+                                      ) == 0.0|| k.midPart.gaugedP==null
                                         ? ''
                                         : this.formService.calculateForMm(
                                             k.midPart.originalThickness,
@@ -8106,7 +8256,7 @@ export class ReviewComponent implements OnInit {
                                             k.midPart.gaugedP
                                           )
                                         )
-                                      )
+                                      )||k.midPart.gaugedP==null
                                         ? ''
                                         : Number(
                                             this.formService.calculateForPercent(
@@ -8119,42 +8269,42 @@ export class ReviewComponent implements OnInit {
                                     border: [true, true, false, true],
                                   },
                                   {
-                                    text:
-                                      this.convertToNumber(
+                                    text: k.midPart.gaugedP==null?"":
+                                      Number(
                                         this.formService.calculateForMm(
                                           k.midPart.originalThickness,
                                           k.midPart.gaugedP
                                         )
                                       ) >=
-                                        this.convertToNumber(
+                                        Number(
                                           this.formService.threePartsFourOfMaxAlwbDim(
-                                            this.formService.calculateForMaxAlwbDimForString(
+                                            this.formService.calculateForMaxAlwbDim(
                                               k.midPart.originalThickness,
                                               k.midPart.percent
                                             )
                                           )
                                         ) &&
-                                      this.convertToNumber(
+                                      Number(
                                         this.formService.calculateForMm(
                                           k.midPart.originalThickness,
                                           k.midPart.gaugedP
                                         )
                                       ) <=
-                                        this.convertToNumber(
-                                          this.formService.calculateForMaxAlwbDimForString(
+                                        Number(
+                                          this.formService.calculateForMaxAlwbDim(
                                             k.midPart.originalThickness,
                                             k.midPart.percent
                                           )
                                         )
                                         ? 'S'
-                                        : this.convertToNumber(
+                                        : Number(
                                             this.formService.calculateForMm(
                                               k.midPart.originalThickness,
                                               k.midPart.gaugedP
                                             )
                                           ) >
-                                          this.convertToNumber(
-                                            this.formService.calculateForMaxAlwbDimForString(
+                                          Number(
+                                            this.formService.calculateForMaxAlwbDim(
                                               k.midPart.originalThickness,
                                               k.midPart.percent
                                             )
@@ -8171,7 +8321,7 @@ export class ReviewComponent implements OnInit {
                                           k.midPart.originalThickness,
                                           k.midPart.gaugedS
                                         )
-                                      ) == 0.0
+                                      ) == 0.0|| k.midPart.gaugedS==null
                                         ? ''
                                         : this.formService.calculateForMm(
                                             k.midPart.originalThickness,
@@ -8189,7 +8339,7 @@ export class ReviewComponent implements OnInit {
                                             k.midPart.gaugedS
                                           )
                                         )
-                                      )
+                                      )||k.midPart.gaugedS==null
                                         ? ''
                                         : Number(
                                             this.formService.calculateForPercent(
@@ -8202,42 +8352,42 @@ export class ReviewComponent implements OnInit {
                                     border: [true, true, false, true],
                                   },
                                   {
-                                    text:
-                                      this.convertToNumber(
+                                    text: k.midPart.gaugedS==null?"":
+                                      Number(
                                         this.formService.calculateForMm(
                                           k.midPart.originalThickness,
                                           k.midPart.gaugedS
                                         )
                                       ) >=
-                                        this.convertToNumber(
+                                        Number(
                                           this.formService.threePartsFourOfMaxAlwbDim(
-                                            this.formService.calculateForMaxAlwbDimForString(
+                                            this.formService.calculateForMaxAlwbDim(
                                               k.midPart.originalThickness,
                                               k.midPart.percent
                                             )
                                           )
                                         ) &&
-                                      this.convertToNumber(
+                                      Number(
                                         this.formService.calculateForMm(
                                           k.midPart.originalThickness,
                                           k.midPart.gaugedS
                                         )
                                       ) <=
-                                        this.convertToNumber(
-                                          this.formService.calculateForMaxAlwbDimForString(
+                                        Number(
+                                          this.formService.calculateForMaxAlwbDim(
                                             k.midPart.originalThickness,
                                             k.midPart.percent
                                           )
                                         )
                                         ? 'S'
-                                        : this.convertToNumber(
+                                        : Number(
                                             this.formService.calculateForMm(
                                               k.midPart.originalThickness,
                                               k.midPart.gaugedS
                                             )
                                           ) >
-                                          this.convertToNumber(
-                                            this.formService.calculateForMaxAlwbDimForString(
+                                          Number(
+                                            this.formService.calculateForMaxAlwbDim(
                                               k.midPart.originalThickness,
                                               k.midPart.percent
                                             )
@@ -8254,10 +8404,13 @@ export class ReviewComponent implements OnInit {
                                     style: ['txt_center'],
                                   },
                                   {
-                                    text: `${this.formService.calculateForMaxAlwbDimForString(
+                                    text: `${Number(this.formService.calculateForMaxAlwbDim(
                                       k.lowerPart.originalThickness,
                                       k.lowerPart.percent
-                                    )}`,
+                              )) != 0.0 ? Number(this.formService.calculateForMaxAlwbDim(
+                                k.lowerPart.originalThickness,
+                                k.lowerPart.percent
+                              )) : "" }`,
                                     style: ['txt_center'],
                                   },
                                   {
@@ -8275,7 +8428,7 @@ export class ReviewComponent implements OnInit {
                                           k.lowerPart.originalThickness,
                                           k.lowerPart.gaugedP
                                         )
-                                      ) == 0.0
+                                      ) == 0.0||k.lowerPart.gaugedP==null
                                         ? ''
                                         : this.formService.calculateForMm(
                                             k.lowerPart.originalThickness,
@@ -8293,7 +8446,7 @@ export class ReviewComponent implements OnInit {
                                             k.lowerPart.gaugedP
                                           )
                                         )
-                                      )
+                                      )||k.lowerPart.gaugedP==null
                                         ? ''
                                         : Number(
                                             this.formService.calculateForPercent(
@@ -8306,42 +8459,42 @@ export class ReviewComponent implements OnInit {
                                     border: [true, true, false, true],
                                   },
                                   {
-                                    text:
-                                      this.convertToNumber(
+                                    text:k.lowerPart.gaugedP==null?"":
+                                      Number(
                                         this.formService.calculateForMm(
                                           k.lowerPart.originalThickness,
                                           k.lowerPart.gaugedP
                                         )
                                       ) >=
-                                        this.convertToNumber(
+                                        Number(
                                           this.formService.threePartsFourOfMaxAlwbDim(
-                                            this.formService.calculateForMaxAlwbDimForString(
+                                            this.formService.calculateForMaxAlwbDim(
                                               k.lowerPart.originalThickness,
                                               k.lowerPart.percent
                                             )
                                           )
                                         ) &&
-                                      this.convertToNumber(
+                                      Number(
                                         this.formService.calculateForMm(
                                           k.lowerPart.originalThickness,
                                           k.lowerPart.gaugedP
                                         )
                                       ) <=
-                                        this.convertToNumber(
-                                          this.formService.calculateForMaxAlwbDimForString(
+                                        Number(
+                                          this.formService.calculateForMaxAlwbDim(
                                             k.lowerPart.originalThickness,
                                             k.lowerPart.percent
                                           )
                                         )
                                         ? 'S'
-                                        : this.convertToNumber(
+                                        : Number(
                                             this.formService.calculateForMm(
                                               k.lowerPart.originalThickness,
                                               k.lowerPart.gaugedP
                                             )
                                           ) >
-                                          this.convertToNumber(
-                                            this.formService.calculateForMaxAlwbDimForString(
+                                          Number(
+                                            this.formService.calculateForMaxAlwbDim(
                                               k.lowerPart.originalThickness,
                                               k.lowerPart.percent
                                             )
@@ -8358,7 +8511,7 @@ export class ReviewComponent implements OnInit {
                                           k.lowerPart.originalThickness,
                                           k.lowerPart.gaugedS
                                         )
-                                      ) == 0.0
+                                      ) == 0.0||k.lowerPart.gaugedS==null
                                         ? ''
                                         : this.formService.calculateForMm(
                                             k.lowerPart.originalThickness,
@@ -8376,7 +8529,7 @@ export class ReviewComponent implements OnInit {
                                             k.lowerPart.gaugedS
                                           )
                                         )
-                                      )
+                                      )||k.lowerPart.gaugedS==null
                                         ? ''
                                         : Number(
                                             this.formService.calculateForPercent(
@@ -8389,42 +8542,42 @@ export class ReviewComponent implements OnInit {
                                     border: [true, true, false, true],
                                   },
                                   {
-                                    text:
-                                      this.convertToNumber(
+                                    text:k.lowerPart.gaugedS==null?"":
+                                      Number(
                                         this.formService.calculateForMm(
                                           k.lowerPart.originalThickness,
                                           k.lowerPart.gaugedS
                                         )
                                       ) >=
-                                        this.convertToNumber(
+                                        Number(
                                           this.formService.threePartsFourOfMaxAlwbDim(
-                                            this.formService.calculateForMaxAlwbDimForString(
+                                            this.formService.calculateForMaxAlwbDim(
                                               k.lowerPart.originalThickness,
                                               k.lowerPart.percent
                                             )
                                           )
                                         ) &&
-                                      this.convertToNumber(
+                                      Number(
                                         this.formService.calculateForMm(
                                           k.lowerPart.originalThickness,
                                           k.lowerPart.gaugedS
                                         )
                                       ) <=
-                                        this.convertToNumber(
-                                          this.formService.calculateForMaxAlwbDimForString(
+                                        Number(
+                                          this.formService.calculateForMaxAlwbDim(
                                             k.lowerPart.originalThickness,
                                             k.lowerPart.percent
                                           )
                                         )
                                         ? 'S'
-                                        : this.convertToNumber(
+                                        : Number(
                                             this.formService.calculateForMm(
                                               k.lowerPart.originalThickness,
                                               k.lowerPart.gaugedS
                                             )
                                           ) >
-                                          this.convertToNumber(
-                                            this.formService.calculateForMaxAlwbDimForString(
+                                          Number(
+                                            this.formService.calculateForMaxAlwbDim(
                                               k.lowerPart.originalThickness,
                                               k.lowerPart.percent
                                             )
@@ -8503,6 +8656,7 @@ export class ReviewComponent implements OnInit {
       },
     };
     pdfMake.createPdf(pdfDocument).download();
+    // pdfMake.createPdf(pdfDocument).open();
   }
 
   ngOnInit() {
@@ -8599,10 +8753,14 @@ export class ReviewComponent implements OnInit {
                 });
             }
             if (this.formInfo[i].formType.includes('TM6')) {
+              console.log("id 6" ,this.formInfo[i].formId);
+
               this.sketchService
-                .getSketchFromApi('form_tm6', this.formInfo[i].formId)
+              .getSketchFromApi('form_tm6', this.formInfo[i].formId)
                 .subscribe((data) => {
                   this.lsSketch.push(data);
+                  console.log("ls sk7", this.lsSketch)
+
                 });
             }
             if (this.formInfo[i].formType.includes('TM7')) {
