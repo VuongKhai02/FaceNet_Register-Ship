@@ -11,6 +11,7 @@ import { ReportIndexPush } from 'src/app/share/models/report-indexPush.model';
 import { partLocal } from 'src/app/share/models/local.model';
 import { Form } from 'src/app/share/models/form.model';
 import { Router } from '@angular/router';
+import { FormLocal } from 'src/app/share/models/local.model';
 
 @Component({
   selector: 'app-selectform',
@@ -60,7 +61,7 @@ export class SelectformComponent implements OnInit {
             this.reportIndexService
               .getReportIndexFromAPI(this.mainData.mainId)
               .subscribe((data) => {
-                let newForm: Form[] = [];
+                let newForm: FormLocal[] = [];
 
                 for (
                   let i: number = 0;
@@ -72,6 +73,7 @@ export class SelectformComponent implements OnInit {
                     index: -1,
                     name: this.selectForm.value.formSelect[i],
                     type: this.selectForm.value.formSelect[i],
+                    edit: false,
                   });
                 }
 

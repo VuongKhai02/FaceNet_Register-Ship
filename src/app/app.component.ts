@@ -21,6 +21,7 @@ import { AccountService } from './share/services/account.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import jwtDecode from 'jwt-decode';
 import { FormService } from './share/services/form/form.service';
+import { FormLocal } from './share/models/local.model';
 
 @Component({
   selector: 'app-root',
@@ -68,6 +69,7 @@ export class AppComponent implements OnInit {
       index: -1,
       name: formName,
       type: formName,
+      edit: false,
     });
     this.parts[i].visible = false;
   }
@@ -89,19 +91,33 @@ export class AppComponent implements OnInit {
         .subscribe(
           (data) => {
             this.reportIndex = data;
+            let jForm: FormLocal[] = [];
             for (let i: number = 0; i < this.reportIndex.parts.length; i++) {
+              for (
+                let j: number = 0;
+                j < this.reportIndex.parts[i].forms.length;
+                j++
+              ) {
+                jForm.push({
+                  formID: this.reportIndex.parts[i].forms[j].formID,
+                  index: this.reportIndex.parts[i].forms[j].index,
+                  name: this.reportIndex.parts[i].forms[j].name,
+                  type: this.reportIndex.parts[i].forms[j].type,
+                  edit: false,
+                });
+              }
               this.parts.push({
                 id: this.reportIndex.parts[i].id,
                 partIndex: this.reportIndex.parts[i].partIndex,
                 partName: this.reportIndex.parts[i].item,
-                forms: this.reportIndex.parts[i].forms.sort(
-                  (a, b) => a.index - b.index
-                ),
+                forms: jForm.sort((a, b) => a.index - b.index),
                 visible: false,
                 edit: false,
               });
-              this.parts = this.parts.sort((a, b) => a.partIndex - b.partIndex);
+              jForm = [];
             }
+            this.parts = this.parts.sort((a, b) => a.partIndex - b.partIndex);
+            this.mainData.loading = false;
           },
           (err) => {
             console.log(err);
@@ -160,22 +176,33 @@ export class AppComponent implements OnInit {
           .subscribe(
             (data) => {
               this.reportIndex = data;
+              let jForm: FormLocal[] = [];
               for (let i: number = 0; i < this.reportIndex.parts.length; i++) {
+                for (
+                  let j: number = 0;
+                  j < this.reportIndex.parts[i].forms.length;
+                  j++
+                ) {
+                  jForm.push({
+                    formID: this.reportIndex.parts[i].forms[j].formID,
+                    index: this.reportIndex.parts[i].forms[j].index,
+                    name: this.reportIndex.parts[i].forms[j].name,
+                    type: this.reportIndex.parts[i].forms[j].type,
+                    edit: false,
+                  });
+                }
                 this.parts.push({
                   id: this.reportIndex.parts[i].id,
                   partIndex: this.reportIndex.parts[i].partIndex,
                   partName: this.reportIndex.parts[i].item,
-                  forms: this.reportIndex.parts[i].forms.sort(
-                    (a, b) => a.index - b.index
-                  ),
+                  forms: jForm.sort((a, b) => a.index - b.index),
                   visible: false,
                   edit: false,
                 });
-                this.parts = this.parts.sort(
-                  (a, b) => a.partIndex - b.partIndex
-                );
-                this.mainData.loading = false;
+                jForm = [];
               }
+              this.parts = this.parts.sort((a, b) => a.partIndex - b.partIndex);
+              this.mainData.loading = false;
             },
             (err) => {
               this.mainData.loading = false;

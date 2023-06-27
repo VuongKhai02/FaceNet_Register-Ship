@@ -13,6 +13,7 @@ import { partLocal } from 'src/app/share/models/local.model';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { Router } from '@angular/router';
 import { Form } from 'src/app/share/models/form.model';
+import { FormLocal } from 'src/app/share/models/local.model';
 
 @Component({
   selector: 'app-history',
@@ -112,7 +113,7 @@ export class HistoryComponent implements OnInit {
             this.mainData.loading = false;
           }
           this.parts.splice(0, this.parts.length);
-          let newForm: Form[] = [];
+          let newForm: FormLocal[] = [];
           for (let i: number = 0; i < data.parts.length; i++) {
             for (let j: number = 0; j < data.parts[i].forms.length; j++) {
               newForm.push({
@@ -120,6 +121,7 @@ export class HistoryComponent implements OnInit {
                 index: data.parts[i].forms[j].index,
                 name: data.parts[i].forms[j].name,
                 type: data.parts[i].forms[j].type,
+                edit: false,
               });
             }
             this.parts.push({

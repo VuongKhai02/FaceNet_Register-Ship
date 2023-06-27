@@ -12,6 +12,7 @@ import { Form } from 'src/app/share/models/form.model';
 import { GetDataService } from 'src/app/share/services/get-data.service';
 import { partLocal } from 'src/app/share/models/local.model';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { FormLocal } from 'src/app/share/models/local.model';
 
 @Component({
   selector: 'app-table-of-contents',
@@ -52,17 +53,30 @@ export class TableOfContentsComponent implements OnInit {
           (data) => {
             this.reportIndex = data;
             this.parts.splice(0, this.parts.length);
+            let jForm: FormLocal[] = [];
             for (let i: number = 0; i < this.reportIndex.parts.length; i++) {
+              for (
+                let j: number = 0;
+                j < this.reportIndex.parts[i].forms.length;
+                j++
+              ) {
+                jForm.push({
+                  formID: this.reportIndex.parts[i].forms[j].formID,
+                  index: this.reportIndex.parts[i].forms[j].index,
+                  name: this.reportIndex.parts[i].forms[j].name,
+                  type: this.reportIndex.parts[i].forms[j].type,
+                  edit: false,
+                });
+              }
               this.parts.push({
                 id: this.reportIndex.parts[i].id,
                 partIndex: this.reportIndex.parts[i].partIndex,
                 partName: this.reportIndex.parts[i].item,
-                forms: this.reportIndex.parts[i].forms.sort(
-                  (a, b) => a.index - b.index
-                ),
+                forms: jForm.sort((a, b) => a.index - b.index),
                 visible: false,
                 edit: false,
               });
+              jForm = [];
             }
             this.parts = this.parts.sort((a, b) => a.partIndex - b.partIndex);
             this.mainData.loading = false;
@@ -243,7 +257,14 @@ export class TableOfContentsComponent implements OnInit {
         item: this.parts[i].partName,
         partIndex: this.parts[i].partIndex,
       })
-      .subscribe((data) => {});
+      .subscribe(
+        (data) => {
+          this.message.create('success', 'Successfully saved');
+        },
+        (err) => {
+          this.message.create('error', 'Save failed');
+        }
+      );
   }
 
   /**
@@ -324,26 +345,39 @@ export class TableOfContentsComponent implements OnInit {
             .subscribe(
               (data) => {
                 this.reportIndex = data;
+                let jForm: FormLocal[] = [];
                 for (
                   let i: number = 0;
                   i < this.reportIndex.parts.length;
                   i++
                 ) {
+                  for (
+                    let j: number = 0;
+                    j < this.reportIndex.parts[i].forms.length;
+                    j++
+                  ) {
+                    jForm.push({
+                      formID: this.reportIndex.parts[i].forms[j].formID,
+                      index: this.reportIndex.parts[i].forms[j].index,
+                      name: this.reportIndex.parts[i].forms[j].name,
+                      type: this.reportIndex.parts[i].forms[j].type,
+                      edit: false,
+                    });
+                  }
                   this.parts.push({
                     id: this.reportIndex.parts[i].id,
                     partIndex: this.reportIndex.parts[i].partIndex,
                     partName: this.reportIndex.parts[i].item,
-                    forms: this.reportIndex.parts[i].forms.sort(
-                      (a, b) => a.index - b.index
-                    ),
+                    forms: jForm.sort((a, b) => a.index - b.index),
                     visible: false,
                     edit: false,
                   });
-                  this.parts = this.parts.sort(
-                    (a, b) => a.partIndex - b.partIndex
-                  );
-                  this.mainData.loading = false;
+                  jForm = [];
                 }
+                this.parts = this.parts.sort(
+                  (a, b) => a.partIndex - b.partIndex
+                );
+                this.mainData.loading = false;
               },
               (err) => {
                 console.log(err);
@@ -359,7 +393,47 @@ export class TableOfContentsComponent implements OnInit {
     }
   }
 
+  editForm(i: number, j: number) {
+    this.parts[i].forms[j].edit = true;
+  }
+
   dropForm(event: CdkDragDrop<string[]>) {}
+
+  saveFormName(i: number, j: number): void {
+    this.parts[i].forms[j].edit = false;
+    if (
+      this.parts[i].forms[j].type === 'TM2(I)' ||
+      this.parts[i].forms[j].type === 'TM2(II)'
+    ) {
+      this.parts[i].forms[j].type = 'TM2';
+    }
+    this.reportIndexService
+      .putFormName(
+        this.parts[i].forms[j].type,
+        this.parts[i].forms[j].formID,
+        this.parts[i].forms[j].name
+      )
+      .subscribe(
+        (data) => {
+          this.message.create('success', 'Successfully saved');
+          this.ngOnInit();
+          console.log(
+            this.parts[i].forms[j].type,
+            this.parts[i].forms[j].formID,
+            this.parts[i].forms[j].name
+          );
+        },
+        (err) => {
+          this.message.create('error', 'Save failed');
+          console.log(err);
+          console.log(
+            this.parts[i].forms[j].type,
+            this.parts[i].forms[j].formID,
+            this.parts[i].forms[j].name
+          );
+        }
+      );
+  }
 
   cancel() {}
 }

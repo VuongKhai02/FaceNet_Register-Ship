@@ -103,8 +103,20 @@
           <td style="text-align: center">
             {{ part.partIndex }}.{{ form.index }}
           </td>
-          <td>{{ form.name }}</td>
+          <td *ngIf="form.edit === false; else editFormName">
+            {{ form.name }}
+          </td>
+          <ng-template #editFormName>
+            <td>
+              <input
+                nz-input
+                placeholder="Enter new form name"
+                [(ngModel)]="form.name"
+              />
+            </td>
+          </ng-template>
           <td
+            *ngIf="form.edit === false; else saveForm"
             style="
               text-align: center;
               display: flex;
@@ -121,6 +133,10 @@
                 align-items: center;
               "
             >
+              <a (click)="editForm(i, j)"
+                ><span nz-icon nzType="edit" nzTheme="outline"></span
+              ></a>
+              <nz-divider nzType="vertical"></nz-divider>
               <a
                 nz-popconfirm
                 nzPopconfirmTitle="Sure to delete?"
@@ -128,7 +144,10 @@
                 (nzOnCancel)="cancel()"
                 nzPopconfirmPlacement="top"
                 ><span nz-icon nzType="delete" nzTheme="outline"></span></a
-              ><nz-divider nzType="vertical"></nz-divider>
+              ><nz-divider
+                nzType="vertical"
+                *ngIf="part.forms.length !== 1"
+              ></nz-divider>
               <div style="display: flex; flex-direction: column">
                 <a *ngIf="j !== 0" (click)="moveUpForm(i, j)">
                   <span nz-icon nzType="up" nzTheme="outline"></span
@@ -142,6 +161,13 @@
               </div>
             </div>
           </td>
+          <ng-template #saveForm>
+            <td style="text-align: center; background-color: #f5f5f5">
+              <a (click)="saveFormName(i, j)">
+                <span nz-icon nzType="save" nzTheme="outline"></span>
+              </a>
+            </td>
+          </ng-template>
         </tr>
       </tbody>
     </nz-table>
