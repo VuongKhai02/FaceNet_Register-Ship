@@ -417,11 +417,6 @@ export class TableOfContentsComponent implements OnInit {
         (data) => {
           this.message.create('success', 'Successfully saved');
           this.ngOnInit();
-          console.log(
-            this.parts[i].forms[j].type,
-            this.parts[i].forms[j].formID,
-            this.parts[i].forms[j].name
-          );
         },
         (err) => {
           this.message.create('error', 'Save failed');
