@@ -118,8 +118,11 @@ export class Tm2iiComponent {
       this.listFormCode = data;
     });
 
-    if (this.formService.getParticularData() != null)
-      this.generalParticular = this.formService.getParticularData();
+    this.formService.getParticularData().subscribe((data) => {
+      this.generalParticular = data.filter(
+        (element: any) => element.id === this.localService.getId()
+      )[0];
+    });
 
     this.router.events.subscribe((event) => {
       if (

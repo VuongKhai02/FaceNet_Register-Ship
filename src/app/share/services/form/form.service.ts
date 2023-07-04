@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { GeneralParticular } from '../../models/generalParticulars.model';
 import { LocalService } from '../local.service';
 import { API_END_POINT } from 'src/environments/environment';
+import { GeneralParticularsComponent } from 'src/app/Pages/general-particulars/general-particulars.component';
 
 @Injectable({
   providedIn: 'root',
@@ -15,6 +16,8 @@ export class FormService {
   ) {}
 
   generalParticular: GeneralParticular[] = [];
+
+  result!: GeneralParticular;
 
   isLoadingData: boolean = false;
 
@@ -128,18 +131,8 @@ export class FormService {
     return this.httpClient.post(url, fileExcel);
   }
 
-  getParticularData() {
-    this.httpClient
-      .get<GeneralParticular[]>(`${API_END_POINT}/generals_particulars`)
-      .subscribe((data) => {
-        this.generalParticular = data;
-        if (this.localService.getId()) {
-          return this.generalParticular.filter(
-            (element) => element.id === this.localService.getId()
-          )[0];
-        } else return this.generalParticular[0];
-      });
-    return this.generalParticular[0];
+  getParticularData(): Observable<any> {
+    return this.httpClient.get(`${API_END_POINT}/generals_particulars`);
   }
 
   getListSketches(formType: string, formId: string): Observable<any> {
