@@ -421,11 +421,6 @@ export class TableOfContentsComponent implements OnInit {
         (err) => {
           this.message.create('error', 'Save failed');
           console.log(err);
-          console.log(
-            this.parts[i].forms[j].type,
-            this.parts[i].forms[j].formID,
-            this.parts[i].forms[j].name
-          );
         }
       );
   }
